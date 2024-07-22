@@ -4,7 +4,7 @@
   <p align="center">
     ✨ <a href="https://vonsim.github.io">https://vonsim.github.io</a> ✨
     <br/>
-    A 8088-like 8
+    VonSim 8 bits
   </p>
 </p>
 
