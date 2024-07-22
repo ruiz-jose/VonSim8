@@ -42,32 +42,19 @@ export const spanish: Locale = {
       "save-error": "Error al guardar el archivo",
     },
     example: dedent`
-      ; ¡Bienvenido a VonSim!
-      ; Este es un ejemplo de código que calcula los primeros
-      ; n números de la sucesión de Fibonacci, y se guardan a
-      ; partir de la posición 1000h de la memoria.
+      ; ¡Bienvenido a VonSim 8!
+      ; Este es un ejemplo de código que suma dos variables z = x + y
       
-           n  equ 10    ; Calcula los primeros 10 números
-      
-              org 1000h
-      inicio  db 1
-      
-              org 2000h
-              mov bx, offset inicio + 1
-              mov al, 0
-              mov ah, inicio
-      
-      bucle:  cmp bx, offset inicio + n
-              jns fin
-              mov cl, ah
-              add cl, al
-              mov al, ah
-              mov ah, cl
-              mov [bx], cl
-              inc bx
-              jmp bucle
-      fin:    hlt
-              end
+      org 1000h
+        x  db 3
+        y  db 2
+        z  db 0
+      org 2000h
+        mov al, x
+        add al, y
+        mov z, al
+        hlt
+      end
     `,
   },
 
