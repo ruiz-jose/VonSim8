@@ -1,0 +1,10 @@
+# Logs
+logs
+*.log
+pnpm-debug.log*
+*.tsbuildinfo
+
+node_modules
+dist
+dist-ssr
+*.local

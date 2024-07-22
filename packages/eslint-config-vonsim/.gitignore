@@ -1,0 +1,9 @@
+# Logs
+logs
+*.log
+pnpm-debug.log*
+*.tsbuildinfo
+
+node_modules
+*.local
+.turbo

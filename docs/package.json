@@ -1,0 +1,24 @@
+{
+  "name": "@vonsim/docs",
+  "license": "CC-BY-SA-4.0",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "lint": "astro check && eslint --ignore-path .gitignore .",
+    "astro": "astro"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.4.1",
+    "@astrojs/starlight": "^0.15.3",
+    "astro": "^4.1.1",
+    "eslint": "^8.56.0",
+    "eslint-config-vonsim": "workspace:^",
+    "satori": "^0.10.11",
+    "satori-html": "^0.3.2",
+    "sharp": "^0.33.1",
+    "typescript": "~5.3.3"
+  }
+}

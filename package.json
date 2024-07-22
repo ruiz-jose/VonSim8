@@ -1,0 +1,21 @@
+{
+  "name": "vonsim",
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "scripts": {
+    "format": "prettier -w .",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "dev": "pnpm --dir app run dev",
+    "docs:dev": "pnpm --dir docs run dev",
+    "build": "pnpm --dir packages/scripts run build"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "devDependencies": {
+    "prettier": "^3.1.1",
+    "turbo": "^1.11.3"
+  }
+}

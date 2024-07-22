@@ -1,0 +1,26 @@
+{
+  "name": "@vonsim/simulator",
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./cpu": "./src/cpu/types.ts",
+    "./cpu/utils": "./src/cpu/utils.ts"
+  },
+  "scripts": {
+    "lint": "tsc --noEmit && eslint --ignore-path .gitignore .",
+    "test": "vitest --run --reporter verbose"
+  },
+  "dependencies": {
+    "@vonsim/assembler": "workspace:^",
+    "@vonsim/common": "workspace:^"
+  },
+  "devDependencies": {
+    "@vonsim/tsconfig": "workspace:^",
+    "eslint": "^8.56.0",
+    "eslint-config-vonsim": "workspace:^",
+    "type-fest": "^4.9.0",
+    "typescript": "~5.3.3",
+    "vitest": "^1.1.3"
+  }
+}

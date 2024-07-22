@@ -1,0 +1,24 @@
+{
+  "name": "@vonsim/common",
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "exports": {
+    "./address": "./src/address.ts",
+    "./ascii": "./src/ascii.ts",
+    "./byte": "./src/byte.ts",
+    "./i18n": "./src/i18n.ts",
+    "./loops": "./src/loops.ts",
+    "./paths": "./src/paths.ts",
+    "./position": "./src/position.ts"
+  },
+  "scripts": {
+    "lint": "tsc --noEmit && eslint --ignore-path .gitignore ."
+  },
+  "devDependencies": {
+    "@vonsim/tsconfig": "workspace:*",
+    "eslint": "^8.56.0",
+    "eslint-config-vonsim": "workspace:*",
+    "type-fest": "^4.9.0",
+    "typescript": "~5.3.3"
+  }
+}
