@@ -1,10 +1,10 @@
 <p align="center">
   <img src="app/public/favicon.svg" height="128px" align="center" alt="VonSim logo" />
-  <h1 align="center">VonSim</h1>
+  <h1 align="center">VonSim8</h1>
   <p align="center">
     ✨ <a href="https://vonsim.github.io">https://vonsim.github.io</a> ✨
     <br/>
-    A 8088-like Assembly Simulator
+    A 8088-like 8
   </p>
 </p>
 
