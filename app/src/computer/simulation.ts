@@ -180,7 +180,7 @@ async function dispatch(...args: Action) {
             animations: getSettings().animations ? "yes" : "no",
           },
         ] as const;
-        umami.track(...event);
+        //umami.track(...event);
         posthog.capture(...event);
 
         store.set(simulationAtom, { type: "running", until, waitingForInput: false });
