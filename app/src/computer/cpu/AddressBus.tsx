@@ -19,7 +19,7 @@ export function generateAddressPath(from: MARRegister): string {
       return "M 451 349 H 698";
 
     case "ri":
-      return "M 444 388 H 575 V 349 H 698";
+      return "M 454 388 H 575 V 349 H 698";
 
     default:
       throw new Error(`Invalid register ${from}`);
@@ -35,7 +35,7 @@ export function AddressBus() {
   return (
     <svg viewBox="0 0 650 500" className="pointer-events-none absolute inset-0">
       <path
-        className="fill-none stroke-stone-700 stroke-bus"
+        className="stroke-bus fill-none stroke-stone-700"
         strokeLinejoin="round"
         d={[
           "M 451 309 H 575 V 349", // IP
