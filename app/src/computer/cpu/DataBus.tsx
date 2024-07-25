@@ -135,8 +135,8 @@ export function DataBus() {
           "M 370 130 V 250", // result
           "M 250 225 V 250", // flags
           // Internal ALU
-          "M 173 85 H 220", // left
-          "M 182 145 H 220", // right
+          "M 73 85 H 220", // left
+          "M 82 145 H 220", // right
           "M 272 115 h 28", // result
           "M 250 145 v 46", // flags
           // Decoder

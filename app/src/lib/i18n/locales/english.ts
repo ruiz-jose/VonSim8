@@ -210,7 +210,7 @@ export const english = {
 
   footer: {
     documentation: "Documentation",
-    copyright: "III-LIDI, FI, UNLP",
+    copyright: "III-LIDI, FI, UNLP, UNER",
 
     issue: {
       report: "Report an issue",

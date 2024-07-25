@@ -25,7 +25,17 @@ export function Register({
 
   const reg = useAtomValue(valueAtom);
   const low = reg.low;
-  const high = reg.is16bits() ? reg.high : null;
+  //const high = reg.is16bits() ? reg.high : null;
+
+  // Cambio aquí: Mapeo de nombres de registros a su versión de parte baja
+  const nameMapping: Record<string, string> = {
+    AX: "AL",
+    BX: "BL",
+    CX: "CL",
+    DX: "DL",
+  };
+  const displayName = nameMapping[name] || name; // Usa el mapeo si está disponible, de lo contrario usa el nombre original
+
 
   return (
     <Popover>
@@ -39,12 +49,7 @@ export function Register({
           )}
           style={getSpring(springs)}
         >
-          <span className="mr-2 font-bold">{name}</span>
-          {high && (
-            <span className="mr-0.5 rounded bg-stone-900 p-0.5 font-light">
-              {high.toString("hex")}
-            </span>
-          )}
+          <span className="mr-2 font-bold">{displayName}</span>          
           <span className="rounded bg-stone-900 p-0.5 font-light">{low.toString("hex")}</span>
         </animated.button>
       </PopoverTrigger>

@@ -2,7 +2,7 @@
   <img src="app/public/favicon.svg" height="128px" align="center" alt="VonSim logo" />
   <h1 align="center">VonSim8</h1>
   <p align="center">
-    ✨ <a href="https://vonsim.github.io">https://vonsim.github.io</a> ✨
+    ✨ <a href="https://ruiz-jose.github.io/VonSim8/">https://ruiz-jose.github.io/VonSim8/</a> ✨
     <br/>
     VonSim 8 bits
   </p>

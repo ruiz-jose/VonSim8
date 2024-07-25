@@ -197,7 +197,7 @@ export const spanish: Locale = {
 
   footer: {
     documentation: "Documentación",
-    copyright: "III-LIDI, FI, UNLP",
+    copyright: "III-LIDI, FI, UNLP, UNER",
 
     issue: {
       report: "Reportar un error",

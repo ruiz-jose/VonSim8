@@ -13,13 +13,13 @@ export type { MARRegister as AddressRegister };
 export function generateAddressPath(from: MARRegister): string {
   switch (from) {
     case "IP":
-      return "M 551 309 H 575 V 349 H 598";
+      return "M 451 309 H 575 V 349 H 698";
 
     case "SP":
-      return "M 551 349 H 598";
+      return "M 451 349 H 698";
 
     case "ri":
-      return "M 544 388 H 575 V 349 H 598";
+      return "M 444 388 H 575 V 349 H 698";
 
     default:
       throw new Error(`Invalid register ${from}`);
@@ -38,10 +38,10 @@ export function AddressBus() {
         className="fill-none stroke-stone-700 stroke-bus"
         strokeLinejoin="round"
         d={[
-          "M 551 309 H 575 V 349", // IP
-          "M 551 349 H 575", // SP
-          "M 544 388 H 575 V 349", // ri
-          "M 551 349 H 598", // Connection to MAR
+          "M 451 309 H 575 V 349", // IP
+          "M 451 349 H 575", // SP
+          "M 444 388 H 575 V 349", // ri
+          "M 451 349 H 698", // Connection to MAR
         ].join(" ")}
       />
 

@@ -18,7 +18,7 @@ export function Footer() {
       </a>
       <span className="px-2">&middot;</span>
       <a
-        href="https://github.com/vonsim/vonsim"
+        href="https://ruiz-jose.github.io/VonSim8/"
         className="transition-colors hover:text-stone-400"
         target="_blank"
         rel="noopener noreferrer"
@@ -54,7 +54,7 @@ function useIssueLink(): string {
   const program = useSavedProgram();
 
   return (
-    "https://github.com/vonsim/vonsim/issues/new?body=" +
+    "https://github.com/ruiz-jose/VonSim8/issues/new?body=" +
     encodeURIComponent(translate("footer.issue.body", settings, program))
   );
 }
