@@ -2,6 +2,7 @@
 logs
 *.log
 pnpm-debug.log*
+pnpm-lock.yaml
 
 node_modules
 .turbo/
