@@ -208,7 +208,7 @@ export const spanish: Locale = {
         <details>
           <summary>Información extra (POR FAVOR, NO BORRAR)</summary>
 
-          **Versión**: [${__COMMIT_HASH__}](https://github.com/vonsim/vonsim/commit/${__COMMIT_HASH__})
+          **Versión**: [${__COMMIT_HASH__}](https://github.com/ruiz-jose/VonSim8/commit/${__COMMIT_HASH__})
 
           #### Programa
 
