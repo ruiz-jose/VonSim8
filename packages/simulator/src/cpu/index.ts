@@ -88,7 +88,7 @@ export class CPU extends Component {
     // Stack pointer starts at the "bottom" of the memory
     this.#registers.SP = Byte.fromUnsigned(MemoryAddress.MAX_ADDRESS + 1, 16);
     // The initial address of the program is 0x2000
-    this.#registers.IP = Byte.fromUnsigned(0x2000, 16);
+    this.#registers.IP = Byte.fromUnsigned(0x000f, 16);
     // Interrupts always enabled at the start
     this.#setFlag("IF", true);
 
@@ -145,6 +145,7 @@ export class CPU extends Component {
       yield { type: "cpu:cycle.end" };
     }
   }
+
 
   /**
    * Starts an interrupt routine.
