@@ -1,4 +1,4 @@
-nname: Deploy to GitHub Pages
+name: Deploy to GitHub Pages
 
 on:
   push:
@@ -32,18 +32,11 @@ jobs:
         git config --global user.email "jose.ruiz@uner.edu.ar"
         git config --global user.name "jose.ruiz"
 
-    - name: Verify build output
-      run: |
-        if [ ! -d "./dist" ]; then
-          echo "Build directory 'dist' does not exist."
-          exit 1
-        fi
-
     - name: Set up GitHub token
       run: |
         git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
 
     - name: Deploy to GitHub Pages
-      run: npm run deploy
+      run: pnpm run deploy
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
