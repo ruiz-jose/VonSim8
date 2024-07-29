@@ -436,7 +436,6 @@ export class CPU extends Component {
     const value = this.getRegister(register);
     this.#MBR = value;
     yield { type: "cpu:mbr.set", register };
-    console.log("Paso 2: MDR ← read(Memoria[MAR]), IP ← IP + 1");
   }
 
   /**
