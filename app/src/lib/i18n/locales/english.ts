@@ -49,10 +49,10 @@ export const english = {
       
            n  equ 10    ; Calculate the first 10 numbers
       
-              org 00f0h
+              org 0010h
       start   db 1
       
-              org 000fh
+              org 0020h
               mov bx, offset start + 1
               mov al, 0
               mov ah, start
