@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+nname: Deploy to GitHub Pages
 
 on:
   push:
@@ -38,6 +38,10 @@ jobs:
           echo "Build directory 'dist' does not exist."
           exit 1
         fi
+
+    - name: Set up GitHub token
+      run: |
+        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
 
     - name: Deploy to GitHub Pages
       run: npm run deploy
