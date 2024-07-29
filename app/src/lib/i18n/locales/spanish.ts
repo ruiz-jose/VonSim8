@@ -45,11 +45,11 @@ export const spanish: Locale = {
       ; ¡Bienvenido a VonSim 8!
       ; Este es un ejemplo de código que suma dos variables z = x + y
       
-      org 1000h
+      org 00f0h
         x  db 3
         y  db 2
         z  db 0
-      org 2000h
+      org 000fh
         mov al, x
         add al, y
         mov z, al

@@ -413,7 +413,6 @@ export class CPU extends Component {
     const value = this.getRegister(register);
     this.#MAR = value;
     yield { type: "cpu:mar.set", register };
-    console.log("Paso 1: MAR ← IP");
   }
 
   /**
