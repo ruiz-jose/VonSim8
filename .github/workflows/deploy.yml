@@ -16,7 +16,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '20'
+        node-version: '18'
 
     - name: Install pnpm
       run: npm install -g pnpm
@@ -26,6 +26,11 @@ jobs:
 
     - name: Build project
       run: pnpm run build
+
+    - name: Configure Git
+      run: |
+        git config --global user.email "jose.ruiz@uner.edu.ar"
+        git config --global user.name "jose.ruiz"
 
     - name: Verify build output
       run: |
