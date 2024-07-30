@@ -14,9 +14,9 @@ export default defineConfig({
       registerType: "prompt",
       includeAssets: ["fonts/**/*", "favicon.svg", "icon-192.png", "icon-512.png"],
       manifest: {
-        name: "VonSim",
-        short_name: "VonSim",
-        description: "A 8088-like Assembly Simulator",
+        name: "VonSim8",
+        short_name: "VonSim8",
+        description: "Simulador vonsim de 8 bits",
         theme_color: "#1c1917",
         display: "standalone",
         background_color: "#1c1917",
