@@ -157,8 +157,8 @@ export class ALUBinaryInstruction extends Instruction<
           this.name === "AND"
             ? left.signed & right.signed
             : this.name === "OR"
-            ? left.signed | right.signed
-            : left.signed ^ right.signed;
+              ? left.signed | right.signed
+              : left.signed ^ right.signed;
 
         result = Byte.fromSigned(signed, size) as AnyByte;
         flags.CF = false;

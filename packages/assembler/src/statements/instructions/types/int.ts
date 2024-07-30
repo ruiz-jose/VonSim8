@@ -60,8 +60,8 @@ export class IntInstruction extends InstructionStatement {
       ...(this.#value
         ? { value: this.#value.toJSON() }
         : this.#initialValue
-        ? { initialValue: this.#initialValue.toJSON() }
-        : { operands: this.operands.map(o => o.toJSON()) }),
+          ? { initialValue: this.#initialValue.toJSON() }
+          : { operands: this.operands.map(o => o.toJSON()) }),
     };
   }
 

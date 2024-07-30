@@ -157,7 +157,7 @@ function detailedLog(event: SimulatorEvent) {
     console.log("Paso 2: MDR ← read(Memoria[MAR]), IP ← IP + 1");
   }
 
- /* if (ns === "cpu" && name === "ir.set") {
+  /* if (ns === "cpu" && name === "ir.set") {
     console.log("Paso 3: IR ← MBR");
   }*/
 

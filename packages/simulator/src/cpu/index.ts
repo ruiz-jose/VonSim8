@@ -146,7 +146,6 @@ export class CPU extends Component {
     }
   }
 
-
   /**
    * Starts an interrupt routine.
    * The interrupt number should have been previously written to the ri register.

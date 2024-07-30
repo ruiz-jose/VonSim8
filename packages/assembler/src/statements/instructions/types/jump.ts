@@ -99,8 +99,8 @@ export class JumpInstruction extends InstructionStatement {
       ...(this.#address
         ? { address: this.#address.toJSON() }
         : this.#jumpTo
-        ? { jumpTo: this.#jumpTo }
-        : { operands: this.operands.map(o => o.toJSON()) }),
+          ? { jumpTo: this.#jumpTo }
+          : { operands: this.operands.map(o => o.toJSON()) }),
     };
   }
 
