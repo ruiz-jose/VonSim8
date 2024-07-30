@@ -9,7 +9,7 @@ export const memoryAtom = atom(
   new Array<Byte<8>>(MemoryAddress.MAX_ADDRESS + 1).fill(Byte.zero(8)),
 );
 
-export const operatingAddressAtom = atom<MemoryAddress>(MemoryAddress.from(0x2000));
+export const operatingAddressAtom = atom<MemoryAddress>(MemoryAddress.from(0x0020));
 export const fixedAddressAtom = atom<MemoryAddress | null>(null);
 
 type MemoryShown = { address: MemoryAddress; value: Byte<8> }[];
@@ -44,5 +44,5 @@ export function resetMemoryState(computer: ComputerState) {
     memoryAtom,
     computer.memory.map(byte => Byte.fromUnsigned(byte, 8)),
   );
-  store.set(operatingAddressAtom, MemoryAddress.from(0x2000));
+  store.set(operatingAddressAtom, MemoryAddress.from(0x0200));
 }
