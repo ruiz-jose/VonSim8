@@ -18,8 +18,13 @@ jobs:
       with:
         node-version: '18'
 
-    - name: Install pnpm
-      run: npm install -g pnpm
+    - name: Cache Node.js modules
+      uses: actions/cache@v2
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
 
     - name: Install dependencies
       run: pnpm install
@@ -27,16 +32,15 @@ jobs:
     - name: Build project
       run: pnpm run build
 
-    - name: Configure Git
+    - name: Verify build output
       run: |
-        git config --global user.email "jose.ruiz@uner.edu.ar"
-        git config --global user.name "jose.ruiz"
-
-    - name: Set up GitHub token
-      run: |
-        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+        if [ ! -d "./dist" ]; then
+          echo "Build directory 'dist' does not exist."
+          exit 1
+        fi
 
     - name: Deploy to GitHub Pages
-      run: pnpm run deploy
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./dist
