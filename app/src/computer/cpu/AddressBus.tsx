@@ -35,7 +35,7 @@ export function AddressBus() {
   return (
     <svg viewBox="0 0 650 500" className="pointer-events-none absolute inset-0">
       <path
-        className="stroke-bus fill-none stroke-stone-700"
+        className="fill-none stroke-stone-700 stroke-bus"
         strokeLinejoin="round"
         d={[
           "M 451 309 H 575 V 349", // IP

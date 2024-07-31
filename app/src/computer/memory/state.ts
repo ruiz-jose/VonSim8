@@ -44,5 +44,5 @@ export function resetMemoryState(computer: ComputerState) {
     memoryAtom,
     computer.memory.map(byte => Byte.fromUnsigned(byte, 8)),
   );
-  store.set(operatingAddressAtom, MemoryAddress.from(0x0200));
+  store.set(operatingAddressAtom, MemoryAddress.from(0x0020));
 }
