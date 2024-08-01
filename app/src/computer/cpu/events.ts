@@ -108,6 +108,8 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         ],
         { duration: 0.5, easing: "easeInOutQuad" },
       );
+      // Ejecutar fetch-instruction
+      await handleCPUEvent({ type: "cpu:mar.set", register: "IP" });
       return;
     }
 
