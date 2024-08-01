@@ -1,7 +1,7 @@
 import posthog from "posthog-js";
 
 const client =
-  posthog.init("phx_niTQON6BF2DGZnYpZyiyRfYsjUWUMHI1SJUIwSO040WKhJ7", {
+  posthog.init("phx_JyxTGO7dec0jsLzTWsDJef4cFqfOb7DcNwqsb80yDApDSrK", {
     api_host: "https://eu.posthog.com",
     autocapture: false,
     capture_pageview: true,

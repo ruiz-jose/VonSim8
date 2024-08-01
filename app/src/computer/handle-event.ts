@@ -32,6 +32,7 @@ export async function handleEvent(event: SimulatorEvent) {
 
   runningEvents.add(event.type);
 
+
   switch (ns) {
     case "bus": {
       await handleBusEvent(event as SimulatorEvent<"bus:">);
@@ -147,7 +148,7 @@ function detailedLog(event: SimulatorEvent) {
     `background: ${debugColors[ns]}; color: #fff; font-weight: bold;`,
     "background: unset; color: unset; font-weight: normal;",
   );
-
+/*
   // Mostrar pasos del ciclo de captación de una instrucción
   if (ns === "cpu" && name === "mar.set") {
     console.log("Paso 1: MAR ← IP");
@@ -156,7 +157,7 @@ function detailedLog(event: SimulatorEvent) {
   if (ns === "cpu" && name === "mbr.set") {
     console.log("Paso 2: MDR ← read(Memoria[MAR]), IP ← IP + 1");
   }
-
+*/
   /* if (ns === "cpu" && name === "ir.set") {
     console.log("Paso 3: IR ← MBR");
   }*/
@@ -201,3 +202,4 @@ function detailedLog(event: SimulatorEvent) {
   }
   console.groupEnd();
 }
+
