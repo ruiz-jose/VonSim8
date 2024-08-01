@@ -200,9 +200,17 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
     case "cpu:wr.on": {
       const line = event.type.slice(4, 6) as "rd" | "wr";
       await anim(
+        [
+          { key: `bus.${line}.stroke`, to: colors.red[500] },
+          { key: "bus.address.stroke", to: colors.blue[500] },
+        ],
+        { duration: 5, easing: "easeInOutSine" },
+      );
+
+     /* await anim(
         { key: `bus.${line}.stroke`, to: colors.red[500] },
         { duration: 5, easing: "easeOutSine" },
-      );
+      );*/
       return;
     }
 
@@ -221,11 +229,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         { duration: 5, easing: "easeInOutSine" },
       );
       await activateRegister("cpu.MAR", colors.blue[500]);
-      store.set(MARAtom, store.get(registerAtoms[event.register]));
-      await anim(
-        { key: "bus.address.stroke", to: colors.blue[500] },
-        { duration: 5, easing: "easeOutSine" },
-      );
+      store.set(MARAtom, store.get(registerAtoms[event.register]));     
       await Promise.all([
         deactivateRegister("cpu.MAR"),
         anim(

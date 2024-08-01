@@ -109,6 +109,10 @@ async function startThread(generator: EventGenerator): Promise<void> {
       if (event.done) break;
       await handleEvent(event.value);
 
+      if (status.until === "cycle-change") {        
+        pauseSimulation();
+      }
+
       if (event.value.type === "cpu:cycle.update" || event.value.type === "cpu:cycle.interrupt") {
         if (status.until === "cycle-change") {
           pauseSimulation();
