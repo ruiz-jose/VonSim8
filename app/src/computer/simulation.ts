@@ -29,6 +29,7 @@ import { anim, pauseAllAnimations, resumeAllAnimations, stopAllAnimations } from
 import { resetSwitchesState } from "./switches/state";
 import { resetTimerState } from "./timer/state";
 
+
 const simulator = new Simulator();
 
 type RunUntil = "cycle-change" | "end-of-instruction" | "infinity";
@@ -109,15 +110,19 @@ async function startThread(generator: EventGenerator): Promise<void> {
       if (event.done) break;
       await handleEvent(event.value);
 
+
       if (status.until === "cycle-change") {
         if (event.value.type === "cpu:cycle.start") {
+          toast({ title: "Paso 1: MAR ← IP" });
           pauseSimulation();
         } else if (event.value.type === "cpu:register.update") {
+          toast({ title: "Paso 2: MDR ← read(Memoria[MAR]), IP ← IP + 1" });
           pauseSimulation();
         } else if (event.value.type === "cpu:mbr.get") {
+          toast({ title: "Paso 3: IR ← MBR"});
           pauseSimulation();
         }
-      } 
+      }
       if (event.value.type === "cpu:cycle.update" || event.value.type === "cpu:cycle.interrupt") {
         if (status.until === "cycle-change") {
          // pauseSimulation();
