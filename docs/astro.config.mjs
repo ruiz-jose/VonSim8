@@ -5,7 +5,7 @@ import vonsimLang from "./src/assets/vonsim.tmLanguage.json";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://ruiz-jose.github.io/VonSim8",
+  site: "https://ruiz-jose.github.io/VonSim8/",
   base: "/docs/",
   trailingSlash: "always",
 
