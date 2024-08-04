@@ -113,13 +113,13 @@ async function startThread(generator: EventGenerator): Promise<void> {
 
       if (status.until === "cycle-change") {
         if (event.value.type === "cpu:cycle.start") {
-          toast({ title: "Paso 1: MAR ← IP" });
+          toast({ title: "Etapa de captación (fetch):" , description:"Paso 1: MAR ← IP", variant: "info" });
           pauseSimulation();
         } else if (event.value.type === "cpu:register.update") {
-          toast({ title: "Paso 2: MDR ← read(Memoria[MAR]), IP ← IP + 1" });
+          toast({ title: "Etapa de captación (fetch):", description:"Paso 2: MDR ← read(Memoria[MAR]); IP ← IP + 1" , variant: "info"});
           pauseSimulation();
         } else if (event.value.type === "cpu:mbr.get") {
-          toast({ title: "Paso 3: IR ← MBR"});
+          toast({ title: "Etapa de captación (fetch):", description:"Paso 3: IR ← MBR", variant: "info"});
           pauseSimulation();
         }
       }

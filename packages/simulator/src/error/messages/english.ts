@@ -1,7 +1,13 @@
 import { IOAddress, IOAddressLike, MemoryAddress, MemoryAddressLike } from "@vonsim/common/address";
 import type { BaseLocale } from "@vonsim/common/i18n";
 
-const maxAddress = MemoryAddress.from(MemoryAddress.MAX_ADDRESS).toString();
+//const maxAddress = MemoryAddress.from(MemoryAddress.MAX_ADDRESS).toString();
+
+const formatAddress = (address: MemoryAddressLike) => {
+  const formatted = MemoryAddress.format(address);
+  return formatted.slice(-2); // Obtener los últimos dos dígitos
+};
+const maxAddress = formatAddress(MemoryAddress.MAX_ADDRESS);
 
 export const english = {
   // prettier-ignore
