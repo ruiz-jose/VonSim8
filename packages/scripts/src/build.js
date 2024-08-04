@@ -1,3 +1,5 @@
+import fs from "node:fs/promises";
+
 import { $ } from "execa";
 
 const rootDir = new URL("../../..", import.meta.url);
