@@ -87,7 +87,7 @@ function resetState(state: ComputerState) {
  * Starts an execution thread for the given generator. This is, run all the
  * events until the generator is done or the simulation is stopped.
  */
-async function startThread(generator: EventGenerator): Promise<void> {
+async function startThread(generator: EventGenerator): Promise<void> { 
   try {
     // eslint-disable-next-line no-constant-condition
     while (true) {
@@ -112,14 +112,17 @@ async function startThread(generator: EventGenerator): Promise<void> {
 
 
       if (status.until === "cycle-change") {
-        if (event.value.type === "cpu:cycle.start") {
+        if (event.value.type === "cpu:cycle.start" ) {          
           toast({ title: "Etapa de captación (fetch):" , description:"Paso 1: MAR ← IP", variant: "info" });
           pauseSimulation();
-        } else if (event.value.type === "cpu:register.update") {
+        } else if (event.value.type === "cpu:register.update" ) {
           toast({ title: "Etapa de captación (fetch):", description:"Paso 2: MDR ← read(Memoria[MAR]); IP ← IP + 1" , variant: "info"});
           pauseSimulation();
-        } else if (event.value.type === "cpu:mbr.get") {
+        } else if (event.value.type === "cpu:mbr.get" ) {
           toast({ title: "Etapa de captación (fetch):", description:"Paso 3: IR ← MBR", variant: "info"});
+          pauseSimulation();
+        } else if (event.value.type === "cpu:cycle.end") {
+          toast({ title: "Etapa de ejecución (execute):", description: "Paso 1: IR ← MBR", variant: "info" });
           pauseSimulation();
         }
       }
