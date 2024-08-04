@@ -18,7 +18,7 @@ export function Footer() {
       </a>
       <span className="px-2">&middot;</span>
       <a
-        href="https://ruiz-jose.github.io/VonSim8/"
+        href="https://ruiz-jose.github.io/VonSim8/docs/"
         className="transition-colors hover:text-stone-400"
         target="_blank"
         rel="noopener noreferrer"

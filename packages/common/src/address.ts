@@ -33,10 +33,10 @@ export class MemoryAddress {
    * Returns the byte as a string.
    * @param [trailinhG=true] Whether to add a trailing 'h'.
    */
-  toString(trailingH = true): string {
+  toString(trailingH = false): string {
     let result = this.#address.toString("hex");
     if (trailingH) result += "h";
-    return result;
+    return result.slice(-2); // Obtener los últimos dos dígitos;
   }
 
   /**
@@ -102,7 +102,7 @@ export class MemoryAddress {
     let result = address.toString(16).padStart(4, "0").toUpperCase();
     if (trailingH) result += "h";
 
-    return result;
+    return result.slice(-3);// Obtener los últimos tres dígitos
   }
 }
 

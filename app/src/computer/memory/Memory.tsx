@@ -105,7 +105,7 @@ export function Memory() {
           <div className="relative">
             <Input
               className="font-mono"
-              placeholder="0020h"
+              placeholder="20h"
               type="text"
               enterKeyHint="go"
               id={inputId}
