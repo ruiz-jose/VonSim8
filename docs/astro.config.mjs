@@ -5,22 +5,22 @@ import vonsimLang from "./src/assets/vonsim.tmLanguage.json";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://vonsim.github.io",
+  site: "https://ruiz-jose.github.io/VonSim8",
   base: "/docs/",
   trailingSlash: "always",
 
   integrations: [
     starlight({
-      title: "VonSim",
+      title: "VonSim8",
       favicon: "/favicon.svg",
       logo: { src: "./public/favicon.svg", alt: "Logo" },
       editLink: {
-        baseUrl: "https://github.com/vonsim/vonsim/edit/main/docs/",
+        baseUrl: "https://ruiz-jose.github.io/VonSim8/edit/main/docs/",
       },
       pagination: false,
       lastUpdated: true,
       social: {
-        github: "https://github.com/vonsim/vonsim",
+        github: "https://ruiz-jose.github.io/VonSim8/",
       },
 
       defaultLocale: "root",
