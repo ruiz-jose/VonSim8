@@ -15,7 +15,7 @@ export default defineConfig({
       favicon: "/favicon.svg",
       logo: { src: "./public/favicon.svg", alt: "Logo" },
       editLink: {
-        baseUrl: "https://ruiz-jose.github.io/VonSim8/edit/main/docs/",
+        baseUrl: "https://github.com/ruiz-jose/VonSim8/edit/main/docs/",
       },
       pagination: false,
       lastUpdated: true,
