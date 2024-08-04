@@ -9,7 +9,7 @@ export function Footer() {
   return (
     <footer className="px-2 py-1 text-center text-xs tracking-wider text-stone-500">
       <a
-        href="/docs"
+        href="/VonSim8/docs"
         className="transition-colors hover:text-stone-400"
         target="_blank"
         rel="noopener noreferrer"
@@ -18,7 +18,7 @@ export function Footer() {
       </a>
       <span className="px-2">&middot;</span>
       <a
-        href="https://ruiz-jose.github.io/VonSim8/docs/"
+        href="https://ruiz-jose.github.io/VonSim8/"
         className="transition-colors hover:text-stone-400"
         target="_blank"
         rel="noopener noreferrer"
