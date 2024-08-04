@@ -129,7 +129,7 @@ Error generating stack: `+s.message+`
         <details>
           <summary>Debug info (PLEASE, DO NOT DELETE)</summary>
 
-          **Version**: [${"d8e840f"}](https://github.com/vonsim/vonsim/commit/${"d8e840f"})
+          **Version**: [${"4cb6e71"}](https://github.com/vonsim/vonsim/commit/${"4cb6e71"})
 
           #### Program
 
@@ -166,7 +166,7 @@ Error generating stack: `+s.message+`
         <details>
           <summary>Información extra (POR FAVOR, NO BORRAR)</summary>
 
-          **Versión**: [${"d8e840f"}](https://github.com/ruiz-jose/VonSim8/commit/${"d8e840f"})
+          **Versión**: [${"4cb6e71"}](https://github.com/ruiz-jose/VonSim8/commit/${"4cb6e71"})
 
           #### Programa
 
