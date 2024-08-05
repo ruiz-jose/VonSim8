@@ -83,6 +83,7 @@ function resetState(state: ComputerState) {
   resetSwitchesState(state);
 }
 
+let fetchStageCounter = 0;
 /**
  * Starts an execution thread for the given generator. This is, run all the
  * events until the generator is done or the simulation is stopped.
@@ -110,22 +111,49 @@ async function startThread(generator: EventGenerator): Promise<void> {
       if (event.done) break;
       await handleEvent(event.value);
 
-
       if (status.until === "cycle-change") {
-        if (event.value.type === "cpu:cycle.start" ) {          
-          toast({ title: "Etapa de captación (fetch):" , description:"Paso 1: MAR ← IP", variant: "info" });
-          pauseSimulation();
-        } else if (event.value.type === "cpu:register.update" ) {
-          toast({ title: "Etapa de captación (fetch):", description:"Paso 2: MDR ← read(Memoria[MAR]); IP ← IP + 1" , variant: "info"});
-          pauseSimulation();
-        } else if (event.value.type === "cpu:mbr.get" ) {
-          toast({ title: "Etapa de captación (fetch):", description:"Paso 3: IR ← MBR", variant: "info"});
-          pauseSimulation();
-        } else if (event.value.type === "cpu:cycle.end") {
-          toast({ title: "Etapa de ejecución (execute):", description: "Paso 1: IR ← MBR", variant: "info" });
-          pauseSimulation();
+        if (event.value.type === "cpu:cycle.end") {
+          fetchStageCounter = 0; // Reset counter at the end of the cycle
+          continue; // Continue to the next instruction
+        }
+      
+        if (fetchStageCounter < 3) {
+          // Etapa de captación
+          if (event.value.type === "cpu:mar.set") {
+            toast({ title: "Etapa de captación (fetch):", description: "Paso 1: MAR ← IP", variant: "info" });
+            pauseSimulation();
+            fetchStageCounter++;
+          } else if (event.value.type === "cpu:register.update") {
+            toast({ title: "Etapa de captación (fetch):", description: "Paso 2: MDR ← read(Memoria[MAR]); IP ← IP + 1", variant: "info" });
+            pauseSimulation();
+            fetchStageCounter++;
+          } else if (event.value.type === "cpu:mbr.get") {
+            toast({ title: "Etapa de captación (fetch):", description: "Paso 3: IR ← MBR", variant: "info" });
+            pauseSimulation();
+            fetchStageCounter++;
+          }
+        } else {
+          // Etapa de ejecución
+          if (event.value.type === "cpu:mar.set") {
+            const sourceRegister = event.value.register; // Obtener el registro fuente
+            toast({ title: "Etapa de ejecución (execute):", description: `MAR ← ${sourceRegister}`, variant: "info" });
+            pauseSimulation();
+          } else if (event.value.type === "cpu:register.update") {
+            toast({ title: "Etapa de ejecución (execute):", description: "MDR ← read(Memoria[MAR]); IP ← IP + 1", variant: "info" });
+            pauseSimulation();
+          } else if (event.value.type === "cpu:mbr.get") {
+            const sourceRegister = event.value.register; // Obtener el registro fuente
+            toast({ title: "Etapa de ejecución (execute):", description: `${sourceRegister} ← MDR`, variant: "info" });
+            pauseSimulation();
+          }else if (event.value.type === "cpu:register.copy") {
+            const sourceRegister = event.value.src; // Obtener el registro fuente
+            const destRegister = event.value.dest; // Obtener el registro destino
+            toast({ title: "Etapa de ejecución (execute):", description: `${destRegister} ← ${sourceRegister}`, variant: "info" });
+            pauseSimulation();
+          }
         }
       }
+
       if (event.value.type === "cpu:cycle.update" || event.value.type === "cpu:cycle.interrupt") {
         if (status.until === "cycle-change") {
          // pauseSimulation();

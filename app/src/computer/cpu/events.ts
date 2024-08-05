@@ -32,9 +32,6 @@ const drawDataPath = (from: DataRegister, to: DataRegister) => {
 const resetDataPath = () =>
   anim({ key: "cpu.internalBus.data.opacity", to: 0 }, { duration: 1, easing: "easeInSine" });
 
-// Define una bandera para omitir el evento cpu:mar.set
-let skipMarSet = false;
-
 export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<void> {
   switch (event.type) {
     case "cpu:alu.execute": {
@@ -111,10 +108,6 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         ],
         { duration: 0.5, easing: "easeInOutQuad" },
       );
-      // Ejecutar fetch-instruction
-      await handleCPUEvent({ type: "cpu:mar.set", register: "IP" });
-      // Establecer la bandera para omitir el evento cpu:mar.set
-      skipMarSet = true;
       return;
     }
 
@@ -223,13 +216,6 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
     }
 
     case "cpu:mar.set": {
-      // Verificar la bandera y omitir el evento si es necesario
-      if (skipMarSet) {
-        skipMarSet = false; // Restablecer la bandera
-        // Pasar al siguiente paso en la secuencia de ejecución
-        await handleCPUEvent({ type: "cpu:rd.on" });
-        return;
-      }
       await anim(
         [
           { key: "cpu.internalBus.address.path", from: generateAddressPath(event.register) },
