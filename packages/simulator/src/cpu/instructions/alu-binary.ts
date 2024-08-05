@@ -74,8 +74,9 @@ export class ALUBinaryInstruction extends Instruction<
     };
 
     // All intructions are, at least, 2 bytes long.
-    yield* super.consumeInstruction(computer, "IR");
-    yield { type: "cpu:decode" };
+   // yield* super.consumeInstruction(computer, "IR");
+   // yield { type: "cpu:decode" };
+   // Consumir la instrucción solo una vez
     yield* super.consumeInstruction(computer, "IR");
     yield { type: "cpu:decode" };
 

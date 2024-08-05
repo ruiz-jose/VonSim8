@@ -89,12 +89,12 @@ export class BinaryInstruction extends InstructionStatement {
     const { mode, size, out, src } = this.#initialOperation;
 
     // opcode + mode
-    let length = 2;
+    let length = 1; // Cambiado de 2 a 1 byte
     if (
       (mode === "reg<-mem" && src.mode === "direct") ||
       ((mode === "mem<-reg" || mode === "mem<-imd") && out.mode === "direct")
     ) {
-      length += 2; // 2-byte address
+      length += 1; // Cambiado de 2 a 1 byte
     }
     if (mode === "reg<-imd" || mode === "mem<-imd") {
       length += size / 8; // imd size
@@ -118,7 +118,7 @@ export class BinaryInstruction extends InstructionStatement {
     const bytes: number[] = [];
 
     const opcodes: { [key in BinaryInstructionName]: number } = {
-      MOV: 0b100_0000_0,
+      MOV: 0b00_00_0000,
       AND: 0b100_0001_0,
       OR: 0b100_0010_0,
       XOR: 0b100_0011_0,
@@ -134,21 +134,22 @@ export class BinaryInstruction extends InstructionStatement {
 
     switch (mode) {
       case "reg<-reg": {
-        bytes[1] = 0b00_000_000; // 00RRRrrr
-        bytes[1] |= registerToBits(src) << 3;
-        bytes[1] |= registerToBits(out) << 0;
+        //bytes[0] = 0b0000_00_00; // 0000RRrr
+        bytes[0] |= (registerToBits(out) & 0b11) << 2; // RR
+        bytes[0] |= (registerToBits(src) & 0b11) << 0; // rr
         break;
       }
 
       case "reg<-mem": {
         if (src.mode === "direct") {
-          bytes[1] = 0b01000_000; // 01000rrr
+          bytes[0] = 0b0001_00_00; // 0001RR00
           bytes.push(src.address.byte.low.unsigned);
-          bytes.push(src.address.byte.high.unsigned);
+         // bytes.push(src.address.byte.high.unsigned);
         } else {
-          bytes[1] = 0b01010_000; // 01010rrr
+          bytes[0] = 0b0001_00_01; // 0001RR00 indirecto
         }
-        bytes[1] |= registerToBits(out) << 0;
+        bytes[0] |= (registerToBits(out) & 0b11) << 2; // RR
+        //bytes[1] |= registerToBits(out) << 0;
         break;
       }
 

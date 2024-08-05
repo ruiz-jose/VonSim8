@@ -10,14 +10,14 @@ export function registerToBits(reg: Register): number {
     case "AL":
     case "AX":
       return 0b000;
-    case "CL":
-    case "CX":
-      return 0b001;
-    case "DL":
-    case "DX":
-      return 0b010;
     case "BL":
     case "BX":
+      return 0b001;
+    case "CL":
+    case "CX":
+      return 0b010;
+    case "DL":
+    case "DX":
       return 0b011;
     case "AH":
     case "SP":

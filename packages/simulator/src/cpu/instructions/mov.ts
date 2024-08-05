@@ -65,8 +65,8 @@ export class MOVInstruction extends Instruction<"MOV"> {
     };
 
     // All intructions are, at least, 2 bytes long.
-    yield* super.consumeInstruction(computer, "IR");
-    yield { type: "cpu:decode" };
+    //yield* super.consumeInstruction(computer, "IR");
+    //yield { type: "cpu:decode" };
     yield* super.consumeInstruction(computer, "IR");
     yield { type: "cpu:decode" };
 
