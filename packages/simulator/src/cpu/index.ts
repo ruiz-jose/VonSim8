@@ -89,6 +89,10 @@ export class CPU extends Component {
     this.#registers.SP = Byte.fromUnsigned(MemoryAddress.MAX_ADDRESS + 1, 16);
     // The initial address of the program is 0x2000
     this.#registers.IP = Byte.fromUnsigned(0x0020, 16);
+    // Instruction register always starts at 0
+    this.#registers.ri = Byte.fromUnsigned(0x0000, 16);
+    // Instruction register always starts at 0
+    this.#registers.id = Byte.fromUnsigned(0x0000, 16);
     // Interrupts always enabled at the start
     this.#setFlag("IF", true);
 
@@ -268,7 +272,7 @@ export class CPU extends Component {
    */
   *copyWordRegister(src: WordRegister, dest: WordRegister): EventGenerator {
     const value = this.getRegister(src);
-    this.#setRegister(dest, value);
+    this.#setRegister(dest, value.withHigh(Byte.zero(8)));
     yield { type: "cpu:register.copy", size: 16, src, dest };
   }
 
@@ -410,7 +414,7 @@ export class CPU extends Component {
    */
   *setMAR(register: MARRegister): EventGenerator {
     const value = this.getRegister(register);
-    this.#MAR = value;
+    this.#MAR = value.withHigh(Byte.zero(8)); // Asigna el byte alto a cero
     yield { type: "cpu:mar.set", register };
   }
 

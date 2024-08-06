@@ -1,7 +1,10 @@
+import { Byte } from "@vonsim/common/byte";
+
 import type { Computer } from "../../computer";
 import type { EventGenerator } from "../../events";
 import { Instruction } from "../instruction";
 import { splitRegister } from "../utils";
+
 
 /**
  * {@link https://vonsim.github.io/docs/cpu/instructions/mov/ | OV} instruction.
@@ -82,7 +85,7 @@ export class MOVInstruction extends Instruction<"MOV"> {
       if (mode === "direct") {
         // Fetch memory address
         yield* super.consumeInstruction(computer, "ri.l");
-        yield* super.consumeInstruction(computer, "ri.h");
+       // yield* super.consumeInstruction(computer, "ri.h");
       } else {
         // Move BX to ri
         yield* computer.cpu.copyWordRegister("BX", "ri");
@@ -105,7 +108,7 @@ export class MOVInstruction extends Instruction<"MOV"> {
         return true;
       }
 
-      case "reg<-mem": {
+     /* case "reg<-mem": {
         // Fetch low byte
         yield* computer.cpu.setMAR("ri");
         if (!(yield* computer.cpu.useBus("mem-read"))) return false; // Error reading from memory
@@ -123,8 +126,24 @@ export class MOVInstruction extends Instruction<"MOV"> {
           yield* computer.cpu.copyByteRegister("id.l", out);
         }
         return true;
-      }
+      }*/
 
+      case "reg<-mem": {
+        // Fetch low byte
+        yield* computer.cpu.setMAR("ri");
+        if (!(yield* computer.cpu.useBus("mem-read"))) return false; // Error reading from memory
+        yield* computer.cpu.getMBR("id.l");
+        if (size === 16) {
+          // Write to register
+          yield* computer.cpu.copyWordRegister("id", out);
+        } else {
+          yield* computer.cpu.copyByteRegister("id.l", out);
+        }
+          // Update high byte of ri with zero
+        yield* computer.cpu.updateByteRegister("ri.h",Byte.zero(8));
+        return true;
+      }
+      
       case "reg<-imd": {
         // Write to register
         if (size === 8) yield* computer.cpu.copyByteRegister("id.l", out);
@@ -134,18 +153,19 @@ export class MOVInstruction extends Instruction<"MOV"> {
       }
 
       case "mem<-reg": {
-        const [low, high] = splitRegister(src);
+        //const [low, high] = splitRegister(src);
+        const [low] = splitRegister(src);
         // Write low byte
         yield* computer.cpu.setMAR("ri");
         yield* computer.cpu.setMBR(low);
         if (!(yield* computer.cpu.useBus("mem-write"))) return false; // Error writing to memory
-        if (high) {
+      /*  if (high) {
           // Write high byte
           yield* computer.cpu.updateWordRegister("ri", ri => ri.add(1));
           yield* computer.cpu.setMAR("ri");
           yield* computer.cpu.setMBR(high);
           if (!(yield* computer.cpu.useBus("mem-write"))) return false; // Error writing to memory
-        }
+        }*/
         return true;
       }
 

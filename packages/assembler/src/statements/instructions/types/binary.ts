@@ -118,11 +118,11 @@ export class BinaryInstruction extends InstructionStatement {
     const bytes: number[] = [];
 
     const opcodes: { [key in BinaryInstructionName]: number } = {
-      MOV: 0b00_00_0000,
+      MOV: 0b0000_0000,
       AND: 0b100_0001_0,
       OR: 0b100_0010_0,
       XOR: 0b100_0011_0,
-      ADD: 0b100_0100_0,
+      ADD: 0b0100_0000,
       ADC: 0b100_0101_0,
       SUB: 0b100_0110_0,
       SBB: 0b100_0111_0,
@@ -163,13 +163,14 @@ export class BinaryInstruction extends InstructionStatement {
 
       case "mem<-reg": {
         if (out.mode === "direct") {
-          bytes[1] = 0b11000_000; // 11000rrr
+          bytes[0] = 0b0100_0000; // 0100RR00
           bytes.push(out.address.byte.low.unsigned);
-          bytes.push(out.address.byte.high.unsigned);
+          //bytes.push(out.address.byte.high.unsigned);
         } else {
-          bytes[1] = 0b11010_000; // 11010rrr
+          bytes[0] = 0b0100_00_01; // 0001RR00 indirecto
         }
-        bytes[1] |= registerToBits(src) << 0;
+        bytes[0] |= (registerToBits(src) & 0b11) << 2; // RR
+        //bytes[1] |= registerToBits(src) << 0;
         break;
       }
 

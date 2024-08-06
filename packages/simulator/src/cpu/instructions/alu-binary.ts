@@ -91,7 +91,7 @@ export class ALUBinaryInstruction extends Instruction<
       if (out.mode === "direct") {
         // Fetch memory address
         yield* this.consumeInstruction(computer, "ri.l");
-        yield* this.consumeInstruction(computer, "ri.h");
+        //yield* this.consumeInstruction(computer, "ri.h");
       } else {
         // Move BX to ri
         yield* computer.cpu.copyWordRegister("BX", "ri");
@@ -122,7 +122,7 @@ export class ALUBinaryInstruction extends Instruction<
       if (src.mode === "direct") {
         // Fetch memory address
         yield* this.consumeInstruction(computer, "ri.l");
-        yield* this.consumeInstruction(computer, "ri.h");
+       // yield* this.consumeInstruction(computer, "ri.h");
       } else {
         // Move BX to ri
         yield* computer.cpu.copyWordRegister("BX", "ri");
