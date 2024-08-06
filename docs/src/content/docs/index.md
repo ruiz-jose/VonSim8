@@ -1,17 +1,17 @@
 ---
-title: ¿Qué es VonSim?
+title: ¿Qué es VonSim8?
 head:
   - tag: meta
     attrs: { property: og:image, content: https://github.com/ruiz-jose/VonSim8/docs/og/index.png }
 ---
 
-VonSim es una herramienta destinada a la enseñanza y aprendizaje de arquitectura y organización de computadoras. Consta de un entorno para desarrollar programas en [lenguaje ensamblador](/docs/cpu/assembly/) (_Assembly_ o _Assembler_) y de un simulador para los mismos.
+VonSim8 es una herramienta destinada a la enseñanza y aprendizaje de arquitectura y organización de computadoras. Consta de un entorno para desarrollar programas en [lenguaje ensamblador](/docs/cpu/assembly/) (_Assembly_ o _Assembler_) y de un simulador para los mismos.
 
-Está [basado](/docs/cpu/) en el procesador 8088 de Intel, y cuenta con:
+Está [basado](/docs/cpu/) en el VonSim que a su vez se basa en el procesador 8088 de Intel, y cuenta con:
 
-- cuatro registros multipropósito de 16 bits;
-- una [memoria principal](/docs/memory/) de 32 kB;
-- un bus de direcciones de 16 bits y un bus de datos de 8 bits;
+- cuatro registros multipropósito de 8 bits;
+- una [memoria principal](/docs/memory/) de 256 Bytes;
+- un bus de direcciones de 8 bits y un bus de datos de 8 bits;
 - interrupciones por software (como lectura del teclado y escritura en pantalla);
 - interrupciones por hardware con un [PIC](/docs/io/modules/pic/);
 - múltiples [dispositivos](/docs/io/devices/): reloj, llaves, leds y una impresora centronics.
