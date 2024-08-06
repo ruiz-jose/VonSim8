@@ -114,6 +114,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
       if (status.until === "cycle-change") {
         if (event.value.type === "cpu:cycle.end") {
           fetchStageCounter = 0; // Reset counter at the end of the cycle
+          pauseSimulation();
           continue; // Continue to the next instruction
         }
       
