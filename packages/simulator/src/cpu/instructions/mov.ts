@@ -1,4 +1,4 @@
-import { Byte } from "@vonsim/common/byte";
+//import { Byte } from "@vonsim/common/byte";
 
 import type { Computer } from "../../computer";
 import type { EventGenerator } from "../../events";
@@ -107,27 +107,15 @@ export class MOVInstruction extends Instruction<"MOV"> {
 
         return true;
       }
-
-     /* case "reg<-mem": {
-        // Fetch low byte
+      case "reg<-mem": {
         yield* computer.cpu.setMAR("ri");
-        if (!(yield* computer.cpu.useBus("mem-read"))) return false; // Error reading from memory
-        yield* computer.cpu.getMBR("id.l");
-        if (size === 16) {
-          // Fetch high byte
-          yield* computer.cpu.updateWordRegister("ri", ri => ri.add(1));
-          yield* computer.cpu.setMAR("ri");
-          if (!(yield* computer.cpu.useBus("mem-read"))) return false; // Error reading from memory
-          yield* computer.cpu.getMBR("id.h");
-          // Write to register
-          yield* computer.cpu.copyWordRegister("id", out);
-        } else {
-          // Write to register
-          yield* computer.cpu.copyByteRegister("id.l", out);
+        if (!(yield* computer.cpu.useBus("mem-read"))) return false;
+        if (size === 8) {
+          yield* computer.cpu.getMBR(out); // Copiar directamente al registro `out` 
         }
         return true;
-      }*/
-
+      }
+      /*
       case "reg<-mem": {
         // Fetch low byte
         yield* computer.cpu.setMAR("ri");
@@ -142,7 +130,7 @@ export class MOVInstruction extends Instruction<"MOV"> {
           // Update high byte of ri with zero
         yield* computer.cpu.updateByteRegister("ri.h",Byte.zero(8));
         return true;
-      }
+      }*/
       
       case "reg<-imd": {
         // Write to register

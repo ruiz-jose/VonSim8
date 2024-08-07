@@ -87,7 +87,7 @@ export const spanish: Locale = {
       "control-unit": "Unidad de control",
       decoder: "Decodificador",
       status: {
-        fetching: "Leyendo instrucción...",
+        fetching: "Captación instrucción...",
         "fetching-operands": "Leyendo operandos...",
         executing: "Ejecutando...",
         writeback: "Escribiendo resultados...",
