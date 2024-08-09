@@ -118,6 +118,10 @@ export function resetCPUState(computer: ComputerState) {
   store.set(registerAtoms.left, Byte.fromUnsigned(computer.cpu.left, 16));
   store.set(registerAtoms.right, Byte.fromUnsigned(computer.cpu.right, 16));
   store.set(registerAtoms.result, Byte.fromUnsigned(computer.cpu.result, 16));
+  // Inicializar los flags ZF, CF, OF y SF a cero 
+  // Establecer el flag IF a 1
+  computer.cpu.FLAGS = 256;  
+
   store.set(registerAtoms.FLAGS, Byte.fromUnsigned(computer.cpu.FLAGS, 16));
   store.set(registerAtoms.MAR, Byte.fromUnsigned(computer.cpu.MAR, 16));
   store.set(registerAtoms.MBR, Byte.fromUnsigned(computer.cpu.MBR, 8));
