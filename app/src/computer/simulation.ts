@@ -82,6 +82,8 @@ function resetState(state: ComputerState) {
   resetPrinterState(state);
   resetScreenState(state);
   resetSwitchesState(state);
+
+
 }
 
 let fetchStageCounter = 0;
@@ -120,37 +122,39 @@ async function startThread(generator: EventGenerator): Promise<void> {
         }
         if (fetchStageCounter < 3) {
           if (event.value.type === "cpu:mar.set") {
-            store.set(messageAtom, "Etapa de captación (fetch): Paso 1: MAR ← IP");
+            store.set(messageAtom, "Captación: MAR ← IP");
             pauseSimulation();
             fetchStageCounter++;
           } else if (event.value.type === "cpu:register.update") {
-            store.set(messageAtom, "Etapa de captación (fetch): Paso 2: MDR ← read(Memoria[MAR]); IP ← IP + 1");
+            store.set(messageAtom, "Captación: MDR ← read(Memoria[MAR]); IP ← IP + 1");
             pauseSimulation();
             fetchStageCounter++;
           } else if (event.value.type === "cpu:mbr.get") {
-            store.set(messageAtom, "Etapa de captación (fetch): Paso 3: IR ← MBR");
+            store.set(messageAtom, "Captación: IR ← MBR");
             pauseSimulation();
             fetchStageCounter++;
           }
         } else {
           if (event.value.type === "cpu:mar.set") {
             const sourceRegister = event.value.register;
-            store.set(messageAtom, `Etapa de ejecución (execute): MAR ← ${sourceRegister}`);
+            store.set(messageAtom, `Ejecución: MAR ← ${sourceRegister}`);
             pauseSimulation();
           } else if (event.value.type === "cpu:register.update") {
-            store.set(messageAtom, "Etapa de ejecución (execute): MDR ← read(Memoria[MAR]); IP ← IP + 1");
+            store.set(messageAtom, "Ejecución: MDR ← read(Memoria[MAR]); IP ← IP + 1");
             pauseSimulation();
           } else if (event.value.type === "cpu:mbr.get") {
             const sourceRegister = event.value.register;
-            store.set(messageAtom, `Etapa de ejecución (execute): ${sourceRegister} ← MDR`);
+            store.set(messageAtom, `Ejecución: ${sourceRegister} ← MDR`);
             pauseSimulation();
           } else if (event.value.type === "cpu:register.copy") {
             const sourceRegister = event.value.src;
             const destRegister = event.value.dest;
-            store.set(messageAtom, `Etapa de ejecución (execute): ${destRegister} ← ${sourceRegister}`);
+            store.set(messageAtom, `Ejecución: ${destRegister} ← ${sourceRegister}`);
             pauseSimulation();
           }
         }
+      } else {
+        store.set(messageAtom, ""); // Set messageAtom to blank if not executing by cycle
       }
 
       if (event.value.type === "cpu:cycle.update" || event.value.type === "cpu:cycle.interrupt") {

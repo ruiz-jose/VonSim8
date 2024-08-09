@@ -85,8 +85,11 @@ export function Control() {
                   : "bg-stone-900",
           )}
         >
-          {translate(`computer.cpu.status.${statusKey}`)}
-          {message && <div>{message}</div>}
+          {message ? (
+            <div>{message}</div>
+          ) : (
+            translate(`computer.cpu.status.${statusKey}`)
+          )}
         </span>
 
         <div className="mt-4 w-64 overflow-hidden rounded-lg border border-stone-600 bg-stone-900 py-2">
