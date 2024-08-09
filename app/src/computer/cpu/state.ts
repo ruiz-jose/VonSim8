@@ -21,6 +21,7 @@ const resultAtom = atom(Byte.zero(16)); // Result of ALU
 const FLAGSAtom = atom(Byte.zero(16)); // Flags
 export const MARAtom = atom(Byte.zero(16)); // Memory Address Register
 export const MBRAtom = atom(Byte.zero(8)); // Memory Buffer Register
+export const messageAtom = atom<string | null>(null);
 
 const lowAtom = (
   primitive: PrimitiveAtom<Byte<16>>,

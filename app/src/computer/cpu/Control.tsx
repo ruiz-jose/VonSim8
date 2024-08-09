@@ -6,7 +6,7 @@ import { animated, getSpring } from "@/computer/shared/springs";
 import { useSimulation } from "@/computer/simulation";
 import { useTranslate } from "@/lib/i18n";
 
-import { cycleAtom } from "./state";
+import { cycleAtom, messageAtom } from "./state";
 
 /**
  * Control component, to be used inside <CPU />
@@ -16,6 +16,7 @@ export function Control() {
 
   const { status } = useSimulation();
   const cycle = useAtomValue(cycleAtom);
+  const message = useAtomValue(messageAtom);
 
   const operandsText = useMemo(() => {
     if (!("metadata" in cycle)) return "";
@@ -74,7 +75,7 @@ export function Control() {
 
         <span
           className={clsx(
-            "mt-4 w-48 rounded-lg border border-stone-600 py-2 text-center text-sm leading-none transition-colors",
+            "mt-4 w-full rounded-lg border border-stone-600 py-2 text-center text-sm leading-none transition-colors",
             statusKey === "stopped-error"
               ? "bg-red-500"
               : statusKey === "waiting-for-input"
@@ -85,6 +86,7 @@ export function Control() {
           )}
         >
           {translate(`computer.cpu.status.${statusKey}`)}
+          {message && <div>{message}</div>}
         </span>
 
         <div className="mt-4 w-64 overflow-hidden rounded-lg border border-stone-600 bg-stone-900 py-2">

@@ -16,7 +16,7 @@ import { posthog } from "@/lib/posthog";
 import { getSettings, useDevices } from "@/lib/settings";
 import { toast } from "@/lib/toast";
 
-import { cycleAtom, resetCPUState } from "./cpu/state";
+import { cycleAtom, messageAtom,resetCPUState } from "./cpu/state";
 import { eventIsRunning, handleEvent } from "./handle-event";
 import { resetHandshakeState } from "./handshake/state";
 import { resetLedsState } from "./leds/state";
@@ -28,6 +28,7 @@ import { resetScreenState } from "./screen/state";
 import { anim, pauseAllAnimations, resumeAllAnimations, stopAllAnimations } from "./shared/animate";
 import { resetSwitchesState } from "./switches/state";
 import { resetTimerState } from "./timer/state";
+
 
 
 const simulator = new Simulator();
@@ -113,43 +114,40 @@ async function startThread(generator: EventGenerator): Promise<void> {
 
       if (status.until === "cycle-change") {
         if (event.value.type === "cpu:cycle.end") {
-          fetchStageCounter = 0; // Reset counter at the end of the cycle
+          fetchStageCounter = 0;
           pauseSimulation();
-          continue; // Continue to the next instruction
+          continue;
         }
-      
         if (fetchStageCounter < 3) {
-          // Etapa de captación
           if (event.value.type === "cpu:mar.set") {
-            toast({ title: "Etapa de captación (fetch):", description: "Paso 1: MAR ← IP", variant: "info" });
+            store.set(messageAtom, "Etapa de captación (fetch): Paso 1: MAR ← IP");
             pauseSimulation();
             fetchStageCounter++;
           } else if (event.value.type === "cpu:register.update") {
-            toast({ title: "Etapa de captación (fetch):", description: "Paso 2: MDR ← read(Memoria[MAR]); IP ← IP + 1", variant: "info" });
+            store.set(messageAtom, "Etapa de captación (fetch): Paso 2: MDR ← read(Memoria[MAR]); IP ← IP + 1");
             pauseSimulation();
             fetchStageCounter++;
           } else if (event.value.type === "cpu:mbr.get") {
-            toast({ title: "Etapa de captación (fetch):", description: "Paso 3: IR ← MBR", variant: "info" });
+            store.set(messageAtom, "Etapa de captación (fetch): Paso 3: IR ← MBR");
             pauseSimulation();
             fetchStageCounter++;
           }
         } else {
-          // Etapa de ejecución
           if (event.value.type === "cpu:mar.set") {
-            const sourceRegister = event.value.register; // Obtener el registro fuente
-            toast({ title: "Etapa de ejecución (execute):", description: `MAR ← ${sourceRegister}`, variant: "info" });
+            const sourceRegister = event.value.register;
+            store.set(messageAtom, `Etapa de ejecución (execute): MAR ← ${sourceRegister}`);
             pauseSimulation();
           } else if (event.value.type === "cpu:register.update") {
-            toast({ title: "Etapa de ejecución (execute):", description: "MDR ← read(Memoria[MAR]); IP ← IP + 1", variant: "info" });
+            store.set(messageAtom, "Etapa de ejecución (execute): MDR ← read(Memoria[MAR]); IP ← IP + 1");
             pauseSimulation();
           } else if (event.value.type === "cpu:mbr.get") {
-            const sourceRegister = event.value.register; // Obtener el registro fuente
-            toast({ title: "Etapa de ejecución (execute):", description: `${sourceRegister} ← MDR`, variant: "info" });
+            const sourceRegister = event.value.register;
+            store.set(messageAtom, `Etapa de ejecución (execute): ${sourceRegister} ← MDR`);
             pauseSimulation();
-          }else if (event.value.type === "cpu:register.copy") {
-            const sourceRegister = event.value.src; // Obtener el registro fuente
-            const destRegister = event.value.dest; // Obtener el registro destino
-            toast({ title: "Etapa de ejecución (execute):", description: `${destRegister} ← ${sourceRegister}`, variant: "info" });
+          } else if (event.value.type === "cpu:register.copy") {
+            const sourceRegister = event.value.src;
+            const destRegister = event.value.dest;
+            store.set(messageAtom, `Etapa de ejecución (execute): ${destRegister} ← ${sourceRegister}`);
             pauseSimulation();
           }
         }
