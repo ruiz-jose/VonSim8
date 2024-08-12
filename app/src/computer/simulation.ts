@@ -126,7 +126,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             pauseSimulation();
             fetchStageCounter++;
           } else if (event.value.type === "cpu:register.update") {
-            store.set(messageAtom, "Captación: MDR ← read(Memoria[MAR]); IP ← IP + 1");
+            store.set(messageAtom, "Captación: MBR ← read(Memoria[MAR]); IP ← IP + 1");
             pauseSimulation();
             fetchStageCounter++;
           } else if (event.value.type === "cpu:mbr.get") {
@@ -140,11 +140,11 @@ async function startThread(generator: EventGenerator): Promise<void> {
             store.set(messageAtom, `Ejecución: MAR ← ${sourceRegister}`);
             pauseSimulation();
           } else if (event.value.type === "cpu:register.update") {
-            store.set(messageAtom, "Ejecución: MDR ← read(Memoria[MAR]); IP ← IP + 1");
+            store.set(messageAtom, "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1");
             pauseSimulation();
           } else if (event.value.type === "cpu:mbr.get") {
             const sourceRegister = event.value.register;
-            store.set(messageAtom, `Ejecución: ${sourceRegister} ← MDR`);
+            store.set(messageAtom, `Ejecución: ${sourceRegister} ← MBR`);
             pauseSimulation();
           } else if (event.value.type === "cpu:register.copy") {
             const sourceRegister = event.value.src;
