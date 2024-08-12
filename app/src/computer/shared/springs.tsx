@@ -104,7 +104,10 @@ const springs = {
     SP: Register(),
     IP: Register(),
     IR: Register(),
-    ri: Register(),
+    ri: {
+      ...Register(),
+      opacity: new SpringValue(0),
+    },
     id: Register(),
     left: Register(),
     right: Register(),
