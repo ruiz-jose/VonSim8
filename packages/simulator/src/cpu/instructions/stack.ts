@@ -27,7 +27,8 @@ export class StackInstruction extends Instruction<"PUSH" | "POP" | "PUSHF" | "PO
         name: this.name,
         position: this.position,
         operands: register !== "FLAGS" ? [register] : [],
-        willUse: { id: true },
+        //willUse: { id: true },
+        willUse: { id: false },
       },
     };
 

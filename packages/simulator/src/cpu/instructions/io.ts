@@ -40,7 +40,7 @@ export class IOInstruction extends Instruction<"IN" | "OUT"> {
         name: this.name,
         position: this.position,
         operands: this.#formatOperands(),
-        willUse: { ri: true },
+        willUse: { ri: false },
       },
     };
 

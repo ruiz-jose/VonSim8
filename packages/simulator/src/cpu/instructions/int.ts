@@ -22,7 +22,7 @@ export class INTInstruction extends Instruction<"INT"> {
         name: this.name,
         position: this.position,
         operands: [this.number.toString("uint")],
-        willUse: { id: true },
+        willUse: { id: false },
       },
     };
 

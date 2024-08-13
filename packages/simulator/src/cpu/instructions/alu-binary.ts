@@ -69,7 +69,8 @@ export class ALUBinaryInstruction extends Instruction<
         name: this.name,
         position: this.position,
         operands: this.#formatOperands(),
-        willUse: { ri: mode === "reg<-mem" || mode === "mem<-reg" || mode === "mem<-imd" },
+        //willUse: { ri: mode === "reg<-mem" || mode === "mem<-reg" || mode === "mem<-imd" },
+        willUse: {ri: false },          
       },
     };
 
