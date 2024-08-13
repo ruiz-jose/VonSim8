@@ -130,7 +130,7 @@ export function DataBus() {
         d={[
           // ALU registers
           "M 60 85 H 30", // left
-          "V 250 H 610", // Long path to MBR, here to get nice joins
+          "V 250 H 630", // Long path to MBR, here to get nice joins
           "M 60 145 H 30", // right
           "M 370 130 V 250", // result
           "M 250 225 V 250", // flags
@@ -153,7 +153,7 @@ export function DataBus() {
           "M 522 85 H 492", // BX
           "M 522 125 H 492", // CX
           "M 522 165 H 492", // DX
-          "M 522 205 H 492", // id
+          //"M 522 205 H 492", // id
         ].join(" ")}
       />
 
