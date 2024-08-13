@@ -88,13 +88,13 @@ export function ALU() {
         <span className={clsx("rounded p-1 font-light", ZF ? "bg-mantis-400" : "bg-stone-900")}>
           ZF
         </span>
-        <span className={clsx("rounded p-1 font-light", SF ? "bg-mantis-400" : "bg-stone-900")}>
+        <span className={clsx("invisible rounded p-1 font-light", SF ? "bg-mantis-400" : "bg-stone-900")}>
           SF
         </span>
-        <span className={clsx("rounded p-1 font-light", IF ? "bg-mantis-400" : "bg-stone-900")}>
+        <span className={clsx("invisible rounded p-1 font-light", IF ? "bg-mantis-400" : "bg-stone-900")}>
           IF
         </span>
-        <span className={clsx("rounded p-1 font-light", OF ? "bg-mantis-400" : "bg-stone-900")}>
+        <span className={clsx("invisible rounded p-1 font-light", OF ? "bg-mantis-400" : "bg-stone-900")}>
           OF
         </span>
       </animated.div>
