@@ -15,9 +15,9 @@ export function ALU() {
   // https://vonsim.github.io/docs/cpu/#flags
   const CF = FLAGS.bit(0);
   const ZF = FLAGS.bit(6);
-  const SF = FLAGS.bit(7);
-  const IF = FLAGS.bit(9);
-  const OF = FLAGS.bit(11);
+  //const SF = FLAGS.bit(7);
+  //const IF = FLAGS.bit(9);
+  //const OF = FLAGS.bit(11);
 
   return (
     <>
@@ -79,7 +79,7 @@ export function ALU() {
 
       {/* Flags */}
       <animated.div
-        className="absolute left-[165px] top-[190px] flex w-min items-center gap-1 rounded-md border border-mantis-400 bg-stone-800 px-2 py-1 font-mono leading-none"
+        className="absolute left-[215px] top-[190px] flex w-min items-center gap-1 rounded-md border border-mantis-400 bg-stone-800 px-2 py-1 font-mono leading-none"
         style={getSpring("cpu.FLAGS")}
       >
         <span className={clsx("rounded p-1 font-light", CF ? "bg-mantis-400" : "bg-stone-900")}>

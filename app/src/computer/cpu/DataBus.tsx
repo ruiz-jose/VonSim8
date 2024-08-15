@@ -132,12 +132,12 @@ export function DataBus() {
           "M 60 85 H 30", // left
           "V 250 H 630", // Long path to MBR, here to get nice joins
           "M 60 145 H 30", // right
-          "M 370 130 V 250", // result
+          "M 370 110 V 250", // result
           "M 250 225 V 250", // flags
           // Internal ALU
           "M 33 85 H 220", // left
           "M 32 145 H 220", // right
-          "M 272 115 h 28", // result
+          "M 272 115 h 100", // result
           "M 250 145 v 46", // flags
           // Decoder
           "M 205 250 V 272", // IP
