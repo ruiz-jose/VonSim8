@@ -24,7 +24,7 @@ type Node = { position: [x: number, y: number] };
 const dataBus = new UndirectedGraph<Node>({ allowSelfLoops: false });
 
 // These are the endpoints of the bus
-dataBus.addNode("MBR", { position: [610, 250] });
+dataBus.addNode("MBR", { position: [620, 250] });
 dataBus.addNode("AX", { position: [522, 45] });
 dataBus.addNode("BX", { position: [522, 85] });
 dataBus.addNode("CX", { position: [522, 125] });
