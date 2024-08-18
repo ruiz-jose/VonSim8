@@ -58,7 +58,7 @@ dataBus.addNode("left join", { position: [30, 85] });
 dataBus.addNode("right join", { position: [30, 145] });
 dataBus.addNode("operands mbr join", { position: [30, 250] });
 dataBus.addNode("outr mbr join", { position: [553, 250] });
-dataBus.addNode("xx", { position: [405, 250] });
+dataBus.addNode("mbr reg join", { position: [421, 250] });
 
 // Añadir nodos de unión para los registros AX, BX, CX, DX e id
 dataBus.addNode("AX out", { position: [510, 45] });
@@ -91,22 +91,27 @@ dataBus.addUndirectedEdge("id out", "id out join");
 
 
 // Conectar los nodos de unión de los buses de salida con el bus principal
-//dataBus.addUndirectedEdge("AX out join", "BX join");
+// Conectar AX a BX
 dataBus.addUndirectedEdge("AX out join", "outr mbr join");
-dataBus.addUndirectedEdge("outr mbr join", "BX join");
-//dataBus.addUndirectedEdge("xx", "BX join");
+dataBus.addUndirectedEdge("outr mbr join", "mbr reg join");
 
-//dataBus.addUndirectedEdge("addresses mbr join", "BX out join");
+dataBus.addUndirectedEdge("mbr reg join", "BX join");
+// Conectar AX a CX
+dataBus.addUndirectedEdge("mbr reg join", "CX join");
+// Conectar AX a DX
+dataBus.addUndirectedEdge("mbr reg join", "DX join");
+
+
 dataBus.addUndirectedEdge("BX out join", "CX out join");
 dataBus.addUndirectedEdge("CX out join", "DX out join");
 dataBus.addUndirectedEdge("DX out join", "id out join");
 dataBus.addUndirectedEdge("id out join", "data mbr join");
 
-dataBus.addUndirectedEdge("AX out join", "left");
+/*dataBus.addUndirectedEdge("AX out join", "left");
 dataBus.addUndirectedEdge("BX out join", "left");
 dataBus.addUndirectedEdge("CX out join", "left");
 dataBus.addUndirectedEdge("DX out join", "left");
-dataBus.addUndirectedEdge("id out join", "left");
+dataBus.addUndirectedEdge("id out join", "left");*/
 
 // These are the lines
 dataBus.addUndirectedEdge("AX join", "AX");
