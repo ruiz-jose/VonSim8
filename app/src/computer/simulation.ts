@@ -87,6 +87,8 @@ function resetState(state: ComputerState) {
 }
 
 let fetchStageCounter = 0;
+let executeStageCounter = 0;
+let messageReadWrite = "";
 /**
  * Starts an execution thread for the given generator. This is, run all the
  * events until the generator is done or the simulation is stopped.
@@ -117,6 +119,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
       if (status.until === "cycle-change") {
         if (event.value.type === "cpu:cycle.end") {
           fetchStageCounter = 0;
+          executeStageCounter = 0;
+          messageReadWrite = "";
           pauseSimulation();
           continue;
         }
@@ -135,14 +139,25 @@ async function startThread(generator: EventGenerator): Promise<void> {
             fetchStageCounter++;
           }
         } else {
+          
+          if (event.value.type === "cpu:rd.on" && executeStageCounter > 1) {
+            messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR]);";           
+          } else if (event.value.type === "cpu:wr.on") {
+            messageReadWrite = "Ejecución: write(Memoria[MAR]) ← MBR;";
+          }
           if (event.value.type === "cpu:mar.set") {
             const sourceRegister = event.value.register;
             const displayRegister = sourceRegister === "ri" ? "MBR" : sourceRegister;
             store.set(messageAtom, `Ejecución: MAR ← ${displayRegister}`);
             pauseSimulation();
+            executeStageCounter++;
           } else if (event.value.type === "cpu:register.update") {
-            store.set(messageAtom, "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1");
-            pauseSimulation();
+            const sourceRegister = event.value.register;
+            const displayRegister = executeStageCounter === 1 ? "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1" : `Ejecución: MBR ← ${sourceRegister}`;
+            store.set(messageAtom, displayRegister);
+            pauseSimulation();            
+            executeStageCounter++;
+
           } else if (event.value.type === "cpu:mbr.get") {
             const sourceRegister  =  event.value.register;
             if (String(sourceRegister) !== 'ri.l') {
@@ -154,7 +169,14 @@ async function startThread(generator: EventGenerator): Promise<void> {
             const destRegister = event.value.dest;
             store.set(messageAtom, `Ejecución: ${destRegister} ← ${sourceRegister}`);
             pauseSimulation();
-          }
+          } else if (event.value.type === "bus:reset" && executeStageCounter > 1) {
+            store.set(messageAtom, messageReadWrite);
+            pauseSimulation();
+          } else if (event.value.type === "cpu:mbr.set") {
+            const sourceRegister  =  event.value.register;
+            store.set(messageAtom, `Ejecución: MBR ← ${sourceRegister}`);
+            pauseSimulation();
+          }  
         }
       } else {
         store.set(messageAtom, ""); // Set messageAtom to blank if not executing by cycle

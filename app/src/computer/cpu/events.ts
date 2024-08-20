@@ -207,6 +207,10 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         { key: `bus.${line}.stroke`, to: colors.red[500] },
         { duration: 5, easing: "easeOutSine" },
       );
+      await anim(
+        { key: "bus.data.stroke", to: colors.mantis[400] },
+        { duration: 5, easing: "easeOutSine" },
+      );
       return;
     }
 
@@ -250,10 +254,10 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       await drawDataPath(reg, "MBR");
       await activateRegister("cpu.MBR");
       store.set(MBRAtom, store.get(registerAtoms[event.register]));
-      await anim(
+      /*await anim(
         { key: "bus.data.stroke", to: colors.mantis[400] },
         { duration: 5, easing: "easeOutSine" },
-      );
+      );*/
       await Promise.all([deactivateRegister("cpu.MBR"), resetDataPath()]);
       return;
     }
