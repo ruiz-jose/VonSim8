@@ -172,7 +172,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
           } else if (event.value.type === "cpu:register.copy") {
             const sourceRegister = event.value.src;
             const destRegister = event.value.dest;
-            store.set(messageAtom, `Ejecución: ${destRegister} ← ${sourceRegister}`);
+            const displaySource = sourceRegister === "result.l" ? "ALU" : sourceRegister;
+            store.set(messageAtom, `Ejecución: ${destRegister} ← ${displaySource}`);
             pauseSimulation();
           } else if (event.value.type === "bus:reset" && executeStageCounter > 1) {
             store.set(messageAtom, messageReadWrite);
