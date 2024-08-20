@@ -99,8 +99,13 @@ async function startThread(generator: EventGenerator): Promise<void> {
     while (true) {
       const status = store.get(simulationAtom);
       const settings = getSettings();
-      if (status.type === "stopped") break; // stop the thread
-      if (status.type === "paused") {
+        if (status.type === "stopped") {
+          fetchStageCounter = 0;
+          executeStageCounter = 0;
+          messageReadWrite = "";
+          break; // stop the thread
+        }
+        if (status.type === "paused") {
         // Wait until the simulation is resumed
         await new Promise<void>(resolve => {
           const unsubscribe = store.sub(simulationAtom, () => {
@@ -141,9 +146,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
         } else {
           
           if (event.value.type === "cpu:rd.on" && executeStageCounter > 1) {
-            messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR]);";           
+            messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";           
           } else if (event.value.type === "cpu:wr.on") {
-            messageReadWrite = "Ejecución: write(Memoria[MAR]) ← MBR;";
+            messageReadWrite = "Ejecución: write(Memoria[MAR]) ← MBR";
           }
           if (event.value.type === "cpu:mar.set") {
             const sourceRegister = event.value.register;
@@ -153,7 +158,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             executeStageCounter++;
           } else if (event.value.type === "cpu:register.update") {
             const sourceRegister = event.value.register;
-            const displayRegister = executeStageCounter === 1 ? "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1" : `Ejecución: MBR ← ${sourceRegister}`;
+            const displayRegister = sourceRegister === "IP" ? "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1" : `Ejecución: MBR ← ${sourceRegister}`;
             store.set(messageAtom, displayRegister);
             pauseSimulation();            
             executeStageCounter++;

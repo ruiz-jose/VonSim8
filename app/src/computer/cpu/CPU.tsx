@@ -22,9 +22,9 @@ export function CPU() {
       <AddressBus />
       <DataBus />
 
-      <Reg name="left" className="invisible left-[60px] top-[70px]" />
-      <Reg name="right" className="invisible left-[60px] top-[130px]" />
-      <Reg name="result" className="invisible left-[300px] top-[100px]" />
+      <Reg name="left" className="left-[60px] top-[70px]" />
+      <Reg name="right" className="left-[60px] top-[130px]" />
+      <Reg name="result" className="left-[300px] top-[100px]" />
 
       <ALU />
 

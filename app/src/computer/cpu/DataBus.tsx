@@ -92,20 +92,24 @@ dataBus.addUndirectedEdge("BX out join", "outr mbr join");
 dataBus.addUndirectedEdge("CX out join", "outr mbr join");
 dataBus.addUndirectedEdge("DX out join", "outr mbr join");
 dataBus.addUndirectedEdge("id out join", "outr mbr join");
-
+/*
+dataBus.addUndirectedEdge("AX out join", "left");
+dataBus.addUndirectedEdge("BX out join", "left");
+dataBus.addUndirectedEdge("CX out join", "left");
+dataBus.addUndirectedEdge("DX out join", "left");
+dataBus.addUndirectedEdge("id out join", "left");
+*/
 dataBus.addUndirectedEdge("outr mbr join", "mbr reg join");
+
 
 dataBus.addUndirectedEdge("mbr reg join", "AX join");
 dataBus.addUndirectedEdge("mbr reg join", "BX join");
 dataBus.addUndirectedEdge("mbr reg join", "CX join");
 dataBus.addUndirectedEdge("mbr reg join", "DX join");
 dataBus.addUndirectedEdge("mbr reg join", "id join");
+dataBus.addUndirectedEdge("outr mbr join", "operands mbr join");
 
-/*dataBus.addUndirectedEdge("AX out join", "left");
-dataBus.addUndirectedEdge("BX out join", "left");
-dataBus.addUndirectedEdge("CX out join", "left");
-dataBus.addUndirectedEdge("DX out join", "left");
-dataBus.addUndirectedEdge("id out join", "left");*/
+
 
 // These are the lines
 dataBus.addUndirectedEdge("AX join", "AX");
@@ -230,13 +234,14 @@ export function DataBus() {
           "M 550 125 H 510", // CX out
           "M 550 165 H 510", // DX out
          // "M 550 205 H 510", // id out
-          "M 550 10 V 250", // Vertical join for output buses
-          "M 550 45 H 492", // Connect to data mbr join
+         //"M 550 10 V 250", // Vertical join for output buses
+          "M 550 40 V 250", // Vertical join for output buses
+         // "M 550 45 H 492", // Connect to data mbr join
           // Connect output buses to left of ALU
-          "M 550 10 H 100 V 84", // AX out to left
+         /* "M 550 10 H 100 V 84", // AX out to left
           "M 555 10 H 100 V 84", // BX out to left
           "M 555 10 H 100 V 84", // CX out to left
-          "M 555 10 H 100 V 84", // DX out to left
+          "M 555 10 H 100 V 84", // DX out to left*/
           //"M 510 205 H 60", // id out to left
         ].join(" ")}
       />
