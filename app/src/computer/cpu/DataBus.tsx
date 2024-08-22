@@ -100,6 +100,7 @@ dataBus.addUndirectedEdge("DX out join", "left");
 dataBus.addUndirectedEdge("id out join", "left");
 */
 dataBus.addUndirectedEdge("outr mbr join", "mbr reg join");
+dataBus.addUndirectedEdge("MBR", "outr mbr join");
 
 
 dataBus.addUndirectedEdge("mbr reg join", "AX join");
@@ -108,7 +109,6 @@ dataBus.addUndirectedEdge("mbr reg join", "CX join");
 dataBus.addUndirectedEdge("mbr reg join", "DX join");
 dataBus.addUndirectedEdge("mbr reg join", "id join");
 dataBus.addUndirectedEdge("outr mbr join", "operands mbr join");
-
 
 
 // These are the lines
@@ -141,7 +141,7 @@ dataBus.addUndirectedEdge("left", "left join");
 dataBus.addUndirectedEdge("right", "right join");
 dataBus.addUndirectedEdge("left join", "right join");
 dataBus.addUndirectedEdge("right join", "operands mbr join");
-dataBus.addUndirectedEdge("operands mbr join", "IR mbr join");
+//dataBus.addUndirectedEdge("operands mbr join", "IR mbr join");
 
 export type DataRegister = PhysicalRegister | "MBR";
 
@@ -170,12 +170,13 @@ export function generateDataPath(from: DataRegister, to: DataRegister): string {
   let path: string[] = [];
   
   const registers = ["AX", "BX", "CX", "DX", "id"];
-  if (registers.includes(from) && registers.includes(to)) {
+  if (from === "MBR" && registers.includes(to)) {
+    path = ["MBR", "mbr reg join", `${to} join`, to];
+  } else if (registers.includes(from) && registers.includes(to)) {
     path = intermediatePath(from, to);
   } else {
     path = bidirectional(dataBus, from, to) || [];
   }
-  
   if (path.length === 0) throw new Error(`No path from ${from} to ${to}`);
 
   const start = dataBus.getNodeAttribute(path[0], "position");
