@@ -1,4 +1,5 @@
 import type { MARRegister } from "@vonsim/simulator/cpu";
+import { useState } from "react";
 
 import { animated, getSpring } from "@/computer/shared/springs";
 
@@ -31,23 +32,29 @@ export function generateAddressPath(from: MARRegister): string {
  */
 export function AddressBus() {
   const { path, ...style } = getSpring("cpu.internalBus.address");
+  const [highlight] = useState(false);
+
+  const paths = [
+    "M 451 309 H 550 V 349", // IP
+    "M 451 349 H 550", // SP
+    "M 444 388 H 550 V 349", // ri
+    "M 451 349 H 698", // Connection to MAR
+  ];
 
   return (
     <svg viewBox="0 0 650 500" className="pointer-events-none absolute inset-0">
-      <path
-        className="fill-none stroke-stone-700 stroke-bus"
-        strokeLinejoin="round"
-        d={[
-          "M 451 309 H 550 V 349", // IP
-          "M 451 349 H 550", // SP
-          "M 444 388 H 550 V 349", // ri
-          "M 451 349 H 698", // Connection to MAR
-        ].join(" ")}
-      />
+      {paths.map((d, index) => (
+        <path
+          key={index}
+          className={`fill-none stroke-bus ${highlight && d === "M 444 388 H 575 V 349" ? "stroke-mantis-400" : "stroke-stone-700"}`}
+          strokeLinejoin="round"
+          d={d}
+        />
+      ))}
 
       <animated.path
         d={path}
-        className="fill-none stroke-blue-500 stroke-bus"
+        className="fill-none stroke-mantis-400 stroke-bus"
         strokeLinejoin="round"
         pathLength={1}
         strokeDasharray={1}
