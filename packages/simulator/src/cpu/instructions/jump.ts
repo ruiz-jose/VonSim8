@@ -33,8 +33,9 @@ export class JumpInstruction extends Instruction<
       instruction: {
         name: this.name,
         position: this.position,
-        operands: [this.jumpTo.toString()],
-        willUse: { id: this.name === "CALL", ri: true },
+        operands: [this.jumpTo.toString( false)],
+       // willUse: { id: this.name === "CALL", ri: true },
+       willUse: { id: this.name === "CALL", ri: false },
       },
     };
 
@@ -45,7 +46,7 @@ export class JumpInstruction extends Instruction<
 
     // Consume jump address
     yield* super.consumeInstruction(computer, "ri.l");
-    yield* super.consumeInstruction(computer, "ri.h");
+   // yield* super.consumeInstruction(computer, "ri.h");
 
     yield { type: "cpu:cycle.update", phase: "execute" };
 
@@ -91,7 +92,10 @@ export class JumpInstruction extends Instruction<
         if (!(yield* computer.cpu.pushToStack())) return false; // Stack overflow
       }
 
-      yield* computer.cpu.copyWordRegister("ri", "IP");
+      //yield* computer.cpu.copyWordRegister("ri", "IP");
+      // Mostrar el valor de MBR antes de asignarlo a IP.l
+      //console.log("Valor de MBR antes de asignarlo a IP.l:", computer.cpu.getRegister("MBR"));
+      yield* computer.cpu.copyByteRegister("ri.l", "IP.l");
     }
 
     return true;

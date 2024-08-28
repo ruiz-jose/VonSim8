@@ -39,6 +39,7 @@ export type PhysicalRegister = keyof RegistersMap;
  */
 export type PartialRegisters =
   | `${"A" | "B" | "C" | "D"}${"L" | "H"}`
+  | `${"MBR"}`
   | `${"SP" | "IP" | "ri" | "id" | "left" | "right" | "result" | "FLAGS"}.${"l" | "h"}`;
 
 export type ByteRegister = ConditionalKeys<RegistersMap, Byte<8>> | PartialRegisters;

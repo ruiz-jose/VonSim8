@@ -55,7 +55,7 @@ export class JumpInstruction extends InstructionStatement {
    * Returns the length of the instruction in bytes.
    * @see https://vonsim.github.io/docs/reference/codification/
    */
-  readonly length = 3;
+  readonly length = 2;
 
   /**
    * Returns the bytes of the instruction.
@@ -65,21 +65,21 @@ export class JumpInstruction extends InstructionStatement {
     const bytes: number[] = [];
 
     const opcodes: { [key in JumpInstructionName]: number } = {
-      JC: 0b0010_0000,
-      JNC: 0b0010_0001,
-      JZ: 0b0010_0010,
-      JNZ: 0b0010_0011,
-      JS: 0b0010_0100,
-      JNS: 0b0010_0101,
-      JO: 0b0010_0110,
-      JNO: 0b0010_0111,
-      JMP: 0b0011_0000,
-      CALL: 0b0011_0001,
+      JC: 0b1100_0011,
+      JNC: 0b1100_0100,
+      JZ: 0b1100_0001,
+      JNZ: 0b0010_0010,
+      JS: 0b1100_0101,
+      JNS: 0b1100_0110,
+      JO: 0b1100_0111,
+      JNO: 0b1100_1000,
+      JMP: 0b1100_0000,
+      CALL: 0b1100_1001,
     };
 
     bytes.push(opcodes[this.instruction]);
     bytes.push(this.address.byte.low.unsigned);
-    bytes.push(this.address.byte.high.unsigned);
+   // bytes.push(this.address.byte.high.unsigned);
 
     return new Uint8Array(bytes);
   }
