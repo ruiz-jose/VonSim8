@@ -173,7 +173,13 @@ async function startThread(generator: EventGenerator): Promise<void> {
             const sourceRegister = event.value.src;
             const destRegister = event.value.dest;
             const displaySource = sourceRegister === "result.l" ? "ALU" : sourceRegister;
-            store.set(messageAtom, `Ejecución: ${destRegister} ← ${displaySource}`);
+            let displayMessage = `Ejecución: ${destRegister} ← ${displaySource}`;
+        
+            // Condición específica para la transferencia entre ri.l y ip.l
+            if (sourceRegister === "ri.l" && destRegister === "IP.l") {
+              displayMessage = "Ejecución: IP ← MBR";
+            }
+            store.set(messageAtom, displayMessage);
             pauseSimulation();
           } else if (event.value.type === "bus:reset" && executeStageCounter > 1) {
             store.set(messageAtom, messageReadWrite);
