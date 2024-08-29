@@ -10,7 +10,7 @@ import { AnyByte, Byte } from "./byte";
  */
 export class MemoryAddress {
   static readonly MIN_ADDRESS = 0x0000;
-  static readonly MAX_ADDRESS = 0x7fff;
+  static readonly MAX_ADDRESS = 0x00ff;
 
   #address: Byte<16>;
 
