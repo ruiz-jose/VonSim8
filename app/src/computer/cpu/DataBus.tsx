@@ -33,6 +33,7 @@ dataBus.addNode("id", { position: [451, 205] });
 dataBus.addNode("IP", { position: [451, 309] });
 dataBus.addNode("SP", { position: [451, 349] });
 dataBus.addNode("ri", { position: [451, 388] });
+dataBus.addNode("MAR", { position: [698, 349] });
 dataBus.addNode("result", { position: [370, 130] });
 dataBus.addNode("FLAGS", { position: [250, 225] });
 dataBus.addNode("IR", { position: [205, 272] });
@@ -50,6 +51,8 @@ dataBus.addNode("data mbr join", { position: [421, 250] });
 dataBus.addNode("IP join", { position: [421, 309] });
 dataBus.addNode("SP join", { position: [421, 349] });
 dataBus.addNode("ri join", { position: [421, 388] });
+dataBus.addNode("MAR join1", { position: [550, 388] });
+dataBus.addNode("MAR join2", { position: [550, 348] });
 dataBus.addNode("addresses mbr join", { position: [421, 250] });
 dataBus.addNode("result mbr join", { position: [370, 250] });
 dataBus.addNode("FLAGS mbr join", { position: [250, 250] });
@@ -123,6 +126,9 @@ dataBus.addUndirectedEdge("MBR", "data mbr join");
 dataBus.addUndirectedEdge("IP", "IP join");
 dataBus.addUndirectedEdge("SP", "SP join");
 dataBus.addUndirectedEdge("ri", "ri join");
+dataBus.addUndirectedEdge("MAR join1", "ri");
+dataBus.addUndirectedEdge("MAR join2", "MAR join1");
+dataBus.addUndirectedEdge("MAR", "MAR join2");
 dataBus.addUndirectedEdge("IP join", "SP join");
 dataBus.addUndirectedEdge("SP join", "ri join");
 dataBus.addUndirectedEdge("IP join", "addresses mbr join");
@@ -177,6 +183,15 @@ export function generateDataPath(from: DataRegister, to: DataRegister): string {
   } else {
     path = bidirectional(dataBus, from, to) || [];
   }
+
+  // Reemplazar 'ri' por 'MAR' si el destino es 'ri'
+  if (to === "ri") {
+    const riIndex = path.indexOf("ri");
+    if (riIndex !== -1) {
+      path.splice(riIndex, 1, "ri", "MAR join1", "MAR join2", "MAR");
+    }
+  }
+
   if (path.length === 0) throw new Error(`No path from ${from} to ${to}`);
 
   const start = dataBus.getNodeAttribute(path[0], "position");

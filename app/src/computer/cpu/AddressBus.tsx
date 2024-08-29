@@ -20,7 +20,9 @@ export function generateAddressPath(from: MARRegister): string {
       return "M 451 349 H 698";
 
     case "ri":
-      return "M 454 388 H 550 V 349 H 698";
+      //return "M 454 388 H 550 V 349 H 698";
+      // Devolver una cadena vacía para evitar la animación
+      return "";
 
     default:
       throw new Error(`Invalid register ${from}`);
