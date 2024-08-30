@@ -157,7 +157,7 @@ export type DataRegister = PhysicalRegister | "MBR";
  * @returns The path as a SVG path.
  * @throws If there is no path between the two registers.
  */
-export function generateDataPath(from: DataRegister, to: DataRegister): string {
+export function generateDataPath(from: DataRegister, to: DataRegister, instruction?: string): string {
   console.log("from:", from);
   console.log("to:", to);
 
@@ -190,6 +190,16 @@ export function generateDataPath(from: DataRegister, to: DataRegister): string {
     if (riIndex !== -1) {
       path.splice(riIndex, 1, "ri", "MAR join1", "MAR join2", "MAR");
     }
+  }
+
+  // Cambiar la animación si from es "ri" y to es "IP"
+  if (from === "ri" && to === "IP") {
+    path = ["MBR", "mbr reg join", "IP join", "IP"];
+  }
+
+  // No dibujar la animación si from es "MBR" y to es "ri" y la instrucción es JMP, JZ o JC
+  if (from === "MBR" && to === "ri" && ["JMP", "JZ", "JC"].includes(instruction)) {
+    return "";
   }
 
   if (path.length === 0) throw new Error(`No path from ${from} to ${to}`);
