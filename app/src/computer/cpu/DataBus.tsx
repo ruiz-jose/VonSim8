@@ -198,7 +198,7 @@ export function generateDataPath(from: DataRegister, to: DataRegister, instructi
   }
 
   // No dibujar la animación si from es "MBR" y to es "ri" y la instrucción es JMP, JZ o JC
-  if (from === "MBR" && to === "ri" && ["JMP", "JZ", "JC"].includes(instruction)) {
+  if (from === "MBR" && to === "ri" && ["JMP", "JZ", "JC"].includes(instruction ?? "")) {
     return "";
   }
 
