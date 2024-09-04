@@ -118,7 +118,7 @@ export class BinaryInstruction extends InstructionStatement {
     const bytes: number[] = [];
 
     const opcodes: { [key in BinaryInstructionName]: number } = {
-      MOV: 0b0000_0000,
+      MOV: 0b0000_00_00,
       AND: 0b100_0001_0,
       OR: 0b100_0010_0,
       XOR: 0b100_0011_0,
@@ -177,11 +177,11 @@ export class BinaryInstruction extends InstructionStatement {
 
       case "mem<-imd": {
         if (out.mode === "direct") {
-          bytes[1] = 0b11001000;
+          bytes[0] = 0b0010_11_00; // 00101100
           bytes.push(out.address.byte.low.unsigned);
-          bytes.push(out.address.byte.high.unsigned);
+          //bytes.push(out.address.byte.high.unsigned);
         } else {
-          bytes[1] = 0b11011000;
+          bytes[0] = 0b0010_11_01; // 00101101
         }
         bytes.push(src.low.unsigned);
         if (size === 16) bytes.push(src.high.unsigned);
