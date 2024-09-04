@@ -146,7 +146,7 @@ export class BinaryInstruction extends InstructionStatement {
           bytes.push(src.address.byte.low.unsigned);
          // bytes.push(src.address.byte.high.unsigned);
         } else {
-          bytes[0] = 0b0001_00_01; // 0001RR00 indirecto
+          bytes[0] = 0b0001_00_01; // 0001RR01 indirecto
         }
         bytes[0] |= (registerToBits(out) & 0b11) << 2; // RR
         //bytes[1] |= registerToBits(out) << 0;
@@ -154,16 +154,17 @@ export class BinaryInstruction extends InstructionStatement {
       }
 
       case "reg<-imd": {
-        bytes[1] = 0b01001_000; // 01001rrr
-        bytes[1] |= registerToBits(out) << 0;
+        bytes[0] = 0b0001_00_11; // 0001RR11
+        //bytes[1] |= registerToBits(out) << 0;
         bytes.push(src.low.unsigned);
-        if (size === 16) bytes.push(src.high.unsigned);
+        bytes[0] |= (registerToBits(out) & 0b11) << 2; // RR
+        //if (size === 16) bytes.push(src.high.unsigned);
         break;
       }
 
       case "mem<-reg": {
         if (out.mode === "direct") {
-          bytes[0] = 0b0100_0000; // 0100RR00
+          bytes[0] = 0b0010_00_00; // 0010RR00
           bytes.push(out.address.byte.low.unsigned);
           //bytes.push(out.address.byte.high.unsigned);
         } else {

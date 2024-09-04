@@ -1,5 +1,6 @@
 //import { Byte } from "@vonsim/common/byte";
 
+import { ByteRegister } from "../../../../assembler/src/types";
 import type { Computer } from "../../computer";
 import type { EventGenerator } from "../../events";
 import { Instruction } from "../instruction";
@@ -74,7 +75,6 @@ export class MOVInstruction extends Instruction<"MOV"> {
     //yield { type: "cpu:decode" };
     yield* super.consumeInstruction(computer, "IR");
     yield { type: "cpu:decode" };
-
     yield { type: "cpu:cycle.update", phase: "decoded", next: "fetch-operands" };
 
     if (
@@ -93,7 +93,16 @@ export class MOVInstruction extends Instruction<"MOV"> {
         yield* computer.cpu.copyWordRegister("BX", "ri");
       }
     }
-    if (this.operation.mode === "reg<-imd" || this.operation.mode === "mem<-imd") {
+    if (this.operation.mode === "reg<-imd" ) {
+      // Fetch immediate value and store it in id
+      if (size === 8 && typeof out === "string") {
+        yield* super.consumeInstruction(computer, out as ByteRegister); // Copiar directamente al registro `out`
+      }
+      //yield* super.consumeInstruction(computer, "id.l");
+      if (this.operation.size === 16) yield* super.consumeInstruction(computer, "id.h");
+    }
+
+    if ( this.operation.mode === "mem<-imd") {
       // Fetch immediate value and store it in id
       yield* super.consumeInstruction(computer, "id.l");
       if (this.operation.size === 16) yield* super.consumeInstruction(computer, "id.h");
@@ -136,9 +145,11 @@ export class MOVInstruction extends Instruction<"MOV"> {
       
       case "reg<-imd": {
         // Write to register
-        if (size === 8) yield* computer.cpu.copyByteRegister("id.l", out);
-        else yield* computer.cpu.copyWordRegister("id", out);
-
+        //yield* computer.cpu.setMBR("id.l");
+        if (size === 16) yield* computer.cpu.setMBR("id.h");
+        if (size === 8) {
+          yield* computer.cpu.getMBR(out); // Copiar directamente al registro `out` 
+        }
         return true;
       }
 
