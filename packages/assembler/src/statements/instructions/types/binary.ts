@@ -21,7 +21,7 @@ type InitialOperation =
   | { mode: "mem<-reg"; size: ByteSize; out: InitialMemoryAccess; src: Register }
   | { mode: "mem<-imd"; size: ByteSize; out: InitialMemoryAccess; src: NumberExpression };
 
-type MemoryAccess = { mode: "direct"; address: MemoryAddress } | { mode: "indirect" };
+type MemoryAccess = { mode: "direct"; address: MemoryAddress } | { mode: "indirect" ; register: "BX" | "BL"};
 
 type Operation =
   | { mode: "reg<-reg"; size: 8; out: ByteRegister; src: ByteRegister }
@@ -251,7 +251,7 @@ export class BinaryInstruction extends InstructionStatement {
         if (src.size !== "auto" && src.size !== out.size) {
           throw new AssemblerError("size-mismatch", src.size, out.size).at(this);
         }
-
+        
         this.#initialOperation = {
           mode: "reg<-mem",
           size: out.size,

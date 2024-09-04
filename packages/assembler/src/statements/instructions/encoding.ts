@@ -28,5 +28,7 @@ export function registerToBits(reg: Register): number {
       return 0b110;
     case "BH":
       return 0b111;
+    default:
+      throw new Error(`Registro no soportado: ${reg}`);
   }
 }

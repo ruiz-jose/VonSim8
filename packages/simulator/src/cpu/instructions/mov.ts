@@ -28,7 +28,7 @@ export class MOVInstruction extends Instruction<"MOV"> {
         return [out, src];
 
       case "reg<-mem": {
-        const addr = src.mode === "direct" ? src.address.toString() : "BX";
+        const addr = src.mode === "direct" ? src.address.toString() : "BL";
         return [out, `[${addr}]`];
       }
 
@@ -36,12 +36,12 @@ export class MOVInstruction extends Instruction<"MOV"> {
         return [out, `${src.toString("hex")}h`];
 
       case "mem<-reg": {
-        const addr = out.mode === "direct" ? out.address.toString() : "BX";
+        const addr = out.mode === "direct" ? out.address.toString() : "BL";
         return [`[${addr}]`, src];
       }
 
       case "mem<-imd": {
-        const addr = out.mode === "direct" ? out.address.toString() : "BX";
+        const addr = out.mode === "direct" ? out.address.toString() : "BL";
         return [`[${addr}]`, `${src.toString("hex")}h`];
       }
 
@@ -90,7 +90,7 @@ export class MOVInstruction extends Instruction<"MOV"> {
        // yield* super.consumeInstruction(computer, "ri.h");
       } else {
         // Move BX to ri
-        yield* computer.cpu.copyWordRegister("BX", "ri");
+        yield* computer.cpu.copyByteRegister("BL", "ri.l");
       }
     }
     if (this.operation.mode === "reg<-imd" ) {

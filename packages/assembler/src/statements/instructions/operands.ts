@@ -7,6 +7,7 @@ import type { Token } from "../../lexer/tokens";
 import { NumberExpression } from "../../number-expression";
 import { Register, WORD_REGISTERS } from "../../types";
 
+
 /**
  * An operand of an instruction.
  *

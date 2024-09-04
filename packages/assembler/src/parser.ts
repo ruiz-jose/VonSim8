@@ -225,10 +225,10 @@ export class Parser {
       const start = this.previous();
 
       if (this.check(...REGISTERS)) {
-        this.consume("BX", new AssemblerError("parser.indirect-addressing-must-be-bx"));
+        this.consume("BL", new AssemblerError("parser.indirect-addressing-must-be-bx"));
         const end = this.consume(
           "RIGHT_BRACKET",
-          new AssemblerError("parser.expected-literal-after-literal", "]", "BX"),
+          new AssemblerError("parser.expected-literal-after-literal", "]", "BL"),
         );
 
         return new IndirectAddressOperand(
