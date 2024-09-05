@@ -89,6 +89,7 @@ function resetState(state: ComputerState) {
 let fetchStageCounter = 0;
 let executeStageCounter = 0;
 let messageReadWrite = "";
+let shouldDisplayMessage = true;
 /**
  * Starts an execution thread for the given generator. This is, run all the
  * events until the generator is done or the simulation is stopped.
@@ -143,8 +144,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
             pauseSimulation();
             fetchStageCounter++;
           }
-        } else {
-          
+        } else {  
+          console.log(executeStageCounter);        
           if (event.value.type === "cpu:rd.on" && executeStageCounter > 1) {
             messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";           
           } else if (event.value.type === "cpu:wr.on") {
@@ -153,9 +154,12 @@ async function startThread(generator: EventGenerator): Promise<void> {
           if (event.value.type === "cpu:mar.set") {
             const sourceRegister = event.value.register;
             const displayRegister = sourceRegister === "ri" ? "MBR" : sourceRegister;
-            store.set(messageAtom, `Ejecución: MAR ← ${displayRegister}`);
+            if (shouldDisplayMessage) {
+              store.set(messageAtom, `Ejecución: MAR ← ${displayRegister}`);
+            }
             pauseSimulation();
             executeStageCounter++;
+            shouldDisplayMessage = true; // No mostrar el mensaje en el próximo ciclo
           } else if (event.value.type === "cpu:register.update") {
             const sourceRegister = event.value.register;
             const displayRegister = sourceRegister === "IP" ? "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1" : `Ejecución: MBR ← ${sourceRegister}`;
@@ -178,9 +182,17 @@ async function startThread(generator: EventGenerator): Promise<void> {
             // Condición específica para la transferencia entre ri.l y ip.l
             if (sourceRegister === "ri.l" && destRegister === "IP.l") {
               displayMessage = "Ejecución: IP ← MBR";
+              store.set(messageAtom, displayMessage);
+              pauseSimulation();
+            } else if (sourceRegister === "BL" && destRegister === "ri.l") {
+              displayMessage = "Ejecución: MAR ← BL";
+              store.set(messageAtom, displayMessage);
+              shouldDisplayMessage = false;
+              executeStageCounter++;
+            } else {
+              store.set(messageAtom, displayMessage);
+              pauseSimulation();
             }
-            store.set(messageAtom, displayMessage);
-            pauseSimulation();
           } else if (event.value.type === "bus:reset" && executeStageCounter > 1) {
             store.set(messageAtom, messageReadWrite);
             pauseSimulation();
