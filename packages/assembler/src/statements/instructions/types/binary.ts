@@ -154,7 +154,7 @@ export class BinaryInstruction extends InstructionStatement {
       }
 
       case "reg<-imd": {
-        bytes[0] = 0b0001_00_11; // 0001RR11
+        bytes[0] = 0b0001_00_10; // 0001RR10
         //bytes[1] |= registerToBits(out) << 0;
         bytes.push(src.low.unsigned);
         bytes[0] |= (registerToBits(out) & 0b11) << 2; // RR
