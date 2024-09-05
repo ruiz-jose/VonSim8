@@ -127,7 +127,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
           fetchStageCounter = 0;
           executeStageCounter = 0;
           messageReadWrite = "";
-          pauseSimulation();
+          //pauseSimulation();
           continue;
         }
         if (fetchStageCounter < 3) {
@@ -144,8 +144,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             pauseSimulation();
             fetchStageCounter++;
           }
-        } else {  
-          console.log(executeStageCounter);        
+        } else {        
           if (event.value.type === "cpu:rd.on" && executeStageCounter > 1) {
             messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";           
           } else if (event.value.type === "cpu:wr.on") {
