@@ -7,137 +7,107 @@ head:
 
 Aquí se denota la codificación en binario de cada una de las instrucciones del simulador. Pese a que el set de instrucciones esté basado en el de Intel 8088, la codificación se simplificado con fines prácticos y didácticos.
 
-A lo largo de la codificación se usan las siguientes abreviaturas:
+## Formato de instrucciones
+Las instrucciones están codificadas con 1, 2 o 3 bytes. Los primeros 4 bits identifican el `opcode` de la instrucción y determinan como se tienen que ise interpretar los 4 bits restantes. 
 
-- `w`: indica el tamaño de los operandos.
+| Caso | Codificación | Parámetros |
+| --- | --- | --- |
+| A: entre registros | `---- XXYY` | `XX` = Registro destino, `YY` = Registro fuente |
+| B: Cargar a registro  | `---- XXmm DDDDDDDD` | `mm` = modo, `XX` = Registro destino, `D` = Dirección de memoria o Dato Inmediato |
+| C: Almacenar en memoria | `---- mmmm DDDDDDDD dddddddd` | `mmmm` = modo ampliado, `D` = Dirección de memoria,  `d` = Dato Inmediato |
+| D: control de flujo  | `---- ffff DDDDDDDD` | `ffff` = funcionalidad `D` = Dirección de memoria |
 
-  | `w` | Tamaño  |
-  | :-: | :------ |
-  | `0` | 8 bits  |
-  | `1` | 16 bits |
+ `d` = Dato Inmediato, no puede ser destino de la instrucción.
 
-- `rrr` o `RRR`: referencian registros, y dependen de `w`.
 
-  | `rrr` | `w=0` | `w=1` |
-  | :---: | :---: | :---: |
-  | `000` | `AL`  | `AX`  |
-  | `001` | `CL`  | `CX`  |
-  | `010` | `DL`  | `DX`  |
-  | `011` | `BL`  | `BX`  |
-  | `100` | `AH`  | `SP`  |
-  | `101` | `CH`  |   —   |
-  | `110` | `DH`  |   —   |
-  | `111` | `BH`  |   —   |
+| Modo direccionamientos B: Cargar a registro  |  |  |
+| :---: | :---: | :---: |
+| **`mm`= Modo** | **`Byte`= tamaño** | **Interpretación** |
+| 00 |  2 |directo `D` = Dirección de memoria |
+| 01 |  1 |indirecto utiliza como operando implicito el registro `BL` y no requiere operando `D` |
+| 10 |  2 |Inmediato `D` = Dato Inmediato |
+| 11 |  2 |Indirecto la dirección se calcula operando implicito `BL` + Dato Inmediato|
 
-- **dato** se refiere al byte/word de un dato inmediato. Para instrucciones con `w=0`, **dato-high** es obviado.
-- **desp** se refiere al word de un desplazamiento (siempre en Ca2).
-- **dir** se refiere al word de una dirección.
-- **xxx-low** se refiere a la parte menos significativa (LSB) de un word o a un byte.
-- **xxx-high** se refiere a la marte más significativa (MSB) de un word.
+| Modo direccionamientos C: Almacenar en memoria  |  |  |
+| :---: | :---: | :---: |
+| **`mmmm`= Modo** | **`Byte`= tamaño** | **Interpretación** |
+| 00YY |  2 |directo `D` = Dirección de memoria, `YY` = Registro fuente |
+| 01YY |  1 |indirecto `BL`, `YY` = Registro fuente|
+| 01YY |  2 |Indirecto la dirección se calcula operando implicito `BL` + Dato Inmediato |
+| 1100 |  3 |Inmediato a memoria|
+| 1101 |  2 |Inmediato a memoria mediante indirecto `BL`|
+| 1110 |  3 |Inmediato a memoria mediante indirecto `BL`+ Dato Inmediato |
 
----
 
-| Instrucción |    Opcode    |
-| :---------: | :----------: |
-|    `MOV`    | `100 0000 w` |
-|    `AND`    | `100 0001 w` |
-|    `OR`     | `100 0010 w` |
-|    `XOR`    | `100 0011 w` |
-|    `ADD`    | `100 0100 w` |
-|    `ADC`    | `100 0101 w` |
-|    `SUB`    | `100 0110 w` |
-|    `SBB`    | `100 0111 w` |
-|    `CMP`    | `100 1000 w` |
+| # | Instrucción        | Acción                                                             | Codificación                  |
+| - | ---                | ---                                                                | ---                           |
+| 0 | `MOV Rx, Ry`       | `Rx` $\leftarrow$ `Ry`                                             | `0000 XXYY`                   |
+| 1 | `MOV Rx, [M]`      | `Rx` $\leftarrow$ `Mem[Dirección]`                                 | `0001 XX00 DDDDDDDD`          |
+| 1 | `MOV Rx, [BL]`     | `Rx` $\leftarrow$ `Mem[BL]`                                        | `0001 XX01`                   |
+| 1 | `MOV Rx, D`        | `Rx` $\leftarrow$ `Dato`                                           | `0001 XX10 DDDDDDDD`          |
+| 1 | `MOV Rx, [BL + D]` | `Rx` $\leftarrow$ `Mem[BL + Dato]`                                 | `0001 XX11 DDDDDDDD`          |
+| 2 | `MOV [M], Ry`      | `Mem[Dirección]` $\leftarrow$ `Rx`                                 | `0010 00YY DDDDDDDD`          |
+| 2 | `MOV [BL], Ry`     | `Mem[BL]` $\leftarrow$ `Rx`                                        | `0010 01YY`                   |
+| 2 | `MOV [BL + D], Ry` | `Mem[BL + Dato]` $\leftarrow$ `Rx`                                 | `0010 10YY DDDDDDDD`          |
+| 2 | `MOV [M], D`       | `Mem[Dirección]` $\leftarrow$ `Dato`                               | `0010 1100 DDDDDDDD dddddddd` |
+| 2 | `MOV [BL], D`      | `Mem[BL]` $\leftarrow$ `Dato`                                      | `0010 1101 DDDDDDDD`          |
+| 2 | `MOV [BL + D], D`  | `Mem[BL + Dato]` $\leftarrow$ `Dato`                               | `0010 1110 DDDDDDDD`          |
+| 3 | `ADD Rx, Ry`       | `Rx` $\leftarrow$ `Rx + Ry`                                        | `0011 XXYY`                   |
+| 4 | `ADD --, --`       | Mismo direccionamientos que MOV                                    | `0100 ---- --------`          |
+| 5 | `ADD --, --`       | Mismo direccionamientos que MOV                                    | `0101 ---- -------- --------` |
+| 6 | `SUB Rx, Ry`       | `Rx` $\leftarrow$ `Rx - Ry`                                        | `0110 XXYY`                   |
+| 7 | `SUB --, --`       | Mismo direccionamientos que MOV                                    | `0111 ---- --------`          |
+| 8 | `SUB --, --`       | Mismo direccionamientos que MOV                                    | `1000 ---- -------- --------` |
+| 9 | `CMP Rx, Ry`       | Modifica *flags* de `Rx - Ry`                                      | `1001 XXYY`                   |
+| A | `CMP --, --`       | Mismo direccionamientos que MOV                                    | `1010 ---- --------`          |
+| B | `CMP --, --`       | Mismo direccionamientos que MOV                                    | `1011 ---- -------- --------` |
+| C | `JMP M`            | `IP` $\leftarrow$ `Dirección`                                      | `1100 0000 DDDDDDDD`          |
+| C | `JC M`             | Si `flag C=1` entonces `IP` $\leftarrow$ `Dirección`               | `1100 0001 DDDDDDDD`          |
+| C | `JZ M`             | Si `flag Z=1` entonces `IP` $\leftarrow$ `Dirección`               | `1100 0011 DDDDDDDD`          |
+| C | `Jxx M`            | Se pueden implemementar más flags y CALL                           | `1100 ffff --------`          |
 
+
+- `Rx` o `Ry`: referencian registros.
+
+  | `Código` | `Nombre` | 
+  | :---: | :---: | 
+  | `00` | `AL`  | 
+  | `01` | `CL`  | 
+  | `10` | `DL`  |
+  | `11` | `BL`  | 
+  
 Estas instrucciones reciben dos operandos y soportan varios modos de direccionamiento. Esta información está codificada en el bit `d` y el segundo byte de la instrucción según la siguiente tabla:
 
-| Destino                                | Fuente                                 | Segundo byte | Bytes siguientes                         |
-| :------------------------------------- | :------------------------------------- | :----------: | :--------------------------------------- |
-| Registro                               | Registro                               |  `00RRRrrr`  | —                                        |
-| Registro                               | Memoria (directo)                      |  `01000rrr`  | dir-low, dir-high                        |
-| Registro                               | Memoria (indirecto)                    |  `01010rrr`  | —                                        |
-| Registro                               | Memoria (indirecto con desplazamiento) |  `01100rrr`  | desp-low, desp-high                      |
-| Registro                               | Inmediato                              |  `01001rrr`  | dato-low, dato-high                      |
-| Memoria (directo)                      | Registro                               |  `11000rrr`  | dir-low, dir-high                        |
-| Memoria (indirecto)                    | Registro                               |  `11010rrr`  | —                                        |
-| Memoria (indirecto con desplazamiento) | Registro                               |  `11100rrr`  | desp-low, desp-high                      |
-| Memoria (directo)                      | Inmediato                              |  `11001000`  | dir-low, dir-high, dato-low, dato-high   |
-| Memoria (indirecto)                    | Inmediato                              |  `11011000`  | dato-low, dato-high                      |
-| Memoria (indirecto con desplazamiento) | Inmediato                              |  `11101000`  | desp-low, desp-high, dato-low, dato-high |
-
-Para las instrucciones con un registro como operando, `rrr` codifica este registro. En el caso registro a registro, `RRR` codifica el registro fuente y `rrr` el registro destino.
-
----
-
-| Instrucción |    Opcode    |
-| :---------: | :----------: |
-|    `NOT`    | `0100 000 w` |
-|    `NEG`    | `0100 001 w` |
-|    `INC`    | `0100 010 w` |
-|    `DEC`    | `0100 011 w` |
-
-Estas instrucciones reciben un operando y soportan varios modos de direccionamiento. Esta información está codificada el segundo byte de la instrucción según la siguiente tabla:
-
-| Destino                                | Segundo byte | Bytes siguientes    |
-| :------------------------------------- | :----------: | :------------------ |
-| Registro                               |  `00000rrr`  | —                   |
-| Memoria (directo)                      |  `11000000`  | dir-low, dir-high   |
-| Memoria (indirecto)                    |  `11010000`  | —                   |
-| Memoria (indirecto con desplazamiento) |  `11100000`  | desp-low, desp-high |
-
----
-
-| Instrucción |    Opcode    |
-| :---------: | :----------: |
-|    `IN`     | `0101 00 pw` |
-|    `OUT`    | `0101 01 pw` |
-
-El bit `p` codifica
-
-- si el puerto es fijo (`p=0`), el cual se tendrá que proveer en el siguiente byte (puerto máximo: 255),
-- o si el puerto es variable (`p=1`), caso en el cual se usará el valor almacenado en el registro `DX` como puerto.
+| Destino                                | Fuente                                 |  Primer Byte | Segundo Byte                             |Tercer Byte
+| :------------------------------------- | :------------------------------------- | :----------: | :--------------------------------------- | :--------------------------------------- |
+| Registro                               | Registro                               |  `----RxRy`  | —                                        |
+| Registro                               | Memoria (directo)                      |  `----Rx00`  | dir                                      |
+| Registro                               | Memoria (indirecto)                    |  `----Rx01`  | —                                        |
+| Registro                               | Inmediato                              |  `----Rx10`  | dato                                     |
+| Registro                               | Memoria (indirecto con desplazamiento) |  `----Rx11`  | dato desplazamiento                      |
+| Memoria (directo)                      | Registro                               |  `----00Ry`  | dir                                      |
+| Memoria (indirecto)                    | Registro                               |  `----01Ry`  | dir                                      |
+| Memoria (indirecto con desplazamiento) | Registro                               |  `----10Ry`  | dato                                     |
+| Memoria (directo)                      | Inmediato                              |  `----1100`  | dir                                      |dato
+| Memoria (indirecto)                    | Inmediato                              |  `----1101`  | dato                                     |
+| Memoria (indirecto con desplazamiento) | Inmediato                              |  `----1110`  | dato desplazamiento                      |
 
 ---
 
 | Instrucción |   Opcode    |
 | :---------: | :---------: |
-|   `PUSH`    | `0110 0rrr` |
-|    `POP`    | `0110 1rrr` |
-|   `PUSHF`   | `0111 0000` |
-|   `POPF`    | `0111 1000` |
-
-`rrr` siempre representa un registro de 16 bits.
-
----
-
-| Instrucción |   Opcode    |
-| :---------: | :---------: |
-|    `JC`     | `0010 0000` |
-|    `JNC`    | `0010 0001` |
-|    `JZ`     | `0010 0010` |
-|    `JNZ`    | `0010 0011` |
-|    `JS`     | `0010 0100` |
-|    `JNS`    | `0010 0101` |
-|    `JO`     | `0010 0110` |
-|    `JNO`    | `0010 0111` |
-|    `JMP`    | `0011 0000` |
-|   `CALL`    | `0011 0001` |
-|    `RET`    | `0011 0011` |
-
-Luego del opcode, estas instrucciones (salvo `RET`) reciben una dirección absoluta de memoria (que ocupa dos bytes).
+|    `JMP`    | `1100 0000` |
+|    `JC`     | `1100 0000` |
+|    `JNC`    | `1100 0001` |
+|    `JZ`     | `1100 0010` |
+|    `JNZ`    | `1100 0011` |
+|    `JS`     | `1100 0100` |
+|    `JNS`    | `1100 0101` |
+|    `JO`     | `1100 0110` |
+|    `JNO`    | `1100 0111` |
 
 ---
 
-| Instrucción |   Opcode    |
-| :---------: | :---------: |
-|    `CLI`    | `0001 1000` |
-|    `STI`    | `0001 1001` |
-|    `INT`    | `0001 1010` |
-|   `IRET`    | `0001 1011` |
-
-Luego del opcode, `INT` recibe el número de instrucción (ocupa un byte).
-
----
 
 | Instrucción |   Opcode    |
 | :---------: | :---------: |
