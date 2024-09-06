@@ -17,21 +17,18 @@ head:
 ## Ejecución instrucción de transferencia MOV:
 
 ### 0: Copiar entre registros: `MOV rx, ry`
-
   - Rx ← Ry
 
-### 1: Cargar a registro:  MOV rx , [D] 
+### 1: Cargar a registro: 
 ####  0: MOV Rx,  [Dirección] 
-
   - MAR ← IP
   - MBR ← read(Memoria[MAR]); IP ← IP + 1        (Obtener byte 2)   
   - MAR ← MBR
   - MBR ← read(Memoria[MAR])        (Obtener operando)
   - Rx  ← MBR 
 
-### 2: Almacenar en memoria:  MOV  [D], ry
+### 2: Almacenar en memoria:
 #### 0: MOV  [Dirección], Ry     
-
   - MAR ← IP
   - MBR ← read(Memoria[MAR]); IP ← IP + 1      (Obtener byte 2)
   - MAR ← MBR

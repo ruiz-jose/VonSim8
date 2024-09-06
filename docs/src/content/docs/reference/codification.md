@@ -7,38 +7,6 @@ head:
 
 Aquí se denota la codificación en binario de cada una de las instrucciones del simulador. Pese a que el set de instrucciones esté basado en el de Intel 8088, la codificación se simplificado con fines prácticos y didácticos.
 
-## Formato de instrucciones
-Las instrucciones están codificadas con 1, 2 o 3 bytes. Los primeros 4 bits identifican el `opcode` de la instrucción y determinan como se tienen que ise interpretar los 4 bits restantes. 
-
-| Caso | Codificación | Parámetros |
-| --- | --- | --- |
-| A: entre registros | `---- XXYY` | `XX` = Registro destino, `YY` = Registro fuente |
-| B: Cargar a registro  | `---- XXmm DDDDDDDD` | `mm` = modo, `XX` = Registro destino, `D` = Dirección de memoria o Dato Inmediato |
-| C: Almacenar en memoria | `---- mmmm DDDDDDDD dddddddd` | `mmmm` = modo ampliado, `D` = Dirección de memoria,  `d` = Dato Inmediato |
-| D: control de flujo  | `---- ffff DDDDDDDD` | `ffff` = funcionalidad `D` = Dirección de memoria |
-
- `d` = Dato Inmediato, no puede ser destino de la instrucción.
-
-
-| Modo direccionamientos B: Cargar a registro  |  |  |
-| :---: | :---: | :---: |
-| **`mm`= Modo** | **`Byte`= tamaño** | **Interpretación** |
-| 00 |  2 |directo `D` = Dirección de memoria |
-| 01 |  1 |indirecto utiliza como operando implicito el registro `BL` y no requiere operando `D` |
-| 10 |  2 |Inmediato `D` = Dato Inmediato |
-| 11 |  2 |Indirecto la dirección se calcula operando implicito `BL` + Dato Inmediato|
-
-| Modo direccionamientos C: Almacenar en memoria  |  |  |
-| :---: | :---: | :---: |
-| **`mmmm`= Modo** | **`Byte`= tamaño** | **Interpretación** |
-| 00YY |  2 |directo `D` = Dirección de memoria, `YY` = Registro fuente |
-| 01YY |  1 |indirecto `BL`, `YY` = Registro fuente|
-| 01YY |  2 |Indirecto la dirección se calcula operando implicito `BL` + Dato Inmediato |
-| 1100 |  3 |Inmediato a memoria|
-| 1101 |  2 |Inmediato a memoria mediante indirecto `BL`|
-| 1110 |  3 |Inmediato a memoria mediante indirecto `BL`+ Dato Inmediato |
-
-
 | # | Instrucción        | Acción                                                             | Codificación                  |
 | - | ---                | ---                                                                | ---                           |
 | 0 | `MOV Rx, Ry`       | `Rx` $\leftarrow$ `Ry`                                             | `0000 XXYY`                   |
@@ -76,7 +44,7 @@ Las instrucciones están codificadas con 1, 2 o 3 bytes. Los primeros 4 bits ide
   | `10` | `DL`  |
   | `11` | `BL`  | 
   
-Estas instrucciones reciben dos operandos y soportan varios modos de direccionamiento. Esta información está codificada en el bit `d` y el segundo byte de la instrucción según la siguiente tabla:
+Estas instrucciones reciben dos operandos y soportan varios modos de direccionamiento. Esta información está codificada en el primer Byte junto al código de operación de la instrucción según la siguiente tabla:
 
 | Destino                                | Fuente                                 |  Primer Byte | Segundo Byte                             |Tercer Byte
 | :------------------------------------- | :------------------------------------- | :----------: | :--------------------------------------- | :--------------------------------------- |
@@ -93,27 +61,41 @@ Estas instrucciones reciben dos operandos y soportan varios modos de direccionam
 | Memoria (indirecto con desplazamiento) | Inmediato                              |  `----1110`  | dato desplazamiento                      |
 
 ---
+## Formato de instrucciones
+Las instrucciones están codificadas con 1, 2 o 3 bytes. Los primeros 4 bits identifican el `opcode` de la instrucción y determinan como se tienen que ise interpretar los 4 bits restantes. 
 
-| Instrucción |   Opcode    |
-| :---------: | :---------: |
-|    `JMP`    | `1100 0000` |
-|    `JC`     | `1100 0000` |
-|    `JNC`    | `1100 0001` |
-|    `JZ`     | `1100 0010` |
-|    `JNZ`    | `1100 0011` |
-|    `JS`     | `1100 0100` |
-|    `JNS`    | `1100 0101` |
-|    `JO`     | `1100 0110` |
-|    `JNO`    | `1100 0111` |
+| Caso | Codificación | Parámetros |
+| --- | --- | --- |
+| A: entre registros | `---- XXYY` | `XX` = Registro destino, `YY` = Registro fuente |
+| B: Cargar a registro  | `---- XXmm DDDDDDDD` | `mm` = modo, `XX` = Registro destino, `D` = Dirección de memoria o Dato Inmediato |
+| C: Almacenar en memoria | `---- mmmm DDDDDDDD dddddddd` | `mmmm` = modo ampliado, `D` = Dirección de memoria,  `d` = Dato Inmediato |
+| D: control de flujo  | `---- ffff DDDDDDDD` | `ffff` = funcionalidad `D` = Dirección de memoria |
+
+ `d` = Dato Inmediato, no puede ser destino de la instrucción.
+
+---
+
+| Modo direccionamientos B: Cargar a registro  |  |  |
+| :---: | :---: | :---: |
+| **`mm`= Modo** | **`Byte`= tamaño** | **Interpretación** |
+| 00 |  2 |directo `D` = Dirección de memoria |
+| 01 |  1 |indirecto utiliza como operando implicito el registro `BL` y no requiere operando `D` |
+| 10 |  2 |Inmediato `D` = Dato Inmediato |
+| 11 |  2 |Indirecto la dirección se calcula operando implicito `BL` + Dato Inmediato|
 
 ---
 
-
-| Instrucción |   Opcode    |
-| :---------: | :---------: |
-|    `NOP`    | `0001 0000` |
-|    `HLT`    | `0001 0001` |
+| Modo direccionamientos C: Almacenar en memoria  |  |  |
+| :---: | :---: | :---: |
+| **`mmmm`= Modo** | **`Byte`= tamaño** | **Interpretación** |
+| 00YY |  2 |directo `D` = Dirección de memoria, `YY` = Registro fuente |
+| 01YY |  1 |indirecto `BL`, `YY` = Registro fuente|
+| 01YY |  2 |Indirecto la dirección se calcula operando implicito `BL` + Dato Inmediato |
+| 1100 |  3 |Inmediato a memoria|
+| 1101 |  2 |Inmediato a memoria mediante indirecto `BL`|
+| 1110 |  3 |Inmediato a memoria mediante indirecto `BL`+ Dato Inmediato |
 
 ---
+
 
 <small>Esta obra está bajo la licencia <a target="_blank" rel="license noopener noreferrer" href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.</small>
