@@ -35,7 +35,7 @@ export class JumpInstruction extends Instruction<
         position: this.position,
         operands: [this.jumpTo.toString( false)],
        // willUse: { id: this.name === "CALL", ri: true },
-       willUse: { id: this.name === "CALL", ri: false },
+       willUse: { id: this.name === "CALL" , ri: false },
       },
     };
 
@@ -88,7 +88,7 @@ export class JumpInstruction extends Instruction<
 
     if (jump) {
       if (this.name === "CALL") {
-        yield* computer.cpu.copyWordRegister("IP", "id");
+        yield* computer.cpu.copyByteRegister("IP.l", "id.l");
         if (!(yield* computer.cpu.pushToStack())) return false; // Stack overflow
       }
 

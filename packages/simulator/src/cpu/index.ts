@@ -539,7 +539,7 @@ export class CPU extends Component {
   *pushToStack(): EventGenerator<boolean> {
     let SP = this.getRegister("SP");
 
-    if (!MemoryAddress.inRange(SP.unsigned - 1)) {
+   /*if (!MemoryAddress.inRange(SP.unsigned - 1)) {
       yield { type: "cpu:error", error: new SimulatorError("stack-overflow") };
       return false;
     }
@@ -547,7 +547,7 @@ export class CPU extends Component {
     yield* this.updateWordRegister("SP", SP);
     yield* this.setMAR("SP");
     yield* this.setMBR("id.h");
-    if (!(yield* this.useBus("mem-write"))) return false; // Error writing to memory
+    if (!(yield* this.useBus("mem-write"))) return false; // Error writing to memory*/
 
     if (!MemoryAddress.inRange(SP.unsigned - 1)) {
       yield { type: "cpu:error", error: new SimulatorError("stack-overflow") };
