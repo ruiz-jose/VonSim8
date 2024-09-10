@@ -584,7 +584,7 @@ export class CPU extends Component {
     SP = SP.add(1);
     yield* this.updateWordRegister("SP", SP);
 
-    if (!MemoryAddress.inRange(SP)) {
+   /* if (!MemoryAddress.inRange(SP)) {
       yield { type: "cpu:error", error: new SimulatorError("stack-underflow") };
       return true;
     }
@@ -592,7 +592,7 @@ export class CPU extends Component {
     if (!(yield* this.useBus("mem-read"))) return false; // Error reading memory
     yield* this.getMBR("id.h");
     SP = SP.add(1);
-    yield* this.updateWordRegister("SP", SP);
+    yield* this.updateWordRegister("SP", SP);*/
 
     return true;
   }
