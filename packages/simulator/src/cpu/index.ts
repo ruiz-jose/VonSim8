@@ -86,7 +86,7 @@ export class CPU extends Component {
     }
 
     // Stack pointer starts at the "bottom" of the memory
-    this.#registers.SP = Byte.fromUnsigned(MemoryAddress.MAX_ADDRESS + 1, 16);
+    this.#registers.SP = Byte.fromUnsigned(MemoryAddress.MAX_ADDRESS, 16);
     // The initial address of the program is 0x2000
     this.#registers.IP = Byte.fromUnsigned(0x0020, 16);
     // Instruction register always starts at 0
