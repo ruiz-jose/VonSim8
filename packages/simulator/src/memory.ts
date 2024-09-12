@@ -33,7 +33,7 @@ export type MemoryOperation =
  * This class is: MUTABLE
  */
 export class Memory extends Component {
-  static readonly SIZE = MemoryAddress.MAX_ADDRESS;
+  static readonly SIZE = MemoryAddress.MAX_ADDRESS + 1;
 
   #buffer: Uint8Array;
   #codeMemory: Set<number>;
