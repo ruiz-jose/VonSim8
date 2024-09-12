@@ -44,7 +44,8 @@ export class Memory extends Component {
     if (options.data === "unchanged") {
       this.#buffer = options.previous.memory.#buffer;
     } else if (options.data === "randomize") {
-      this.#buffer = new Uint8Array(Memory.SIZE).map(() => Byte.random(8).unsigned);
+      //this.#buffer = new Uint8Array(Memory.SIZE).map(() => Byte.random(8).unsigned);
+      this.#buffer = new Uint8Array(Memory.SIZE).map(() => Byte.zero(8).unsigned);
     } else {
       this.#buffer = new Uint8Array(Memory.SIZE);
     }
