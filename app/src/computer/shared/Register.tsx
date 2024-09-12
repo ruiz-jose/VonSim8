@@ -40,7 +40,7 @@ export function Register({
     <Popover>
       <PopoverTrigger asChild>
         <animated.button
-          title= { displayName}
+          title= {`Registro ${displayName}`}
           className={clsx(
             "flex w-min cursor-pointer items-center rounded-md border bg-stone-800 px-2 py-1 font-mono leading-none transition-opacity",
             emphasis ? "border-mantis-400 text-lg" : "border-stone-600 text-base",
