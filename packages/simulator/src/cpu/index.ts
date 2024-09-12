@@ -553,12 +553,11 @@ export class CPU extends Component {
       yield { type: "cpu:error", error: new SimulatorError("stack-overflow") };
       return false;
     }
-    SP = SP.add(-1);
-    yield* this.updateWordRegister("SP", SP);
     yield* this.setMAR("SP");
     yield* this.setMBR("id.l");
     if (!(yield* this.useBus("mem-write"))) return false; // Error writing to memory
-
+    SP = SP.add(-1);
+    yield* this.updateWordRegister("SP", SP);
     return true;
   }
 
@@ -578,11 +577,12 @@ export class CPU extends Component {
       yield { type: "cpu:error", error: new SimulatorError("stack-underflow") };
       return false;
     }
-    yield* this.setMAR("SP");
-    if (!(yield* this.useBus("mem-read"))) return false; // Error reading memory
-    yield* this.getMBR("id.l");
     SP = SP.add(1);
     yield* this.updateWordRegister("SP", SP);
+    yield* this.setMAR("SP");
+    if (!(yield* this.useBus("mem-read"))) return false; // Error reading memory
+    //yield* this.getMBR("id.l");
+
 
    /* if (!MemoryAddress.inRange(SP)) {
       yield { type: "cpu:error", error: new SimulatorError("stack-underflow") };
