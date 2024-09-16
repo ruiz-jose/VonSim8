@@ -47,7 +47,7 @@ export class CPU extends Component {
       this.#registers = options.previous.cpu.#registers;
       this.#MAR = options.previous.cpu.#MAR;
       this.#MBR = options.previous.cpu.#MBR;
-    } else if (options.data === "randomize") {
+    /*} else if (options.data === "randomize") {
       this.#registers = {
         AX: Byte.random(16),
         BX: Byte.random(16),
@@ -64,7 +64,7 @@ export class CPU extends Component {
         FLAGS: Byte.random(16),
       };
       this.#MAR = Byte.random(16);
-      this.#MBR = Byte.random(8);
+      this.#MBR = Byte.random(8);*/
     } else {
       this.#registers = {
         AX: Byte.zero(16),
