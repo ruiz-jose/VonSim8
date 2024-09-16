@@ -185,7 +185,7 @@ export function generateDataPath(from: DataRegister, to: DataRegister, instructi
   }
 
   // Reemplazar 'ri' por 'MAR' si el destino es 'ri'
-  if (to === "ri") {
+  if (to === "ri"&& (instruction === "MOV" && mode !== "mem<-imd")) {
     const riIndex = path.indexOf("ri");
     if (riIndex !== -1) {
       path.splice(riIndex, 1, "ri", "MAR join1", "MAR join2", "MAR");
@@ -198,10 +198,7 @@ export function generateDataPath(from: DataRegister, to: DataRegister, instructi
   }
 
 // No dibujar la animación si from es "MBR" y to es "ri" y la instrucción es JMP, JZ, JC o MOV con mode "mem<-imd"
-if (
-  (from === "MBR" && to === "ri" && ["JMP", "JZ", "JC", "CALL"].includes(instruction ?? "")) ||
-  (instruction === "MOV" && mode === "mem<-imd")
-) {
+if (from === "MBR" && to === "ri" && ["JMP", "JZ", "JC", "CALL"].includes(instruction ?? "")) {
   return "";
 }
 

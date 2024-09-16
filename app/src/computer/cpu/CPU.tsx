@@ -52,7 +52,13 @@ export function CPU({ willUseId }: CPUProps) {
 
       <Reg name="IP" emphasis className="left-[450px] top-[292px]" />
       <Reg name="SP" emphasis className="left-[450px] top-[332px]" />
-      <Reg name="ri" className="invisible left-[450px] top-[372px]" />
+      <Reg
+        name="ri"
+        className={clsx("left-[450px] top-[372px]", {
+          invisible: !willUseId,
+        })}
+      />
+
 
       <Reg name="MAR" className="right-[-51px] top-[333px]" />
     </div>
