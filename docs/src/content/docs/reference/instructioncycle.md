@@ -16,7 +16,6 @@ Se busca detallar los pasos que realiza la unidad de control para ejecutar cada 
 - Buses que intervienen (Datos, direcciones y control).
 - Señales de control que se envían.
 - Considere que el CPU tiene una unidad de control microprogramada, como interviene en la ejecución de la instrucción.
-
   
 ## Etapa de captación (*)
 
@@ -44,7 +43,7 @@ Se busca detallar los pasos que realiza la unidad de control para ejecutar cada 
 
   4. **MBR ← read(Memoria[MAR])**: La UC emite la señal de lectura (read) a la memoria, que utiliza el valor del MAR como dirección a través del bus de direcciones. La memoria devuelve el contenido de esa dirección a través del bus de datos. La UC ordena que este dato se almacene en el registro de datos de memoria (MBR). (Obtener operando)
 
-  5. **Rx  ← MBR**: La instrucción almacenada en el MBR se transfiere al registro Rx. La UC emite la señal para seleccionar el dato del MBR y ordena que este valor se copie al Rx.
+  5. **Rx  ← MBR**: El dato almacenado en el MBR se transfiere al registro Rx. La UC emite la señal para seleccionar el dato del MBR y ordena que este valor se copie al Rx.
 
 
 ### `MOV  [Dirección], Ry`  (Almacenar en memoria)
@@ -69,6 +68,8 @@ Se busca detallar los pasos que realiza la unidad de control para ejecutar cada 
 
   4. **MBR ← read(Memoria[MAR])**: La UC emite la señal de lectura (read) a la memoria, que utiliza el valor del MAR como dirección a través del bus de direcciones. La memoria devuelve el contenido de esa dirección a través del bus de datos. La UC ordena que este dato se almacene en el registro de datos de memoria (MBR). (Obtener operando)
 
+  5. **Rx  ← Rx + MBR**: El dato almacenado en el MBR se envía a la ALU junto al registro Rx para relizar la operación aritmetica sumar y el resultado se copia en el registro Rx.
+
 ### `SUB [Dirección], Ry`  ([M] = [M] - Ry)
 
   1. **MAR ← IP**: El contenido del registro de instrucciones (IP) se transfiere al registro de direcciones de memoria (MAR). La unidad de control (UC) envía la señal para seleccionar el dato del IP y da la orden para que este valor se copie en el MAR.
@@ -78,3 +79,7 @@ Se busca detallar los pasos que realiza la unidad de control para ejecutar cada 
   3. **MAR  ← MBR**: La instrucción almacenada en el MBR se transfiere al registro MAR. La UC emite la señal para seleccionar el dato del MBR y ordena que este valor se copie al MAR.
 
   4. **MBR ← read(Memoria[MAR])**: La UC emite la señal de lectura (read) a la memoria, que utiliza el valor del MAR como dirección a través del bus de direcciones. La memoria devuelve el contenido de esa dirección a través del bus de datos. La UC ordena que este dato se almacene en el registro de datos de memoria (MBR). (Obtener operando)
+
+  5. **MBR  ← MBR + Ry**: El dato almacenado en el MBR se envía a la ALU junto al registro Rx para relizar la operación aritmetica sumar y el resultado se copia en el registro Rx.
+
+  5. **write(Memoria[MAR]) ←  MBR**: La UC emite la señal de escritura (write) a la memoria, que utiliza el valor del MAR como dirección a través del bus de direcciones. La memoria graba el contenido del que viene por el bus de datos en la direccion que se envia por el bus de direcciones.
