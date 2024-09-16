@@ -10,7 +10,11 @@ import { Control } from "./Control";
 import { DataBus } from "./DataBus";
 import { registerAtoms } from "./state";
 
-export function CPU() {
+type CPUProps = {
+  willUseId: boolean;
+};
+
+export function CPU({ willUseId }: CPUProps) {
   const translate = useTranslate();
 
   return (
@@ -32,7 +36,13 @@ export function CPU() {
       <Reg name="BX" emphasis className="left-[450px] top-[70px]" />
       <Reg name="CX" emphasis className="left-[450px] top-[110px]" />
       <Reg name="DX" emphasis className="left-[450px] top-[150px]" />
-      <Reg name="id" className="invisible left-[450px] top-[190px]" />
+      <Reg
+        name="id"
+        className={clsx("left-[450px] top-[190px]", {
+          invisible: !willUseId,
+        })}
+      />
+
 
       <Reg name="MBR" className="right-[-51px] top-[233px]" />
 
@@ -58,7 +68,7 @@ function Reg({
   emphasis?: boolean;
   className?: string;
 }) {
-  const translate = useTranslate();
+  //const translate = useTranslate();
 
   return (
     <Register
@@ -66,7 +76,7 @@ function Reg({
       valueAtom={registerAtoms[name]}
       springs={`cpu.${name}`}
       emphasis={emphasis}
-      title={translate("computer.cpu.register", name)}
+     // title={translate("computer.cpu.register", name)}
       className={clsx("absolute", className)}
     />
   );

@@ -26,6 +26,7 @@ import { Timer } from "./timer/Timer";
 
 export function ComputerContainer() {
   const wrapperRef = useRef<ReactZoomPanPinchRef>(null);
+  const willUseId = false;
 
   return (
     <div className="relative h-full w-full">
@@ -40,7 +41,7 @@ export function ComputerContainer() {
           <div className="relative h-[1300px] w-[1900px]">
             <SystemBus />
 
-            <CPU />
+            <CPU willUseId={willUseId}/>
             <Memory />
 
             <Handshake />

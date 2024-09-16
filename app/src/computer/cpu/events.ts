@@ -18,8 +18,8 @@ import { DataRegister, generateDataPath } from "./DataBus";
 import { aluOperationAtom, cycleAtom, MARAtom, MBRAtom, registerAtoms } from "./state";
 
 
-const drawDataPath = (from: DataRegister, to: DataRegister, instruction: string) => {
-  const path = generateDataPath(from, to, instruction);
+const drawDataPath = (from: DataRegister, to: DataRegister, instruction: string, mode: string) => {
+  const path = generateDataPath(from, to, instruction, mode);
   return anim(
     [
       { key: "cpu.internalBus.data.path", from: path },
@@ -36,6 +36,7 @@ const resetDataPath = () =>
 
 
 let instructionName = "";
+let mode = "";
 export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<void> {
 
   switch (event.type) {
@@ -105,6 +106,8 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
 
     case "cpu:cycle.start": {  
       instructionName = event.instruction.name; // Obtén el nombre de la instrucción en curso    
+      mode = event.instruction.willUse.id ? "mem<-imd" : ""; // Verifica si willUse.id es true y establece el modo
+      
       highlightLine(event.instruction.position.start);
       store.set(cycleAtom, { phase: "fetching", metadata: event.instruction });
       await anim(
@@ -248,7 +251,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
 
     case "cpu:mbr.get": {
       const [reg] = parseRegister(event.register);
-      await drawDataPath("MBR", reg, instructionName);
+      await drawDataPath("MBR", reg, instructionName, mode);
       await activateRegister(`cpu.${reg}`);
       store.set(registerAtoms[event.register], store.get(MBRAtom));
       await Promise.all([deactivateRegister(`cpu.${reg}`), resetDataPath()]);
@@ -257,7 +260,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
 
     case "cpu:mbr.set": {
       const [reg] = parseRegister(event.register);
-      await drawDataPath(reg, "MBR", instructionName);
+      await drawDataPath(reg, "MBR", instructionName, mode);
       await activateRegister("cpu.MBR");
       store.set(MBRAtom, store.get(registerAtoms[event.register]));
       /*await anim(
@@ -271,7 +274,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
     case "cpu:register.copy": {
       const [src] = parseRegister(event.src);
       const [dest] = parseRegister(event.dest);
-      if (src !== dest) await drawDataPath(src, dest, instructionName);
+      if (src !== dest) await drawDataPath(src, dest, instructionName, mode);
       await activateRegister(`cpu.${dest}`);
       // @ts-expect-error Registers types always match, see CPUMicroOperation
       store.set(registerAtoms[event.dest], store.get(registerAtoms[event.src]));

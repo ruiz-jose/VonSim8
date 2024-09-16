@@ -15,14 +15,13 @@ export function Register({
   className,
 }: {
   name: string;
-  //title: string;
+  //title?: string;
   valueAtom: AnyByteAtom;
   springs: RegisterKey;
   emphasis?: boolean;
   className?: string;
 }) {
   const translate = useTranslate();
-
   const reg = useAtomValue(valueAtom);
   const low = reg.low;
   //const high = reg.is16bits() ? reg.high : null;
