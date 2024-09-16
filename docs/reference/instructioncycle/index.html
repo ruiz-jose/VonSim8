@@ -36,21 +36,11 @@
 <p>Utilizando el repertorio de instrucciones proporcionado, y empleando el simulador VonSim8 en modo de ejecución por ciclo (tecla F7).</p>
 <p>Se busca detallar los pasos que realiza la unidad de control para ejecutar cada una de las instrucciones, nombrando los:</p>
 <ul>
-<li>
-<p>Secuencia de pasos.</p>
-</li>
-<li>
-<p>Registros involucrados en cada paso del proceso.</p>
-</li>
-<li>
-<p>Buses que intervienen (Datos, direcciones y control).</p>
-</li>
-<li>
-<p>Señales de control que se envían.</p>
-</li>
-<li>
-<p>Considere que el CPU tiene una unidad de control microprogramada, como interviene en la ejecución de la instrucción.</p>
-</li>
+<li>Secuencia de pasos.</li>
+<li>Registros involucrados en cada paso del proceso.</li>
+<li>Buses que intervienen (Datos, direcciones y control).</li>
+<li>Señales de control que se envían.</li>
+<li>Considere que el CPU tiene una unidad de control microprogramada, como interviene en la ejecución de la instrucción.</li>
 </ul>
 <h2 id="etapa-de-captación">Etapa de captación (*)</h2>
 <ol>
@@ -85,7 +75,7 @@
 <p><strong>MBR ← read(Memoria[MAR])</strong>: La UC emite la señal de lectura (read) a la memoria, que utiliza el valor del MAR como dirección a través del bus de direcciones. La memoria devuelve el contenido de esa dirección a través del bus de datos. La UC ordena que este dato se almacene en el registro de datos de memoria (MBR). (Obtener operando)</p>
 </li>
 <li>
-<p><strong>Rx  ← MBR</strong>: La instrucción almacenada en el MBR se transfiere al registro Rx. La UC emite la señal para seleccionar el dato del MBR y ordena que este valor se copie al Rx.</p>
+<p><strong>Rx  ← MBR</strong>: El dato almacenado en el MBR se transfiere al registro Rx. La UC emite la señal para seleccionar el dato del MBR y ordena que este valor se copie al Rx.</p>
 </li>
 </ol>
 <h3 id="mov--dirección-ry--almacenar-en-memoria"><code dir="auto">MOV  [Dirección], Ry</code>  (Almacenar en memoria)</h3>
@@ -120,6 +110,9 @@
 <li>
 <p><strong>MBR ← read(Memoria[MAR])</strong>: La UC emite la señal de lectura (read) a la memoria, que utiliza el valor del MAR como dirección a través del bus de direcciones. La memoria devuelve el contenido de esa dirección a través del bus de datos. La UC ordena que este dato se almacene en el registro de datos de memoria (MBR). (Obtener operando)</p>
 </li>
+<li>
+<p><strong>Rx  ← Rx + MBR</strong>: El dato almacenado en el MBR se envía a la ALU junto al registro Rx para relizar la operación aritmetica sumar y el resultado se copia en el registro Rx.</p>
+</li>
 </ol>
 <h3 id="sub-dirección-ry--m--m---ry"><code dir="auto">SUB [Dirección], Ry</code>  ([M] = [M] - Ry)</h3>
 <ol>
@@ -135,4 +128,10 @@
 <li>
 <p><strong>MBR ← read(Memoria[MAR])</strong>: La UC emite la señal de lectura (read) a la memoria, que utiliza el valor del MAR como dirección a través del bus de direcciones. La memoria devuelve el contenido de esa dirección a través del bus de datos. La UC ordena que este dato se almacene en el registro de datos de memoria (MBR). (Obtener operando)</p>
 </li>
-</ol> </div> <footer class="astro-nf7rdxke"> <div class="meta sl-flex astro-nf7rdxke"> <a href="https://github.com/ruiz-jose/VonSim8/edit/main/docs/src/content/docs/reference/instructioncycle.md" class="sl-flex astro-cdzuc6lw"><svg aria-hidden="true" class="astro-cdzuc6lw astro-y3plryzp" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.2em;"><path d="M22 7.24a1 1 0 0 0-.29-.71l-4.24-4.24a1 1 0 0 0-1.1-.22 1 1 0 0 0-.32.22l-2.83 2.83L2.29 16.05a1 1 0 0 0-.29.71V21a1 1 0 0 0 1 1h4.24a1 1 0 0 0 .76-.29l10.87-10.93L21.71 8c.1-.1.17-.2.22-.33a1 1 0 0 0 0-.24v-.14l.07-.05ZM6.83 20H4v-2.83l9.93-9.93 2.83 2.83L6.83 20ZM18.17 8.66l-2.83-2.83 1.42-1.41 2.82 2.82-1.41 1.42Z"/></svg> Edita esta página</a> <p>Última actualización: <time datetime="2024-09-12T16:11:06.000Z">12 sept 2024</time></p> </div> <div class="pagination-links astro-25g77d3u" dir="ltr">   </div>  </footer>  </div> </div>   </main> </div> </div>  </div> </div>  </body></html>
+<li>
+<p><strong>MBR  ← MBR + Ry</strong>: El dato almacenado en el MBR se envía a la ALU junto al registro Rx para relizar la operación aritmetica sumar y el resultado se copia en el registro Rx.</p>
+</li>
+<li>
+<p><strong>write(Memoria[MAR]) ←  MBR</strong>: La UC emite la señal de escritura (write) a la memoria, que utiliza el valor del MAR como dirección a través del bus de direcciones. La memoria graba el contenido del que viene por el bus de datos en la direccion que se envia por el bus de direcciones.</p>
+</li>
+</ol> </div> <footer class="astro-nf7rdxke"> <div class="meta sl-flex astro-nf7rdxke"> <a href="https://github.com/ruiz-jose/VonSim8/edit/main/docs/src/content/docs/reference/instructioncycle.md" class="sl-flex astro-cdzuc6lw"><svg aria-hidden="true" class="astro-cdzuc6lw astro-y3plryzp" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.2em;"><path d="M22 7.24a1 1 0 0 0-.29-.71l-4.24-4.24a1 1 0 0 0-1.1-.22 1 1 0 0 0-.32.22l-2.83 2.83L2.29 16.05a1 1 0 0 0-.29.71V21a1 1 0 0 0 1 1h4.24a1 1 0 0 0 .76-.29l10.87-10.93L21.71 8c.1-.1.17-.2.22-.33a1 1 0 0 0 0-.24v-.14l.07-.05ZM6.83 20H4v-2.83l9.93-9.93 2.83 2.83L6.83 20ZM18.17 8.66l-2.83-2.83 1.42-1.41 2.82 2.82-1.41 1.42Z"/></svg> Edita esta página</a> <p>Última actualización: <time datetime="2024-09-16T10:59:15.000Z">16 sept 2024</time></p> </div> <div class="pagination-links astro-25g77d3u" dir="ltr">   </div>  </footer>  </div> </div>   </main> </div> </div>  </div> </div>  </body></html>
