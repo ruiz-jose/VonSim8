@@ -96,8 +96,10 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       // Interrupts handler uses id and ri
       await anim(
         [
-          { key: "cpu.id.opacity", to: 1 },
-          { key: "cpu.ri.opacity", to: 1 },
+          //{ key: "cpu.id.opacity", to: 1 },
+          //{ key: "cpu.ri.opacity", to: 1 },
+          { key: "cpu.id.opacity", to: 0 },
+          { key: "cpu.ri.opacity", to: 0},
         ],
         { duration: 0.5, easing: "easeInOutQuad" },
       );
@@ -112,8 +114,10 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       store.set(cycleAtom, { phase: "fetching", metadata: event.instruction });
       await anim(
         [
-          { key: "cpu.id.opacity", to: event.instruction.willUse.id ? 1 : 0.4 },
-          { key: "cpu.ri.opacity", to: event.instruction.willUse.ri ? 1 : 0.4 },
+         // { key: "cpu.id.opacity", to: event.instruction.willUse.id ? 1 : 0.4 },
+         // { key: "cpu.ri.opacity", to: event.instruction.willUse.ri ? 1 : 0.4 },
+         { key: "cpu.id.opacity", to: event.instruction.willUse.id ? 0.4 : 0 },
+         { key: "cpu.ri.opacity", to: event.instruction.willUse.ri ? 0.4 : 0 },
         ],
         { duration: 0.5, easing: "easeInOutQuad" },
       );

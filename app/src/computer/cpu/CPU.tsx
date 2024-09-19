@@ -10,11 +10,7 @@ import { Control } from "./Control";
 import { DataBus } from "./DataBus";
 import { registerAtoms } from "./state";
 
-type CPUProps = {
-  willUseId: boolean;
-};
-
-export function CPU({ willUseId }: CPUProps) {
+export function CPU( ) {
   const translate = useTranslate();
 
   return (
@@ -36,13 +32,7 @@ export function CPU({ willUseId }: CPUProps) {
       <Reg name="BX" emphasis className="left-[450px] top-[70px]" />
       <Reg name="CX" emphasis className="left-[450px] top-[110px]" />
       <Reg name="DX" emphasis className="left-[450px] top-[150px]" />
-      <Reg
-        name="id"
-        className={clsx("left-[450px] top-[190px]", {
-          invisible: !willUseId,
-        })}
-      />
-
+      <Reg name="id" emphasis className="invisible left-[450px] top-[190px] opacity-0" />
 
       <Reg name="MBR" className="right-[-51px] top-[233px]" />
 
@@ -52,13 +42,7 @@ export function CPU({ willUseId }: CPUProps) {
 
       <Reg name="IP" emphasis className="left-[450px] top-[292px]" />
       <Reg name="SP" emphasis className="left-[450px] top-[332px]" />
-      <Reg
-        name="ri"
-        className={clsx("left-[450px] top-[372px]", {
-          invisible: !willUseId,
-        })}
-      />
-
+      <Reg name="ri" emphasis className="left-[450px] top-[372px] opacity-0" />
 
       <Reg name="MAR" className="right-[-51px] top-[333px]" />
     </div>

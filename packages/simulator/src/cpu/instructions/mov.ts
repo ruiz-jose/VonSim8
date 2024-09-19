@@ -62,8 +62,8 @@ export class MOVInstruction extends Instruction<"MOV"> {
         position: this.position,
         operands: this.#formatOperands(),
         willUse: {
-          ri: false,
-          id: false,         
+          ri: mode === "mem<-imd",
+          id: mode === "mem<-imd",         
           // ri: mode === "reg<-mem" || mode === "mem<-reg" || mode === "mem<-imd",
           //id: mode === "reg<-mem" || mode === "reg<-imd" || mode === "mem<-imd",
         },

@@ -185,7 +185,7 @@ export function generateDataPath(from: DataRegister, to: DataRegister, instructi
   }
 
   // Reemplazar 'ri' por 'MAR' si el destino es 'ri'
-  if (to === "ri"&& (instruction === "MOV" && mode !== "mem<-imd")) {
+  if (to === "ri" && (instruction === "MOV" && mode !== "mem<-imd")) {
     const riIndex = path.indexOf("ri");
     if (riIndex !== -1) {
       path.splice(riIndex, 1, "ri", "MAR join1", "MAR join2", "MAR");
