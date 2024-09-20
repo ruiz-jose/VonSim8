@@ -180,6 +180,12 @@ export function generateDataPath(from: DataRegister, to: DataRegister, instructi
     path = ["MBR", "mbr reg join", `${to} join`, to];
   } else if (registers.includes(from) && registers.includes(to)) {
     path = intermediatePath(from, to);
+  }  else if (from === "IP" && to === "id") {
+      path = ["IP", "IP join","id join", "id"];
+  } else if (from === "id" && to === "MBR") {
+    path = ["id out", "id out join", "outr mbr join", "MBR"];
+  } else if (from === "id" && to === "IP" && instruction === "RET") {
+    path = ["MBR", "mbr reg join", "IP join", "IP"];
   } else {
     path = bidirectional(dataBus, from, to) || [];
   }
@@ -197,10 +203,15 @@ export function generateDataPath(from: DataRegister, to: DataRegister, instructi
     path = ["MBR", "mbr reg join", "IP join", "IP"];
   }
 
-// No dibujar la animación si from es "MBR" y to es "ri" y la instrucción es JMP, JZ, JC o MOV con mode "mem<-imd"
-if (from === "MBR" && to === "ri" && ["JMP", "JZ", "JC", "CALL"].includes(instruction ?? "")) {
-  return "";
-}
+  // No dibujar la animación si from es "MBR" y to es "ri" y la instrucción es JMP, JZ, JC o MOV con mode "mem<-imd"
+  if (from === "MBR" && to === "ri" && ["JMP", "JZ", "JC", "CALL"].includes(instruction ?? "")) {
+    return "";
+  }
+
+  // No dibujar la animación si la instrucción es MOV con mode "mem<-imd"
+  if (instruction === "MOV" && mode === "mem<-imd") {
+    return "";
+  }
 
   if (path.length === 0) throw new Error(`No path from ${from} to ${to}`);
 

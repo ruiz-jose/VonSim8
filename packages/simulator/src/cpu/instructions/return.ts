@@ -20,7 +20,7 @@ export class ReturnInstruction extends Instruction<"RET" | "IRET"> {
         name: this.name,
         position: this.position,
         operands: [],
-        willUse: { id: true },
+        willUse: { id: false },
       },
     };
 
