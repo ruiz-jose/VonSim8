@@ -85,7 +85,7 @@ function resetState(state: ComputerState) {
 
 
 }
-
+let lastInstructionWasCall = false;
 let fetchStageCounter = 0;
 let executeStageCounter = 0;
 let messageReadWrite = "";
@@ -161,8 +161,18 @@ async function startThread(generator: EventGenerator): Promise<void> {
             shouldDisplayMessage = true; // No mostrar el mensaje en el próximo ciclo
           } else if (event.value.type === "cpu:register.update") {
             const sourceRegister = event.value.register;
-            const displayRegister = sourceRegister === "IP" ? "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1" : `Ejecución: MBR ← ${sourceRegister}`;
-            store.set(messageAtom, displayRegister);
+            let displayMessage = "";
+            if (sourceRegister === "SP") {
+              if (lastInstructionWasCall) {
+                displayMessage = "SP = SP - 1";
+                lastInstructionWasCall = false;
+              } else {
+                displayMessage = "SP = SP + 1";               
+              }
+            } else {
+              displayMessage = sourceRegister === "IP" ? "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1" : `Ejecución: MBR ← ${sourceRegister}`;
+            }
+            store.set(messageAtom, displayMessage);
             pauseSimulation();            
             executeStageCounter++;
 
@@ -183,6 +193,15 @@ async function startThread(generator: EventGenerator): Promise<void> {
               displayMessage = "Ejecución: IP ← MBR";
               store.set(messageAtom, displayMessage);
               pauseSimulation();
+            } else if (sourceRegister === "IP.l" && destRegister === "id.l") {
+              displayMessage = "Ejecución: id ← IP";
+              store.set(messageAtom, displayMessage);
+              lastInstructionWasCall = true;
+              pauseSimulation();
+            }else if (sourceRegister === "id" && destRegister === "IP") {
+              displayMessage = "Ejecución: IP ← MBR";
+              store.set(messageAtom, displayMessage);
+              pauseSimulation();
             } else if (sourceRegister === "BL" && destRegister === "ri.l") {
               displayMessage = "Ejecución: MAR ← BL";
               store.set(messageAtom, displayMessage);
@@ -196,7 +215,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             store.set(messageAtom, messageReadWrite);
             pauseSimulation();
           } else if (event.value.type === "cpu:mbr.set") {
-            const sourceRegister  =  event.value.register;
+            const sourceRegister = event.value.register === "id.l" ? "id" : event.value.register;
             store.set(messageAtom, `Ejecución: MBR ← ${sourceRegister}`);
             pauseSimulation();
           }  
