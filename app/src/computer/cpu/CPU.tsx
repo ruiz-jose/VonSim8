@@ -32,7 +32,7 @@ export function CPU( ) {
       <Reg name="BX" emphasis className="left-[450px] top-[70px]" />
       <Reg name="CX" emphasis className="left-[450px] top-[110px]" />
       <Reg name="DX" emphasis className="left-[450px] top-[150px]" />
-      <Reg name="id" emphasis className="invisible left-[450px] top-[190px] opacity-0" />
+      <Reg name="id" emphasis className="left-[450px] top-[190px] opacity-0" />
 
       <Reg name="MBR" className="right-[-51px] top-[233px]" />
 

@@ -108,7 +108,10 @@ const springs = {
       ...Register(),
       opacity: new SpringValue(0),
     },
-    id: Register(),
+    id: {
+      ...Register(),
+      opacity: new SpringValue(0),
+    },
     left: Register(),
     right: Register(),
     result: Register(),
