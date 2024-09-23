@@ -7,14 +7,14 @@ head:
 
 El teclado es un dispositivo de entrada que permite al usuario ingresar caracteres al sistema. La forma de comunicarse con el teclado es mediante una [llamada al sistema](/docs/cpu/#llamadas-al-sistema). Esto es así por simplicidad, ya que un teclado real es mucho más complejo.
 
-Con la llamada `INT 6` se detiene la ejecución del código hasta que se presione una tecla en el teclado. El carácter que correspona será guardado en la dirección de memoria almacenada en `BX` según su representación en ASCII.
+Con la llamada `INT 6` se detiene la ejecución del código hasta que se presione una tecla en el teclado. El carácter que correspona será guardado en la dirección de memoria almacenada en `BL` según su representación en ASCII.
 
 ```vonsim
-org 1000h
+org 10h
 car db ?
 
-org 2000h
-mov bx, offset car
+org 20h
+mov bl, offset car
 int 6
 ; El usuario escribe un carácter
 int 0
