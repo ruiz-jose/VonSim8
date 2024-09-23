@@ -89,13 +89,16 @@ export class JumpInstruction extends Instruction<
     if (jump) {
       if (this.name === "CALL") {
         yield* computer.cpu.copyByteRegister("IP.l", "id.l");
+        yield* computer.cpu.copyByteRegister("ri.l", "IP.l");
         if (!(yield* computer.cpu.pushToStack())) return false; // Stack overflow
       }
+      else{
 
       //yield* computer.cpu.copyWordRegister("ri", "IP");
       // Mostrar el valor de MBR antes de asignarlo a IP.l
       //console.log("Valor de MBR antes de asignarlo a IP.l:", computer.cpu.getRegister("MBR"));
       yield* computer.cpu.copyByteRegister("ri.l", "IP.l");
+      }
     }
 
     return true;
