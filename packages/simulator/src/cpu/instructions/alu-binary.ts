@@ -36,7 +36,7 @@ export class ALUBinaryInstruction extends Instruction<
         return [out, src];
 
       case "reg<-mem": {
-        const addr = src.mode === "direct" ? src.address.toString() : "BX";
+        const addr = src.mode === "direct" ? src.address.toString() : "BL";
         return [out, `[${addr}]`];
       }
 
@@ -44,12 +44,12 @@ export class ALUBinaryInstruction extends Instruction<
         return [out, `${src.toString("hex")}h`];
 
       case "mem<-reg": {
-        const addr = out.mode === "direct" ? out.address.toString() : "BX";
+        const addr = out.mode === "direct" ? out.address.toString() : "BL";
         return [`[${addr}]`, src];
       }
 
       case "mem<-imd": {
-        const addr = out.mode === "direct" ? out.address.toString() : "BX";
+        const addr = out.mode === "direct" ? out.address.toString() : "BL";
         return [`[${addr}]`, `${src.toString("hex")}h`];
       }
 
