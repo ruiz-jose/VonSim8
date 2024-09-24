@@ -190,13 +190,13 @@ export function generateDataPath(from: DataRegister, to: DataRegister, instructi
     path = bidirectional(dataBus, from, to) || [];
   }
 
-  // Reemplazar 'ri' por 'MAR' si el destino es 'ri'
+  /*// Reemplazar 'ri' por 'MAR' si el destino es 'ri'
   if (to === "ri" && (instruction === "MOV" && mode !== "mem<-imd")) {
     const riIndex = path.indexOf("ri");
     if (riIndex !== -1) {
       path.splice(riIndex, 1, "ri", "MAR join1", "MAR join2", "MAR");
     }
-  }
+  }*/
 
   // Cambiar la animación si from es "ri" y to es "IP"
   if (from === "ri" && to === "IP") {
@@ -209,9 +209,9 @@ export function generateDataPath(from: DataRegister, to: DataRegister, instructi
   }
 
   // No dibujar la animación si la instrucción es MOV con mode "mem<-imd"
-  if (instruction === "MOV" && mode === "mem<-imd") {
+ /* if (instruction === "MOV" && mode === "mem<-imd") {
     return "";
-  }
+  }*/
 
   if (path.length === 0) throw new Error(`No path from ${from} to ${to}`);
 
