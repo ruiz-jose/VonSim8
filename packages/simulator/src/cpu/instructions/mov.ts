@@ -148,7 +148,7 @@ export class MOVInstruction extends Instruction<"MOV"> {
         //yield* computer.cpu.setMBR("id.l");
         if (size === 16) yield* computer.cpu.setMBR("id.h");
         if (size === 8) {
-          yield* computer.cpu.getMBR(out); // Copiar directamente al registro `out` 
+          //yield* computer.cpu.getMBR(out); // Copiar directamente al registro `out` 
         }
         return true;
       }
