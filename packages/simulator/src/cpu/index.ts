@@ -174,18 +174,19 @@ export class CPU extends Component {
     if (!(yield* this.pushToStack())) return false; // Stack overflow
 
     // Get interrupt routine address low
-    let vector = Byte.fromUnsigned(number.unsigned * 4, 16);
-    yield* this.updateWordRegister("ri", vector);
+    //let vector = Byte.fromUnsigned(number.unsigned * 4, 16);
+    const vector = Byte.fromUnsigned(number.unsigned, 8);
+    yield* this.updateByteRegister("ri.l", vector);
     yield* this.setMAR("ri");
     if (!(yield* this.useBus("mem-read"))) return false; // Error reading memory
     yield* this.getMBR("id.l");
 
     // Get interrupt routine address high
-    vector = vector.add(1);
+    /*vector = vector.add(1);
     yield* this.updateWordRegister("ri", vector);
     yield* this.setMAR("ri");
     if (!(yield* this.useBus("mem-read"))) return false; // Error reading memory
-    yield* this.getMBR("id.h");
+    yield* this.getMBR("id.h");*/
 
     // Update IP
     yield* this.copyWordRegister("id", "IP");

@@ -58,10 +58,10 @@ export function* handleSyscall(
 
       const char = yield* computer.io.keyboard.readChar();
 
-      yield* computer.cpu.updateByteRegister("id.l",char);
+      yield* computer.cpu.updateByteRegister("AL",char);
 
       yield* computer.cpu.setMAR("ri");
-      yield* computer.cpu.setMBR("id.l");
+      yield* computer.cpu.setMBR("AL");
       if (!(yield* computer.cpu.useBus("mem-write"))) return false; // Error writing to memory
 
       // Doesn't return -- retrieves machine state
