@@ -6,10 +6,10 @@ import { Byte } from "@vonsim/common/byte";
  * @see {@link https://vonsim.github.io/docs/cpu/#llamadas-al-sistema}.
  */
 export const syscalls = [
-  [0, Byte.fromUnsigned(0xa000, 16)],
-  [3, Byte.fromUnsigned(0xa300, 16)],
-  [6, Byte.fromUnsigned(0xa600, 16)],
-  [7, Byte.fromUnsigned(0xa700, 16)],
+  [0, Byte.fromUnsigned(0xa0, 8)],
+  [3, Byte.fromUnsigned(0xb0, 8)],
+  [6, Byte.fromUnsigned(0xc0, 8)],
+  [7, Byte.fromUnsigned(0xd0, 8)],
 ] as const;
 
 export type Syscalls = typeof syscalls;
@@ -22,6 +22,6 @@ export type SyscallNumber = Syscalls[number][0];
 export const reservedAddressesForSyscalls: ReadonlySet<number> = new Set(
   ...syscalls.map(([n]) => {
     // Each element of the interrupt vector table is 4 bytes long.
-    return [n * 4, n * 4 + 1, n * 4 + 2, n * 4 + 3];
+    return [n, n + 1, n + 2, n + 3];
   }),
 );

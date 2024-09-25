@@ -53,7 +53,8 @@ export class Memory extends Component {
     // Load syscalls addresses into memory
     this.#reservedMemory = new Set();
     for (const [number, address] of syscalls) {
-      const start = number * 4; // Interrupt vector position
+      //const start = number * 4; // Interrupt vector position
+      const start = number; // Interrupt vector position
       this.#buffer.set(address.toUint8Array(), start);
       this.#buffer.set(Byte.zero(16).toUint8Array(), start + 2);
       this.#reservedMemory.add(start);
