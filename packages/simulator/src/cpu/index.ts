@@ -167,7 +167,9 @@ export class CPU extends Component {
    */
   *startInterrupt(number: Byte<8>): EventGenerator<boolean> {
     // Save machine state
-    yield* this.copyWordRegister("FLAGS", "id");
+    //yield* this.copyWordRegister("FLAGS", "id");
+    yield* this.copyByteRegister("FLAGS.l", "id.l");
+
     if (!(yield* this.pushToStack())) return false; // Stack overflow
     yield* this.updateFLAGS({ IF: false });
     yield* this.copyWordRegister("IP", "id");
@@ -318,15 +320,15 @@ export class CPU extends Component {
   getFlag(flag: Flag): boolean {
     switch (flag) {
       case "CF":
-        return this.#registers.FLAGS.bit(0);
+        return this.#registers.FLAGS.bit(1);
       case "ZF":
-        return this.#registers.FLAGS.bit(6);
+        return this.#registers.FLAGS.bit(0);
       case "SF":
-        return this.#registers.FLAGS.bit(7);
+        return this.#registers.FLAGS.bit(3);
       case "IF":
-        return this.#registers.FLAGS.bit(9);
+        return this.#registers.FLAGS.bit(4);
       case "OF":
-        return this.#registers.FLAGS.bit(11);
+        return this.#registers.FLAGS.bit(2);
       default:
         throw new TypeError(`Invalid flag ${flag}`);
     }
@@ -340,19 +342,19 @@ export class CPU extends Component {
   #setFlag(flag: Flag, value: boolean): void {
     switch (flag) {
       case "CF":
-        this.#registers.FLAGS = this.#registers.FLAGS.withBit(0, value);
+        this.#registers.FLAGS = this.#registers.FLAGS.withBit(1, value);
         return;
       case "ZF":
-        this.#registers.FLAGS = this.#registers.FLAGS.withBit(6, value);
+        this.#registers.FLAGS = this.#registers.FLAGS.withBit(0, value);
         return;
       case "SF":
-        this.#registers.FLAGS = this.#registers.FLAGS.withBit(7, value);
+        this.#registers.FLAGS = this.#registers.FLAGS.withBit(3, value);
         return;
       case "IF":
-        this.#registers.FLAGS = this.#registers.FLAGS.withBit(9, value);
+        this.#registers.FLAGS = this.#registers.FLAGS.withBit(4, value);
         return;
       case "OF":
-        this.#registers.FLAGS = this.#registers.FLAGS.withBit(11, value);
+        this.#registers.FLAGS = this.#registers.FLAGS.withBit(2, value);
         return;
       default:
         throw new TypeError(`Invalid flag ${flag}`);
