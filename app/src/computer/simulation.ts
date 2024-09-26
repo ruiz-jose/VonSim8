@@ -85,7 +85,7 @@ function resetState(state: ComputerState) {
 
 
 }
-let lastInstructionWasCall = false;
+let currentInstructionName: string | null = null;
 let fetchStageCounter = 0;
 let executeStageCounter = 0;
 let messageReadWrite = "";
@@ -121,6 +121,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
       const event = generator.next();
       if (event.done) break;
       await handleEvent(event.value);
+      if (event.value.type === "cpu:cycle.start") {
+        currentInstructionName = event.value.instruction.name;
+      }
 
       if (status.until === "cycle-change") {
         if (event.value.type === "cpu:cycle.end") {
@@ -163,10 +166,10 @@ async function startThread(generator: EventGenerator): Promise<void> {
             const sourceRegister = event.value.register;
             let displayMessage = "";
             if (sourceRegister === "SP") {
-              if (lastInstructionWasCall) {
-                displayMessage = "SP = SP - 1";
-                lastInstructionWasCall = false;
-              } else {
+              if (currentInstructionName === "CALL") {
+                displayMessage = "SP = SP - 1";  
+              } 
+              if (currentInstructionName === "RET") {
                 displayMessage = "SP = SP + 1";               
               }
             } else {
@@ -196,7 +199,6 @@ async function startThread(generator: EventGenerator): Promise<void> {
             } else if (sourceRegister === "IP.l" && destRegister === "id.l") {
               displayMessage = "Ejecución: id ← IP";
               store.set(messageAtom, displayMessage);
-              lastInstructionWasCall = true;
               pauseSimulation();
             }else if (sourceRegister === "id" && destRegister === "IP") {
               displayMessage = "Ejecución: IP ← MBR";
