@@ -22,7 +22,7 @@ export class INTInstruction extends Instruction<"INT"> {
         name: this.name,
         position: this.position,
         operands: [this.number.toString("uint")],
-        willUse: { id: true, ri: true },
+        willUse: { id: true },
       },
     };
 
@@ -31,7 +31,7 @@ export class INTInstruction extends Instruction<"INT"> {
     yield { type: "cpu:cycle.update", phase: "decoded", next: "fetch-operands" };
 
     // Consume interrupt number
-    yield* super.consumeInstruction(computer, "ri.l");
+    yield* super.consumeInstruction(computer, "id.l");
 
     yield { type: "cpu:cycle.update", phase: "execute" };
 
