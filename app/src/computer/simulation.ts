@@ -193,30 +193,33 @@ async function startThread(generator: EventGenerator): Promise<void> {
             const displaySource = sourceRegister === "result.l" ? "ALU" : sourceRegister;
             let displayMessage = `Ejecución: ${destRegister} ← ${displaySource}`;
 
-            if (!(sourceRegister === "id.l" && destRegister === "ri.l")) {
-              // Condición específica para la transferencia entre ri.l y ip.l
-              if (sourceRegister === "ri.l" && destRegister === "IP.l") {
-                displayMessage = "Ejecución: IP ← MBR";
-                store.set(messageAtom, displayMessage);
-                pauseSimulation();
-              } else if (sourceRegister === "IP.l" && destRegister === "id.l") {
-                displayMessage = "Ejecución: id ← IP";
-                store.set(messageAtom, displayMessage);
-                pauseSimulation();
-              }else if (sourceRegister === "id" && destRegister === "IP") {
-                displayMessage = "Ejecución: IP ← MBR";
-                store.set(messageAtom, displayMessage);
-                pauseSimulation();
-              } else if (sourceRegister === "BL" && destRegister === "ri.l") {
-                displayMessage = "Ejecución: MAR ← BL";
-                store.set(messageAtom, displayMessage);
-                shouldDisplayMessage = false;
-                executeStageCounter++;
-              } else {
-                store.set(messageAtom, displayMessage);
-                pauseSimulation();
-              }
-            }  
+            if (sourceRegister === "ri.l" && destRegister === "IP.l") {
+              displayMessage = "Ejecución: IP ← MBR";
+              store.set(messageAtom, displayMessage);
+              pauseSimulation();
+            } else if (sourceRegister === "IP.l" && destRegister === "id.l") {
+              displayMessage = "Ejecución: id ← IP";
+              store.set(messageAtom, displayMessage);
+              pauseSimulation(); 
+            } else if (sourceRegister === "id.l" && destRegister === "ri.l") {
+              displayMessage = "Ejecución: MBR ← id";
+              shouldDisplayMessage = false; // No mostrar el mensaje en el próximo ciclo
+              store.set(messageAtom, displayMessage);
+              pauseSimulation();
+            }else if (sourceRegister === "id" && destRegister === "IP") {
+              displayMessage = "Ejecución: IP ← MBR";
+              store.set(messageAtom, displayMessage);
+              pauseSimulation();
+            } else if (sourceRegister === "BL" && destRegister === "ri.l") {
+              displayMessage = "Ejecución: MAR ← BL";
+              store.set(messageAtom, displayMessage);
+              shouldDisplayMessage = false;
+              executeStageCounter++;
+            } else {
+              store.set(messageAtom, displayMessage);
+              pauseSimulation();
+            }
+
           } else if (event.value.type === "bus:reset" && executeStageCounter > 1) {
             store.set(messageAtom, messageReadWrite);
             pauseSimulation();
