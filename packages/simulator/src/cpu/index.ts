@@ -180,7 +180,8 @@ export class CPU extends Component {
     // Get interrupt routine address low
     //let vector = Byte.fromUnsigned(number.unsigned * 4, 16);
     const vector = Byte.fromUnsigned(number.unsigned, 8);
-    yield* this.updateByteRegister("ri.l", vector);
+    yield* this.updateByteRegister("id.l", vector);
+    yield* this.copyByteRegister("id.l", "ri.l");
     yield* this.setMAR("ri");
     if (!(yield* this.useBus("mem-read"))) return false; // Error reading memory
     //yield* this.getMBR("id.l");

@@ -180,8 +180,12 @@ export function generateDataPath(from: DataRegister, to: DataRegister, instructi
     path = ["MBR", "mbr reg join", `${to} join`, to];
   } else if (registers.includes(from) && registers.includes(to)) {
     path = intermediatePath(from, to);
-  }  else if (from === "IP" && to === "id") {
-      path = ["IP", "IP join","id join", "id"];
+  } else if (from === "IP" && to === "id") {
+    path = ["IP", "IP join","id join", "id"];
+  } else if (from === "id" && to === "ri") {
+    path = ["id out", "id out join", "outr mbr join","mbr reg join", "ri join", "ri", "MAR join1", "MAR join2", "MAR"];
+  } else if (from === "BX" && to === "ri") {
+    path = ["BX out", "BX out join", "outr mbr join","mbr reg join", "ri join", "ri", "MAR join1", "MAR join2", "MAR"];
   } else if (from === "id" && to === "MBR") {
     path = ["id out", "id out join", "outr mbr join", "MBR"];
   } else if (from === "id" && to === "IP" && instruction === "RET") {
