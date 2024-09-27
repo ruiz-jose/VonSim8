@@ -30,6 +30,9 @@ export function parseRegister(
       return ["DX", "high"];
     default: {
       const [reg, part] = register.split(".") as Split<typeof register, ".">;
+      if (reg === "MBR") {
+        return [reg as PhysicalRegister, null]; // MBR es un registro de 8 bits, no tiene parte baja o alta
+      }
       return [reg, part === "l" ? "low" : part === "h" ? "high" : null];
     }
   }

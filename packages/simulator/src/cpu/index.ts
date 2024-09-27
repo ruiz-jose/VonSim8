@@ -168,12 +168,14 @@ export class CPU extends Component {
   *startInterrupt(number: Byte<8>): EventGenerator<boolean> {
     // Save machine state
     //yield* this.copyWordRegister("FLAGS", "id");
-    yield* this.copyByteRegister("FLAGS.l", "id.l");
+    //yield* this.copyByteRegister("FLAGS.l", "MBR");
+    //yield* this.setMBR("FLAGS.l");
 
-    if (!(yield* this.pushToStack())) return false; // Stack overflow
+    if (!(yield* this.pushToStack("FLAGS.l"))) return false; // Stack overflow
     yield* this.updateFLAGS({ IF: false });
-    yield* this.copyWordRegister("IP", "id");
-    if (!(yield* this.pushToStack())) return false; // Stack overflow
+    //yield* this.copyWordRegister("IP", "id");
+    //yield* this.setMBR("IP.l");
+    if (!(yield* this.pushToStack("IP.l"))) return false; // Stack overflow
 
     // Get interrupt routine address low
     //let vector = Byte.fromUnsigned(number.unsigned * 4, 16);
@@ -181,8 +183,8 @@ export class CPU extends Component {
     yield* this.updateByteRegister("ri.l", vector);
     yield* this.setMAR("ri");
     if (!(yield* this.useBus("mem-read"))) return false; // Error reading memory
-    yield* this.getMBR("id.l");
-
+    //yield* this.getMBR("id.l");
+    yield* this.getMBR("IP.l");
     // Get interrupt routine address high
     /*vector = vector.add(1);
     yield* this.updateWordRegister("ri", vector);
@@ -191,7 +193,7 @@ export class CPU extends Component {
     yield* this.getMBR("id.h");*/
 
     // Update IP
-    yield* this.copyWordRegister("id", "IP");
+    //yield* this.copyWordRegister("id", "IP");
     return true;
   }
 
@@ -539,14 +541,14 @@ export class CPU extends Component {
    * ---
    * Called by the instructions ({@link InstructionType.execute}).
    */
-  *pushToStack(): EventGenerator<boolean> {
+  *pushToStack(sourceRegister: "id.l" | "IP.l" | "FLAGS.l"): EventGenerator<boolean> {
     let SP = this.getRegister("SP");
 
-   /*if (!MemoryAddress.inRange(SP.unsigned - 1)) {
+   if (!MemoryAddress.inRange(SP.unsigned - 1)) {
       yield { type: "cpu:error", error: new SimulatorError("stack-overflow") };
       return false;
     }
-    SP = SP.add(-1);
+   /* SP = SP.add(-1);
     yield* this.updateWordRegister("SP", SP);
     yield* this.setMAR("SP");
     yield* this.setMBR("id.h");
@@ -557,7 +559,7 @@ export class CPU extends Component {
       return false;
     }
     yield* this.setMAR("SP");
-    yield* this.setMBR("id.l");
+    yield* this.setMBR(sourceRegister);
     if (!(yield* this.useBus("mem-write"))) return false; // Error writing to memory
     SP = SP.add(-1);
     yield* this.updateWordRegister("SP", SP);
@@ -573,7 +575,7 @@ export class CPU extends Component {
    * ---
    * Called by the instructions ({@link InstructionType.execute}).
    */
-  *popFromStack(): EventGenerator<boolean> {
+  *popFromStack(sourceRegister: "id.l" | "IP.l" | "FLAGS.l"): EventGenerator<boolean> {
     let SP = this.getRegister("SP");
 
     if (!MemoryAddress.inRange(SP)) {
@@ -584,7 +586,7 @@ export class CPU extends Component {
     yield* this.updateWordRegister("SP", SP);
     yield* this.setMAR("SP");
     if (!(yield* this.useBus("mem-read"))) return false; // Error reading memory
-    //yield* this.getMBR("id.l");
+    yield* this.getMBR(sourceRegister);
 
 
    /* if (!MemoryAddress.inRange(SP)) {

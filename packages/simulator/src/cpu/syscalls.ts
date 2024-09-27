@@ -79,9 +79,9 @@ export function* handleSyscall(
 
       // Push AX and BX to stack
       yield* computer.cpu.copyWordRegister("AX", "id");
-      if (!(yield* computer.cpu.pushToStack())) return false; // Stack overflow
+      if (!(yield* computer.cpu.pushToStack("id.l"))) return false; // Stack overflow
       yield* computer.cpu.copyWordRegister("BX", "id");
-      if (!(yield* computer.cpu.pushToStack())) return false; // Stack overflow
+      if (!(yield* computer.cpu.pushToStack("id.l"))) return false; // Stack overflow
 
       // CMP AL, 0 -- Check if length is 0
       yield* computer.cpu.copyByteRegister("AL", "left.l");
@@ -128,9 +128,9 @@ export function* handleSyscall(
       }
 
       // Pop BX and AX from stack
-      if (!(yield* computer.cpu.popFromStack())) return false; // Stack underflow
+      if (!(yield* computer.cpu.popFromStack("id.l"))) return false; // Stack underflow
       yield* computer.cpu.copyWordRegister("id", "BX");
-      if (!(yield* computer.cpu.popFromStack())) return false; // Stack underflow
+      if (!(yield* computer.cpu.popFromStack("id.l"))) return false; // Stack underflow
       yield* computer.cpu.copyWordRegister("id", "AX");
 
       // Doesn't return -- retrieves machine state
@@ -144,9 +144,9 @@ export function* handleSyscall(
   }
 
   // Retrieve machine state
-  if (!(yield* computer.cpu.popFromStack())) return false; // Stack underflow
-  yield* computer.cpu.copyWordRegister("id", "IP");
-  if (!(yield* computer.cpu.popFromStack())) return false; // Stack underflow
-  yield* computer.cpu.copyWordRegister("id", "FLAGS");
+  if (!(yield* computer.cpu.popFromStack("IP.l"))) return false; // Stack underflow
+  //yield* computer.cpu.copyWordRegister("id", "IP");
+  if (!(yield* computer.cpu.popFromStack("FLAGS.l"))) return false; // Stack underflow
+  //yield* computer.cpu.copyWordRegister("id", "FLAGS");
   return true;
 }
