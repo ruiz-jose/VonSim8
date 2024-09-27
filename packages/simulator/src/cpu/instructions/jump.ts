@@ -90,7 +90,7 @@ export class JumpInstruction extends Instruction<
       if (this.name === "CALL") {
         yield* computer.cpu.copyByteRegister("IP.l", "id.l");
         yield* computer.cpu.copyByteRegister("ri.l", "IP.l");
-        if (!(yield* computer.cpu.pushToStack())) return false; // Stack overflow
+        if (!(yield* computer.cpu.pushToStack("id.l"))) return false; // Stack overflow
       }
       else{
 

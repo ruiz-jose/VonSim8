@@ -29,13 +29,13 @@ export class ReturnInstruction extends Instruction<"RET" | "IRET"> {
     yield { type: "cpu:decode" };
     yield { type: "cpu:cycle.update", phase: "decoded", next: "execute" };
 
-    if (!(yield* computer.cpu.popFromStack())) return false; // Stack underflow
+    if (!(yield* computer.cpu.popFromStack("IP.l"))) return false; // Stack underflow
 
-    yield* computer.cpu.copyWordRegister("id", "IP");
+    //yield* computer.cpu.copyWordRegister("id", "IP");
 
     if (this.name === "IRET") {
-      if (!(yield* computer.cpu.popFromStack())) return false; // Stack underflow
-      yield* computer.cpu.copyWordRegister("id", "FLAGS");
+      if (!(yield* computer.cpu.popFromStack("FLAGS.l"))) return false; // Stack underflow
+      //yield* computer.cpu.copyWordRegister("id", "FLAGS");
       // NOTE: IRET doesn't need to explicitly set IF to true, since it's already set to true by default.
       // So, by returning FLAGS to the original value, IF will be set to true.
     }
