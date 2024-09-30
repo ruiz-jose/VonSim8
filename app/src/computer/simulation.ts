@@ -139,7 +139,13 @@ async function startThread(generator: EventGenerator): Promise<void> {
             pauseSimulation();
             fetchStageCounter++;
           } else if (event.value.type === "cpu:register.update") {
-            store.set(messageAtom, "Captación: MBR ← read(Memoria[MAR]); IP ← IP + 1");
+            const sourceRegister = event.value.register;
+            if (sourceRegister === "id.l") {
+              fetchStageCounter = 3;
+              store.set(messageAtom, "Ejecución: id ← caracter ASCII");
+            } else {
+              store.set(messageAtom, "Captación: MBR ← read(Memoria[MAR]); IP ← IP + 1");
+            }
             pauseSimulation();
             fetchStageCounter++;
           } else if (event.value.type === "cpu:mbr.get") {
