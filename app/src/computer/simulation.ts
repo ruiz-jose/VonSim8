@@ -161,7 +161,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             }
             pauseSimulation();
             executeStageCounter++;
-            shouldDisplayMessage = true; // No mostrar el mensaje en el próximo ciclo
+            shouldDisplayMessage = true; // No mostrar el mensaje en el próximo ciclo*/
           } else if (event.value.type === "cpu:register.update") {
             const sourceRegister = event.value.register;
             let displayMessage = "";
@@ -182,7 +182,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
             executeStageCounter++;
 
           } else if (event.value.type === "cpu:mbr.get") {
-            const sourceRegister = event.value.register === "id.l" ? "id" : event.value.register;
+            const sourceRegister = event.value.register === "id.l" ? "id" : 
+            event.value.register === "IP.l" ? "IP" : 
+            event.value.register;
             if (String(sourceRegister) !== 'ri.l') {
               store.set(messageAtom, `Ejecución: ${sourceRegister} ← MBR`);
               pauseSimulation();
@@ -202,10 +204,14 @@ async function startThread(generator: EventGenerator): Promise<void> {
               store.set(messageAtom, displayMessage);
               pauseSimulation(); 
             } else if (sourceRegister === "id.l" && destRegister === "ri.l") {
-              displayMessage = "Ejecución: MBR ← id";
+              displayMessage = "Ejecución: MAR ← id";
               shouldDisplayMessage = false; // No mostrar el mensaje en el próximo ciclo
               store.set(messageAtom, displayMessage);
-              pauseSimulation();
+             // pauseSimulation();
+            } else if (sourceRegister === "MBR" && destRegister === "ri.l") {
+              displayMessage = "Ejecución: MAR ← MBR";
+              store.set(messageAtom, displayMessage);
+             // pauseSimulation();
             }else if (sourceRegister === "id" && destRegister === "IP") {
               displayMessage = "Ejecución: IP ← MBR";
               store.set(messageAtom, displayMessage);
@@ -232,13 +238,13 @@ async function startThread(generator: EventGenerator): Promise<void> {
             pauseSimulation();
           }  
         }
-      } else {
+      } /*else {
         store.set(messageAtom, ""); // Set messageAtom to blank if not executing by cycle
-      }
+      }*/
 
       if (event.value.type === "cpu:cycle.update" || event.value.type === "cpu:cycle.interrupt") {
         if (status.until === "cycle-change") {
-         // pauseSimulation();
+          pauseSimulation();
         } else if (!settings.animations) {
           // If animations are disabled, wait for some time to not overwhelm the CPU
           await new Promise(resolve => setTimeout(resolve, settings.executionUnit));
