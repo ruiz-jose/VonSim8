@@ -53,12 +53,12 @@ export function* handleSyscall(
         return false;
       }
 
-      //yield* computer.cpu.copyWordRegister("BX", "ri");
-      yield* computer.cpu.copyByteRegister("BL", "ri.l");
-
       const char = yield* computer.io.keyboard.readChar();
 
       yield* computer.cpu.updateByteRegister("id.l",char);
+
+      //yield* computer.cpu.copyWordRegister("BX", "ri");
+      yield* computer.cpu.copyByteRegister("BL", "ri.l");
 
       yield* computer.cpu.setMAR("ri");
       yield* computer.cpu.setMBR("id.l");

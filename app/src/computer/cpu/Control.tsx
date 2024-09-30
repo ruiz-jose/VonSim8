@@ -85,11 +85,17 @@ export function Control() {
                   : "bg-stone-900",
           )}
         >
-          {statusKey === "stopped-error" || statusKey === "waiting-for-input" || statusKey === "int6" || statusKey === "int7" ? (
-            translate(`computer.cpu.status.${statusKey}`)
-          ) : (
-            <div>{message}</div>
-          )}
+          {statusKey === "int6" ? (
+            <>
+              {translate(`computer.cpu.status.${statusKey}`)}
+              <div>{message}</div>
+            </>
+            ) : ( statusKey === "stopped-error" || statusKey === "waiting-for-input"  || statusKey === "int7") ? (
+              translate(`computer.cpu.status.${statusKey}`)
+            )  : (
+              <div>{message}</div>
+            )
+          }
         </span>
 
         <div className="mt-4 w-64 overflow-hidden rounded-lg border border-stone-600 bg-stone-900 py-2">
