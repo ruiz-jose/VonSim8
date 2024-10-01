@@ -130,7 +130,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
           fetchStageCounter = 0;
           executeStageCounter = 0;
           messageReadWrite = "";
-          //pauseSimulation();
+          pauseSimulation();
           continue;
         }
         if (fetchStageCounter < 3) {
@@ -164,10 +164,10 @@ async function startThread(generator: EventGenerator): Promise<void> {
             const displayRegister = sourceRegister === "ri" ? "MBR" : sourceRegister;
             if (shouldDisplayMessage) {
               store.set(messageAtom, `Ejecución: MAR ← ${displayRegister}`);
+              pauseSimulation();
+              executeStageCounter++;
+              shouldDisplayMessage = true; // No mostrar el mensaje en el próximo ciclo*/
             }
-            pauseSimulation();
-            executeStageCounter++;
-            shouldDisplayMessage = true; // No mostrar el mensaje en el próximo ciclo*/
           } else if (event.value.type === "cpu:register.update") {
             const sourceRegister = event.value.register;
             let displayMessage = "";
@@ -193,7 +193,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             event.value.register;
             if (String(sourceRegister) !== 'ri.l') {
               store.set(messageAtom, `Ejecución: ${sourceRegister} ← MBR`);
-              pauseSimulation();
+              // pauseSimulation();
             }
           } else if (event.value.type === "cpu:register.copy") {
             const sourceRegister = event.value.src;
@@ -229,7 +229,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
               executeStageCounter++;
             } else {
               store.set(messageAtom, displayMessage);
-              pauseSimulation();
+             // pauseSimulation();
             }
 
           } else if (event.value.type === "bus:reset" && executeStageCounter > 1) {
@@ -244,13 +244,13 @@ async function startThread(generator: EventGenerator): Promise<void> {
             pauseSimulation();
           }  
         }
-      } /*else {
+      } else {
         store.set(messageAtom, ""); // Set messageAtom to blank if not executing by cycle
-      }*/
+      }
 
       if (event.value.type === "cpu:cycle.update" || event.value.type === "cpu:cycle.interrupt") {
         if (status.until === "cycle-change") {
-          pauseSimulation();
+         // pauseSimulation();
         } else if (!settings.animations) {
           // If animations are disabled, wait for some time to not overwhelm the CPU
           await new Promise(resolve => setTimeout(resolve, settings.executionUnit));

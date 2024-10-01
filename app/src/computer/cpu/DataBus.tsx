@@ -176,8 +176,10 @@ export function generateDataPath(from: DataRegister, to: DataRegister, instructi
   let path: string[] = [];
   
   const registers = ["AX", "BX", "CX", "DX", "id"];
-  if (from === "MBR" && registers.includes(to)) {
-    path = ["MBR", "mbr reg join", `${to} join`, to];
+  if (from === "MBR" && to === "ri") {
+    path = ["MBR", "mbr reg join", "outr mbr join", "mbr reg join", "ri join", "ri", "MAR join1", "MAR join2", "MAR"];
+  } else if (from === "MBR" && registers.includes(to)) {
+      path = ["MBR", "mbr reg join", `${to} join`, to];
   } else if (registers.includes(from) && registers.includes(to)) {
     path = intermediatePath(from, to);
   } else if (from === "IP" && to === "id") {
