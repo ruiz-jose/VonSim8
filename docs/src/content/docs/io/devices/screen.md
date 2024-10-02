@@ -10,18 +10,18 @@ La pantalla es un dispositivo de salida que permite mostrar caracteres. La forma
 Con la llamada `INT 7` se escribe una cadena de caracteres en la pantalla. Recibe dos parámetros:
 
 - `AL`: longitud de la cadena a imprimir
-- `BX`: dirección de memoria donde empieza la cadena
+- `BL`: dirección de memoria donde empieza la cadena
 
 ```vonsim
-org 1000h
+org 10h
 cadena db "Hola!"
 
-org 2000h
-mov bx, offset cadena
+org 20h
+mov bl, offset cadena
 mov al, 5
 int 7
 ; Se imprime "Hola!" (sin las comillas) en la pantalla.
-int 0
+hlt
 end
 ```
 

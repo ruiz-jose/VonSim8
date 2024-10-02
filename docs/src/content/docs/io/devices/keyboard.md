@@ -17,7 +17,7 @@ org 20h
 mov bl, offset car
 int 6
 ; El usuario escribe un carácter
-int 0
+hlt
 end
 
 ; El carácter escrito se almacenó en 'car'.

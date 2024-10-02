@@ -193,7 +193,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
             event.value.register;
             if (String(sourceRegister) !== 'ri.l') {
               store.set(messageAtom, `Ejecución: ${sourceRegister} ← MBR`);
-              // pauseSimulation();
+              if (String(sourceRegister) === 'id') {
+                pauseSimulation();
+              } 
             }
           } else if (event.value.type === "cpu:register.copy") {
             const sourceRegister = event.value.src;
