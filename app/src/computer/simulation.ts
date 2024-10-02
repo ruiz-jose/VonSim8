@@ -133,9 +133,16 @@ async function startThread(generator: EventGenerator): Promise<void> {
           pauseSimulation();
           continue;
         }
-        if (fetchStageCounter < 3) {
+        if (fetchStageCounter < 3 ) {
           if (event.value.type === "cpu:mar.set") {
-            store.set(messageAtom, "Captación: MAR ← IP");
+
+            const sourceRegister = event.value.register;
+            if (sourceRegister === "SP") {
+              fetchStageCounter = 3;
+              store.set(messageAtom, "Ejecución: Stack ← AL");
+            } else {
+              store.set(messageAtom, "Captación: MAR ← IP");
+            }
             pauseSimulation();
             fetchStageCounter++;
           } else if (event.value.type === "cpu:register.update") {
