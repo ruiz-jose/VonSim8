@@ -162,12 +162,13 @@ async function startThread(generator: EventGenerator): Promise<void> {
           if (event.value.type === "cpu:mar.set") {
             const sourceRegister = event.value.register;
             const displayRegister = sourceRegister === "ri" ? "MBR" : sourceRegister;
+            
             if (shouldDisplayMessage) {
               store.set(messageAtom, `Ejecución: MAR ← ${displayRegister}`);
-              pauseSimulation();
-              executeStageCounter++;
-              shouldDisplayMessage = true; // No mostrar el mensaje en el próximo ciclo*/
             }
+            pauseSimulation();
+            executeStageCounter++;
+
           } else if (event.value.type === "cpu:register.update") {
             const sourceRegister = event.value.register;
             let displayMessage = "";
@@ -215,7 +216,6 @@ async function startThread(generator: EventGenerator): Promise<void> {
               displayMessage = "Ejecución: MAR ← id";
               shouldDisplayMessage = false; // No mostrar el mensaje en el próximo ciclo
               store.set(messageAtom, displayMessage);
-             // pauseSimulation();
             } else if (sourceRegister === "MBR" && destRegister === "ri.l") {
               displayMessage = "Ejecución: MAR ← MBR";
               store.set(messageAtom, displayMessage);
@@ -228,7 +228,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
               displayMessage = "Ejecución: MAR ← BL";
               store.set(messageAtom, displayMessage);
               shouldDisplayMessage = false;
-              executeStageCounter++;
+              executeStageCounter++;             
             } else {
               store.set(messageAtom, displayMessage);
              // pauseSimulation();

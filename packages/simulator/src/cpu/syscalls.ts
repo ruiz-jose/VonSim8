@@ -78,10 +78,10 @@ export function* handleSyscall(
       }
 
       // Push AX and BX to stack
-      yield* computer.cpu.copyWordRegister("AX", "id");
-      if (!(yield* computer.cpu.pushToStack("id.l"))) return false; // Stack overflow
-      yield* computer.cpu.copyWordRegister("BX", "id");
-      if (!(yield* computer.cpu.pushToStack("id.l"))) return false; // Stack overflow
+      //yield* computer.cpu.copyWordRegister("AX", "id");
+      if (!(yield* computer.cpu.pushToStack("AL"))) return false; // Stack overflow
+      //yield* computer.cpu.copyWordRegister("BX", "id");
+      if (!(yield* computer.cpu.pushToStack("BL"))) return false; // Stack overflow
 
       // CMP AL, 0 -- Check if length is 0
       yield* computer.cpu.copyByteRegister("AL", "left.l");
