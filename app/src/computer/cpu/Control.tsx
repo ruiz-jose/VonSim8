@@ -85,12 +85,12 @@ export function Control() {
                   : "bg-stone-900",
           )}
         >
-          {  statusKey === "int6"  ? (
+          {  statusKey === "int6" || statusKey === "int7"  ? (
             <>
               {translate(`computer.cpu.status.${statusKey}`)}
               <div>{message}</div>
             </>            
-              ) : statusKey === "waiting-for-input" ? (
+              ) :  statusKey === "stopped-error" || statusKey === "waiting-for-input" ? (
               <>
                 {translate(`computer.cpu.status.${statusKey}`)}
               </>            
