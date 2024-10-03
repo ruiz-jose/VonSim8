@@ -231,7 +231,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
               displayMessage = "Ejecución: IP ← MBR";
               store.set(messageAtom, displayMessage);
               pauseSimulation();
-            } else if (sourceRegister === "BL" && destRegister === "ri.l") {
+            } else if ((sourceRegister === "BL" && destRegister === "ri.l") ||(sourceRegister === "BX" && destRegister === "ri")) {
               displayMessage = "Ejecución: MAR ← BL";
               store.set(messageAtom, displayMessage);
               shouldDisplayMessage = false;
