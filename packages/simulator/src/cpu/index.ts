@@ -542,7 +542,7 @@ export class CPU extends Component {
    * ---
    * Called by the instructions ({@link InstructionType.execute}).
    */
-  *pushToStack(sourceRegister: "AL" | "BL" | "id.l" | "IP.l" | "FLAGS.l"): EventGenerator<boolean> {
+  *pushToStack(sourceRegister: "AL" | "BL" | "CL" | "DL" | "id.l" | "IP.l" | "FLAGS.l"): EventGenerator<boolean> {
     let SP = this.getRegister("SP");
 
    if (!MemoryAddress.inRange(SP.unsigned - 1)) {
@@ -576,7 +576,7 @@ export class CPU extends Component {
    * ---
    * Called by the instructions ({@link InstructionType.execute}).
    */
-  *popFromStack(sourceRegister: "AL" | "BL" | "id.l" | "IP.l" | "FLAGS.l"): EventGenerator<boolean> {
+  *popFromStack(sourceRegister: "AL" | "BL" | "CL" | "DL"| "id.l" | "IP.l" | "FLAGS.l"): EventGenerator<boolean> {
     let SP = this.getRegister("SP");
 
     if (!MemoryAddress.inRange(SP)) {

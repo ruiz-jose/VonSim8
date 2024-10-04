@@ -53,17 +53,20 @@ export function* handleSyscall(
         return false;
       }
 
+      if (!(yield* computer.cpu.pushToStack("DL"))) return false; // Stack overflow
+
       const char = yield* computer.io.keyboard.readChar();
 
-      yield* computer.cpu.updateByteRegister("id.l",char);
+      //yield* computer.cpu.updateByteRegister("id.l",char);
+      yield* computer.cpu.updateByteRegister("DL",char);
 
       //yield* computer.cpu.copyWordRegister("BX", "ri");
       yield* computer.cpu.copyByteRegister("BL", "ri.l");
 
       yield* computer.cpu.setMAR("ri");
-      yield* computer.cpu.setMBR("id.l");
+      yield* computer.cpu.setMBR("DL");
       if (!(yield* computer.cpu.useBus("mem-write"))) return false; // Error writing to memory
-
+      if (!(yield* computer.cpu.popFromStack("DL"))) return false; // Stack underflow
       // Doesn't return -- retrieves machine state
       break;
     }
@@ -79,15 +82,16 @@ export function* handleSyscall(
 
       // Push AX and BX to stack
       //yield* computer.cpu.copyWordRegister("AX", "id");
-      if (!(yield* computer.cpu.pushToStack("AL"))) return false; // Stack overflow
+      //if (!(yield* computer.cpu.pushToStack("AL"))) return false; // Stack overflow
       //yield* computer.cpu.copyWordRegister("BX", "id");
-      if (!(yield* computer.cpu.pushToStack("BL"))) return false; // Stack overflow
+      //if (!(yield* computer.cpu.pushToStack("BL"))) return false; // Stack overflow
+      if (!(yield* computer.cpu.pushToStack("DL"))) return false; // Stack overflow
 
       // CMP AL, 0 -- Check if length is 0
       yield* computer.cpu.copyByteRegister("AL", "left.l");
       yield* computer.cpu.updateByteRegister("right.l", Byte.zero(8));
       const AL = computer.cpu.getRegister("AL");
-      yield* computer.cpu.aluExecute("SUB", AL, {
+      yield* computer.cpu.aluExecute("CMP", AL, {
         CF: false,
         OF: false,
         SF: AL.signed < 0,
@@ -99,9 +103,10 @@ export function* handleSyscall(
         yield* computer.cpu.copyWordRegister("BX", "ri");
         yield* computer.cpu.setMAR("ri");
         if (!(yield* computer.cpu.useBus("mem-read"))) return false; // Error reading from memory
-        yield* computer.cpu.getMBR("id.l");
+        //yield* computer.cpu.getMBR("id.l");
+        yield* computer.cpu.getMBR("DL");
         // Send character to the screen
-        const char = computer.cpu.getRegister("id.l");
+        const char = computer.cpu.getRegister("DL");
         yield* computer.io.screen.sendChar(char);
         // INC BX
         yield* computer.cpu.copyWordRegister("BX", "left");
@@ -128,10 +133,12 @@ export function* handleSyscall(
       }
 
       // Pop BX and AX from stack
-      if (!(yield* computer.cpu.popFromStack("id.l"))) return false; // Stack underflow
-      yield* computer.cpu.copyWordRegister("id", "BX");
-      if (!(yield* computer.cpu.popFromStack("id.l"))) return false; // Stack underflow
-      yield* computer.cpu.copyWordRegister("id", "AX");
+      //if (!(yield* computer.cpu.popFromStack("id.l"))) return false; // Stack underflow
+      //yield* computer.cpu.copyWordRegister("id", "BX");
+      //if (!(yield* computer.cpu.popFromStack("id.l"))) return false; // Stack underflow
+     //yield* computer.cpu.copyWordRegister("id", "AX");
+     if (!(yield* computer.cpu.popFromStack("DL"))) return false; // Stack underflow
+
 
       // Doesn't return -- retrieves machine state
       break;
