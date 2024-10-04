@@ -139,6 +139,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             const sourceRegister = event.value.register;
             if (sourceRegister === "SP") {
               fetchStageCounter = 3;
+              executeStageCounter = 3;
               store.set(messageAtom, "Ejecución: MAR ← SP");
             } else {
               store.set(messageAtom, "Captación: MAR ← IP");
