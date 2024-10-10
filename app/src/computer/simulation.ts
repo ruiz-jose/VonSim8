@@ -133,7 +133,13 @@ async function startThread(generator: EventGenerator): Promise<void> {
           messageReadWrite = "";
           pauseSimulation();
           continue;
-        }
+        }  else if (event.value.type === "cpu:int.6") {            
+          store.set(messageAtom, "PILA ← DL; DL ← ASCII; (BL) ← DL; IRET");
+          pauseSimulation();  
+        }  else if (event.value.type === "cpu:int.7") {            
+          store.set(messageAtom, "PILA ← DL; Bucle: DL ← (BL); video ← DL; SUB AL, 1; JNZ Bucle; (BL) ← DL; IRET");
+          pauseSimulation();         
+        }     
         if (fetchStageCounter < 3 ) {
           if (event.value.type === "cpu:mar.set") {
 
@@ -160,7 +166,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
           if (event.value.type === "cpu:rd.on" && executeStageCounter > 1) {
             messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";           
           } else if (event.value.type === "cpu:wr.on") {
-            messageReadWrite = "Ejecución: write(Memoria[MAR]) ← MBR";
+            messageReadWrite = "Ejecución: write(Memoria[MAR]) ← MBR";                  
           }
           if (event.value.type === "cpu:mar.set") {
             const sourceRegister = event.value.register;
@@ -188,11 +194,20 @@ async function startThread(generator: EventGenerator): Promise<void> {
             } else if (sourceRegister === "DL" && currentInstructionName === "INT") {
               displayMessage = "DL ← ASCII";    
               jump_yes = false;   
+            } else if (sourceRegister === "right.l" && currentInstructionName === "INT") {
+              displayMessage = "SUB AL, 1";     
+            } else if (sourceRegister === "right" && currentInstructionName === "INT") {
+              displayMessage = "ADD BL, 1";  
+            } else if (sourceRegister === "ri.l" && currentInstructionName === "INT") {
+              displayMessage = "MAR ← (video)"; 
+              shouldDisplayMessage = false;     
             } else {
               displayMessage = sourceRegister === "IP" ? "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1" : `Ejecución: MBR ← ${sourceRegister}`;
             }
             store.set(messageAtom, displayMessage);
-            pauseSimulation();            
+            if (displayMessage !== "MAR ← (video)"){
+              pauseSimulation();            
+            }
             executeStageCounter++;
 
           } else if (event.value.type === "cpu:mbr.get") {
@@ -202,7 +217,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             event.value.register;
             if (String(sourceRegister) !== 'ri.l') {
               store.set(messageAtom, `Ejecución: ${sourceRegister} ← MBR`);
-              if (String(sourceRegister) === 'id') {
+              if (String(sourceRegister) === 'id' || (String(sourceRegister) === "DL" && currentInstructionName === "INT")) {
                 pauseSimulation();
               } 
             }
@@ -216,6 +231,10 @@ async function startThread(generator: EventGenerator): Promise<void> {
               displayMessage = "Ejecución: IP ← MBR";
               store.set(messageAtom, displayMessage);
               pauseSimulation();
+            } else if (destRegister === "left" && currentInstructionName === "INT") {
+              displayMessage = "ADD BL, 1"; 
+            } else if ((sourceRegister === "result" || sourceRegister === "result.l")  && currentInstructionName === "INT") {
+              pauseSimulation(); 
             } else if (sourceRegister === "IP.l" && destRegister === "id.l") {
               displayMessage = "Ejecución: id ← IP";
               store.set(messageAtom, displayMessage);

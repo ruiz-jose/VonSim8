@@ -88,16 +88,16 @@ export function* handleSyscall(
       if (!(yield* computer.cpu.pushToStack("DL"))) return false; // Stack overflow
 
       // CMP AL, 0 -- Check if length is 0
-      yield* computer.cpu.copyByteRegister("AL", "left.l");
-      yield* computer.cpu.updateByteRegister("right.l", Byte.zero(8));
+    /*  yield* computer.cpu.copyByteRegister("AL", "left.l");
+      yield* computer.cpu.updateByteRegister("right.l", Byte.fromUnsigned(1, 8));
       const AL = computer.cpu.getRegister("AL");
       yield* computer.cpu.aluExecute("CMP", AL, {
         CF: false,
         OF: false,
         SF: AL.signed < 0,
         ZF: AL.isZero(),
-      });
-
+      });*/
+      let video = 0xC0;
       while (!computer.cpu.getRegister("AL").isZero()) {
         // Read character from [BX]
         yield* computer.cpu.copyWordRegister("BX", "ri");
@@ -105,9 +105,20 @@ export function* handleSyscall(
         if (!(yield* computer.cpu.useBus("mem-read"))) return false; // Error reading from memory
         //yield* computer.cpu.getMBR("id.l");
         yield* computer.cpu.getMBR("DL");
+
+       
+
+        yield* computer.cpu.updateByteRegister("ri.l", Byte.fromUnsigned(video, 8));
+        yield* computer.cpu.setMAR("ri");
+        yield* computer.cpu.setMBR("DL");
+        if (!(yield* computer.cpu.useBus("mem-write"))) return false; // Error writing to memory
+
         // Send character to the screen
         const char = computer.cpu.getRegister("DL");
         yield* computer.io.screen.sendChar(char);
+        video++;
+
+
         // INC BX
         yield* computer.cpu.copyWordRegister("BX", "left");
         yield* computer.cpu.updateWordRegister("right", Byte.fromUnsigned(1, 16));
