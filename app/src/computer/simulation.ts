@@ -90,6 +90,7 @@ let fetchStageCounter = 0;
 let executeStageCounter = 0;
 let messageReadWrite = "";
 let shouldDisplayMessage = true;
+let jump_yes = true;
 /**
  * Starts an execution thread for the given generator. This is, run all the
  * events until the generator is done or the simulation is stopped.
@@ -174,18 +175,19 @@ async function startThread(generator: EventGenerator): Promise<void> {
           } else if (event.value.type === "cpu:register.update") {
             const sourceRegister = event.value.register;
             let displayMessage = "";
+            shouldDisplayMessage = true;
             if (sourceRegister === "SP") {
-              if (currentInstructionName === "CALL" || currentInstructionName === "INT") {
-                displayMessage = "SP = SP - 1";
-                shouldDisplayMessage = true;  
+              if (currentInstructionName === "CALL" || currentInstructionName === "INT" && jump_yes) {
+                displayMessage = "SP = SP - 1";                             
               } 
-              if (currentInstructionName === "RET") {
-                displayMessage = "SP = SP + 1";               
+              if (currentInstructionName === "RET" || currentInstructionName === "IRET" || (!jump_yes && currentInstructionName === "INT")) {
+                displayMessage = "SP = SP + 1";                 
               }
             } else if (sourceRegister === "FLAGS") {
               displayMessage = "IF = 0"; 
             } else if (sourceRegister === "DL" && currentInstructionName === "INT") {
-              displayMessage = "DL ← ASCII";       
+              displayMessage = "DL ← ASCII";    
+              jump_yes = false;   
             } else {
               displayMessage = sourceRegister === "IP" ? "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1" : `Ejecución: MBR ← ${sourceRegister}`;
             }
@@ -196,6 +198,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
           } else if (event.value.type === "cpu:mbr.get") {
             const sourceRegister = event.value.register === "id.l" ? "id" : 
             event.value.register === "IP.l" ? "IP" : 
+            event.value.register === "FLAGS.l" ? "FLAGS" : 
             event.value.register;
             if (String(sourceRegister) !== 'ri.l') {
               store.set(messageAtom, `Ejecución: ${sourceRegister} ← MBR`);
