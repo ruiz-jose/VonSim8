@@ -176,13 +176,16 @@ async function startThread(generator: EventGenerator): Promise<void> {
             let displayMessage = "";
             if (sourceRegister === "SP") {
               if (currentInstructionName === "CALL" || currentInstructionName === "INT") {
-                displayMessage = "SP = SP - 1";  
+                displayMessage = "SP = SP - 1";
+                shouldDisplayMessage = true;  
               } 
               if (currentInstructionName === "RET") {
                 displayMessage = "SP = SP + 1";               
               }
             } else if (sourceRegister === "FLAGS") {
-              displayMessage = "IF = 0";    
+              displayMessage = "IF = 0"; 
+            } else if (sourceRegister === "DL" && currentInstructionName === "INT") {
+              displayMessage = "DL ← ASCII";       
             } else {
               displayMessage = sourceRegister === "IP" ? "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1" : `Ejecución: MBR ← ${sourceRegister}`;
             }
