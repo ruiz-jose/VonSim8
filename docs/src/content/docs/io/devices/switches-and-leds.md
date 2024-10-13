@@ -13,6 +13,25 @@ Las llaves o interruptores están conectados al puerto `PA`/`CA` del [PIO](/docs
 
 Las luces o LED están conectadas al puerto `PB`/`CB` del [PIO](/docs/io/modules/pio/) y son dispositivos de salida. La única forma de cambiar su estado es modificando `PB`. Estos cambios se reflejarán en las luces si el PIO está configurado correctamente, de lo contrario, las luces se verán apagadas.
 
+```vonsim
+; Enciende las luces (una si una no): 1010 1010b
+; 31h = PB --> puertos luces
+; 33h = CB --> Control luces
+
+org 20h
+; 0000 0000b habilito todas las luces
+mov al, 0 
+out 33h, al
+
+; enciendo una si una no= 170: 1010 1010b
+mov al, 170
+out 31h, al
+
+hlt
+end
+```
+
+
 ---
 
 <small>Esta obra está bajo la licencia <a target="_blank" rel="license noopener noreferrer" href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.</small>
