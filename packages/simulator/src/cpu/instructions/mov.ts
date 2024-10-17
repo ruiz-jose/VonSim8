@@ -86,7 +86,8 @@ export class MOVInstruction extends Instruction<"MOV"> {
         this.operation.mode === "reg<-mem" ? this.operation.src.mode : this.operation.out.mode;
       if (mode === "direct") {
         // Fetch memory address
-        yield* super.consumeInstruction(computer, "ri.l");
+        if (this.operation.mode === "mem<-imd") yield* super.consumeInstruction(computer, "id.l");
+        else yield* super.consumeInstruction(computer, "ri.l");        
        // yield* super.consumeInstruction(computer, "ri.h");
       } else {
         // Move BX to ri
@@ -104,6 +105,7 @@ export class MOVInstruction extends Instruction<"MOV"> {
 
     if ( this.operation.mode === "mem<-imd") {
       // Fetch immediate value and store it in id
+      yield* computer.cpu.copyByteRegister("id.l", "ri.l");
       yield* super.consumeInstruction(computer, "id.l");
       if (this.operation.size === 16) yield* super.consumeInstruction(computer, "id.h");
     }
@@ -173,7 +175,7 @@ export class MOVInstruction extends Instruction<"MOV"> {
       case "mem<-imd": {
         // Write low byte
         yield* computer.cpu.setMAR("ri");
-        yield* computer.cpu.setMBR("id.l");
+        //yield* computer.cpu.setMBR("id.l");
         if (!(yield* computer.cpu.useBus("mem-write"))) return false; // Error writing to memory
         if (size === 16) {
           // Write high byte
