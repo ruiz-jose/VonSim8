@@ -62,7 +62,7 @@ export class MOVInstruction extends Instruction<"MOV"> {
         position: this.position,
         operands: this.#formatOperands(),
         willUse: {
-          ri: mode === "mem<-imd",
+          //ri: mode === "mem<-imd",
           id: mode === "mem<-imd",         
           // ri: mode === "reg<-mem" || mode === "mem<-reg" || mode === "mem<-imd",
           //id: mode === "reg<-mem" || mode === "reg<-imd" || mode === "mem<-imd",
@@ -106,7 +106,7 @@ export class MOVInstruction extends Instruction<"MOV"> {
     if ( this.operation.mode === "mem<-imd") {
       // Fetch immediate value and store it in id
       yield* computer.cpu.copyByteRegister("id.l", "ri.l");
-      yield* super.consumeInstruction(computer, "id.l");
+      yield* super.consumeInstruction(computer, "id.l", true); // Pasar true para saltar getMBR
       if (this.operation.size === 16) yield* super.consumeInstruction(computer, "id.h");
     }
 
@@ -174,6 +174,7 @@ export class MOVInstruction extends Instruction<"MOV"> {
 
       case "mem<-imd": {
         // Write low byte
+        yield* computer.cpu.copyByteRegister("id.l", "ri.l");
         yield* computer.cpu.setMAR("ri");
         //yield* computer.cpu.setMBR("id.l");
         if (!(yield* computer.cpu.useBus("mem-write"))) return false; // Error writing to memory

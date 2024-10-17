@@ -50,7 +50,7 @@ export abstract class Instruction<TInstruction extends InstructionName> {
    * @param computer The computer that will execute the instruction.
    * @param dest Which register to store the byte in.
    */
-  protected *consumeInstruction(computer: Computer, dest: ByteRegister): EventGenerator {
+  protected *consumeInstruction(computer: Computer, dest: ByteRegister, skipMBR?: boolean): EventGenerator {
     yield* computer.cpu.setMAR("IP");
     const byte = yield* computer.cpu.useBus("mem-read");
     if (!byte) {
@@ -61,6 +61,9 @@ export abstract class Instruction<TInstruction extends InstructionName> {
       );
     }
     yield* computer.cpu.updateWordRegister("IP", IP => IP.add(1));
-    yield* computer.cpu.getMBR(dest);
+    // Condicional para saltar la ejecución de getMBR
+    if (!skipMBR) {
+      yield* computer.cpu.getMBR(dest);
+    }
   }
 }
