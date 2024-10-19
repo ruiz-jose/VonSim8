@@ -264,7 +264,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
              // pauseSimulation();
             }
 
-          } else if (event.value.type === "bus:reset" && executeStageCounter > 1 && !currentInstructionMode) {
+          } else if (event.value.type === "bus:reset" && executeStageCounter > 1
+             && (!currentInstructionMode && currentInstructionName === "MOV")) {
             store.set(messageAtom, messageReadWrite);
             pauseSimulation();
           } else if (event.value.type === "cpu:mbr.set") {
