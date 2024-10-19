@@ -105,7 +105,6 @@ export class MOVInstruction extends Instruction<"MOV"> {
 
     if ( this.operation.mode === "mem<-imd") {
       // Fetch immediate value and store it in id
-      yield* computer.cpu.copyByteRegister("id.l", "ri.l");
       yield* super.consumeInstruction(computer, "id.l", true); // Pasar true para saltar getMBR
       if (this.operation.size === 16) yield* super.consumeInstruction(computer, "id.h");
     }
