@@ -91,6 +91,8 @@ let executeStageCounter = 0;
 let messageReadWrite = "";
 let shouldDisplayMessage = true;
 let jump_yes = true;
+let currentInstructionMode = false;
+
 /**
  * Starts an execution thread for the given generator. This is, run all the
  * events until the generator is done or the simulation is stopped.
@@ -124,6 +126,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
       await handleEvent(event.value);
       if (event.value.type === "cpu:cycle.start") {
         currentInstructionName = event.value.instruction.name;
+        currentInstructionMode = event.value.instruction.willUse.id? true : false;
       }
 
       if (status.until === "cycle-change") {
@@ -261,7 +264,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
              // pauseSimulation();
             }
 
-          } else if (event.value.type === "bus:reset" && executeStageCounter > 1) {
+          } else if (event.value.type === "bus:reset" && executeStageCounter > 1 && !currentInstructionMode) {
             store.set(messageAtom, messageReadWrite);
             pauseSimulation();
           } else if (event.value.type === "cpu:mbr.set") {
