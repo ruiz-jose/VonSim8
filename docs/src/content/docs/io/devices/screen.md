@@ -18,12 +18,17 @@ cadena db "Hola!"
 
 org 20h
 <<<<<<< HEAD
+<<<<<<< HEAD
 mov bl, offset cadena
 mov al, 5
 =======
 mov BL, offset cadena
 mov AL, 5
 >>>>>>> 57b5ccf (modifique ejemplo ingresar por teclado)
+=======
+mov BL, offset cadena
+mov AL, 5
+>>>>>>> 57b5ccf764df36410f2d897ddde5ab9f955e2df9
 int 7
 ; Se imprime "Hola!" (sin las comillas) en la pantalla.
 hlt
