@@ -5,81 +5,72 @@ head:
     attrs: { property: og:image, content: https://vonsim.github.io/docs/og/codification.png }
 ---
 
-# Ciclo de la instrucción (Etapas de captación y ejecución)
-
-Utilizando el repertorio de instrucciones proporcionado, y empleando el simulador VonSim8 en modo de ejecución por ciclo (tecla F7).
-
-Se busca detallar los pasos que realiza la unidad de control para ejecutar cada una de las instrucciones, nombrando los:
+## Ciclo de la instrucción: Etapas de captación y ejecución
+Este apartado describe en detalle el proceso llevado a cabo por la Unidad de Control (UC) para ejecutar cada instrucción, destacando los siguientes aspectos:
 
 - Secuencia de pasos.
-- Registros involucrados en cada paso del proceso.
-- Buses que intervienen (Datos, direcciones y control).
-- Señales de control que se envían.
-- Considere que el CPU tiene una unidad de control microprogramada, como interviene en la ejecución de la instrucción.
-  
-## Etapa de captación (*)
+- Registros involucrados en cada etapa del proceso.
+- Uso de los buses de datos, direcciones y control.
+- Señales de control generadas.
 
-  1. **MAR ← IP**: El contenido del registro de instrucciones (IP) se transfiere al registro de direcciones de memoria (MAR). La unidad de control (UC) envía la señal para seleccionar el dato del IP y da la orden para que este valor se copie en el MAR.
+El ciclo de la instrucción se define como la secuencia de microoperaciones que tienen lugar durante la ejecución de una instrucción en el sistema. Estas operaciones se describen utilizando un lenguaje de transferencia entre registros, de la forma:
 
-  2. **MBR ← read(Memoria[MAR]); IP ← IP + 1**: La UC emite la señal de lectura (read) a la memoria, que utiliza el valor del MAR como dirección a través del bus de direcciones. La memoria devuelve el contenido de esa dirección a través del bus de datos. La UC ordena que este dato se almacene en el registro de datos de memoria (MBR). Al mismo tiempo, el IP se incrementa en 1 para apuntar a la siguiente byte.
+`destino` $\leftarrow$ `origen` 
 
-  3. **IR  ← MBR**: La instrucción almacenada en el MBR se transfiere al registro de instrucciones (IR). La UC emite la señal para seleccionar el dato del MBR y ordena que este valor se copie al IR.
-  
-(*): Todas las instrucciones tienen los mismos pasos en la etapa de captación.
+#### Etapa de Captación: 
+En esta etapa, común a todas las instrucciones, se realiza la lectura de la instrucción desde la memoria.
 
-## Etapa de Ejecución
+  1. **`MAR` $\leftarrow$ `IP`**:
+  El contenido del registro puntero de instrucciones `IP` se transfiere al registro de direcciones de memoria `MAR`. La UC genera la señal necesaria para seleccionar el valor del `IP` y copiarlo en el `MAR`.
+  2. **`MDR` $\leftarrow$ `read(Memoria[MAR])` ; `IP` $\leftarrow$ `IP` + 1**:
+  La UC activa la señal de lectura (read) hacia la memoria, utilizando el valor del `MAR` como dirección. El dato leído se transfiere al Registro de Datos de Memoria `MBR` a través del bus de datos. Simultáneamente, el `IP` se incrementa en 1 para apuntar al siguiente byte.
+  3. **`IR` $\leftarrow$ `MBR`**:
+  El contenido del `MBR` se transfiere al Registro de Instrucciones `IR`, completando la etapa de captación. 
 
-### `MOV rx, ry`  (Copiar entre registros)
+#### Etapa de Ejecución:
+En esta etapa, las operaciones específicas dependen del tipo de instrucción. A continuación, se describen algunos casos representativos:
 
-  1. **Rx ← Ry**: El contenido del registro (Ry) se copia al registro (Rx). La unidad de control (UC) envía la señal para seleccionar el dato del Ry para luego dar la orden para que este dato se copie en el Rx.
+* MOV `Rx`, `Ry` (Copiar entre registros)
+  1. **`Rx` $\leftarrow$ `Ry`**:
+  El contenido del registro `Ry` se copia en el registro `Rx`.
 
-### `MOV Rx,  [Dirección]`  (Cargar a registro)
+* MOV `Rx`, `[Dirección]` (Cargar a registro)
+  1. **`MAR` $\leftarrow$ `IP`**:
+  El valor del `IP` se transfiere a `MAR`.
+  2. **`MBR` $\leftarrow$ `read(Memoria[MAR])`; `IP` $\leftarrow$ `IP` + 1**:
+  Se lee (read) de memoria el contenido de la dirección indicada por `MAR` y se almacena en `MBR`.Simultáneamente, el `IP` se incrementa.
+  3. **`MAR` $\leftarrow$ `MBR`**:
+  El contenido de `MBR` se transfiere a `MAR`.
+  4. **`MBR` $\leftarrow$ `read(Memoria[MAR])`**:
+  Se lee de memoria el contenido de la dirección indicada por `MAR` y se almacena en `MBR`.
+  5. **`Rx`  $\leftarrow$ `MBR`**:
+  El contenido del `MBR` se copia al registro `Rx`.
 
-  1. **MAR ← IP**: El contenido del registro de instrucciones (IP) se transfiere al registro de direcciones de memoria (MAR). La unidad de control (UC) envía la señal para seleccionar el dato del IP y da la orden para que este valor se copie en el MAR.
+* MOV `[Dirección]`, `Ry` (Almacenar en memoria)     
+  1, 2, 3. Igual que MOV `Rx`, `[Dirección]`.
+  4. **`MBR` $\leftarrow$ `Ry`**:
+  El contenido de `Ry` se transfiere a `MBR`.
+  5. **`write(Memoria[MAR])` $\leftarrow$ `MBR`**:
+  El contenido de `MBR` se escribe (write) en memoria en la dirección apuntada por el `MAR`.
 
-  2. **MBR ← read(Memoria[MAR]); IP ← IP + 1**: La UC emite la señal de lectura (read) a la memoria, que utiliza el valor del MAR como dirección a través del bus de direcciones. La memoria devuelve el contenido de esa dirección a través del bus de datos. La UC ordena que este dato se almacene en el registro de datos de memoria (MBR). Al mismo tiempo, el IP se incrementa en 1 para apuntar a la siguiente byte. (Obtener byte 2) 
+* ADD  `Rx`, `[Dirección]` (Sumar a registro)
+  1, 2, 3, 4. Igual que MOV `Rx`, `[Dirección]`.
+  5. **`Rx`  $\leftarrow$ `Rx` + `MBR`**:
+  La Unidad Aritmético-Lógica (ALU) realiza la suma entre `Rx` y `MBR`, almacenando el resultado en `Rx`. El Registro de Estado `RS` se actualiza con los indicadores correspondientes.
 
-  3. **MAR  ← MBR**: La instrucción almacenada en el MBR se transfiere al registro MAR. La UC emite la señal para seleccionar el dato del MBR y ordena que este valor se copie al MAR.
+* SUB `[Dirección]`, `Ry` (Restar a memoria)
+  1, 2, 3, 4. Igual que MOV `Rx`, `[Dirección]`.
+  5. **`MBR` $\leftarrow$ `Ry` - `MBR`**: 
+  La ALU resta el contenido de `MBR` al de `Ry`, almacenando el resultado en `MBR`. El `RS` se actualiza.
+  6. **`write(Memoria[MAR])` $\leftarrow$ `MBR`**:
+  El contenido de `MBR` se escribe en memoria en la dirección apuntada por el `MAR`.
 
-  4. **MBR ← read(Memoria[MAR])**: La UC emite la señal de lectura (read) a la memoria, que utiliza el valor del MAR como dirección a través del bus de direcciones. La memoria devuelve el contenido de esa dirección a través del bus de datos. La UC ordena que este dato se almacene en el registro de datos de memoria (MBR). (Obtener operando)
+* CMP `Rx`,  `[Dirección]` (Comparar a registro)
+  1, 2, 3, 4. Igual que MOV `Rx`, `[Dirección]`.
+  5. **`Rx` - `MBR`**: 
+  La ALU realiza la resta entre el contenido de `Rx` y `MBR`. Aunque el resultado no se almacena, el `RS` se actualiza con los indicadores de comparación.
 
-  5. **Rx  ← MBR**: El dato almacenado en el MBR se transfiere al registro Rx. La UC emite la señal para seleccionar el dato del MBR y ordena que este valor se copie al Rx.
-
-
-### `MOV  [Dirección], Ry`  (Almacenar en memoria)
-    
-  1. **MAR ← IP**: El contenido del registro de instrucciones (IP) se transfiere al registro de direcciones de memoria (MAR). La unidad de control (UC) envía la señal para seleccionar el dato del IP y da la orden para que este valor se copie en el MAR.
-
-  2. **MBR ← read(Memoria[MAR]); IP ← IP + 1**: La UC emite la señal de lectura (read) a la memoria, que utiliza el valor del MAR como dirección a través del bus de direcciones. La memoria devuelve el contenido de esa dirección a través del bus de datos. La UC ordena que este dato se almacene en el registro de datos de memoria (MBR). Al mismo tiempo, el IP se incrementa en 1 para apuntar a la siguiente byte. (Obtener byte 2) 
-
-  3. **MAR  ← MBR**: La UC emite la señal de lectura (read) a la memoria, que utiliza el valor del MAR como dirección a través del bus de direcciones. La memoria devuelve el contenido de esa dirección a través del bus de datos. La UC ordena que este dato se almacene en el registro de datos de memoria (MBR).
-
-  4. **MBR ← Ry**: La UC emite la señal de lectura (read) a la memoria, que utiliza el valor del MAR como dirección a través del bus de direcciones. La memoria devuelve el contenido de esa dirección a través del bus de datos. La UC ordena que este dato se almacene en el registro de datos de memoria (MBR). (Obtener operando)
-
-  5. **write(Memoria[MAR]) ←  MBR**: La UC emite la señal de escritura (write) a la memoria, que utiliza el valor del MAR como dirección a través del bus de direcciones. La memoria graba el contenido del que viene por el bus de datos en la direccion que se envia por el bus de direcciones.
-
-### `ADD Rx,  [Dirección]`  (Rx = Rx + [M])
-
-  1. **MAR ← IP**: El contenido del registro de instrucciones (IP) se transfiere al registro de direcciones de memoria (MAR). La unidad de control (UC) envía la señal para seleccionar el dato del IP y da la orden para que este valor se copie en el MAR.
-
-  2. **MBR ← read(Memoria[MAR]); IP ← IP + 1**: La UC emite la señal de lectura (read) a la memoria, que utiliza el valor del MAR como dirección a través del bus de direcciones. La memoria devuelve el contenido de esa dirección a través del bus de datos. La UC ordena que este dato se almacene en el registro de datos de memoria (MBR). Al mismo tiempo, el IP se incrementa en 1 para apuntar a la siguiente byte. (Obtener byte 2) 
-
-  3. **MAR  ← MBR**: La instrucción almacenada en el MBR se transfiere al registro MAR. La UC emite la señal para seleccionar el dato del MBR y ordena que este valor se copie al MAR.
-
-  4. **MBR ← read(Memoria[MAR])**: La UC emite la señal de lectura (read) a la memoria, que utiliza el valor del MAR como dirección a través del bus de direcciones. La memoria devuelve el contenido de esa dirección a través del bus de datos. La UC ordena que este dato se almacene en el registro de datos de memoria (MBR). (Obtener operando)
-
-  5. **Rx  ← Rx + MBR**: El dato almacenado en el MBR se envía a la ALU junto al registro Rx para relizar la operación aritmetica sumar y el resultado se copia en el registro Rx.
-
-### `SUB [Dirección], Ry`  ([M] = [M] - Ry)
-
-  1. **MAR ← IP**: El contenido del registro de instrucciones (IP) se transfiere al registro de direcciones de memoria (MAR). La unidad de control (UC) envía la señal para seleccionar el dato del IP y da la orden para que este valor se copie en el MAR.
-
-  2. **MBR ← read(Memoria[MAR]); IP ← IP + 1**: La UC emite la señal de lectura (read) a la memoria, que utiliza el valor del MAR como dirección a través del bus de direcciones. La memoria devuelve el contenido de esa dirección a través del bus de datos. La UC ordena que este dato se almacene en el registro de datos de memoria (MBR). Al mismo tiempo, el IP se incrementa en 1 para apuntar a la siguiente byte. (Obtener byte 2) 
-
-  3. **MAR  ← MBR**: La instrucción almacenada en el MBR se transfiere al registro MAR. La UC emite la señal para seleccionar el dato del MBR y ordena que este valor se copie al MAR.
-
-  4. **MBR ← read(Memoria[MAR])**: La UC emite la señal de lectura (read) a la memoria, que utiliza el valor del MAR como dirección a través del bus de direcciones. La memoria devuelve el contenido de esa dirección a través del bus de datos. La UC ordena que este dato se almacene en el registro de datos de memoria (MBR). (Obtener operando)
-
-  5. **MBR  ← MBR + Ry**: El dato almacenado en el MBR se envía a la ALU junto al registro Rx para relizar la operación aritmetica sumar y el resultado se copia en el registro Rx.
-
-  5. **write(Memoria[MAR]) ←  MBR**: La UC emite la señal de escritura (write) a la memoria, que utiliza el valor del MAR como dirección a través del bus de direcciones. La memoria graba el contenido del que viene por el bus de datos en la direccion que se envia por el bus de direcciones.
+* JMP  `Dirección` (Salto incondicional)
+  1, 2. Igual que MOV `Rx`, `[Dirección]`.
+  3. **`IP` $\leftarrow$ `MBR`**:
+  El contenido del `MBR` se transfiere al registro `IP`, estableciendo la nueva dirección de ejecución.
