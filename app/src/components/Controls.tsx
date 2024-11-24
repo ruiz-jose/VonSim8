@@ -54,13 +54,13 @@ export function Controls({ className }: { className?: string }) {
   );
 
   return (
-    <div className={clsx("flex items-center justify-center gap-4", className)}>
+  <div className={clsx("flex items-center justify-center gap-4", className)}>
     <button
       disabled={status.type === "running"}
       onClick={runCycle}
       className="inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md bg-green-500 px-3 text-sm text-white ring-offset-stone-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
     >
-      <FontAwesomeIcon icon={faPlay} className="mr-2" />
+      <FontAwesomeIcon icon={faPlay} className="md:mr-2" />
       <span className="hidden text-sm font-medium md:inline">{translate("control.action.run.cycle-change")}</span>
       <kbd className="ml-2 hidden text-stone-600 md:inline">F7</kbd>
     </button>
@@ -69,7 +69,7 @@ export function Controls({ className }: { className?: string }) {
       onClick={runInstruction}
       className="inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md bg-green-500 px-3 text-sm text-white ring-offset-stone-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
     >
-      <FontAwesomeIcon icon={faStepForward} className="mr-2" />
+      <FontAwesomeIcon icon={faStepForward} className="md:mr-2" />
       <span className="hidden text-sm font-medium md:inline">{translate("control.action.run.end-of-instruction")}</span>
       <kbd className="ml-2 hidden text-stone-600 md:inline">F8</kbd>
     </button>
@@ -78,7 +78,7 @@ export function Controls({ className }: { className?: string }) {
       onClick={runInfinity}
       className="inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md bg-green-500 px-3 text-sm text-white ring-offset-stone-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
     >
-      <FontAwesomeIcon icon={faInfinity} className="mr-2" />
+      <FontAwesomeIcon icon={faInfinity} className="md:mr-2" />
       <span className="hidden text-sm font-medium md:inline">{translate("control.action.run.infinity")}</span>
       <kbd className="ml-2 hidden text-stone-600 md:inline">F4</kbd>
     </button>
@@ -87,7 +87,7 @@ export function Controls({ className }: { className?: string }) {
       onClick={() => dispatch("cpu.stop")}
       className="inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md bg-red-500 px-3 text-sm text-white ring-offset-stone-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
     >
-      <FontAwesomeIcon icon={faStop} className="mr-2" />
+      <FontAwesomeIcon icon={faStop} className="md:mr-2" />
       <span className="hidden text-sm font-medium md:inline">{translate("control.action.stop")}</span>
     </button>
   </div>
