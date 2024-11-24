@@ -1,5 +1,5 @@
 {
-  "name": "@vonsim/app",
+  "name": "@vonsim8/app",
   "license": "AGPL-3.0-only",
   "type": "module",
   "scripts": {
@@ -16,6 +16,8 @@
     "@codemirror/search": "^6.5.5",
     "@codemirror/state": "^6.4.0",
     "@codemirror/view": "^6.23.0",
+    "@fortawesome/free-solid-svg-icons": "^6.7.1",
+    "@fortawesome/react-fontawesome": "^0.2.2",
     "@lezer/highlight": "^1.2.0",
     "@radix-ui/react-dropdown-menu": "^2.0.6",
     "@radix-ui/react-label": "^2.0.2",

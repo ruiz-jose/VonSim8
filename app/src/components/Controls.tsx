@@ -1,5 +1,6 @@
+import { faInfinity, faPlay, faStepForward, faStop } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import clsx from "clsx";
-import { ChevronRight, ChevronsRight, Infinity, StopCircle } from 'lucide-react';
 import { useCallback } from "react";
 import { useKey } from "react-use";
 
@@ -59,35 +60,35 @@ export function Controls({ className }: { className?: string }) {
       onClick={runCycle}
       className="inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md bg-green-500 px-3 text-sm text-white ring-offset-stone-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
     >
-      <ChevronRight className="mr-2 h-4 w-4" />
-      <span className="text-sm font-medium">{translate("control.action.run.cycle-change")}</span>
-      <kbd className="ml-2 text-stone-600">F7</kbd>
+      <FontAwesomeIcon icon={faPlay} className="mr-2" />
+      <span className="hidden text-sm font-medium md:inline">{translate("control.action.run.cycle-change")}</span>
+      <kbd className="ml-2 hidden text-stone-600 md:inline">F7</kbd>
     </button>
     <button
       disabled={status.type === "running"}
       onClick={runInstruction}
       className="inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md bg-green-500 px-3 text-sm text-white ring-offset-stone-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
     >
-      <ChevronsRight className="mr-2 h-4 w-4" />
-      <span className="text-sm font-medium">{translate("control.action.run.end-of-instruction")}</span>
-      <kbd className="ml-2 text-stone-600">F8</kbd>
+      <FontAwesomeIcon icon={faStepForward} className="mr-2" />
+      <span className="hidden text-sm font-medium md:inline">{translate("control.action.run.end-of-instruction")}</span>
+      <kbd className="ml-2 hidden text-stone-600 md:inline">F8</kbd>
     </button>
     <button
       disabled={status.type === "running"}
       onClick={runInfinity}
       className="inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md bg-green-500 px-3 text-sm text-white ring-offset-stone-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
     >
-      <Infinity className="mr-2 h-4 w-4" />
-      <span className="text-sm font-medium">{translate("control.action.run.infinity")}</span>
-      <kbd className="ml-2 text-stone-600">F4</kbd>
+      <FontAwesomeIcon icon={faInfinity} className="mr-2" />
+      <span className="hidden text-sm font-medium md:inline">{translate("control.action.run.infinity")}</span>
+      <kbd className="ml-2 hidden text-stone-600 md:inline">F4</kbd>
     </button>
     <button
       disabled={status.type === "stopped"}
       onClick={() => dispatch("cpu.stop")}
       className="inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md bg-red-500 px-3 text-sm text-white ring-offset-stone-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
     >
-      <StopCircle className="mr-2 h-4 w-4" />
-      <span className="text-sm font-medium">{translate("control.action.stop")}</span>
+      <FontAwesomeIcon icon={faStop} className="mr-2" />
+      <span className="hidden text-sm font-medium md:inline">{translate("control.action.stop")}</span>
     </button>
   </div>
   );
