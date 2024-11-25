@@ -170,13 +170,24 @@ export const english = {
 
     devices: {
       label: "Devices",
-      description: "Which preset of devices to use.",
+      description: "Which devices should be enabled.",
 
-      "no-devices": "No devices",
       "keyboard-and-screen": "Keyboard and screen",
-      "pio-switches-and-leds": "Switches and LEDs",
-      "pio-printer": "Printer (PIO)",
-      handshake: "Printer (Handshake)",
+      pic: {
+        label: "PIC",
+        description: "Also adds a timer and the F10 key.",
+      },
+      pio: {
+        label: "PIO",
+        "switches-and-leds": "Switches and LEDs",
+        printer: "Printer",
+        null: "Disconnected",
+      },
+      handshake: {
+        label: "Handshake",
+        printer: "Printer",
+        null: "Disconnected",
+      },
     },
 
     animations: {
