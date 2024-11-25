@@ -29,15 +29,15 @@ export function Settings({ className }: { className?: string }) {
   const { status } = useSimulation();
 
   return (
-    <div className={clsx("scrollbar-stone-700 overflow-auto", className)}>
+    <div className={clsx("overflow-auto scrollbar-stone-700", className)}>
       <h3 className="flex items-center gap-2 border-b border-stone-600 py-2 pl-4 text-xl font-semibold">
-        <span className="icon-[lucide--settings] h-6 w-6" /> {translate("settings.title")}
+        <span className="icon-[lucide--settings] size-6" /> {translate("settings.title")}
       </h3>
 
       <Setting>
         <SettingInfo>
           <SettingTitle>
-            <span className="icon-[lucide--languages] h-6 w-6" />
+            <span className="icon-[lucide--languages] size-6" />
             {translate("settings.language.label")}
           </SettingTitle>
         </SettingInfo>
@@ -52,12 +52,12 @@ export function Settings({ className }: { className?: string }) {
           <SelectContent>
             <SelectItem value="en">
               <span className="inline-flex items-center gap-2">
-                <span className="icon-[circle-flags--uk] h-4 w-4" /> English
+                <span className="icon-[circle-flags--uk] size-4" /> English
               </span>
             </SelectItem>
             <SelectItem value="es">
               <span className="inline-flex items-center gap-2">
-                <span className="icon-[circle-flags--ar] h-4 w-4" /> Español
+                <span className="icon-[circle-flags--ar] size-4" /> Español
               </span>
             </SelectItem>
           </SelectContent>
@@ -67,32 +67,32 @@ export function Settings({ className }: { className?: string }) {
       <Setting>
         <SettingInfo>
           <SettingTitle>
-            <span className="icon-[lucide--pilcrow-square] h-6 w-6" />
+            <span className="icon-[lucide--pilcrow-square] size-6" />
             {translate("settings.editorFontSize.label")}
           </SettingTitle>
         </SettingInfo>
 
         <div className="flex items-center rounded-lg border border-stone-600 bg-stone-900">
           <button
-            className="m-0.5 flex h-8 w-8 items-center justify-center rounded-lg text-white transition-colors hover:enabled:bg-stone-800 disabled:cursor-not-allowed"
+            className="m-0.5 flex size-8 items-center justify-center rounded-lg text-white transition-colors hover:enabled:bg-stone-800 disabled:cursor-not-allowed"
             disabled={settings.editorFontSize <= 8}
             onClick={() =>
               setSettings(prev => ({ ...prev, editorFontSize: prev.editorFontSize - 1 }))
             }
             title={translate("settings.editorFontSize.decrease")}
           >
-            <span className="icon-[lucide--minus] h-4 w-4" />
+            <span className="icon-[lucide--minus] size-4" />
           </button>
           <span className="w-8 text-center text-sm font-normal">{settings.editorFontSize}</span>
           <button
-            className="m-0.5 flex h-8 w-8 items-center justify-center rounded-lg text-white transition-colors hover:enabled:bg-stone-800 disabled:cursor-not-allowed"
+            className="m-0.5 flex size-8 items-center justify-center rounded-lg text-white transition-colors hover:enabled:bg-stone-800 disabled:cursor-not-allowed"
             disabled={settings.editorFontSize >= 64}
             onClick={() =>
               setSettings(prev => ({ ...prev, editorFontSize: prev.editorFontSize + 1 }))
             }
             title={translate("settings.editorFontSize.increase")}
           >
-            <span className="icon-[lucide--plus] h-4 w-4" />
+            <span className="icon-[lucide--plus] size-4" />
           </button>
         </div>
       </Setting>
@@ -102,7 +102,7 @@ export function Settings({ className }: { className?: string }) {
       <Setting>
         <SettingInfo>
           <SettingTitle>
-            <span className="icon-[lucide--memory-stick] h-6 w-6" />
+            <span className="icon-[lucide--memory-stick] size-6" />
             {translate("settings.dataOnLoad.label")}
           </SettingTitle>
           <SettingSubtitle>{translate("settings.dataOnLoad.description")}</SettingSubtitle>
@@ -130,13 +130,13 @@ export function Settings({ className }: { className?: string }) {
       <Setting>
         <SettingInfo>
           <SettingTitle>
-            <span className="icon-[lucide--monitor-smartphone] h-6 w-6" />
+            <span className="icon-[lucide--monitor-smartphone] size-6" />
             {translate("settings.devices.label")}
           </SettingTitle>
           <SettingSubtitle>{translate("settings.devices.description")}</SettingSubtitle>
         </SettingInfo>
+      </Setting>
 
-        
       <Setting>
         <SettingInfo>
           <SettingTitle>{translate("settings.devices.keyboard-and-screen")}</SettingTitle>
@@ -238,13 +238,12 @@ export function Settings({ className }: { className?: string }) {
         </Select>
       </Setting>
 
-
       <hr className="border-stone-600" />
 
       <Setting>
         <SettingInfo>
           <SettingTitle>
-            <span className="icon-[lucide--rotate-3d] h-6 w-6" />
+            <span className="icon-[lucide--rotate-3d] size-6" />
             {translate("settings.animations.label")}
           </SettingTitle>
           <SettingSubtitle>{translate("settings.animations.description")}</SettingSubtitle>
@@ -263,7 +262,7 @@ export function Settings({ className }: { className?: string }) {
       <Setting>
         <SettingInfo>
           <SettingTitle>
-            <span className="icon-[lucide--gauge] h-6 w-6" />
+            <span className="icon-[lucide--gauge] size-6" />
             {translate("settings.speeds.executionUnit")}
           </SettingTitle>
         </SettingInfo>
@@ -283,7 +282,7 @@ export function Settings({ className }: { className?: string }) {
       <Setting>
         <SettingInfo>
           <SettingTitle>
-            <span className="icon-[lucide--clock] h-6 w-6" />
+            <span className="icon-[lucide--clock] size-6" />
             {translate("settings.speeds.clockSpeed")}
           </SettingTitle>
         </SettingInfo>
@@ -302,7 +301,7 @@ export function Settings({ className }: { className?: string }) {
       <Setting>
         <SettingInfo>
           <SettingTitle>
-            <span className="icon-[lucide--printer] h-6 w-6" />
+            <span className="icon-[lucide--printer] size-6" />
             {translate("settings.speeds.printerSpeed")}
           </SettingTitle>
         </SettingInfo>
@@ -324,13 +323,13 @@ export function Settings({ className }: { className?: string }) {
       <Setting>
         <SettingInfo>
           <SettingTitle>
-            <span className="icon-[lucide--contrast] h-6 w-6" />
+            <span className="icon-[lucide--contrast] size-6" />
             {translate("settings.filters.label")}
           </SettingTitle>
           <SettingSubtitle>
             {translate("settings.filters.description")}
             <button
-              className="text-mantis-400 hover:text-mantis-300 mt-1 block transition-colors"
+              className="mt-1 block text-mantis-400 transition-colors hover:text-mantis-300"
               onClick={() =>
                 setSettings(prev => ({
                   ...prev,
@@ -397,7 +396,7 @@ export function Settings({ className }: { className?: string }) {
             }))
           }
         >
-          <span className="icon-[lucide--trash-2] h-4 w-4" />
+          <span className="icon-[lucide--trash-2] size-4" />
           {translate("settings.reset")}
         </button>
       </div>
