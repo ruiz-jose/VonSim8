@@ -13,7 +13,12 @@ import { Switch } from "@/components/ui/Switch";
 import { stopAllAnimations } from "@/computer/shared/animate";
 import { useSimulation } from "@/computer/simulation";
 import { useTranslate } from "@/lib/i18n";
-import { DATA_ON_LOAD_VALUES, DEVICES, useSettings } from "@/lib/settings";
+import {
+  DATA_ON_LOAD_VALUES,
+  HANDSHAKE_CONNECTIONS,
+  PIO_CONNECTIONS,
+  useSettings,
+} from "@/lib/settings";
 import { defaultSettings } from "@/lib/settings/schema";
 
 export const settingsOpenAtom = atom(false);
@@ -120,6 +125,8 @@ export function Settings({ className }: { className?: string }) {
         </Select>
       </Setting>
 
+      <hr className="border-stone-600" />
+
       <Setting>
         <SettingInfo>
           <SettingTitle>
@@ -129,23 +136,108 @@ export function Settings({ className }: { className?: string }) {
           <SettingSubtitle>{translate("settings.devices.description")}</SettingSubtitle>
         </SettingInfo>
 
+        
+      <Setting>
+        <SettingInfo>
+          <SettingTitle>{translate("settings.devices.keyboard-and-screen")}</SettingTitle>
+        </SettingInfo>
+
+        <Switch
+          className="ml-8"
+          checked={settings.devices.keyboardAndScreen}
+          onCheckedChange={value =>
+            setSettings(prev => ({
+              ...prev,
+              devices: { ...prev.devices, keyboardAndScreen: value },
+            }))
+          }
+          disabled={status.type !== "stopped"}
+        />
+      </Setting>
+
+      <Setting>
+        <SettingInfo>
+          <SettingTitle>{translate("settings.devices.pic.label")}</SettingTitle>
+          <SettingSubtitle>{translate("settings.devices.pic.description")}</SettingSubtitle>
+        </SettingInfo>
+
+        <Switch
+          className="ml-8"
+          checked={settings.devices.pic}
+          onCheckedChange={value =>
+            setSettings(prev => ({
+              ...prev,
+              devices: { ...prev.devices, pic: value },
+            }))
+          }
+          disabled={status.type !== "stopped"}
+        />
+      </Setting>
+
+      <Setting>
+        <SettingInfo>
+          <SettingTitle>{translate("settings.devices.pio.label")}</SettingTitle>
+        </SettingInfo>
+
         <Select
-          value={settings.devices}
-          onValueChange={value => setSettings(prev => ({ ...prev, devices: value as any }))}
+          value={settings.devices.pio ?? "null"}
+          onValueChange={value =>
+            setSettings(prev => ({
+              ...prev,
+              devices: {
+                ...prev.devices,
+                pio: value === "null" ? null : (value as any),
+                handshake: prev.devices.handshake === value ? null : prev.devices.handshake,
+              },
+            }))
+          }
           disabled={status.type !== "stopped"}
         >
           <SelectTrigger className="w-52 min-w-[theme(width.52)]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {DEVICES.map(value => (
+            {PIO_CONNECTIONS.map(value => (
               <SelectItem key={value} value={value}>
-                {translate(`settings.devices.${value}`)}
+                {translate(`settings.devices.pio.${value}`)}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
       </Setting>
+
+      <Setting>
+        <SettingInfo>
+          <SettingTitle>{translate("settings.devices.handshake.label")}</SettingTitle>
+        </SettingInfo>
+
+        <Select
+          value={settings.devices.handshake ?? "null"}
+          onValueChange={value =>
+            setSettings(prev => ({
+              ...prev,
+              devices: {
+                ...prev.devices,
+                handshake: value === "null" ? null : (value as any),
+                pio: prev.devices.pio === value ? null : prev.devices.pio,
+              },
+            }))
+          }
+          disabled={status.type !== "stopped"}
+        >
+          <SelectTrigger className="w-52 min-w-[theme(width.52)]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {HANDSHAKE_CONNECTIONS.map(value => (
+              <SelectItem key={value} value={value}>
+                {translate(`settings.devices.handshake.${value}`)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </Setting>
+
 
       <hr className="border-stone-600" />
 
