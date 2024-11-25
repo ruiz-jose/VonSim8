@@ -22,8 +22,16 @@ export const settingsSchema = z.object({
   /**
    * Value of {@link ComputerOptions.devices}.
    */
-  devices: z.enum(DEVICES).catch("no-devices"),
-
+  //devices: z.enum(DEVICES).catch("no-devices"),
+  devices: z
+  .object({
+    keyboardAndScreen: z.boolean(),
+    pic: z.boolean(),
+    pio: z.enum(["switches-and-leds", "printer"]).nullable(),
+    handshake: z.enum(["printer"]).nullable(),
+  })
+  .catch({ keyboardAndScreen: false, pic: false, pio: null, handshake: null }),
+  
   /**
    * Disable animations for faster running. Only affects animations affected
    * by the `executionUnit` (e.g. the cpu). Other animations (like the clock
