@@ -157,24 +157,13 @@ export const spanish: Locale = {
 
     devices: {
       label: "Dispositivos",
-      description: "Qué dispositivos deben estar habilitados.",
+      description: "Qué conjunto de dispositivos usar.",
 
+      "no-devices": "Ninguno",
       "keyboard-and-screen": "Teclado y pantalla",
-      pic: {
-        label: "PIC",
-        description: "También agrega un timer y la tecla F10.",
-      },
-      pio: {
-        label: "PIO",
-        "switches-and-leds": "Llaves y luces",
-        printer: "Impresora",
-        null: "Desconectado",
-      },
-      handshake: {
-        label: "Handshake",
-        printer: "Impresora",
-        null: "Desconectado",
-      },
+      "pio-switches-and-leds": "Llaves y luces",
+      "pio-printer": "Impresora (PIO)",
+      handshake: "Impresora (Handshake)",
     },
 
     animations: {
