@@ -58,7 +58,7 @@ export function Controls({ className }: { className?: string }) {
     <button
       disabled={status.type === "running"}
       onClick={runCycle}
-      className="inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md bg-green-500 px-3 text-sm text-white ring-offset-stone-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+      className="bg-mantis-500 inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md px-3 text-sm text-white ring-offset-stone-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
     >
       <FontAwesomeIcon icon={faPlay} className="md:mr-2" />
       <span className="hidden text-sm font-medium md:inline">{translate("control.action.run.cycle-change")}</span>
