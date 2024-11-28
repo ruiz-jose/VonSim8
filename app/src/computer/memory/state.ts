@@ -13,7 +13,7 @@ export const operatingAddressAtom = atom<MemoryAddress>(MemoryAddress.from(0x002
 export const fixedAddressAtom = atom<MemoryAddress | null>(null);
 
 type MemoryShown = { address: MemoryAddress; value: Byte<8> }[];
-const CELLS = 16;
+const CELLS = 256;
 
 export const memoryShownAtom = atom<MemoryShown>(get => {
   // If there's a fixed address, show it and the surrounding addresses
