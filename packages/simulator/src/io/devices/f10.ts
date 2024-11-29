@@ -8,14 +8,12 @@ export type F10Event = { type: "f10:press" };
  *
  * Interrupt line: INT0
  *
- * @see {@link https://vonsim.github.io/docs/io/devices/f10/}.
+ * @see {@link https://vonsim.github.io/en/io/devices/f10}.
  *
  * ---
  * This class is: IMMUTABLE
  */
-export class F10<
-  TDevices extends "pio-switches-and-leds" | "pio-printer" | "handshake",
-> extends Component<TDevices> {
+export class F10 extends Component {
   /**
    * Sends an interrupt to the PIC module.
    *
@@ -24,7 +22,7 @@ export class F10<
    */
   *press(): EventGenerator {
     yield { type: "f10:press" };
-    yield* this.computer.io.pic.interrupt(0);
+    if (this.computer.io.pic) yield* this.computer.io.pic.interrupt(0);
   }
 
   toJSON() {

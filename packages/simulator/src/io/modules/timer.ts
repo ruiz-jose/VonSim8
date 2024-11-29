@@ -27,18 +27,16 @@ export type TimerOperation =
  *
  * Interrupt line: INT1
  *
- * @see {@link https://vonsim.github.io/docs/io/modules/timer/}.
+ * @see {@link https://vonsim.github.io/en/io/modules/timer}.
  *
  * ---
  * This class is: MUTABLE
  */
-export class Timer<
-  TDevices extends "pio-switches-and-leds" | "pio-printer" | "handshake",
-> extends IOModule<TimerRegister, TDevices> {
+export class Timer extends IOModule<TimerRegister> {
   #CONT: Byte<8>;
   #COMP: Byte<8>;
 
-  constructor(options: ComponentInit<TDevices>) {
+  constructor(options: ComponentInit) {
     super(options);
     this.#CONT = Byte.zero(8);
     this.#COMP = Byte.zero(8);
@@ -87,7 +85,7 @@ export class Timer<
     yield { type: "timer:register.update", register: "CONT", value };
     if (this.#COMP.equals(value)) {
       yield { type: "timer:int.on" };
-      yield* this.computer.io.pic.interrupt(1);
+      if (this.computer.io.pic) yield* this.computer.io.pic.interrupt(1);
     } else {
       yield { type: "timer:int.off" };
     }

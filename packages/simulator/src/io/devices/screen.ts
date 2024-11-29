@@ -10,19 +10,17 @@ export type ScreenEvent = { type: "screen:send-char"; char: Byte<8>; output: str
  * This component displays text on an screen, given by the CPU
  * with an `INT 7` syscall.
  *
- * @see {@link https://vonsim.github.io/docs/io/devices/screen/}.
+ * @see {@link https://vonsim.github.io/en/io/devices/screen}.
  *
  * ---
  * This class is: MUTABLE
  */
-export class Screen<
-  TDevices extends "keyboard-and-screen" | "pio-switches-and-leds" | "pio-printer" | "handshake",
-> extends Component<TDevices> {
+export class Screen extends Component {
   #output: string;
 
-  constructor(options: ComponentInit<TDevices>) {
+  constructor(options: ComponentInit) {
     super(options);
-    if (options.data === "unchanged" && "screen" in options.previous.io) {
+    if (options.data === "unchanged" && options.previous.io.screen) {
       this.#output = options.previous.io.screen.#output;
     } else {
       this.#output = "";
@@ -42,7 +40,7 @@ export class Screen<
 
   /**
    * Sends a character to the screen.
-   * @see {@link https://vonsim.github.io/docs/io/devices/screen/}.
+   * @see {@link https://vonsim.github.io/en/io/devices/screen}.
    *
    * ---
    * Called by the CPU.

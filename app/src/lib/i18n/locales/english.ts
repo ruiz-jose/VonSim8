@@ -1,6 +1,7 @@
 import { IOAddress, IOAddressLike, MemoryAddress, MemoryAddressLike } from "@vonsim/common/address";
 import type { BaseLocale } from "@vonsim/common/i18n";
 import dedent from "dedent";
+import type { JsonValue } from "type-fest";
 
 const maxAddress = MemoryAddress.from(MemoryAddress.MAX_ADDRESS).toString();
 
@@ -49,10 +50,10 @@ export const english = {
       
            n  equ 10    ; Calculate the first 10 numbers
       
-              org 10h
+              org 1000h
       start   db 1
       
-              org 20h
+              org 2000h
               mov bx, offset start + 1
               mov al, 0
               mov ah, start
@@ -221,11 +222,11 @@ export const english = {
 
   footer: {
     documentation: "Documentation",
-    copyright: "III-LIDI, FI, UNLP, UNER",
+    copyright: "III-LIDI, FI, UNLP",
 
     issue: {
       report: "Report an issue",
-      body: (settings: Record<string, string | number | boolean>, program: string) => dedent`
+      body: (settings: JsonValue, program: string) => dedent`
         <!-- Please describe the problem you are having in as much detail as possible. -->
         <!-- Most importantly, add the steps to reproduce the problem. -->
 
@@ -245,9 +246,9 @@ export const english = {
 
           #### Settings
 
-          ${Object.entries(settings)
-            .map(([key, value]) => `- **${key}**: ${value}`)
-            .join("\n          ")}
+          \`\`\`json
+          ${JSON.stringify(settings, null, 2)}
+          \`\`\`
           
         </details>
       `,

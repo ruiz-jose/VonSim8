@@ -23,7 +23,7 @@ import type { EventGenerator, SimulatorEvent } from "./events";
 export class Simulator {
   #computer: Computer = new Computer({
     program: { data: [], instructions: [] },
-    devices: "pio-switches-and-leds",
+    devices: { keyboardAndScreen: false, pic: false, pio: null, handshake: null },
     data: "clean",
   });
 
@@ -63,24 +63,24 @@ export class Simulator {
 
     return {
       clock: {
-        connected: () => "clock" in this.#computer.io,
+        connected: () => this.#computer.io.clock !== null,
         tick: () => {
-          if ("clock" in this.#computer.io) return this.#computer.io.clock.tick();
+          if (this.#computer.io.clock) return this.#computer.io.clock.tick();
           else console.warn("Called clock.tick() when no clock was connected to the computer");
         },
       },
       f10: {
         connected: () => "f10" in this.#computer.io,
         press: () => {
-          if ("f10" in this.#computer.io) return this.#computer.io.f10.press();
+          if (this.#computer.io.f10) return this.#computer.io.f10.press();
           else console.warn("Called f10.press() when no f10 was connected to the computer");
         },
       },
       keyboard: {
         connected: () => "keyboard" in this.#computer.io,
         readChar: (char: Byte<8>) => {
-          if ("keyboard" in this.#computer.io)
-            return this.#computer.io.keyboard.setLastCharRead(char);
+          if (this.#computer.io.keyboard) return this.#computer.io.keyboard.
+          setLastCharRead(char);
           else
             console.warn("Called keyboard.press() when no keyboard was connected to the computer");
         },
@@ -89,27 +89,27 @@ export class Simulator {
         connected: () => "leds" in this.#computer.io,
       },
       printer: {
-        connected: () => "printer" in this.#computer.io,
+        connected: () => this.#computer.io.printer !== null,
         clear: () => {
-          if ("printer" in this.#computer.io) return this.#computer.io.printer.clear();
+          if (this.#computer.io.printer) return this.#computer.io.printer.clear();
           else console.warn("No printer connected to the computer!");
         },
         print: () => {
-          if ("printer" in this.#computer.io) return this.#computer.io.printer.print();
+          if (this.#computer.io.printer) return this.#computer.io.printer.print();
           else console.warn("No printer connected to the computer!");
         },
       },
       screen: {
         connected: () => "screen" in this.#computer.io,
         clear: () => {
-          if ("screen" in this.#computer.io) return this.#computer.io.screen.clear();
+          if (this.#computer.io.screen) return this.#computer.io.screen.clear();
           else console.warn("Called screen.clear() when no screen was connected to the computer");
         },
       },
       switches: {
         connected: () => "switches" in this.#computer.io,
         toggle: (index: number) => {
-          if ("switches" in this.#computer.io) return this.#computer.io.switches.toggle(index);
+          if (this.#computer.io.switches) return this.#computer.io.switches.toggle(index);
           else
             console.warn(
               "Called switches.toggle() when no switches were connected to the computer",

@@ -7,14 +7,12 @@ export type ClockEvent = { type: "clock:tick" };
  * The clock is a device that sends a signal to the Timer module
  * at a constant rate.
  *
- * @see {@link https://vonsim.github.io/docs/io/devices/clock/}.
+ * @see {@link https://vonsim.github.io/en/io/devices/clock}.
  *
  * ---
  * This class is: IMMUTABLE
  */
-export class Clock<
-  TDevices extends "pio-switches-and-leds" | "pio-printer" | "handshake",
-> extends Component<TDevices> {
+export class Clock extends Component {
   /**
    * Sends a tick signal to the Timer module.
    *
@@ -23,7 +21,7 @@ export class Clock<
    */
   *tick(): EventGenerator {
     yield { type: "clock:tick" };
-    yield* this.computer.io.timer.tick();
+    if (this.computer.io.timer) yield* this.computer.io.timer.tick();
   }
 
   toJSON() {

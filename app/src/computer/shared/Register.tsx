@@ -8,14 +8,14 @@ import { useTranslate } from "@/lib/i18n";
 
 export function Register({
   name,
-  //title,
+  title,
   valueAtom,
   springs,
   emphasis = false,
   className,
 }: {
   name: string;
-  //title?: string;
+  title?: string;
   valueAtom: AnyByteAtom;
   springs: RegisterKey;
   emphasis?: boolean;

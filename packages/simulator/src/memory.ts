@@ -23,7 +23,7 @@ export type MemoryOperation =
 
 /**
  * Memory.
- * @see {@link https://vonsim.github.io/docs/memory/}
+ * @see {@link https://vonsim.github.io/en/computer/memory}
  *
  * It has the memory itself ({@link Memory.#buffer}) and a set of reserved memory addresses.
  * These reserved addresses are the ones that are used by the instructions, and they are
@@ -44,8 +44,7 @@ export class Memory extends Component {
     if (options.data === "unchanged") {
       this.#buffer = options.previous.memory.#buffer;
     } else if (options.data === "randomize") {
-      //this.#buffer = new Uint8Array(Memory.SIZE).map(() => Byte.random(8).unsigned);
-      this.#buffer = new Uint8Array(Memory.SIZE).map(() => Byte.zero(8).unsigned);
+      this.#buffer = new Uint8Array(Memory.SIZE).map(() => Byte.random(8).unsigned);
     } else {
       this.#buffer = new Uint8Array(Memory.SIZE);
     }
@@ -53,8 +52,7 @@ export class Memory extends Component {
     // Load syscalls addresses into memory
     this.#reservedMemory = new Set();
     for (const [number, address] of syscalls) {
-      //const start = number * 4; // Interrupt vector position
-      const start = number; // Interrupt vector position
+      const start = number * 4; // Interrupt vector position
       this.#buffer.set(address.toUint8Array(), start);
       this.#buffer.set(Byte.zero(16).toUint8Array(), start + 2);
       this.#reservedMemory.add(start);
