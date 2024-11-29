@@ -25,7 +25,7 @@ export function ControlLines() {
     .filter(Boolean)
     .join(" ");
 
-  const memPath = "M 750 545 H 860 V 460";
+  const memPath = "M 750 545 H 800";
 
   return (
     <svg className="pointer-events-none absolute inset-0 z-[15] h-full w-full">
@@ -49,7 +49,7 @@ export function ControlLines() {
 
       {devices.hasIOBus && (
         <>
-          <ControlLine springs="bus.iom" d="M 380 460 H 675 V 525" />
+          <ControlLine springs="bus.iom" d="M 380" />
 
           <path
             className="fill-none stroke-stone-900 stroke-[6px]"
