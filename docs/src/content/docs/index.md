@@ -18,7 +18,7 @@ Está [basado](/docs/cpu/) en el VonSim que a su vez se basa en el procesador 80
 
 Estos dispositivos están inspirados por sus análogos especificados por la iAPX 88 (o familia 8088) de Intel. Estos son un conjunto de dispositivos diseñados por Intel para su buen funcionamiento en conjunto con el procesador 8088. Más detalles pueden encontrarse en el [manual de usuario de iAPX 88 (1981)](http://www.bitsavers.org/components/intel/8086/1981_iAPX_86_88_Users_Manual.pdf).
 
-:::caution[Simplificaciones]
+:::warning[Simplificaciones]
 Este simulador no busca ser un emulador fiel del 8088. Por el contrario, busca ser una herramienta para la enseñanza de la arquitectura de computadoras. Por eso, se han hecho múltiples simplificaciones con respecto al 8088 que dificultan su uso en un entorno real. Mismamente, el set de instrucciones es mucho más pequeño que el del 8088 y su codificación es más simple.
 :::
 

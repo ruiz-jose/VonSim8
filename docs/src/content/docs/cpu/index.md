@@ -13,7 +13,7 @@ El mismo se caracteriza principalmente por poder hacer operaciones de 8 y 16 bit
 
 El procesador cuenta con los siguientes puertos:
 
-- 16 bits de direcciones de memoria (bus de direcciones, con su respectivo _buffer_ `MAR`)
+- 8 bits de direcciones de memoria (bus de direcciones, con su respectivo _buffer_ `MAR`)
 - 8 bits de datos (bus de datos, con su respectivo _buffer_ `MBR`)
 - 1 bit para la señal de lectura (`RD`)
 - 1 bit para la señal de escritura (`WR`)
@@ -23,11 +23,11 @@ El procesador cuenta con los siguientes puertos:
 
 ## Registros
 
-El procesador cuenta con cuatro registros de propósito general de 16 bits: `AX`, `BX`, `CX` y `DX`. Los mismos también pueden ser accedidos parcialmente como registros de 8 bits: `AH`, `AL`, `BH`, `BL`, `CH`, `CL`, `DH` y `DL`. Además, para el funcionamiento de la [pila](#pila), cuenta con un registro `SP` (_stack pointer_) de 16 bits. Estos registros pueden ser accedidos por el usuario.
+El procesador cuenta con cuatro registros de propósito general de 8 bits: `AL`, `BL`, `CL` y `DL`. Además, para el funcionamiento de la [pila](#pila), cuenta con un registro `SP` (_stack pointer_) de 8 bits. Estos registros pueden ser accedidos por el usuario.
 
-Dentro de los registros internos que no pueden ser accedidos por el usuario, se encuentra el registro [`FLAGS`](#flags) (_flags register_, 16 bits), el `IP` (_instruction pointer_, 16 bits) que almacena la dirección de la próxima instrucción a ejecutar, el `IR` (_instruction register_, 8 bits) que almacena el byte de la instrucción que se está analizando/decodificando en un instante dado, y el `MAR` (_memory address register_, 16 bits) que almacena la dirección de memoria que se quiere propagar por el bus de direcciones, y el `MBR` (_memory buffer register_, 8 bits) que almacena el byte que se quiere propagar o se ha recibido por el bus de datos.
+Dentro de los registros internos que no pueden ser accedidos por el usuario, se encuentra el registro [`FLAGS`](#flags) (_flags register_, 8 bits), el `IP` (_instruction pointer_, 8 bits) que almacena la dirección de la próxima instrucción a ejecutar, el `IR` (_instruction register_, 8 bits) que almacena el byte de la instrucción que se está analizando/decodificando en un instante dado, y el `MAR` (_memory address register_, 8 bits) que almacena la dirección de memoria que se quiere propagar por el bus de direcciones, y el `MBR` (_memory buffer register_, 8 bits) que almacena el byte que se quiere propagar o se ha recibido por el bus de datos.
 
-Hay además algunos registros internos que sirven de intermediarios para realizar ejecutar instrucciones, como pueden ser el `ri` para almacenar una dirección temporal, el `id` para almacenar un dato temporal, o el `left`, `right` y `result` que almacenan los operandos y resultado de una operación aritmética o lógica respectivamente.
+Hay además algunos registros internos que sirven de intermediarios para realizar ejecutar instrucciones, como pueden ser el `id` para almacenar un dato temporal, o el `left`, `right` y `result` que almacenan los operandos y resultado de una operación aritmética o lógica respectivamente.
 
 ## ALU
 
@@ -49,7 +49,7 @@ El resto de bits están reservados / no se utilizan.
 
 ## Pila
 
-El procesador implementa la pila como método de almacenamiento accesible por el usuario y por la misma CPU para su correcto funcionamiento. Esta es del estilo _Last In, First Out_ (LIFO), es decir, el último elemento en entrar es el primero en salir. La pila se encuentra en la memoria principal, comenzando en la dirección más alta de la misma (`8000h`) y creciendo hacia las direcciones más bajas (`7FFEh`, `7FFCh`, etc.). El tope de la pila se guarda en el registro `SP`. Todos los elementos de la pila son de 16 bits.
+El procesador implementa la pila como método de almacenamiento accesible por el usuario y por la misma CPU para su correcto funcionamiento. Esta es del estilo _Last In, First Out_ (LIFO), es decir, el último elemento en entrar es el primero en salir. La pila se encuentra en la memoria principal, comenzando en la dirección más alta de la misma (`FFh`) y creciendo hacia las direcciones más bajas (`FEh`, `FCh`, etc.). El tope de la pila se guarda en el registro `SP`. Todos los elementos de la pila son de 8 bits.
 
 ## Subrutinas
 
@@ -58,16 +58,16 @@ El procesador también implementa subrutinas. Estas son pequeños fragmentos de 
 Ejemplo de subrutina:
 
 ```vonsim
-      org 3000h
-      ; suma ax, bx y cx
-sum3: add ax, bx
-      add ax, cx
+      org 40h
+      ; suma al, bl y cl
+sum3: add al, bl
+      add al, cl
       ret
 
-      org 2000h
-      mov ax, 1
-      mov bx, 2
-      mov cx, 3
+      org 20h
+      mov al, 1
+      mov bl, 2
+      mov cl, 3
       call sum3
       ; ax = 6
       hlt
@@ -80,11 +80,11 @@ El procesador admite interrupciones por hardware y por software, que pueden ser 
 
 Ambas interrupciones deben propocionar un número de interrupción. En el caso de las interrupciones por software, esta es dada por el operando de la instrucción `INT` ([ver más](/docs/cpu/instructions/int/)). En el caso de las interrupciones por hardware, esta es dada por el PIC ([ver cómo se obtiene](/docs/io/modules/pic/#funcionamiento)). El número de interrupción debe ser un número entre `0` y `255`.
 
-Una vez interrumpido, el procesador ejecutará la rutina de interrupción asociada a ese número de interrupción. La dirección de comienzo de esta rutina estará almacenada en el vector de interrupciones. Este vector ocupa las celdas `0000h` hasta `03FFh` de la memoria principal, y cada elemento del vector tiene 4 bytes de largo -- el primer elemento se encuentra en `0h`, el segundo en `4h`, el tercero en `8h`, y así. Cada elemento corresponde con la dirección de inicio de la rutina de interrupción.
+Una vez interrumpido, el procesador ejecutará la rutina de interrupción asociada a ese número de interrupción. La dirección de comienzo de esta rutina estará almacenada en el vector de interrupciones. Este vector ocupa las celdas `00h` hasta `0Fh` de la memoria principal, y cada elemento del vector tiene 1 byte de largo y se corresponde con la dirección de inicio de la rutina de interrupción.
 
 Específicamente, el procesador:
 
-1. obtiene el número de la interrupción (0-255),
+1. obtiene el número de la interrupción (00-0Fh),
 2. apila el registro [`FLAGS`](#flags),
 3. inhabilita las interrupciones (`IF=0`),
 4. apila el registro `IP`,
@@ -104,7 +104,7 @@ El simulador permite realizar llamadas al sistema o _syscalls_. En el simulador,
 
 Las direcciones del vector de interrupciones asociadas a estos números están protegidas por el sistema, impidiendo que el usuario las modifique.
 
-El contenido de estas rutinas se encuentran almacenadas en el [monitor del sistema](/docs/memory/) en las direcciones `A000h`, `A300h`, `A600h` y `A700h` respectivamente.
+El contenido de estas rutinas se encuentran almacenadas en el [monitor del sistema](/docs/memory/) en las direcciones `A0h`, `B0h`, `C0h` y `D0h` respectivamente.
 
 ---
 
