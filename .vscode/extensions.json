@@ -6,6 +6,7 @@
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
     "juanm04.unlp",
-    "antfu.vitest-explorer"
+    "antfu.vitest-explorer",
+    "github.copilot"
   ]
 }
