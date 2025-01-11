@@ -52,7 +52,7 @@ dataBus.addNode("IP join", { position: [421, 309] });
 dataBus.addNode("SP join", { position: [421, 349] });
 dataBus.addNode("ri join", { position: [421, 388] });
 dataBus.addNode("MAR join1", { position: [550, 388] });
-dataBus.addNode("MAR join2", { position: [550, 348] });
+dataBus.addNode("MAR join2", { position: [550, 349] });
 dataBus.addNode("addresses mbr join", { position: [421, 250] });
 dataBus.addNode("result mbr join", { position: [370, 250] });
 dataBus.addNode("FLAGS mbr join", { position: [250, 250] });
@@ -70,6 +70,9 @@ dataBus.addNode("CX out", { position: [510, 125] });
 dataBus.addNode("DX out", { position: [510, 165] });
 dataBus.addNode("id out", { position: [510, 205] });
 
+dataBus.addNode("IP out", { position: [510, 309] });
+dataBus.addNode("SP out", { position: [510, 349] });
+
 // Añadir nodos de unión para los buses de salida en la parte posterior de los registros
 dataBus.addNode("AX out join", { position: [553, 45] });
 dataBus.addNode("BX out join", { position: [553, 85] });
@@ -77,11 +80,17 @@ dataBus.addNode("CX out join", { position: [553, 125] });
 dataBus.addNode("DX out join", { position: [553, 165] });
 dataBus.addNode("id out join", { position: [553, 205] });
 
+dataBus.addNode("IP out join", { position: [553, 309] });
+dataBus.addNode("SP out join", { position: [550, 349] });
+
 dataBus.addUndirectedEdge("AX", "AX out");
 dataBus.addUndirectedEdge("BX", "BX out");
 dataBus.addUndirectedEdge("CX", "CX out");
 dataBus.addUndirectedEdge("DX", "DX out");
 dataBus.addUndirectedEdge("id", "id out");
+
+dataBus.addUndirectedEdge("IP", "IP out");
+dataBus.addUndirectedEdge("SP", "SP out");
 
 // Crear las aristas necesarias para conectar estos nodos de unión con los buses de salida
 dataBus.addUndirectedEdge("AX out", "AX out join");
@@ -95,6 +104,11 @@ dataBus.addUndirectedEdge("BX out join", "outr mbr join");
 dataBus.addUndirectedEdge("CX out join", "outr mbr join");
 dataBus.addUndirectedEdge("DX out join", "outr mbr join");
 dataBus.addUndirectedEdge("id out join", "outr mbr join");
+
+dataBus.addUndirectedEdge("IP out join", "outr mbr join");
+dataBus.addUndirectedEdge("SP out join", "outr mbr join");
+dataBus.addUndirectedEdge("SP out join", "MAR join2");
+
 /*
 dataBus.addUndirectedEdge("AX out join", "left");
 dataBus.addUndirectedEdge("BX out join", "left");
@@ -177,13 +191,13 @@ export function generateDataPath(from: DataRegister, to: DataRegister, instructi
   
   const registers = ["AX", "BX", "CX", "DX", "id"];
   if (from === "MBR" && to === "ri") {
-    path = ["MBR", "mbr reg join", "outr mbr join", "mbr reg join", "ri join", "ri", "MAR join1", "MAR join2", "MAR"];
+    path = ["MBR", "outr mbr join", "SP out join", "MAR join2", "MAR"];
   } else if (from === "MBR" && registers.includes(to)) {
       path = ["MBR", "mbr reg join", `${to} join`, to];
   } else if (registers.includes(from) && registers.includes(to)) {
     path = intermediatePath(from, to);
   } else if (from === "IP" && to === "id") {
-    path = ["IP", "IP join","id join", "id"];
+    path = ["IP out", "IP out join", "outr mbr join", "mbr reg join", "id join", "id"];
   } else if (from === "id" && to === "ri") {
     path = ["id out", "id out join", "outr mbr join","mbr reg join", "ri join", "ri", "MAR join1", "MAR join2", "MAR"];
   } else if (from === "BX" && to === "ri") {
@@ -264,7 +278,7 @@ export function DataBus() {
           "M 205 250 V 272", // IP
           "M 205 300 V 320", // IP->decoder
           // Address registers
-          "M 451 388 H 421", // ri
+          "M 430 349 H 421", // ri
           "V 250", // Long path to MBR, here to get nice joins
           "M 451 349 H 421", // SP
           "M 451 309 H 421", // IP

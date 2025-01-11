@@ -37,9 +37,9 @@ export function AddressBus() {
   const [highlight] = useState(false);
 
   const paths = [
-    "M 451 309 H 550 V 349", // IP
-    "M 451 349 H 550", // SP
-    "M 444 388 H 550 V 349", // ri
+    "M 451 309 H 550 V 250", // IP
+    "M 451 349 H 550 V 250", // SP
+    //"M 444 388 H 550 V 300", // ri
     "M 451 349 H 698", // Connection to MAR
   ];
 
