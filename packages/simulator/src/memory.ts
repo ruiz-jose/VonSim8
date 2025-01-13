@@ -46,7 +46,7 @@ export class Memory extends Component {
     } else if (options.data === "randomize") {
       this.#buffer = new Uint8Array(Memory.SIZE).map(() => Byte.random(8).unsigned);
     } else {
-      this.#buffer = new Uint8Array(Memory.SIZE);
+      this.#buffer = new Uint8Array(Memory.SIZE).fill(0);
     }
 
     // Load syscalls addresses into memory

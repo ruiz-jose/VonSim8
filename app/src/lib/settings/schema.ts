@@ -17,7 +17,7 @@ export const settingsSchema = z.object({
   /**
    * Value of {@link ComputerOptions.data}.
    */
-  dataOnLoad: z.enum(DATA_ON_LOAD_VALUES).catch("randomize"),
+  dataOnLoad: z.enum(DATA_ON_LOAD_VALUES).catch("clean"),
 
   /**
    * Value of {@link ComputerOptions.devices}.
