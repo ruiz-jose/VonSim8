@@ -3,6 +3,7 @@ import type { Byte } from "@vonsim/common/byte";
 import { useAtomValue } from "jotai";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover";
+import { registerAtoms } from "@/computer/cpu/state"; // Importa los átomos de los registros
 import { animated, getSpring } from "@/computer/shared/springs";
 import { useTranslate } from "@/lib/i18n";
 
@@ -12,6 +13,7 @@ export function Memory() {
   const translate = useTranslate();
 
   const memory = useAtomValue(memoryShownAtom);
+  const ip = useAtomValue(registerAtoms.IP); // Obtén el valor del registro IP
 
   const renderMemoryRows = () => {
     const rows = [];
@@ -48,7 +50,7 @@ export function Memory() {
                 </th>
                 {row.map((cell, cellIndex) => (
                   <td key={cellIndex} className="border border-gray-300 w-8 h-8">
-                    <MemoryCell address={cell.address} value={cell.value} />
+                    <MemoryCell address={cell.address} value={cell.value} isIP={cell.address.valueOf() === ip.valueOf()} />
                   </td>
                 ))}
               </tr>
@@ -60,7 +62,7 @@ export function Memory() {
   );
 }
 
-function MemoryCell({ address, value }: { address: MemoryAddress; value: Byte<8> }) {
+function MemoryCell({ address, value, isIP }: { address: MemoryAddress; value: Byte<8>; isIP: boolean }) {
   const translate = useTranslate();
   const operatingAddress = useAtomValue(operatingAddressAtom);
 
@@ -71,7 +73,9 @@ function MemoryCell({ address, value }: { address: MemoryAddress; value: Byte<8>
       <PopoverTrigger asChild>
         <animated.div
           title={title}
-          className="cursor-pointer border border-stone-600 w-8 h-8 flex items-center justify-center bg-stone-800 text-white"
+          className={`cursor-pointer border border-stone-600 w-8 h-8 flex items-center justify-center ${
+            isIP ? "bg-red-500" : "bg-stone-800"
+          } text-white`}
           style={
             address.value === operatingAddress.value
               ? getSpring("memory.operating-cell")
