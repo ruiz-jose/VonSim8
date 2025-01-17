@@ -92,6 +92,8 @@ let messageReadWrite = "";
 let shouldDisplayMessage = true;
 let jump_yes = true;
 let currentInstructionMode = false;
+let cycleCount = 0;
+
 
 /**
  * Starts an execution thread for the given generator. This is, run all the
@@ -107,6 +109,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
           fetchStageCounter = 0;
           executeStageCounter = 0;
           messageReadWrite = "";
+          cycleCount = 0; // Reiniciar el contador de ciclos
           break; // stop the thread
         }
         if (status.type === "paused") {
@@ -133,7 +136,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
         if (event.value.type === "cpu:cycle.end") {
           fetchStageCounter = 0;
           executeStageCounter = 0;
-          messageReadWrite = "";
+          messageReadWrite = "";        
           pauseSimulation();
           continue;
         }  else if (event.value.type === "cpu:int.6") {            
@@ -156,15 +159,20 @@ async function startThread(generator: EventGenerator): Promise<void> {
             }
             pauseSimulation();
             fetchStageCounter++;
+            cycleCount++;
+            
           } else if (event.value.type === "cpu:register.update") {
             store.set(messageAtom, "Captación: MBR ← read(Memoria[MAR]); IP ← IP + 1");
             pauseSimulation();
             fetchStageCounter++;
+            cycleCount++;
           } else if (event.value.type === "cpu:mbr.get") {
             store.set(messageAtom, "Captación: IR ← MBR");
-            pauseSimulation();
+            pauseSimulation();            
             fetchStageCounter++;
+            cycleCount++;
           }
+          
         } else {        
           if (event.value.type === "cpu:rd.on" && executeStageCounter > 1) {
             messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";           
@@ -180,6 +188,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             }
             pauseSimulation();
             executeStageCounter++;
+            cycleCount++;
 
           } else if (event.value.type === "cpu:register.update") {
             const sourceRegister = event.value.register;
@@ -212,6 +221,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
               pauseSimulation();            
             }
             executeStageCounter++;
+            cycleCount++;
 
           } else if (event.value.type === "cpu:mbr.get") {
             const sourceRegister = event.value.register === "id.l" ? "id" : 
@@ -220,10 +230,11 @@ async function startThread(generator: EventGenerator): Promise<void> {
             event.value.register;
             if (String(sourceRegister) !== 'ri.l') {
               store.set(messageAtom, `Ejecución: ${sourceRegister} ← MBR`);
+              cycleCount++;
               if (String(sourceRegister) === 'id' || (String(sourceRegister) === "DL" && currentInstructionName === "INT")) {
-                pauseSimulation();
+                pauseSimulation();                
               } 
-            }
+            }           
           } else if (event.value.type === "cpu:register.copy") {
             const sourceRegister = event.value.src;
             const destRegister = event.value.dest;
@@ -262,12 +273,13 @@ async function startThread(generator: EventGenerator): Promise<void> {
             } else {
               store.set(messageAtom, displayMessage);
              // pauseSimulation();
-            }
-
+            }   
+            cycleCount++;         
           } else if (event.value.type === "bus:reset" && executeStageCounter > 1
              && (!currentInstructionMode && currentInstructionName === "MOV")) {
             store.set(messageAtom, messageReadWrite);
             pauseSimulation();
+            cycleCount++; 
           } else if (event.value.type === "cpu:mbr.set") {
             const sourceRegister = event.value.register === "id.l" ? "id" : 
             event.value.register === "FLAGS.l" ? "FLAGS" : 
@@ -275,12 +287,13 @@ async function startThread(generator: EventGenerator): Promise<void> {
             event.value.register;
             store.set(messageAtom, `Ejecución: MBR ← ${sourceRegister}`);
             pauseSimulation();
+            cycleCount++;
           }  
         }
       } else {
         store.set(messageAtom, ""); // Set messageAtom to blank if not executing by cycle
       }
-
+      console.log(`Ciclos ejecutados: ${cycleCount}`);
       if (event.value.type === "cpu:cycle.update" || event.value.type === "cpu:cycle.interrupt") {
         if (status.until === "cycle-change") {
          // pauseSimulation();
