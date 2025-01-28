@@ -274,9 +274,11 @@ async function startThread(generator: EventGenerator): Promise<void> {
               store.set(messageAtom, displayMessage);
              // pauseSimulation();
             }   
-            cycleCount++;         
+            if (destRegister !== "result.l" && destRegister !== "left.l" && destRegister !== "right.l") {
+              cycleCount++;
+            }  
           } else if (event.value.type === "bus:reset" && executeStageCounter > 1
-             && (!currentInstructionMode && currentInstructionName === "MOV")) {
+            && (!currentInstructionMode && (currentInstructionName === "MOV" || currentInstructionName === "ADD" || currentInstructionName === "SUB"))) {
             store.set(messageAtom, messageReadWrite);
             pauseSimulation();
             cycleCount++; 
