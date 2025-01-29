@@ -236,28 +236,28 @@ async function startThread(generator: EventGenerator): Promise<void> {
               } 
             }           
           } else if (event.value.type === "cpu:register.copy") {
-            const sourceRegister = event.value.src;
-            const destRegister = event.value.dest;
-            const displaySource = sourceRegister === "result.l" ? "ALU" : sourceRegister;
+            const sourceRegister = event.value.src.replace(/\.l$/, '');
+            const destRegister = event.value.dest.replace(/\.l$/, '');
+            const displaySource = sourceRegister === "result" ? "ALU" : sourceRegister;
             let displayMessage = `Ejecución: ${destRegister} ← ${displaySource}`;
 
-            if (sourceRegister === "ri.l" && destRegister === "IP.l") {
+            if (sourceRegister === "ri" && destRegister === "IP") {
               displayMessage = "Ejecución: IP ← MBR";
               store.set(messageAtom, displayMessage);
               pauseSimulation();
             } else if (destRegister === "left" && currentInstructionName === "INT") {
               displayMessage = "ADD BL, 1"; 
-            } else if ((sourceRegister === "result" || sourceRegister === "result.l")  && currentInstructionName === "INT") {
+            } else if (sourceRegister === "result"   && currentInstructionName === "INT") {
               pauseSimulation(); 
-            } else if (sourceRegister === "IP.l" && destRegister === "id.l") {
+            } else if (sourceRegister === "IP" && destRegister === "id") {
               displayMessage = "Ejecución: id ← IP";
               store.set(messageAtom, displayMessage);
               pauseSimulation(); 
-            } else if (sourceRegister === "id.l" && destRegister === "ri.l") {
+            } else if (sourceRegister === "id" && destRegister === "ri") {
               displayMessage = "Ejecución: MAR ← id";
               shouldDisplayMessage = false; // No mostrar el mensaje en el próximo ciclo
               store.set(messageAtom, displayMessage);
-            } else if (sourceRegister === "MBR" && destRegister === "ri.l") {
+            } else if (sourceRegister === "MBR" && destRegister === "ri") {
               displayMessage = "Ejecución: MAR ← MBR";
               store.set(messageAtom, displayMessage);
              // pauseSimulation();
@@ -265,7 +265,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
               displayMessage = "Ejecución: IP ← MBR";
               store.set(messageAtom, displayMessage);
               pauseSimulation();
-            } else if ((sourceRegister === "BL" && destRegister === "ri.l") ||(sourceRegister === "BX" && destRegister === "ri")) {
+            } else if ((sourceRegister === "BL" && destRegister === "ri") ||(sourceRegister === "BX" && destRegister === "ri")) {
               displayMessage = "Ejecución: MAR ← BL";
               store.set(messageAtom, displayMessage);
               shouldDisplayMessage = false;
@@ -274,9 +274,12 @@ async function startThread(generator: EventGenerator): Promise<void> {
               store.set(messageAtom, displayMessage);
              // pauseSimulation();
             }   
-            if (destRegister !== "result.l" && destRegister !== "left.l" && destRegister !== "right.l") {
+            if (
+              destRegister !== "result" && destRegister !== "left" && destRegister !== "right" &&
+              sourceRegister !== "result" && sourceRegister !== "left" && sourceRegister !== "right"
+            ) {
               cycleCount++;
-            }  
+            }
           } else if (event.value.type === "bus:reset" && executeStageCounter > 1
             && (!currentInstructionMode && (currentInstructionName === "MOV" || currentInstructionName === "ADD" || currentInstructionName === "SUB"))) {
             store.set(messageAtom, messageReadWrite);

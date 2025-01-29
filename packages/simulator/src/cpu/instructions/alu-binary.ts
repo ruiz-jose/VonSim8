@@ -237,7 +237,7 @@ export class ALUBinaryInstruction extends Instruction<
       }
 
       // Write low byte
-      yield* computer.cpu.setMAR("ri");
+      //yield* computer.cpu.setMAR("ri");
       yield* computer.cpu.setMBR("result.l");
       if (!(yield* computer.cpu.useBus("mem-write"))) return false; // Error writing memory
     }
