@@ -275,8 +275,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
              // pauseSimulation();
             }   
             if (
-              destRegister !== "result" && destRegister !== "left" && destRegister !== "right" &&
-              sourceRegister !== "result" && sourceRegister !== "left" && sourceRegister !== "right"
+              (destRegister !== "result" && destRegister !== "left" && destRegister !== "right" &&
+               sourceRegister !== "result" && sourceRegister !== "left" && sourceRegister !== "right") ||
+              (sourceRegister === "result" && destRegister !== "MBR")
             ) {
               cycleCount++;
             }
@@ -298,6 +299,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
       } else {
         store.set(messageAtom, ""); // Set messageAtom to blank if not executing by cycle
       }
+      console.log(`Ciclos ejecutados: ${cycleCount}`);
       store.set(cycleCountAtom, cycleCount );
       if (event.value.type === "cpu:cycle.update" || event.value.type === "cpu:cycle.interrupt") {
         if (status.until === "cycle-change") {
