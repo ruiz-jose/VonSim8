@@ -282,7 +282,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
               cycleCount++;
             }
           } else if (event.value.type === "bus:reset" && executeStageCounter > 1
-            && (!currentInstructionMode && (currentInstructionName === "MOV" || currentInstructionName === "ADD" || currentInstructionName === "SUB"))) {
+            && (!currentInstructionMode && (currentInstructionName === "MOV" || currentInstructionName === "ADD" || currentInstructionName === "SUB"  || currentInstructionName === "CMP"))) {
             store.set(messageAtom, messageReadWrite);
             pauseSimulation();
             cycleCount++; 
@@ -301,6 +301,12 @@ async function startThread(generator: EventGenerator): Promise<void> {
       }
       console.log(`Ciclos ejecutados: ${cycleCount}`);
       store.set(cycleCountAtom, cycleCount );
+
+        const eventInstruction = new CustomEvent("instructionChange", {
+          detail: { instruction: currentInstructionName },
+        });
+        window.dispatchEvent(eventInstruction);
+
       if (event.value.type === "cpu:cycle.update" || event.value.type === "cpu:cycle.interrupt") {
         if (status.until === "cycle-change") {
          // pauseSimulation();

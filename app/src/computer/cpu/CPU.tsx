@@ -1,6 +1,7 @@
 import type { PhysicalRegister } from "@vonsim/simulator/cpu";
 import clsx from "clsx";
 import { useAtomValue } from "jotai";
+import { useEffect, useState } from "react";
 
 import { Register } from "@/computer/shared/Register";
 import { useTranslate } from "@/lib/i18n";
@@ -15,6 +16,32 @@ export function CPU( ) {
   const translate = useTranslate();
   const cycleCount = useAtomValue(cycleCountAtom); 
 
+  const [showRegisters, setShowRegisters] = useState(false);
+
+  useEffect(() => {
+    const handleInstruction = (instruction: string) => {
+      if (instruction === "ADD" || instruction === "SUB" || instruction === "CMP") {
+        setShowRegisters(true);
+      } else {
+        setShowRegisters(false);
+      }
+    };
+
+    // Suscríbete a los cambios de instrucción aquí
+    // Por ejemplo, usando un evento personalizado o un estado global
+    // Aquí se muestra un ejemplo con un evento personalizado
+    const eventListener = (event: Event) => {
+      const customEvent = event as CustomEvent;
+      handleInstruction(customEvent.detail.instruction);
+    };
+
+    window.addEventListener("instructionChange", eventListener as EventListener);
+
+    return () => {
+      window.removeEventListener("instructionChange", eventListener);
+    };
+  }, []);
+
   return (
     <div className="absolute left-0 top-0 z-10 h-[500px] w-[650px] rounded-lg border border-stone-600 bg-stone-900 [&_*]:z-20">
       <span className="block w-min rounded-br-lg rounded-tl-lg border-b border-r border-stone-600 bg-mantis-500 px-2 py-1 text-3xl text-white">
@@ -27,9 +54,13 @@ export function CPU( ) {
       <AddressBus />
       <DataBus />
 
-      <Reg name="left" className="left-[60px] top-[50px]" />
-      <Reg name="right" className="left-[60px] top-[110px]" />
-      <Reg name="result" className="left-[300px] top-[80px]" />
+      {showRegisters && (
+        <>
+          <Reg name="left" className="left-[60px] top-[50px]" />
+          <Reg name="right" className="left-[60px] top-[110px]" />
+          <Reg name="result" className="left-[300px] top-[80px]" />
+        </>
+      )}
 
       <ALU />
 

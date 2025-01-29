@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { useAtomValue } from "jotai";
+import { useEffect,useState } from "react";
 
 import { animated, getSpring } from "@/computer/shared/springs";
 
@@ -11,6 +12,35 @@ import { aluOperationAtom, registerAtoms } from "./state";
 export function ALU() {
   const FLAGS = useAtomValue(registerAtoms.FLAGS);
   const operation = useAtomValue(aluOperationAtom);
+  const [showOperation, setShowOperation] = useState(false);
+  const [showFlag, setShowFlag] = useState(false);
+
+
+  useEffect(() => {
+    const handleInstruction = (instruction: string) => {
+      if (instruction === "ADD" || instruction === "SUB" || instruction === "CMP") {
+        setShowOperation(true);
+      } else {
+        setShowOperation(false);
+      }
+      if (instruction === "INT" || instruction === "IRET") {
+        setShowFlag(true);
+      } else {
+        setShowFlag(false);
+      }
+    };
+
+    const eventListener = (event: Event) => {
+      const customEvent = event as CustomEvent;
+      handleInstruction(customEvent.detail.instruction);
+    };
+
+    window.addEventListener("instructionChange", eventListener as EventListener);
+
+    return () => {
+      window.removeEventListener("instructionChange", eventListener);
+    };
+  }, []);
 
   // https://vonsim.github.io/docs/cpu/#flags
   const CF = FLAGS.bit(1);
@@ -70,21 +100,23 @@ export function ALU() {
         }}
       />
 
-      <animated.span
-        className="absolute left-[260px] top-[50px] flex w-min items-center rounded-md border border-stone-600 px-2 py-1 font-mono leading-none"
-        style={getSpring("cpu.alu.operation")}
-      >
-        {operation}
-      </animated.span>
+      {showOperation && (
+        <animated.span
+          className="absolute left-[260px] top-[50px] flex w-min items-center rounded-md border border-stone-600 px-2 py-1 font-mono leading-none"
+          style={getSpring("cpu.alu.operation")}
+        >
+          {operation}
+        </animated.span>
+      )}
 
       {/* Flags */}
       <animated.div
         className="absolute left-[215px] top-[190px] flex w-min items-center gap-1 rounded-md border border-mantis-400 bg-stone-800 px-2 py-1 font-mono leading-none"
         style={getSpring("cpu.FLAGS")}
       >
-        <span className={clsx("rounded p-1 font-light", IF ? "bg-mantis-400" : "bg-stone-900")}>
+        {showFlag && (<span className={clsx("rounded p-1 font-light", IF ? "bg-mantis-400" : "bg-stone-900")}>
           IF
-        </span>
+        </span> )}
         <span className={clsx("rounded p-1 font-light", CF ? "bg-mantis-400" : "bg-stone-900")}>
           CF
         </span>
