@@ -22,6 +22,8 @@ const FLAGSAtom = atom(Byte.zero(16)); // Flags
 export const MARAtom = atom(Byte.zero(16)); // Memory Address Register
 export const MBRAtom = atom(Byte.zero(8)); // Memory Buffer Register
 export const messageAtom = atom<string | null>(null);
+// Define el átomo para cycleCount
+export const cycleCountAtom = atom(0);
 
 const lowAtom = (
   primitive: PrimitiveAtom<Byte<16>>,

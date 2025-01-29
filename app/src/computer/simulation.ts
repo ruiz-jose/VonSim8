@@ -16,7 +16,7 @@ import { posthog } from "@/lib/posthog";
 import { getSettings, useDevices } from "@/lib/settings";
 import { toast } from "@/lib/toast";
 
-import { cycleAtom, messageAtom,resetCPUState } from "./cpu/state";
+import { cycleAtom, cycleCountAtom, messageAtom,resetCPUState } from "./cpu/state";
 import { eventIsRunning, handleEvent } from "./handle-event";
 import { resetHandshakeState } from "./handshake/state";
 import { resetLedsState } from "./leds/state";
@@ -298,7 +298,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
       } else {
         store.set(messageAtom, ""); // Set messageAtom to blank if not executing by cycle
       }
-      console.log(`Ciclos ejecutados: ${cycleCount}`);
+      store.set(cycleCountAtom, cycleCount );
       if (event.value.type === "cpu:cycle.update" || event.value.type === "cpu:cycle.interrupt") {
         if (status.until === "cycle-change") {
          // pauseSimulation();
