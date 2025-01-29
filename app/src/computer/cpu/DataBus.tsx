@@ -34,11 +34,11 @@ dataBus.addNode("IP", { position: [451, 309] });
 dataBus.addNode("SP", { position: [451, 349] });
 dataBus.addNode("ri", { position: [451, 388] });
 dataBus.addNode("MAR", { position: [698, 349] });
-dataBus.addNode("result", { position: [370, 130] });
+dataBus.addNode("result", { position: [370, 100] });
 dataBus.addNode("FLAGS", { position: [250, 225] });
 dataBus.addNode("IR", { position: [205, 272] });
-dataBus.addNode("left", { position: [60, 85] });
-dataBus.addNode("right", { position: [60, 145] });
+dataBus.addNode("left", { position: [100, 85] });
+dataBus.addNode("right", { position: [100, 145] });
 dataBus.addNode("rmbr", { position: [250, 390] });
 
 // These are the intermediate nodes
