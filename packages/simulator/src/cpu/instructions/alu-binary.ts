@@ -84,9 +84,11 @@ export class ALUBinaryInstruction extends Instruction<
     yield { type: "cpu:cycle.update", phase: "decoded", next: "fetch-operands" };
 
     if (mode === "reg<-reg" || mode === "reg<-mem" || mode === "reg<-imd") {
-      // Move out operand to left register
-      if (size === 8) yield* computer.cpu.copyByteRegister(out, "left.l");
-      else yield* computer.cpu.copyWordRegister(out, "left");
+      if (mode !== "reg<-mem"){
+        // Move out operand to left register
+        if (size === 8) yield* computer.cpu.copyByteRegister(out, "left.l");
+        else yield* computer.cpu.copyWordRegister(out, "left");
+      }
     } else {
       // Fetch left operand, which is the memory cell
       if (out.mode === "direct") {
@@ -138,6 +140,11 @@ export class ALUBinaryInstruction extends Instruction<
         yield* computer.cpu.setMAR("ri");
         if (!(yield* computer.cpu.useBus("mem-read"))) return false; // Error reading memory
         yield* computer.cpu.getMBR("right.h");
+      }
+      if (mode === "reg<-mem"){
+        // Move out operand to left register
+        if (size === 8) yield* computer.cpu.copyByteRegister(out, "left.l");
+        else yield* computer.cpu.copyWordRegister(out, "left");
       }
     }
 
