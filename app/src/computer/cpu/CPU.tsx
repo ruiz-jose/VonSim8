@@ -17,6 +17,7 @@ export function CPU( ) {
   const cycleCount = useAtomValue(cycleCountAtom); 
 
   const [showRegisters, setShowRegisters] = useState(false);
+  const [showSP, setShowSP] = useState(false);
 
   useEffect(() => {
     const handleInstruction = (instruction: string) => {
@@ -24,6 +25,11 @@ export function CPU( ) {
         setShowRegisters(true);
       } else {
         setShowRegisters(false);
+      }
+      if (instruction === "CALL" || instruction === "RET" || instruction === "INT" || instruction === "IRET" || instruction === "POP" || instruction === "PUSH") {
+        setShowSP(true);
+      } else {
+        setShowSP(false);
       }
     };
 
@@ -70,17 +76,17 @@ export function CPU( ) {
       <Reg name="DX" emphasis className="left-[450px] top-[150px]" />
       <Reg name="id" emphasis className="left-[450px] top-[190px] opacity-0" />
 
-      <Reg name="MBR" className="right-[-51px] top-[233px]" />
+      <Reg name="MBR" className={clsx("right-[-51px] top-[233px]", "border-red-color")} />
 
-      <Reg name="IR" className="left-[171px] top-[270px]" />
+      <Reg name="IR" className={clsx("left-[171px] top-[270px]", "border-red-color")} />
 
       <Control />
 
-      <Reg name="IP" emphasis className="left-[450px] top-[292px]" />
-      <Reg name="SP" emphasis className="left-[450px] top-[332px]" />
+      <Reg name="IP" emphasis className={clsx("left-[450px] top-[292px]", "border-red-color")} />
+      {showSP && <Reg name="SP" emphasis className="left-[450px] top-[332px]" />}
       <Reg name="ri" emphasis className="left-[450px] top-[372px] opacity-0" />
 
-      <Reg name="MAR" className="right-[-51px] top-[333px]" />
+      <Reg name="MAR" className={clsx("right-[-51px] top-[333px]", "border-red-color")} />
 
     </div>
   );

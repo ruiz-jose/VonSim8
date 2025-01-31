@@ -9,6 +9,10 @@
   }
 }
 
+.border-red-color {
+  border-color: #ff6347;
+}
+
 .computer-background {
   background-color: theme(colors.stone.800);
   background-image: radial-gradient(
