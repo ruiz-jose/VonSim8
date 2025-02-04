@@ -199,9 +199,9 @@ export function generateDataPath(from: DataRegister, to: DataRegister, instructi
   } else if (from === "IP" && to === "id") {
     path = ["IP out", "IP out join", "outr mbr join", "mbr reg join", "id join", "id"];
   } else if (from === "id" && to === "ri") {
-    path = ["id out", "id out join", "outr mbr join","mbr reg join", "ri join", "ri", "MAR join1", "MAR join2", "MAR"];
+    path = ["id out", "id out join", "outr mbr join", "MAR join2", "MAR"];
   } else if (from === "BX" && to === "ri") {
-    path = ["BX out", "BX out join", "outr mbr join","mbr reg join", "ri join", "ri", "MAR join1", "MAR join2", "MAR"];
+    path = ["BX out", "BX out join", "outr mbr join", "MAR join2", "MAR"];
   } else if (from === "id" && to === "MBR") {
     path = ["id out", "id out join", "outr mbr join", "MBR"];
   } else if (from === "id" && to === "IP" && instruction === "RET") {
