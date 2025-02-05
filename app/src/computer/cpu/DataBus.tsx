@@ -37,8 +37,8 @@ dataBus.addNode("MAR", { position: [698, 349] });
 dataBus.addNode("result", { position: [370, 100] });
 dataBus.addNode("FLAGS", { position: [250, 225] });
 dataBus.addNode("IR", { position: [205, 272] });
-dataBus.addNode("left", { position: [100, 85] });
-dataBus.addNode("right", { position: [100, 145] });
+dataBus.addNode("left", { position: [130, 85] });
+dataBus.addNode("right", { position: [125, 145] });
 dataBus.addNode("rmbr", { position: [250, 390] });
 
 // These are the intermediate nodes
@@ -60,7 +60,7 @@ dataBus.addNode("IR mbr join", { position: [205, 250] });
 dataBus.addNode("left join", { position: [30, 85] });
 dataBus.addNode("right join", { position: [30, 145] });
 dataBus.addNode("operands mbr join", { position: [30, 250] });
-dataBus.addNode("outr mbr join", { position: [553, 250] });
+dataBus.addNode("outr mbr join", { position: [550, 250] });
 dataBus.addNode("mbr reg join", { position: [421, 250] });
 
 // Añadir nodos de unión para los registros AX, BX, CX, DX e id
@@ -74,13 +74,13 @@ dataBus.addNode("SP out", { position: [510, 309] });
 dataBus.addNode("IP out", { position: [510, 349] });
 
 // Añadir nodos de unión para los buses de salida en la parte posterior de los registros
-dataBus.addNode("AX out join", { position: [553, 45] });
-dataBus.addNode("BX out join", { position: [553, 85] });
-dataBus.addNode("CX out join", { position: [553, 125] });
-dataBus.addNode("DX out join", { position: [553, 165] });
-dataBus.addNode("id out join", { position: [553, 205] });
+dataBus.addNode("AX out join", { position: [550, 45] });
+dataBus.addNode("BX out join", { position: [550, 85] });
+dataBus.addNode("CX out join", { position: [550, 125] });
+dataBus.addNode("DX out join", { position: [550, 165] });
+dataBus.addNode("id out join", { position: [550, 205] });
 
-dataBus.addNode("SP out join", { position: [553, 309] });
+dataBus.addNode("SP out join", { position: [550, 309] });
 dataBus.addNode("IP out join", { position: [550, 349] });
 
 dataBus.addUndirectedEdge("AX", "AX out");
@@ -251,10 +251,15 @@ export function generateDataPath(from: DataRegister, to: DataRegister, instructi
   return d;
 }
 
+
+type DataBusProps = {
+  showSP: boolean;
+};
+
 /**
  * DataBus component, to be used inside <CPU />
  */
-export function DataBus() {
+export function DataBus({ showSP }: DataBusProps) {
   const { path, ...style } = getSpring("cpu.internalBus.data");
 
   return (
@@ -280,21 +285,22 @@ export function DataBus() {
           // Address registers
           "M 430 349 H 421", // ri
           "V 250", // Long path to MBR, here to get nice joins
-          "M 451 349 H 421", // SP
-          "M 451 309 H 421", // IP
+          "M 451 349 H 421", // IP
+          //"M 451 309 H 421", // SP
+          showSP ? "M 451 309 H 421" : "M 451 309", // SP
           // Data registers
           "M 451 45 H 421", // AX     
           "V 250", // Long path to MBR, here to get nice joins
           "M 451 85 H 421", // BX
           "M 451 125 H 421", // CX
           "M 451 165 H 421", // DX
-          //"M 451 205 H 421", // id
+          showSP ? "M 451 205 H 421" : "",// id
             // Output buses
           "M 550 45 H 520", // AX out
           "M 550 85 H 510", // BX out
           "M 550 125 H 510", // CX out
           "M 550 165 H 510", // DX out
-         // "M 550 205 H 510", // id out
+          showSP ? "M 550 205 H 510" : "", // id out
          //"M 550 10 V 250", // Vertical join for output buses
           "M 550 40 V 250", // Vertical join for output buses
          // "M 550 45 H 492", // Connect to data mbr join

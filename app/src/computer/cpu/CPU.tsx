@@ -17,6 +17,7 @@ export function CPU( ) {
   const cycleCount = useAtomValue(cycleCountAtom); 
 
   const [showRegisters, setShowRegisters] = useState(false);
+  const [showSP, setShowSP] = useState(false);
 
   useEffect(() => {
     const handleInstruction = (instruction: string) => {
@@ -24,6 +25,11 @@ export function CPU( ) {
         setShowRegisters(true);
       } else {
         setShowRegisters(false);
+      }
+      if (instruction === "CALL" || instruction === "RET" || instruction === "INT" || instruction === "IRET" || instruction === "POP" || instruction === "PUSH") {
+        setShowSP(true);
+      } else {
+        setShowSP(false);
       }
     };
 
@@ -51,13 +57,13 @@ export function CPU( ) {
         {cycleCount}
       </span>
 
-      <AddressBus />
-      <DataBus />
+      <AddressBus showSP={showSP} />
+      <DataBus showSP={showSP} />
 
       {showRegisters && (
         <>
-          <Reg name="left" className="left-[60px] top-[50px]" />
-          <Reg name="right" className="left-[60px] top-[110px]" />
+          <Reg name="left" className="left-[110px] top-[50px]" />
+          <Reg name="right" className="left-[100px] top-[110px]" />
           <Reg name="result" className="left-[300px] top-[80px]" />
         </>
       )}
@@ -68,15 +74,14 @@ export function CPU( ) {
       <Reg name="BX" emphasis className="left-[450px] top-[70px]" />
       <Reg name="CX" emphasis className="left-[450px] top-[110px]" />
       <Reg name="DX" emphasis className="left-[450px] top-[150px]" />
-      <Reg name="id" emphasis className="left-[450px] top-[190px] opacity-0" />
+      <Reg name="id" className={clsx("left-[450px] top-[190px]", "border-red-color")} />
 
       <Reg name="MBR" className={clsx("right-[-51px] top-[233px]", "border-red-color")} />
 
       <Reg name="IR" className={clsx("left-[171px] top-[270px]", "border-red-color")} />
 
       <Control />
-
-      <Reg name="SP" emphasis className={clsx("left-[450px] top-[292px]", "border-red-color")} />
+      {showSP && <Reg name="SP" emphasis className={clsx("left-[450px] top-[292px]", "border-red-color")} />}
       <Reg name="IP" emphasis className={clsx("left-[450px] top-[332px]", "border-red-color")} />
       <Reg name="ri" emphasis className="left-[450px] top-[372px] opacity-0" />
 

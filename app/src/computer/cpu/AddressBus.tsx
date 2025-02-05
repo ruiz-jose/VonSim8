@@ -5,6 +5,10 @@ import { animated, getSpring } from "@/computer/shared/springs";
 
 export type { MARRegister as AddressRegister };
 
+type AddressBusProps = {
+  showSP: boolean;
+};
+
 /**
  * Given an {@link MARRegister}, returns the shortest path between it
  * and the MAR register.
@@ -32,13 +36,13 @@ export function generateAddressPath(from: MARRegister): string {
 /**
  * AddressBus component, to be used inside <CPU />
  */
-export function AddressBus() {
+export function AddressBus({ showSP }: AddressBusProps) {
   const { path, ...style } = getSpring("cpu.internalBus.address");
   const [highlight] = useState(false);
 
   const paths = [
-    "M 451 309 H 550 V 250", // IP
-    "M 451 349 H 550 V 250", // SP
+    showSP ? "M 451 309 H 550 V 250" : "", // SP
+    "M 451 349 H 550 V 250", // IP
     //"M 444 388 H 550 V 300", // ri
     "M 451 349 H 698", // Connection to MAR
   ];
