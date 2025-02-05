@@ -30,8 +30,8 @@ dataBus.addNode("BX", { position: [451, 85] });
 dataBus.addNode("CX", { position: [451, 125] });
 dataBus.addNode("DX", { position: [451, 165] });
 dataBus.addNode("id", { position: [451, 205] });
-dataBus.addNode("IP", { position: [451, 309] });
-dataBus.addNode("SP", { position: [451, 349] });
+dataBus.addNode("SP", { position: [451, 309] });
+dataBus.addNode("IP", { position: [451, 349] });
 dataBus.addNode("ri", { position: [451, 388] });
 dataBus.addNode("MAR", { position: [698, 349] });
 dataBus.addNode("result", { position: [370, 100] });
@@ -48,8 +48,8 @@ dataBus.addNode("CX join", { position: [421, 125] });
 dataBus.addNode("DX join", { position: [421, 165] });
 dataBus.addNode("id join", { position: [421, 205] });
 dataBus.addNode("data mbr join", { position: [421, 250] });
-dataBus.addNode("IP join", { position: [421, 309] });
-dataBus.addNode("SP join", { position: [421, 349] });
+dataBus.addNode("SP join", { position: [421, 309] });
+dataBus.addNode("IP join", { position: [421, 349] });
 dataBus.addNode("ri join", { position: [421, 388] });
 dataBus.addNode("MAR join1", { position: [550, 388] });
 dataBus.addNode("MAR join2", { position: [550, 349] });
@@ -70,8 +70,8 @@ dataBus.addNode("CX out", { position: [510, 125] });
 dataBus.addNode("DX out", { position: [510, 165] });
 dataBus.addNode("id out", { position: [510, 205] });
 
-dataBus.addNode("IP out", { position: [510, 309] });
-dataBus.addNode("SP out", { position: [510, 349] });
+dataBus.addNode("SP out", { position: [510, 309] });
+dataBus.addNode("IP out", { position: [510, 349] });
 
 // Añadir nodos de unión para los buses de salida en la parte posterior de los registros
 dataBus.addNode("AX out join", { position: [553, 45] });
@@ -80,8 +80,8 @@ dataBus.addNode("CX out join", { position: [553, 125] });
 dataBus.addNode("DX out join", { position: [553, 165] });
 dataBus.addNode("id out join", { position: [553, 205] });
 
-dataBus.addNode("IP out join", { position: [553, 309] });
-dataBus.addNode("SP out join", { position: [550, 349] });
+dataBus.addNode("SP out join", { position: [553, 309] });
+dataBus.addNode("IP out join", { position: [550, 349] });
 
 dataBus.addUndirectedEdge("AX", "AX out");
 dataBus.addUndirectedEdge("BX", "BX out");

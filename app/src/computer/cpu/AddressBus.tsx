@@ -13,10 +13,10 @@ export type { MARRegister as AddressRegister };
  */
 export function generateAddressPath(from: MARRegister): string {
   switch (from) {
-    case "IP":
+    case "SP":
       return "M 451 309 H 550 V 349 H 698";
 
-    case "SP":
+    case "IP":
       return "M 451 349 H 698";
 
     case "ri":
