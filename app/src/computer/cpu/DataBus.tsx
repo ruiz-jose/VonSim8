@@ -40,6 +40,9 @@ dataBus.addNode("IR", { position: [205, 272] });
 dataBus.addNode("left", { position: [130, 85] });
 dataBus.addNode("right", { position: [125, 145] });
 dataBus.addNode("rmbr", { position: [250, 390] });
+dataBus.addNode("bleft1", { position: [550, 16] });
+dataBus.addNode("bleft2", { position: [100, 16] });
+dataBus.addNode("bleft3", { position: [100, 85] });
 
 // These are the intermediate nodes
 dataBus.addNode("AX join", { position: [421, 45] });
@@ -104,6 +107,15 @@ dataBus.addUndirectedEdge("BX out join", "outr mbr join");
 dataBus.addUndirectedEdge("CX out join", "outr mbr join");
 dataBus.addUndirectedEdge("DX out join", "outr mbr join");
 dataBus.addUndirectedEdge("id out join", "outr mbr join");
+
+dataBus.addUndirectedEdge("AX out join", "bleft1");
+dataBus.addUndirectedEdge("BX out join", "bleft1");
+dataBus.addUndirectedEdge("CX out join", "bleft1");
+dataBus.addUndirectedEdge("DX out join", "bleft1");
+dataBus.addUndirectedEdge("id out join", "bleft1");
+dataBus.addUndirectedEdge("bleft1", "bleft2");
+dataBus.addUndirectedEdge("bleft2", "bleft3");
+dataBus.addUndirectedEdge("bleft3", "left");
 
 dataBus.addUndirectedEdge("IP out join", "outr mbr join");
 dataBus.addUndirectedEdge("SP out join", "outr mbr join");
@@ -176,6 +188,21 @@ export function generateDataPath(from: DataRegister, to: DataRegister, instructi
   console.log("to:", to);
 
   const intermediatePath = (from: DataRegister, to: DataRegister): string[] => {
+    if (to === "left") {
+      return [
+        from,
+        "bleft1", // Añadir el nodo bleft1
+        "bleft2", // Añadir el nodo bleft2
+        "bleft3", // Añadir el nodo bleft3
+        "left", // Añadir el nodo left join
+        `${from} out`,
+        `${from} out join`,
+        "outr mbr join",
+        "mbr reg join",
+        `${to} join`,
+        to,
+      ];
+    }
     return [
       from,
       `${from} out`,
@@ -305,8 +332,8 @@ export function DataBus({ showSP }: DataBusProps) {
           "M 550 40 V 250", // Vertical join for output buses
          // "M 550 45 H 492", // Connect to data mbr join
           // Connect output buses to left of ALU
-         /* "M 550 10 H 100 V 84", // AX out to left
-          "M 555 10 H 100 V 84", // BX out to left
+          "M 550 45 V 16 H 100 V 84", // out to left
+          /*"M 550 12 V 60", // BX out to left
           "M 555 10 H 100 V 84", // CX out to left
           "M 555 10 H 100 V 84", // DX out to left*/
           //"M 510 205 H 60", // id out to left
