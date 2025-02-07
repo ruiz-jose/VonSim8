@@ -41,8 +41,8 @@ dataBus.addNode("left", { position: [130, 85] });
 dataBus.addNode("right", { position: [125, 145] });
 dataBus.addNode("rmbr", { position: [250, 390] });
 dataBus.addNode("bleft1", { position: [550, 16] });
-dataBus.addNode("bleft2", { position: [100, 16] });
-dataBus.addNode("bleft3", { position: [100, 85] });
+dataBus.addNode("bleft2", { position: [90, 16] });
+dataBus.addNode("bleft3", { position: [90, 85] });
 
 // These are the intermediate nodes
 dataBus.addNode("AX join", { position: [421, 45] });
@@ -61,8 +61,8 @@ dataBus.addNode("result mbr join", { position: [370, 250] });
 dataBus.addNode("FLAGS mbr join", { position: [250, 250] });
 dataBus.addNode("IR mbr join", { position: [205, 250] });
 dataBus.addNode("left join", { position: [30, 85] });
-dataBus.addNode("right join", { position: [30, 145] });
-dataBus.addNode("operands mbr join", { position: [30, 250] });
+dataBus.addNode("right join", { position: [90, 145] });
+dataBus.addNode("operands mbr join", { position: [90, 250] });
 dataBus.addNode("outr mbr join", { position: [550, 250] });
 dataBus.addNode("mbr reg join", { position: [421, 250] });
 
@@ -296,14 +296,14 @@ export function DataBus({ showSP }: DataBusProps) {
         strokeLinejoin="round"
         d={[
           // ALU registers
-          "M 60 85 H 30", // left
+          "M 90 145 H 90", // left
           "V 250 H 630", // Long path to MBR, here to get nice joins
-          "M 60 145 H 30", // right
+          "M 90 145 H 90", // right
           "M 370 110 V 250", // result
           "M 250 225 V 250", // flags
           // Internal ALU
-          "M 33 85 H 220", // left
-          "M 32 145 H 220", // right
+          "M 85 85 H 220", // left
+          "M 85 145 H 220", // right
           "M 272 115 h 100", // result
           "M 250 145 v 46", // flags
           // Decoder
@@ -332,7 +332,7 @@ export function DataBus({ showSP }: DataBusProps) {
           "M 550 40 V 250", // Vertical join for output buses
          // "M 550 45 H 492", // Connect to data mbr join
           // Connect output buses to left of ALU
-          "M 550 45 V 16 H 100 V 84", // out to left
+          "M 550 45 V 16 H 90 V 84", // out to left
           /*"M 550 12 V 60", // BX out to left
           "M 555 10 H 100 V 84", // CX out to left
           "M 555 10 H 100 V 84", // DX out to left*/
