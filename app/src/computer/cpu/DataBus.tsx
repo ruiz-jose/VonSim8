@@ -34,7 +34,8 @@ dataBus.addNode("SP", { position: [451, 309] });
 dataBus.addNode("IP", { position: [451, 349] });
 dataBus.addNode("ri", { position: [451, 388] });
 dataBus.addNode("MAR", { position: [698, 349] });
-dataBus.addNode("result", { position: [370, 100] });
+dataBus.addNode("result", { position: [272, 115] });
+dataBus.addNode("ALUresult", { position: [370, 115] });
 dataBus.addNode("FLAGS", { position: [250, 225] });
 dataBus.addNode("IR", { position: [205, 272] });
 dataBus.addNode("left", { position: [130, 85] });
@@ -160,7 +161,8 @@ dataBus.addUndirectedEdge("SP join", "ri join");
 dataBus.addUndirectedEdge("IP join", "addresses mbr join");
 dataBus.addUndirectedEdge("addresses mbr join", "data mbr join");
 
-dataBus.addUndirectedEdge("result", "result mbr join");
+dataBus.addUndirectedEdge("result", "ALUresult");
+dataBus.addUndirectedEdge("ALUresult", "result mbr join");
 dataBus.addUndirectedEdge("result mbr join", "addresses mbr join");
 
 dataBus.addUndirectedEdge("FLAGS", "FLAGS mbr join");
@@ -299,12 +301,12 @@ export function DataBus({ showSP }: DataBusProps) {
           "M 90 145 H 90", // left
           "V 250 H 630", // Long path to MBR, here to get nice joins
           "M 90 145 H 90", // right
-          "M 370 110 V 250", // result
+          "M 272 115 H 370 V 250", // result
           "M 250 225 V 250", // flags
           // Internal ALU
           "M 85 85 H 220", // left
           "M 85 145 H 220", // right
-          "M 272 115 h 100", // result
+          //"M 272 115 h 100", // result
           "M 250 145 v 46", // flags
           // Decoder
           "M 205 250 V 272", // IP

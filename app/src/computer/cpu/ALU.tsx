@@ -67,24 +67,7 @@ export function ALU() {
           pathLength={1}
           strokeDasharray={1}
           style={getSpring("cpu.alu.operands")}
-        />
-        <animated.path
-          className="fill-none stroke-mantis-400 stroke-bus"
-          strokeLinejoin="round"
-          d="M 272 115 h 100"
-          pathLength={1}
-          strokeDasharray={1}
-          style={getSpring("cpu.alu.results")}
-        />
-        <animated.path
-          className="fill-none stroke-mantis-400 stroke-bus"
-          strokeLinejoin="round"
-          d="M 250 145 v 46"
-          pathLength={1}
-          strokeDasharray={1}
-          style={getSpring("cpu.alu.results")}
-        />
-
+        />       
         {/* ALU */}
         <path
           d="M 220 65 v 40 l 17.32 10 l -17.32 10 v 40 l 51.96 -30 v -40 Z"

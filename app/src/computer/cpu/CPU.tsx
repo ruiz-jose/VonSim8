@@ -64,7 +64,6 @@ export function CPU( ) {
         <>
           <Reg name="left" className="left-[110px] top-[50px]" />
           <Reg name="right" className="left-[100px] top-[110px]" />
-          <Reg name="result" className="left-[300px] top-[80px]" />
         </>
       )}
 
