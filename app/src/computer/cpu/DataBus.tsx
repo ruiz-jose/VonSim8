@@ -304,7 +304,7 @@ export function DataBus({ showSP }: DataBusProps) {
           "M 272 115 H 370 V 250", // result
           "M 250 225 V 250", // flags
           // Internal ALU
-          "M 85 85 H 220", // left
+          //"M 85 85 H 220", // left
           "M 85 145 H 220", // right
           //"M 272 115 h 100", // result
           "M 250 145 v 46", // flags
@@ -334,7 +334,7 @@ export function DataBus({ showSP }: DataBusProps) {
           "M 550 40 V 250", // Vertical join for output buses
          // "M 550 45 H 492", // Connect to data mbr join
           // Connect output buses to left of ALU
-          "M 550 45 V 16 H 90 V 84", // out to left
+          "M 550 45 V 16 H 90 V 84 H 220", // out to left
           /*"M 550 12 V 60", // BX out to left
           "M 555 10 H 100 V 84", // CX out to left
           "M 555 10 H 100 V 84", // DX out to left*/
