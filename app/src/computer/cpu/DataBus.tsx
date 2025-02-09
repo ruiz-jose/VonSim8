@@ -298,14 +298,14 @@ export function DataBus({ showSP }: DataBusProps) {
         strokeLinejoin="round"
         d={[
           // ALU registers
-          "M 90 145 H 90", // left
+          "M 220 145 H 90", // left
           "V 250 H 630", // Long path to MBR, here to get nice joins
           "M 90 145 H 90", // right
           "M 272 115 H 370 V 250", // result
           "M 250 225 V 250", // flags
           // Internal ALU
           //"M 85 85 H 220", // left
-          "M 85 145 H 220", // right
+          //"M 85 145 H 220", // right
           //"M 272 115 h 100", // result
           "M 250 145 v 46", // flags
           // Decoder

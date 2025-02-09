@@ -62,8 +62,8 @@ export function CPU( ) {
 
       {showRegisters && (
         <>
-          <Reg name="left" className="left-[110px] top-[50px]" />
-          <Reg name="right" className="left-[100px] top-[110px]" />
+          <Reg name="left" className={clsx("left-[96px] top-[49px]", "border-transparent", "bg-transparent")}/>
+          <Reg name="right" className={clsx("left-[96px] top-[150px]", "border-transparent", "bg-transparent")}/>
         </>
       )}
 

@@ -39,10 +39,10 @@ export function Register({
     <Popover>
       <PopoverTrigger asChild>
         <animated.button
-          title= {`Registro ${displayName}`}
+          title={displayName !== "left" && displayName !== "right" ? `Registro ${displayName}` : displayName}
           className={clsx(
             "flex w-min cursor-pointer items-center rounded-md border bg-stone-800 px-2 py-1 font-mono leading-none transition-opacity",
-            emphasis ? "border-mantis-400 text-lg" : "border-stone-600 text-base",
+            emphasis ? "border-mantis-400 text-lg" : "border-stone-600 text-base",       
             className,
           )}
           style={getSpring(springs)}
@@ -53,7 +53,9 @@ export function Register({
       </PopoverTrigger>
 
       <PopoverContent className="w-60">
-        <p className="px-4 py-2 font-medium text-white">Registro {displayName}</p>
+        <p className="px-4 py-2 font-medium text-white">
+          {displayName !== "left" && displayName !== "right" ? `Registro ${displayName}` : displayName}
+        </p>
         <hr className="border-stone-600" />
         <ul className="px-4 py-2 text-sm">
           {(["hex", "bin", "uint", "int", "safe-ascii"] as const).map(rep => (
