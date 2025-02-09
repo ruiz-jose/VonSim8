@@ -16,7 +16,7 @@ import { posthog } from "@/lib/posthog";
 import { getSettings, useDevices } from "@/lib/settings";
 import { toast } from "@/lib/toast";
 
-import { cycleAtom, cycleCountAtom, messageAtom,resetCPUState } from "./cpu/state";
+import { cycleAtom, cycleCountAtom, instructionCountAtom, messageAtom, resetCPUState } from "./cpu/state";
 import { eventIsRunning, handleEvent } from "./handle-event";
 import { resetHandshakeState } from "./handshake/state";
 import { resetLedsState } from "./leds/state";
@@ -93,6 +93,7 @@ let shouldDisplayMessage = true;
 let jump_yes = true;
 let currentInstructionMode = false;
 let cycleCount = 0;
+let instructionCount = 0;
 
 
 /**
@@ -110,6 +111,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
           executeStageCounter = 0;
           messageReadWrite = "";
           cycleCount = 0; // Reiniciar el contador de ciclos
+          instructionCount = 0; // Reiniciar el contador de instrucciones
           store.set(messageAtom, "Detenido"); // Guardar el mensaje "Detenido"
           break; // stop the thread
         }
@@ -134,15 +136,19 @@ async function startThread(generator: EventGenerator): Promise<void> {
       }
 
       if (status.until === "cycle-change" || status.until === "end-of-instruction" || status.until === "infinity") {
-        if (event.value.type === "cpu:cycle.end") {
+        if (event.value.type === "cpu:cycle.end" || event.value.type === "cpu:halt") {
           fetchStageCounter = 0;
           executeStageCounter = 0;
-          messageReadWrite = "";      
+          messageReadWrite = "";  
+          instructionCount++;
+          console.log(`Instrucciones: ${instructionCount}`);
+          store.set(instructionCountAtom, instructionCount );    
           store.set(messageAtom, "-"); 
-           if (status.until === "cycle-change") {
+          if ( event.value.type === "cpu:halt") {
+            store.set(messageAtom, "Detenido");
+          }
+          if (status.until === "cycle-change" || status.until === "end-of-instruction") {
             pauseSimulation();
-          } else if (status.until === "end-of-instruction") {
-            pauseSimulation(); 
           }
           continue;
         }  else if (event.value.type === "cpu:int.6") {            
