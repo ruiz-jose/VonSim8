@@ -110,6 +110,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
           executeStageCounter = 0;
           messageReadWrite = "";
           cycleCount = 0; // Reiniciar el contador de ciclos
+          store.set(messageAtom, "Detenido"); // Guardar el mensaje "Detenido"
           break; // stop the thread
         }
         if (status.type === "paused") {
@@ -132,19 +133,28 @@ async function startThread(generator: EventGenerator): Promise<void> {
         currentInstructionMode = event.value.instruction.willUse.id? true : false;
       }
 
-      if (status.until === "cycle-change") {
+      if (status.until === "cycle-change" || status.until === "end-of-instruction" || status.until === "infinity") {
         if (event.value.type === "cpu:cycle.end") {
           fetchStageCounter = 0;
           executeStageCounter = 0;
-          messageReadWrite = "";        
-          pauseSimulation();
+          messageReadWrite = "";      
+          store.set(messageAtom, "-"); 
+           if (status.until === "cycle-change") {
+            pauseSimulation();
+          } else if (status.until === "end-of-instruction") {
+            pauseSimulation(); 
+          }
           continue;
         }  else if (event.value.type === "cpu:int.6") {            
           store.set(messageAtom, "PILA ← DL; DL ← ASCII; (BL) ← DL; IRET");
-          pauseSimulation();  
+          if (status.until === "cycle-change") {
+            pauseSimulation();
+          }
         }  else if (event.value.type === "cpu:int.7") {            
           store.set(messageAtom, "PILA ← DL; Bucle: DL ← (BL); video ← DL; SUB AL, 1; JNZ Bucle; (BL) ← DL; IRET");
-          pauseSimulation();         
+          if (status.until === "cycle-change") {
+            pauseSimulation();
+          }       
         }     
         if (fetchStageCounter < 3 ) {
           if (event.value.type === "cpu:mar.set") {
@@ -157,18 +167,24 @@ async function startThread(generator: EventGenerator): Promise<void> {
             } else {
               store.set(messageAtom, "Captación: MAR ← IP");
             }
-            pauseSimulation();
+            if (status.until === "cycle-change") {
+              pauseSimulation();
+            }
             fetchStageCounter++;
             cycleCount++;
             
           } else if (event.value.type === "cpu:register.update") {
             store.set(messageAtom, "Captación: MBR ← read(Memoria[MAR]); IP ← IP + 1");
-            pauseSimulation();
+            if (status.until === "cycle-change") {
+              pauseSimulation();
+            }
             fetchStageCounter++;
             cycleCount++;
           } else if (event.value.type === "cpu:mbr.get") {
             store.set(messageAtom, "Captación: IR ← MBR");
-            pauseSimulation();            
+            if (status.until === "cycle-change") {
+              pauseSimulation();
+            }          
             fetchStageCounter++;
             cycleCount++;
           }
@@ -186,7 +202,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
             if (shouldDisplayMessage) {
               store.set(messageAtom, `Ejecución: MAR ← ${displayRegister}`);
             }
-            pauseSimulation();
+            if (status.until === "cycle-change") {
+              pauseSimulation();
+            }
             executeStageCounter++;
             cycleCount++;
 
@@ -218,7 +236,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
             }
             store.set(messageAtom, displayMessage);
             if (displayMessage !== "MAR ← (video)"){
-              pauseSimulation();            
+              if (status.until === "cycle-change") {
+                pauseSimulation();
+              }           
             }
             executeStageCounter++;
             cycleCount++;
@@ -232,7 +252,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
               store.set(messageAtom, `Ejecución: ${sourceRegister} ← MBR`);
               cycleCount++;
               if (String(sourceRegister) === 'id' || (String(sourceRegister) === "DL" && currentInstructionName === "INT")) {
-                pauseSimulation();                
+                if (status.until === "cycle-change") {
+                  pauseSimulation();
+                }               
               } 
             }           
           } else if (event.value.type === "cpu:register.copy") {
@@ -244,15 +266,21 @@ async function startThread(generator: EventGenerator): Promise<void> {
             if (sourceRegister === "ri" && destRegister === "IP") {
               displayMessage = "Ejecución: IP ← MBR";
               store.set(messageAtom, displayMessage);
-              pauseSimulation();
+              if (status.until === "cycle-change") {
+                pauseSimulation();
+              }
             } else if (destRegister === "left" && currentInstructionName === "INT") {
               displayMessage = "ADD BL, 1"; 
             } else if (sourceRegister === "result"   && currentInstructionName === "INT") {
-              pauseSimulation(); 
+              if (status.until === "cycle-change") {
+                pauseSimulation();
+              }
             } else if (sourceRegister === "IP" && destRegister === "id") {
               displayMessage = "Ejecución: id ← IP";
               store.set(messageAtom, displayMessage);
-              pauseSimulation(); 
+              if (status.until === "cycle-change") {
+                pauseSimulation();
+              }
             } else if (sourceRegister === "id" && destRegister === "ri") {
               displayMessage = "Ejecución: MAR ← id";
               shouldDisplayMessage = false; // No mostrar el mensaje en el próximo ciclo
@@ -264,7 +292,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
             }else if (sourceRegister === "id" && destRegister === "IP") {
               displayMessage = "Ejecución: IP ← MBR";
               store.set(messageAtom, displayMessage);
-              pauseSimulation();
+              if (status.until === "cycle-change") {
+                pauseSimulation();
+              }
             } else if ((sourceRegister === "BL" && destRegister === "ri") ||(sourceRegister === "BX" && destRegister === "ri")) {
               displayMessage = "Ejecución: MAR ← BL";
               store.set(messageAtom, displayMessage);
@@ -284,7 +314,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
           } else if (event.value.type === "bus:reset" && executeStageCounter > 1
             && (!currentInstructionMode && (currentInstructionName === "MOV" || currentInstructionName === "ADD" || currentInstructionName === "SUB"  || currentInstructionName === "CMP"))) {
             store.set(messageAtom, messageReadWrite);
-            pauseSimulation();
+            if (status.until === "cycle-change") {
+              pauseSimulation();
+            }
             cycleCount++; 
           } else if (event.value.type === "cpu:mbr.set") {
             const sourceRegister = event.value.register === "id.l" ? "id" : 
@@ -292,7 +324,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
             event.value.register === "IP.l" ? "IP" : 
             event.value.register;
             store.set(messageAtom, `Ejecución: MBR ← ${sourceRegister}`);
-            pauseSimulation();
+            if (status.until === "cycle-change") {
+              pauseSimulation();
+            }
             cycleCount++;
           }  
         }
