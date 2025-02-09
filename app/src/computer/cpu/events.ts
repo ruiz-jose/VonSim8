@@ -116,7 +116,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         [
          // { key: "cpu.id.opacity", to: event.instruction.willUse.id ? 1 : 0.4 },
          // { key: "cpu.ri.opacity", to: event.instruction.willUse.ri ? 1 : 0.4 },
-         { key: "cpu.id.opacity", to: event.instruction.willUse.id ? 0.4 : 0 },
+         { key: "cpu.id.opacity", to: event.instruction.willUse.id ? 1 : 0 },
          { key: "cpu.ri.opacity", to: event.instruction.willUse.ri ? 0.4 : 0 },
         ],
         { duration: 0.5, easing: "easeInOutQuad" },
