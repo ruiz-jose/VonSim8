@@ -45,7 +45,7 @@ export function Register({
             emphasis ? "border-mantis-400 text-lg" : "border-stone-600 text-base",       
             className,
           )}
-          style={getSpring(springs)}
+          style={displayName === "left" || displayName === "right" ? { backgroundColor: "transparent" } : getSpring(springs)}
         >
           <span className="mr-2 font-bold">{displayName}</span>
           <span className="rounded bg-stone-900 p-0.5 font-light">{low.toString("hex")}</span>
