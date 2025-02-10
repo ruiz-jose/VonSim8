@@ -110,8 +110,6 @@ async function startThread(generator: EventGenerator): Promise<void> {
           fetchStageCounter = 0;
           executeStageCounter = 0;
           messageReadWrite = "";
-          cycleCount = 0; // Reiniciar el contador de ciclos
-          instructionCount = 0; // Reiniciar el contador de instrucciones
           store.set(messageAtom, "Detenido"); // Guardar el mensaje "Detenido"
           break; // stop the thread
         }
@@ -146,8 +144,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
           store.set(messageAtom, "-"); 
           if ( event.value.type === "cpu:halt") {
             store.set(messageAtom, "Detenido");
-          }
-          if (status.until === "cycle-change" || status.until === "end-of-instruction") {
+          }else if (status.until === "cycle-change" || status.until === "end-of-instruction") {
             pauseSimulation();
           }
           continue;
@@ -392,6 +389,10 @@ async function dispatch(...args: Action) {
 
       if (status.type === "stopped") {
         if (!window.codemirror) return;
+        cycleCount = 0; // Reiniciar el contador de ciclos
+        instructionCount = 0; // Reiniciar el contador de instrucciones
+        store.set(cycleCountAtom, cycleCount); // Actualizar el átomo
+        store.set(instructionCountAtom, instructionCount); // Actualizar el átomo
 
         const code = window.codemirror.state.doc.toString();
         const result = assemble(code);
