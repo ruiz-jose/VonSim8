@@ -83,7 +83,7 @@ export function Controls({ className }: { className?: string }) {
       <kbd className="ml-2 hidden text-stone-600 md:inline">F4</kbd>
     </button>
     <button
-      disabled={status.type === "stopped"}
+      disabled={status.type === "stopped" || status.type === "paused"}
       onClick={() => dispatch("cpu.stop")}
       className="inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md bg-red-500 px-3 text-sm text-white ring-offset-stone-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
     >
