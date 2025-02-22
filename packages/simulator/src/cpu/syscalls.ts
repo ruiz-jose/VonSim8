@@ -55,7 +55,12 @@ export function* handleSyscall(
 
       if (!(yield* computer.cpu.pushToStack("DL"))) return false; // Stack overflow
 
-      const char = yield* computer.io.keyboard.readChar();
+      const keyboard = computer.io.keyboard;
+      if (!keyboard) {
+        yield { type: "cpu:error", error: new SimulatorError("device-not-connected", "keyboard") };
+        return false;
+      }
+      const char = yield* keyboard.readChar();
 
       //yield* computer.cpu.updateByteRegister("id.l",char);
       yield* computer.cpu.updateByteRegister("DL",char);
@@ -97,7 +102,7 @@ export function* handleSyscall(
         SF: AL.signed < 0,
         ZF: AL.isZero(),
       });*/
-      let video = 0xC0;
+      let video = 0xD8;
       while (!computer.cpu.getRegister("AL").isZero()) {
         // Read character from [BX]
         yield* computer.cpu.copyWordRegister("BX", "ri");
@@ -115,7 +120,12 @@ export function* handleSyscall(
 
         // Send character to the screen
         const char = computer.cpu.getRegister("DL");
-        yield* computer.io.screen.sendChar(char);
+        if (computer.io.screen) {
+          yield* computer.io.screen.sendChar(char);
+        } else {
+          yield { type: "cpu:error", error: new SimulatorError("device-not-connected", "screen") };
+          return false;
+        }
         video++;
 
 
