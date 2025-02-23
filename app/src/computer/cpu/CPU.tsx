@@ -10,15 +10,16 @@ import { AddressBus } from "./AddressBus";
 import { ALU } from "./ALU";
 import { Control } from "./Control";
 import { DataBus } from "./DataBus";
-import { cycleCountAtom, instructionCountAtom, registerAtoms } from "./state";
+import { cycleCountAtom, instructionCountAtom, registerAtoms, showSPAtom } from "./state";
 
 export function CPU( ) {
   const translate = useTranslate();
   const cycleCount = useAtomValue(cycleCountAtom); 
   const instructionCount = useAtomValue(instructionCountAtom); 
+  const showSP = useAtomValue(showSPAtom); // Usar el átomo showSPAtom
+  const [showid, setShowid] = useState(false);
 
   const [showRegisters, setShowRegisters] = useState(false);
-  const [showSP, setShowSP] = useState(false);
 
   useEffect(() => {
     const handleInstruction = (instruction: string) => {
@@ -28,9 +29,9 @@ export function CPU( ) {
         setShowRegisters(false);
       }
       if (instruction === "CALL" || instruction === "RET" || instruction === "INT" || instruction === "IRET" || instruction === "POP" || instruction === "PUSH") {
-        setShowSP(true);
+        setShowid(true);
       } else {
-        setShowSP(false);
+        setShowid(false);
       }
     };
 
@@ -60,7 +61,7 @@ export function CPU( ) {
       </div>
 
       <AddressBus showSP={showSP} />
-      <DataBus showSP={showSP} />
+      <DataBus showSP={showSP} showid={showid} />
 
       {showRegisters && (
         <>
@@ -75,7 +76,7 @@ export function CPU( ) {
       <Reg name="BX" emphasis className="left-[450px] top-[70px]" />
       <Reg name="CX" emphasis className="left-[450px] top-[110px]" />
       <Reg name="DX" emphasis className="left-[450px] top-[150px]" />
-      <Reg name="id" className={clsx("left-[450px] top-[190px]", "border-red-color")} />
+      {showid && <Reg name="id" className={clsx("left-[450px] top-[190px]", "border-red-color")} />}
 
       <Reg name="MBR" className={clsx("right-[-51px] top-[233px]", "border-red-color")} />
 

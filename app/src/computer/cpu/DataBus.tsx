@@ -283,12 +283,13 @@ export function generateDataPath(from: DataRegister, to: DataRegister, instructi
 
 type DataBusProps = {
   showSP: boolean;
+  showid: boolean; 
 };
 
 /**
  * DataBus component, to be used inside <CPU />
  */
-export function DataBus({ showSP }: DataBusProps) {
+export function DataBus({ showSP, showid }: DataBusProps) {
   const { path, ...style } = getSpring("cpu.internalBus.data");
 
   return (
@@ -323,13 +324,13 @@ export function DataBus({ showSP }: DataBusProps) {
           "M 451 85 H 421", // BX
           "M 451 125 H 421", // CX
           "M 451 165 H 421", // DX
-          showSP ? "M 451 205 H 421" : "",// id
+          showid ? "M 451 205 H 421" : "",// id
             // Output buses
           "M 550 45 H 520", // AX out
           "M 550 85 H 510", // BX out
           "M 550 125 H 510", // CX out
           "M 550 165 H 510", // DX out
-          showSP ? "M 550 205 H 510" : "", // id out
+          showid ? "M 550 205 H 510" : "", // id out
          //"M 550 10 V 250", // Vertical join for output buses
           "M 550 40 V 250", // Vertical join for output buses
          // "M 550 45 H 492", // Connect to data mbr join

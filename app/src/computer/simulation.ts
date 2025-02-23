@@ -16,7 +16,7 @@ import { posthog } from "@/lib/posthog";
 import { getSettings, useDevices } from "@/lib/settings";
 import { toast } from "@/lib/toast";
 
-import { cycleAtom, cycleCountAtom, instructionCountAtom, messageAtom, resetCPUState } from "./cpu/state";
+import { cycleAtom, cycleCountAtom, instructionCountAtom, messageAtom, resetCPUState, showSPAtom } from "./cpu/state";
 import { eventIsRunning, handleEvent } from "./handle-event";
 import { resetHandshakeState } from "./handshake/state";
 import { resetLedsState } from "./leds/state";
@@ -407,6 +407,16 @@ async function dispatch(...args: Action) {
           data: getSettings().dataOnLoad,
           devices: getSettings().devices,
         });
+
+
+       // Verificar si el programa contiene alguna instrucción que afecte al registro SP
+       const instructions = result.instructions.map(instruction => instruction.instruction);
+       const hasSPInstruction = instructions.some(instruction =>
+         ["CALL", "RET", "INT", "IRET", "POP", "PUSH"].includes(instruction)
+       );
+
+        // Actualizar el estado showSP en consecuencia
+        store.set(showSPAtom, hasSPInstruction);
         resetState(simulator.getComputerState());
 
         // Track event
