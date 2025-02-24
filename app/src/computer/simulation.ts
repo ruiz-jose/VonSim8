@@ -141,7 +141,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
           instructionCount++;
           console.log(`Instrucciones: ${instructionCount}`);
           store.set(instructionCountAtom, instructionCount );    
-          store.set(messageAtom, "-"); 
+          //store.set(messageAtom, "-"); 
           if ( event.value.type === "cpu:halt") {
             store.set(messageAtom, "Detenido");
           }else if (status.until === "cycle-change" || status.until === "end-of-instruction") {
@@ -149,12 +149,14 @@ async function startThread(generator: EventGenerator): Promise<void> {
           }
           continue;
         }  else if (event.value.type === "cpu:int.6") {            
-          store.set(messageAtom, "PILA ← DL; DL ← ASCII; (BL) ← DL; IRET");
+          //store.set(messageAtom, "PILA ← DL; DL ← ASCII; (BL) ← DL; IRET");
+          store.set(messageAtom, "Rutina leer caracter del teclado");
           if (status.until === "cycle-change") {
             pauseSimulation();
           }
         }  else if (event.value.type === "cpu:int.7") {            
-          store.set(messageAtom, "PILA ← DL; Bucle: DL ← (BL); video ← DL; SUB AL, 1; JNZ Bucle; (BL) ← DL; IRET");
+          //store.set(messageAtom, "PILA ← DL; Bucle: DL ← (BL); video ← DL; SUB AL, 1; JNZ Bucle; (BL) ← DL; IRET");
+          store.set(messageAtom, "Rutina mostrar por pantalla");
           if (status.until === "cycle-change") {
             pauseSimulation();
           }       
