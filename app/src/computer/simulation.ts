@@ -30,6 +30,9 @@ import { resetSwitchesState } from "./switches/state";
 import { resetTimerState } from "./timer/state";
 
 
+// Define el átomo para hasINTInstruction
+export const hasINTInstructionAtom = atom(false);
+
 
 const simulator = new Simulator();
 
@@ -407,18 +410,23 @@ async function dispatch(...args: Action) {
         simulator.loadProgram({
           program: result,
           data: getSettings().dataOnLoad,
-          devices: getSettings().devices,
+          devices: getSettings().devices,        
         });
-
 
        // Verificar si el programa contiene alguna instrucción que afecte al registro SP
        const instructions = result.instructions.map(instruction => instruction.instruction);
        const hasSPInstruction = instructions.some(instruction =>
          ["CALL", "RET", "INT", "IRET", "POP", "PUSH"].includes(instruction)
        );
-
+     
         // Actualizar el estado showSP en consecuencia
         store.set(showSPAtom, hasSPInstruction);
+
+        // Verificar si el programa contiene alguna instrucción INT
+        const hasINTInstruction = instructions.some(instruction => instruction === "INT");
+
+        store.set(hasINTInstructionAtom, hasINTInstruction); // Actualizar el nuevo átomo
+
         resetState(simulator.getComputerState());
 
         // Track event

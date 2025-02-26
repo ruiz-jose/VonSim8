@@ -49,14 +49,19 @@ export class Memory extends Component {
       this.#buffer = new Uint8Array(Memory.SIZE).fill(0);
     }
 
-    // Load syscalls addresses into memory
-    this.#reservedMemory = new Set();
-    for (const [number, address] of syscalls) {
-      const start = number; // Interrupt vector position
-      this.#buffer[start] = address.unsigned;
-      this.#reservedMemory.add(start);
-    }
+    // Verificar si el programa contiene alguna instrucción INT
+    const hasINTInstruction = options.program.instructions.some(instruction => instruction.instruction === "INT");
 
+    // Load syscalls addresses into memory only if hasINTInstruction is true
+    this.#reservedMemory = new Set();
+    if (hasINTInstruction) {
+      for (const [number, address] of syscalls) {
+        const start = number; // Interrupt vector position
+        this.#buffer[start] = address.unsigned;
+        this.#reservedMemory.add(start);
+      }
+    }
+   
     // Load data directives into memory
     for (const directive of options.program.data) {
       let offset = directive.start.value;
