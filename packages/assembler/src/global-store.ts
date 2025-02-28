@@ -104,20 +104,51 @@ export class GlobalStore {
     this.codeMemory.clear();
     const occupiedMemory = new Set<number>();
 
-    let pointer: number | null = null;
+    // Verificar si el programa contiene la instrucción INT
+    const hasINT = statements.some(statement => statement.isInstruction() && statement.instruction === "INT");
+
+    let codePointer = hasINT ? 0x20 : 0x00; // Comienza en 20h por defecto, o 0h si no hay INT
+    let dataPointer: number | null = null;
+    let lastCodeAddress: number = codePointer;
+
+    // Separar las instrucciones y los datos
+    const instructionStatements: Statement[] = [];
+    const dataStatements: Statement[] = [];
+
+    for (const statement of statements) {
+      if (statement.isInstruction()) {
+        instructionStatements.push(statement);
+      } else if (statement.isDataDirective()) {
+        dataStatements.push(statement);
+      }
+    }
 
     const errors = forEachWithErrors(
-      statements,
+      [...instructionStatements, ...dataStatements], // Procesar primero las instrucciones y luego los datos
       statement => {
-        if (statement.isEnd()) return;
+       // if (statement.isEnd()) return;
         if (statement.isDataDirective() && statement.directive === "EQU") return;
 
         if (statement.isOriginChange()) {
-          pointer = statement.newAddress;
+          const address = statement.newAddress;
+          if (address < 0x20) {
+            dataPointer = address;
+          } else {
+            codePointer = address;
+          }
           return;
         }
 
-        if (pointer === null) {
+        let pointer: number;
+        if (statement.isDataDirective()) {
+          if (dataPointer === null) {
+            // Si no se ha definido ORG para datos, los colocamos después del código
+            dataPointer = lastCodeAddress;
+          }
+          pointer = dataPointer;
+        } else if (statement.isInstruction()) {
+          pointer = codePointer;
+        } else {
           throw new AssemblerError("missing-org").at(statement);
         }
 
@@ -132,9 +163,10 @@ export class GlobalStore {
           if (occupiedMemory.has(address.value)) {
             throw new AssemblerError("occupied-address", address).at(statement);
           }
-
-          if (reservedAddressesForSyscalls.has(address.value)) {
-            throw new AssemblerError("reserved-address", address).at(statement);
+          if (hasINT) {
+            if (reservedAddressesForSyscalls.has(address.value)) {
+              throw new AssemblerError("reserved-address", address).at(statement);
+            }
           }
 
           occupiedMemory.add(address.value);
@@ -149,7 +181,15 @@ export class GlobalStore {
             address: startAddress,
           });
         }
-        pointer += length;
+        if (statement.isDataDirective()) {
+          if (dataPointer === null) {
+            throw new Error("Data pointer is null");
+          }
+          dataPointer += length;
+        } else if (statement.isInstruction()) {
+          codePointer += length;
+          lastCodeAddress = Math.max(lastCodeAddress, codePointer); // Actualizar la última dirección usada por el código
+        }
       },
       AssemblerError.from,
     );

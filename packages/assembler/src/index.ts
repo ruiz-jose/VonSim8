@@ -37,9 +37,9 @@ export function assemble(source: string): AssembleResult {
     const lastStatement = statements.at(-1);
 
     if (!lastStatement) throw new AssemblerError("empty-program");
-    if (!lastStatement.isEnd()) {
-      throw new AssemblerError("end-must-be-the-last-statement").at(lastStatement);
-    }
+    //if (!lastStatement.isEnd()) {
+    //  throw new AssemblerError("end-must-be-the-last-statement").at(lastStatement);
+    //}
 
     let errors: AssemblerError<any>[] = [];
 
