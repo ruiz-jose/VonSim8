@@ -64,7 +64,7 @@ import type { ZeroaryInstruction } from "./types/zeroary";
 export abstract class InstructionStatement extends Statement {
   readonly type = "instruction";
   readonly label: string | null;
-  protected readonly operands: Operand[];
+  readonly operands: Operand[];
   #start: MemoryAddress | null = null;
 
   constructor(operands: Operand[], label: string | null, position: Position) {
@@ -78,6 +78,11 @@ export abstract class InstructionStatement extends Statement {
   abstract toBytes(): Uint8Array;
   abstract validate(store: GlobalStore): void;
   abstract evaluateExpressions(store: GlobalStore): void;
+  
+  // Agregar un método público para acceder a los operandos
+  public getOperands(): Operand[] {
+    return this.operands;
+  }
 
   get start(): MemoryAddress {
     if (this.#start === null) {

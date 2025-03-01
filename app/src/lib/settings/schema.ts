@@ -15,7 +15,7 @@ export const settingsSchema = z.object({
   editorFontSize: z.number().int().min(8).max(64).catch(14),
 
   /**
-   * Value of {@link ComputerOptions.data}.
+   * Value of data on load.
    */
   dataOnLoad: z.enum(DATA_ON_LOAD_VALUES).catch("clean"),
 

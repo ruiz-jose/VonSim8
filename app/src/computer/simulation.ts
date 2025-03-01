@@ -2,7 +2,6 @@
  * @fileoverview
  * This file exposes methods/state that the UI uses to interact with the simulator.
  */
-
 import { assemble } from "@vonsim/assembler";
 import { Byte } from "@vonsim/common/byte";
 import { ComputerState, EventGenerator, Simulator, SimulatorError } from "@vonsim/simulator";
@@ -13,7 +12,7 @@ import { highlightLine, setReadOnly } from "@/editor/methods";
 import { translate } from "@/lib/i18n";
 import { store } from "@/lib/jotai";
 import { posthog } from "@/lib/posthog";
-import { getSettings, useDevices } from "@/lib/settings";
+import { getSettings, settingsAtom, useDevices  } from "@/lib/settings";
 import { toast } from "@/lib/toast";
 
 import { cycleAtom, cycleCountAtom, instructionCountAtom, messageAtom, resetCPUState, showSPAtom } from "./cpu/state";
@@ -32,7 +31,6 @@ import { resetTimerState } from "./timer/state";
 
 // Define el átomo para hasINTInstruction
 export const hasINTInstructionAtom = atom(false);
-
 
 const simulator = new Simulator();
 
@@ -386,6 +384,7 @@ async function dispatch(...args: Action) {
   const action = args[0];
   const status = store.get(simulationAtom);
 
+
   switch (action) {
     case "cpu.run": {
       if (status.type === "running") return invalidAction();
@@ -403,15 +402,8 @@ async function dispatch(...args: Action) {
         const result = assemble(code);
 
         if (!result.success) return assembleError();
-
+        console.log(result);
         setReadOnly(true);
-
-        // Reset the simulator
-        simulator.loadProgram({
-          program: result,
-          data: getSettings().dataOnLoad,
-          devices: getSettings().devices,        
-        });
 
        // Verificar si el programa contiene alguna instrucción que afecte al registro SP
        const instructions = result.instructions.map(instruction => instruction.instruction);
@@ -422,11 +414,32 @@ async function dispatch(...args: Action) {
         // Actualizar el estado showSP en consecuencia
         store.set(showSPAtom, hasSPInstruction);
 
-        // Verificar si el programa contiene alguna instrucción INT
-        const hasINTInstruction = instructions.some(instruction => instruction === "INT");
+        // Verificar si el programa contiene INT 6 o INT 7
+        const connectScreenAndKeyboard = result.instructions.some(instruction => {
+          if (instruction.instruction === "INT") {
+            return instruction.operands.some((operand: any) => {
+              if (operand.type === "number-expression" && typeof operand.value.value === "number") {
+                return operand.value.value === 6 || operand.value.value === 7;
+              }
+              return false;
+            });
+          }
+          return false;
+        });
 
-        store.set(hasINTInstructionAtom, hasINTInstruction); // Actualizar el nuevo átomo
+        store.set(settingsAtom, (prev: any) => ({
+          ...prev,
+          devices: { ...prev.devices, keyboardAndScreen: connectScreenAndKeyboard },
+        }));
+       
+        // Reset the simulator
+        simulator.loadProgram({
+          program: result,
+          data: getSettings().dataOnLoad,
+          devices: getSettings().devices,        
+        });
 
+ 
         resetState(simulator.getComputerState());
 
         // Track event

@@ -8,5 +8,7 @@ export const screenAtom = atom("");
 export function resetScreenState(computer: ComputerState) {
   if (!("screen" in computer.io)) return;
 
-  store.set(screenAtom, computer.io.screen);
+  if (computer.io.screen !== null) {
+    store.set(screenAtom, computer.io.screen);
+  }
 }
