@@ -1,4 +1,4 @@
-import { faInfinity, faPlay, faStepForward, faStop } from '@fortawesome/free-solid-svg-icons';
+import { faInfinity, faPause, faPlay, faRedo, faStepForward } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import clsx from "clsx";
 import { useCallback } from "react";
@@ -53,6 +53,17 @@ export function Controls({ className }: { className?: string }) {
     [runInfinity],
   );
 
+  const handleStopPause = useCallback(() => {
+    if (status.type === "running") {
+      dispatch("cpu.stop");
+    } else if (status.type === "stopped") {
+      dispatch("cpu.run", "infinity", false); // Pasar false para no iniciar la ejecución
+    } else {
+      dispatch("cpu.stop");
+    }
+  }, [status.type, dispatch]);
+
+
   return (
   <div className={clsx("flex items-center justify-center gap-4", className)}>
     <button
@@ -83,12 +94,13 @@ export function Controls({ className }: { className?: string }) {
       <kbd className="ml-2 hidden text-stone-600 md:inline">F4</kbd>
     </button>
     <button
-      disabled={status.type === "stopped" || status.type === "paused"}
-      onClick={() => dispatch("cpu.stop")}
+       // Comentando la línea disabled
+        // disabled={status.type === "stopped" || status.type === "paused"}
+      onClick={handleStopPause}
       className="inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md bg-red-500 px-3 text-sm text-white ring-offset-stone-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
     >
-      <FontAwesomeIcon icon={faStop} className="md:mr-2" />
-      <span className="hidden text-sm font-medium md:inline">{translate("control.action.stop")}</span>
+      <FontAwesomeIcon icon={status.type === "running" ? faPause : faRedo} className="md:mr-2" />
+      <span className="hidden text-sm font-medium md:inline">{translate(status.type === "running" ? "control.action.pause" : "control.action.reset")}</span>
     </button>
   </div>
   );

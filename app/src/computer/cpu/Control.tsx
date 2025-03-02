@@ -106,7 +106,7 @@ export function Control() {
         <div className="mt-4 w-64 overflow-hidden rounded-lg border border-stone-600 bg-stone-900 py-2">
           <p className="text-center font-mono">
             {!("metadata" in cycle) || cycle.phase === "fetching" || status.type === "stopped" ? 
-             (cycle.phase ==="stopped" && statusKey !== "stopped-error" ? (<span className="text-mantis-400">HLT</span>): (<span className="italic text-stone-400">???</span>)
+             (cycle.phase ==="stopped" && statusKey !== "stopped-error" && statusKey !== "stopped" ? (<span className="text-mantis-400">HLT</span>): (<span className="italic text-stone-400">???</span>)
             ) : (
               <>
                 <span className="text-mantis-400">{cycle.metadata.name}</span>

@@ -69,6 +69,8 @@ export const spanish: Locale = {
         infinity: "Hasta el final",
       },
       stop: "Detener",
+      reset: "Reiniciar",
+      pause: "Pausar",
     },
     tabs: {
       editor: "Editor",

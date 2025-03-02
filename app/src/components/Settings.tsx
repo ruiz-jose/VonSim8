@@ -151,7 +151,8 @@ export function Settings({ className }: { className?: string }) {
               devices: { ...prev.devices, keyboardAndScreen: value },
             }))
           }
-          disabled={status.type !== "stopped"}
+          // Comentando la línea disabled
+          // disabled={status.type !== "stopped"}
         />
       </Setting>
 
@@ -170,7 +171,8 @@ export function Settings({ className }: { className?: string }) {
               devices: { ...prev.devices, pic: value },
             }))
           }
-          disabled={status.type !== "stopped"}
+          // Comentando la línea disabled
+          // disabled={status.type !== "stopped"}
         />
       </Setting>
 
@@ -191,7 +193,8 @@ export function Settings({ className }: { className?: string }) {
               },
             }))
           }
-          disabled={status.type !== "stopped"}
+          // Comentando la línea disabled
+          // disabled={status.type !== "stopped"}
         >
           <SelectTrigger className="w-52 min-w-[theme(width.52)]">
             <SelectValue />

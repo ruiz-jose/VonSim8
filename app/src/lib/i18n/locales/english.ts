@@ -83,6 +83,8 @@ export const english = {
         infinity: "Until stop",
       },
       stop: "Stop",
+      reset: "Reset",
+      pause: "Pause",
     },
     tabs: {
       editor: "Editor",

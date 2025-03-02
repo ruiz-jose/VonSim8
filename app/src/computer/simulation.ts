@@ -47,6 +47,7 @@ function notifyError(error: SimulatorError<any>) {
   toast({ title: message, variant: "error" });
 }
 
+
 export function finishSimulation(error?: SimulatorError<any>) {
   if (error) notifyError(error);
 
@@ -86,6 +87,7 @@ function resetState(state: ComputerState) {
 
 
 }
+
 let currentInstructionName: string | null = null;
 let fetchStageCounter = 0;
 let executeStageCounter = 0;
@@ -372,7 +374,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
 }
 
 type Action =
-  | [action: "cpu.run", until: RunUntil]
+  | [action: "cpu.run", until: RunUntil, startImmediately?: boolean]
   | [action: "cpu.stop"]
   | [action: "f10.press"]
   | [action: "switch.toggle", index: number]
@@ -390,6 +392,7 @@ async function dispatch(...args: Action) {
       if (status.type === "running") return invalidAction();
 
       const until = args[1];
+      const startImmediately = args[2] !== false; // Default to true if not provided
 
       if (status.type === "stopped") {
         if (!window.codemirror) return;
@@ -402,8 +405,8 @@ async function dispatch(...args: Action) {
         const result = assemble(code);
 
         if (!result.success) return assembleError();
-        console.log(result);
-        setReadOnly(true);
+
+        //setReadOnly(true);
 
        // Verificar si el programa contiene alguna instrucción que afecte al registro SP
        const instructions = result.instructions.map(instruction => instruction.instruction);
@@ -453,13 +456,20 @@ async function dispatch(...args: Action) {
           },
         ] as const;
         //umami.track(...event);
+
         posthog.capture(...event);
 
-        store.set(simulationAtom, { type: "running", until, waitingForInput: false });
+        if (startImmediately) {
+          store.set(simulationAtom, { type: "running", until, waitingForInput: false });
 
-        startThread(simulator.startCPU());
-        startClock();
-        startPrinter();
+          startThread(simulator.startCPU());
+          startClock();
+          startPrinter();
+        } else {
+          //clearCPURegisters(); // Limpiar los registros del CPU
+        }
+        
+
       } else {
         store.set(simulationAtom, { type: "running", until, waitingForInput: false });
 
