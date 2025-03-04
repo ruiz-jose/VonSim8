@@ -71,8 +71,8 @@ function invalidAction() {
   toast({ title: translate(getSettings().language, "messages.invalid-action"), variant: "error" });
 }
 
-function resetState(state: ComputerState) {
-  resetCPUState(state);
+function resetState(state: ComputerState, clearRegisters = false) {
+  resetCPUState(state, clearRegisters);
   resetMemoryState(state);
 
   resetHandshakeState(state);
@@ -374,8 +374,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
 }
 
 type Action =
-  | [action: "cpu.run", until: RunUntil, startImmediately?: boolean]
-  | [action: "cpu.stop"]
+  | [action: "cpu.run", until: RunUntil]
+  | [action: "cpu.stop", reset?: boolean]
   | [action: "f10.press"]
   | [action: "switch.toggle", index: number]
   | [action: "keyboard.sendChar", char: string]
@@ -392,7 +392,7 @@ async function dispatch(...args: Action) {
       if (status.type === "running") return invalidAction();
 
       const until = args[1];
-      const startImmediately = args[2] !== false; // Default to true if not provided
+
 
       if (status.type === "stopped") {
         if (!window.codemirror) return;
@@ -443,7 +443,7 @@ async function dispatch(...args: Action) {
         });
 
  
-        resetState(simulator.getComputerState());
+        resetState(simulator.getComputerState()); 
 
         // Track event
         const event = [
@@ -459,15 +459,12 @@ async function dispatch(...args: Action) {
 
         posthog.capture(...event);
 
-        if (startImmediately) {
-          store.set(simulationAtom, { type: "running", until, waitingForInput: false });
+        store.set(simulationAtom, { type: "running", until, waitingForInput: false });
 
-          startThread(simulator.startCPU());
-          startClock();
-          startPrinter();
-        } else {
-          //clearCPURegisters(); // Limpiar los registros del CPU
-        }
+        startThread(simulator.startCPU());
+        startClock();
+        startPrinter();
+
         
 
       } else {
@@ -480,7 +477,13 @@ async function dispatch(...args: Action) {
     }
 
     case "cpu.stop": {
-      finishSimulation();
+      const shouldReset = args[1];
+      if (shouldReset) {
+        finishSimulation();
+        resetState(simulator.getComputerState(), shouldReset); // Pasar el parámetro clearRegisters
+      } else {
+        pauseSimulation();
+      }
       return;
     }
 

@@ -1,4 +1,4 @@
-import { faInfinity, faPause, faPlay, faRedo, faStepForward } from '@fortawesome/free-solid-svg-icons';
+import { faInfinity, faPause,faPlay, faRedo, faStepForward } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import clsx from "clsx";
 import { useCallback } from "react";
@@ -55,11 +55,9 @@ export function Controls({ className }: { className?: string }) {
 
   const handleStopPause = useCallback(() => {
     if (status.type === "running") {
-      dispatch("cpu.stop");
-    } else if (status.type === "stopped") {
-      dispatch("cpu.run", "infinity", false); // Pasar false para no iniciar la ejecución
+      dispatch("cpu.stop", false); //pausar
     } else {
-      dispatch("cpu.stop");
+      dispatch("cpu.stop", true); //reset
     }
   }, [status.type, dispatch]);
 
@@ -95,7 +93,8 @@ export function Controls({ className }: { className?: string }) {
     </button>
     <button
        // Comentando la línea disabled
-        // disabled={status.type === "stopped" || status.type === "paused"}
+      //disabled={status.type === "stopped" || status.type === "paused"}
+      disabled={status.type === "stopped"}
       onClick={handleStopPause}
       className="inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md bg-red-500 px-3 text-sm text-white ring-offset-stone-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
     >

@@ -109,25 +109,43 @@ export const cycleAtom = atom<Cycle>({ phase: "stopped" });
 
 export const aluOperationAtom = atom("ADD");
 
-export function resetCPUState(computer: ComputerState) {
-  store.set(registerAtoms.AX, Byte.fromUnsigned(computer.cpu.AX, 16));
-  store.set(registerAtoms.BX, Byte.fromUnsigned(computer.cpu.BX, 16));
-  store.set(registerAtoms.CX, Byte.fromUnsigned(computer.cpu.CX, 16));
-  store.set(registerAtoms.DX, Byte.fromUnsigned(computer.cpu.DX, 16));
-  store.set(registerAtoms.SP, Byte.fromUnsigned(computer.cpu.SP, 16));
-  store.set(registerAtoms.IP, Byte.fromUnsigned(computer.cpu.IP, 16));
-  store.set(registerAtoms.IR, Byte.fromUnsigned(computer.cpu.IR, 8));
-  store.set(registerAtoms.ri, Byte.fromUnsigned(computer.cpu.ri, 16));
-  store.set(registerAtoms.id, Byte.fromUnsigned(computer.cpu.id, 16));
-  store.set(registerAtoms.left, Byte.fromUnsigned(computer.cpu.left, 16));
-  store.set(registerAtoms.right, Byte.fromUnsigned(computer.cpu.right, 16));
-  store.set(registerAtoms.result, Byte.fromUnsigned(computer.cpu.result, 16));
-  // Inicializar los flags ZF, CF, OF y SF a cero 
-  // Establecer el flag IF a 1
-  computer.cpu.FLAGS = 16;  
+export function resetCPUState(computer: ComputerState, clearRegisters = false) {
+  if (clearRegisters) {
+    store.set(registerAtoms.AX, Byte.zero(16));
+    store.set(registerAtoms.BX, Byte.zero(16));
+    store.set(registerAtoms.CX, Byte.zero(16));
+    store.set(registerAtoms.DX, Byte.zero(16));
+    store.set(registerAtoms.SP, Byte.zero(16));
+    store.set(registerAtoms.IP, Byte.zero(16));
+    store.set(registerAtoms.IR, Byte.zero(8));
+    store.set(registerAtoms.ri, Byte.zero(16));
+    store.set(registerAtoms.id, Byte.zero(16));
+    store.set(registerAtoms.left, Byte.zero(16));
+    store.set(registerAtoms.right, Byte.zero(16));
+    store.set(registerAtoms.result, Byte.zero(16));
+    store.set(registerAtoms.FLAGS, Byte.zero(16));
+    store.set(registerAtoms.MAR, Byte.zero(16));
+    store.set(registerAtoms.MBR, Byte.zero(8));
+  } else {
+    store.set(registerAtoms.AX, Byte.fromUnsigned(computer.cpu.AX, 16));
+    store.set(registerAtoms.BX, Byte.fromUnsigned(computer.cpu.BX, 16));
+    store.set(registerAtoms.CX, Byte.fromUnsigned(computer.cpu.CX, 16));
+    store.set(registerAtoms.DX, Byte.fromUnsigned(computer.cpu.DX, 16));
+    store.set(registerAtoms.SP, Byte.fromUnsigned(computer.cpu.SP, 16));
+    store.set(registerAtoms.IP, Byte.fromUnsigned(computer.cpu.IP, 16));
+    store.set(registerAtoms.IR, Byte.fromUnsigned(computer.cpu.IR, 8));
+    store.set(registerAtoms.ri, Byte.fromUnsigned(computer.cpu.ri, 16));
+    store.set(registerAtoms.id, Byte.fromUnsigned(computer.cpu.id, 16));
+    store.set(registerAtoms.left, Byte.fromUnsigned(computer.cpu.left, 16));
+    store.set(registerAtoms.right, Byte.fromUnsigned(computer.cpu.right, 16));
+    store.set(registerAtoms.result, Byte.fromUnsigned(computer.cpu.result, 16));
+    // Inicializar los flags ZF, CF, OF y SF a cero 
+    // Establecer el flag IF a 1
+    computer.cpu.FLAGS = 16;  
 
-  store.set(registerAtoms.FLAGS, Byte.fromUnsigned(computer.cpu.FLAGS, 16));
-  store.set(registerAtoms.MAR, Byte.fromUnsigned(computer.cpu.MAR, 16));
-  store.set(registerAtoms.MBR, Byte.fromUnsigned(computer.cpu.MBR, 8));
+    store.set(registerAtoms.FLAGS, Byte.fromUnsigned(computer.cpu.FLAGS, 16));
+    store.set(registerAtoms.MAR, Byte.fromUnsigned(computer.cpu.MAR, 16));
+    store.set(registerAtoms.MBR, Byte.fromUnsigned(computer.cpu.MBR, 8));
+  }  
   store.set(cycleAtom, { phase: "stopped" });
 }
