@@ -49,7 +49,13 @@ function notifyError(error: SimulatorError<any>) {
 
 
 export function finishSimulation(error?: SimulatorError<any>) {
-  if (error) notifyError(error);
+  if (error) {
+    notifyError(error);
+    if (error.code === "no-instruction") {
+      store.set(simulationAtom, { type: "paused" });
+      return;
+    }
+  }
 
   highlightLine(null);
   setReadOnly(false);
