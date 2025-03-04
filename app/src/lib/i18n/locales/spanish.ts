@@ -88,6 +88,7 @@ export const spanish: Locale = {
       register: register => `Registro ${register}`,
       "control-unit": "Unidad de control",
       decoder: "Decodificador",
+      stats: "Estadísticas CPU",
       status: {
         fetching: "Captación instrucción...",
         "fetching-operands": "Leyendo operandos...",

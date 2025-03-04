@@ -10,6 +10,7 @@ import { Header } from "@/components/Header";
 import { Settings, settingsOpenAtom } from "@/components/Settings";
 import { ToastAction } from "@/components/ui/Toast";
 import { ComputerContainer } from "@/computer";
+import { CPUStats } from "@/computer/cpu/CPUStats"; 
 import { Editor } from "@/editor";
 import { useTranslate } from "@/lib/i18n";
 import { useFilters, useLanguage } from "@/lib/settings";
@@ -80,6 +81,7 @@ function DesktopLayout() {
         tagName="section"
         className="computer-background rounded-lg border border-stone-600"
       >
+        <CPUStats /> {/* Usar el nuevo componente */}
         <ComputerContainer />
       </Panel>
       {settingsOpen && (

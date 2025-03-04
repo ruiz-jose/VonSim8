@@ -10,12 +10,11 @@ import { AddressBus } from "./AddressBus";
 import { ALU } from "./ALU";
 import { Control } from "./Control";
 import { DataBus } from "./DataBus";
-import { cycleCountAtom, instructionCountAtom, registerAtoms, showSPAtom } from "./state";
+import { registerAtoms, showSPAtom } from "./state";
 
 export function CPU( ) {
   const translate = useTranslate();
-  const cycleCount = useAtomValue(cycleCountAtom); 
-  const instructionCount = useAtomValue(instructionCountAtom); 
+
   const showSP = useAtomValue(showSPAtom); // Usar el átomo showSPAtom
   const [showid, setShowid] = useState(false);
 
@@ -55,10 +54,6 @@ export function CPU( ) {
       <span className="block w-min rounded-br-lg rounded-tl-lg border-b border-r border-stone-600 bg-mantis-500 px-2 py-1 text-3xl text-white">
         {translate("computer.cpu.name")}
       </span>
-      <div className="absolute top-0 right-0 flex flex-col items-end px-2 py-1 text-sm text-white">
-        <div>Clock: {cycleCount}</div>
-        <div>Inst.: {instructionCount}</div>
-      </div>
 
       <AddressBus showSP={showSP} />
       <DataBus showSP={showSP} showid={showid} />

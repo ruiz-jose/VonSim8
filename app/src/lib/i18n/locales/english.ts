@@ -102,6 +102,7 @@ export const english = {
       register: (register: string) => `${register} register`,
       "control-unit": "Control unit",
       decoder: "Decoder",
+      stats: "stats CPU",
       status: {
         fetching: "Fetching instruction...",
         "fetching-operands": "Fetching operands...",
