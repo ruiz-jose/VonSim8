@@ -89,6 +89,7 @@ export const spanish: Locale = {
       "control-unit": "Unidad de control",
       decoder: "Decodificador",
       stats: "Estadísticas CPU",
+      "instruction-cycle": "Ciclo de instrucción",
       status: {
         fetching: "Captación instrucción...",
         "fetching-operands": "Leyendo operandos...",

@@ -26,6 +26,7 @@ export const messageAtom = atom<string | null>(null);
 export const cycleCountAtom = atom(0);
 export const showSPAtom = atom(false);
 export const instructionCountAtom = atom(0); // Variable global para contar las instrucciones
+export const messageHistoryAtom = atom<{ cycle: number; stage: string; action: string; }[]>([]);
 
 const lowAtom = (
   primitive: PrimitiveAtom<Byte<16>>,

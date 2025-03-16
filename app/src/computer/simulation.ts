@@ -15,7 +15,7 @@ import { posthog } from "@/lib/posthog";
 import { getSettings, settingsAtom, useDevices  } from "@/lib/settings";
 import { toast } from "@/lib/toast";
 
-import { cycleAtom, cycleCountAtom, instructionCountAtom, messageAtom, resetCPUState, showSPAtom } from "./cpu/state";
+import { cycleAtom, cycleCountAtom, instructionCountAtom, messageAtom, messageHistoryAtom, resetCPUState, showSPAtom } from "./cpu/state";
 import { eventIsRunning, handleEvent } from "./handle-event";
 import { resetHandshakeState } from "./handshake/state";
 import { resetLedsState } from "./leds/state";
@@ -27,6 +27,7 @@ import { resetScreenState } from "./screen/state";
 import { anim, pauseAllAnimations, resumeAllAnimations, stopAllAnimations } from "./shared/animate";
 import { resetSwitchesState } from "./switches/state";
 import { resetTimerState } from "./timer/state";
+
 
 
 // Define el átomo para hasINTInstruction
@@ -116,10 +117,12 @@ async function startThread(generator: EventGenerator): Promise<void> {
       const status = store.get(simulationAtom);
       const settings = getSettings();
         if (status.type === "stopped") {
+          // Limpiar el historial de mensajes al reiniciar o ejecutar
+          store.set(messageHistoryAtom, []);
           fetchStageCounter = 0;
           executeStageCounter = 0;
           messageReadWrite = "";
-          store.set(messageAtom, "Detenido"); // Guardar el mensaje "Detenido"
+          store.set(messageAtom, "Ejecución: Detenido"); // Guardar el mensaje "Detenido" solo si no está ya establecido
           break; // stop the thread
         }
         if (status.type === "paused") {

@@ -103,6 +103,7 @@ export const english = {
       "control-unit": "Control unit",
       decoder: "Decoder",
       stats: "stats CPU",
+      "instruction-cycle": "Ciclo de instrucción",
       status: {
         fetching: "Fetching instruction...",
         "fetching-operands": "Fetching operands...",

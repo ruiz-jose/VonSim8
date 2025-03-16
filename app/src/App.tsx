@@ -11,6 +11,7 @@ import { Settings, settingsOpenAtom } from "@/components/Settings";
 import { ToastAction } from "@/components/ui/Toast";
 import { ComputerContainer } from "@/computer";
 import { CPUStats } from "@/computer/cpu/CPUStats"; 
+import { RegisterTransferMessages } from "@/computer/cpu/RegisterTransferMessages"; 
 import { Editor } from "@/editor";
 import { useTranslate } from "@/lib/i18n";
 import { useFilters, useLanguage } from "@/lib/settings";
@@ -82,6 +83,7 @@ function DesktopLayout() {
         className="computer-background rounded-lg border border-stone-600"
       >
         <CPUStats /> {/* Usar el nuevo componente */}
+        <RegisterTransferMessages /> {/* Usar el nuevo componente */}        
         <ComputerContainer />
       </Panel>
       {settingsOpen && (
