@@ -1,5 +1,5 @@
 import { useAtomValue } from "jotai";
-import { useState, useEffect } from "react";
+import { useEffect,useState } from "react";
 
 import { useTranslate } from "@/lib/i18n";
 
@@ -10,7 +10,7 @@ export function CPUStats() {
   const cycleCount = useAtomValue(cycleCountAtom);
   const instructionCount = useAtomValue(instructionCountAtom);
 
-  const [position, setPosition] = useState({ x: 900, y: 600 }); // Posición inicial
+  const [position, setPosition] = useState({ x: 300, y: 760 }); // Posición inicial
   const [isDragging, setIsDragging] = useState(false); // Estado de arrastre
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 }); // Offset del mouse al arrastrar
 

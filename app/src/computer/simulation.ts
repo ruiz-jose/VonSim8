@@ -117,12 +117,11 @@ async function startThread(generator: EventGenerator): Promise<void> {
       const status = store.get(simulationAtom);
       const settings = getSettings();
         if (status.type === "stopped") {
-          // Limpiar el historial de mensajes al reiniciar o ejecutar
-          store.set(messageHistoryAtom, []);
+
           fetchStageCounter = 0;
           executeStageCounter = 0;
           messageReadWrite = "";
-          store.set(messageAtom, "Ejecución: Detenido"); // Guardar el mensaje "Detenido" solo si no está ya establecido
+          store.set(messageAtom, "Ejecución: Detenido"); 
           break; // stop the thread
         }
         if (status.type === "paused") {
@@ -155,7 +154,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
           store.set(instructionCountAtom, instructionCount );    
           //store.set(messageAtom, "-"); 
           if ( event.value.type === "cpu:halt") {
-            store.set(messageAtom, "Detenido");
+            cycleCount++;
+            store.set(cycleCountAtom, cycleCount );
+            store.set(messageAtom, "Ejecución: Detenido");
           }else if (status.until === "cycle-change" || status.until === "end-of-instruction") {
             pauseSimulation();
           }
@@ -409,7 +410,8 @@ async function dispatch(...args: Action) {
         instructionCount = 0; // Reiniciar el contador de instrucciones
         store.set(cycleCountAtom, cycleCount); // Actualizar el átomo
         store.set(instructionCountAtom, instructionCount); // Actualizar el átomo
-
+        // Limpiar el historial de mensajes al reiniciar o ejecutar
+        store.set(messageHistoryAtom, []);
         const code = window.codemirror.state.doc.toString();
         const result = assemble(code);
 
