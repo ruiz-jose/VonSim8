@@ -27,6 +27,8 @@ export const cycleCountAtom = atom(0);
 export const showSPAtom = atom(false);
 export const instructionCountAtom = atom(0); // Variable global para contar las instrucciones
 export const messageHistoryAtom = atom<{ cycle: number; stage: string; action: string; }[]>([]);
+// Crear un átomo para almacenar el valor de connectScreenAndKeyboard
+export const connectScreenAndKeyboardAtom = atom(false);
 
 const lowAtom = (
   primitive: PrimitiveAtom<Byte<16>>,

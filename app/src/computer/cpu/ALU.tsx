@@ -4,7 +4,7 @@ import { useEffect,useState } from "react";
 
 import { animated, getSpring } from "@/computer/shared/springs";
 
-import { aluOperationAtom, registerAtoms } from "./state";
+import { aluOperationAtom, connectScreenAndKeyboardAtom,registerAtoms } from "./state";
 
 /**
  * ALU component, to be used inside <CPU />
@@ -13,7 +13,9 @@ export function ALU() {
   const FLAGS = useAtomValue(registerAtoms.FLAGS);
   const operation = useAtomValue(aluOperationAtom);
   const [showOperation, setShowOperation] = useState(false);
-  const [showFlag, setShowFlag] = useState(false);
+
+  const connectScreenAndKeyboard = useAtomValue(connectScreenAndKeyboardAtom); // Obtener el valor del átomo
+
 
 
   useEffect(() => {
@@ -22,11 +24,6 @@ export function ALU() {
         setShowOperation(true);
       } else {
         setShowOperation(false);
-      }
-      if (instruction === "INT" || instruction === "IRET") {
-        setShowFlag(true);
-      } else {
-        setShowFlag(false);
       }
     };
 
@@ -97,7 +94,7 @@ export function ALU() {
         className="absolute left-[215px] top-[190px] flex w-min items-center gap-1 rounded-md border border-mantis-400 bg-stone-800 px-2 py-1 font-mono leading-none"
         style={getSpring("cpu.FLAGS")}
       >
-        {showFlag && (<span className={clsx("rounded p-1 font-light", IF ? "bg-mantis-400" : "bg-stone-900")}>
+        {connectScreenAndKeyboard && (<span className={clsx("rounded p-1 font-light", IF ? "bg-mantis-400" : "bg-stone-900")}>
           IF
         </span> )}
         <span className={clsx("rounded p-1 font-light", CF ? "bg-mantis-400" : "bg-stone-900")}>

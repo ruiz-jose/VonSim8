@@ -15,7 +15,7 @@ import { posthog } from "@/lib/posthog";
 import { getSettings, settingsAtom, useDevices  } from "@/lib/settings";
 import { toast } from "@/lib/toast";
 
-import { cycleAtom, cycleCountAtom, instructionCountAtom, messageAtom, messageHistoryAtom, resetCPUState, showSPAtom } from "./cpu/state";
+import { connectScreenAndKeyboardAtom, cycleAtom, cycleCountAtom, instructionCountAtom, messageAtom, messageHistoryAtom, resetCPUState, showSPAtom } from "./cpu/state";
 import { eventIsRunning, handleEvent } from "./handle-event";
 import { resetHandshakeState } from "./handshake/state";
 import { resetLedsState } from "./leds/state";
@@ -231,35 +231,39 @@ async function startThread(generator: EventGenerator): Promise<void> {
             let displayMessage = "";
             shouldDisplayMessage = true;
             if (sourceRegister === "SP") {
-              if (currentInstructionName === "CALL" || currentInstructionName === "INT" && jump_yes) {
-                displayMessage = "SP = SP - 1";                             
+           /*  if (currentInstructionName === "CALL" || currentInstructionName === "INT" && jump_yes) {
+                displayMessage = "Ejecución: SP = SP - 1";                             
               } 
               if (currentInstructionName === "RET" || currentInstructionName === "IRET" || (!jump_yes && currentInstructionName === "INT")) {
-                displayMessage = "SP = SP + 1";                 
-              }
+                displayMessage = "Ejecución: SP = SP + 1";                 
+              }*/
             } else if (sourceRegister === "FLAGS") {
-              displayMessage = "IF = 0"; 
+              displayMessage = "Interrupción: IF = 0"; 
             } else if (sourceRegister === "DL" && currentInstructionName === "INT") {
-              displayMessage = "DL ← ASCII";    
+              displayMessage = "Interrupción: DL ← ASCII";    
               jump_yes = false;   
             } else if (sourceRegister === "right.l" && currentInstructionName === "INT") {
-              displayMessage = "SUB AL, 1";     
+              displayMessage = "Interrupción: SUB AL, 1";     
             } else if (sourceRegister === "right" && currentInstructionName === "INT") {
-              displayMessage = "ADD BL, 1";  
+              displayMessage = "Interrupción:ADD BL, 1";  
             } else if (sourceRegister === "ri.l" && currentInstructionName === "INT") {
-              displayMessage = "MAR ← (video)"; 
+              displayMessage = "Interrupción: MAR ← (video)"; 
               shouldDisplayMessage = false;     
             } else {
               displayMessage = sourceRegister === "IP" ? "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1" : `Ejecución: MBR ← ${sourceRegister}`;
             }
             store.set(messageAtom, displayMessage);
-            if (displayMessage !== "MAR ← (video)"){
+            if (displayMessage !== "Interrupción: MAR ← (video)"){
               if (status.until === "cycle-change") {
-                pauseSimulation();
+                if (currentInstructionName !== "CALL"  && jump_yes) {
+                  pauseSimulation();                          
+                } 
               }           
             }
             executeStageCounter++;
-            cycleCount++;
+            if (currentInstructionName !== "INT") {
+              cycleCount++; // Incrementar el contador de ciclos solo si no es INT
+            }
 
           } else if (event.value.type === "cpu:mbr.get") {
             const sourceRegister = event.value.register === "id.l" ? "id" : 
@@ -329,19 +333,38 @@ async function startThread(generator: EventGenerator): Promise<void> {
             ) {
               cycleCount++;
             }
-          } else if (event.value.type === "bus:reset" && executeStageCounter > 1
-            && (!currentInstructionMode && (currentInstructionName === "MOV" || currentInstructionName === "ADD" || currentInstructionName === "SUB"  || currentInstructionName === "CMP"))) {
-            store.set(messageAtom, messageReadWrite);
-            if (status.until === "cycle-change") {
-              pauseSimulation();
+          } else if (
+            event.value.type === "bus:reset" &&
+            executeStageCounter > 1 &&
+            ( currentInstructionName === "MOV" ||
+               currentInstructionName === "ADD" ||
+               currentInstructionName === "SUB" ||
+               currentInstructionName === "CMP" ||
+               currentInstructionName === "CALL")
+          ) {
+            /*(currentInstructionMode &&
+              (currentInstructionName === "MOV" ||
+               currentInstructionName === "ADD" ||
+               currentInstructionName === "SUB" ||
+               currentInstructionName === "CMP" ||
+               currentInstructionName === "CALL"))*/
+            const displayMessageFLAGS = "; SP = SP - 1";  
+            if (currentInstructionName === "CALL" && jump_yes) {
+              messageReadWrite += displayMessageFLAGS;
             }
+            store.set(messageAtom, messageReadWrite);
+           /* if (status.until === "cycle-change") {
+              pauseSimulation();
+
+            }*/
+
             cycleCount++; 
           } else if (event.value.type === "cpu:mbr.set") {
             const sourceRegister = event.value.register === "id.l" ? "id" : 
             event.value.register === "FLAGS.l" ? "FLAGS" : 
             event.value.register === "IP.l" ? "IP" : 
             event.value.register;
-            store.set(messageAtom, `Ejecución: MBR ← ${sourceRegister}`);
+            store.set(messageAtom,  `Ejecución: MBR ← ${sourceRegister}`);
             if (status.until === "cycle-change") {
               pauseSimulation();
             }
@@ -446,6 +469,9 @@ async function dispatch(...args: Action) {
           devices: { ...prev.devices, keyboardAndScreen: connectScreenAndKeyboard },
         }));
        
+        // Actualizar el átomo con el valor de connectScreenAndKeyboard
+        store.set(connectScreenAndKeyboardAtom, connectScreenAndKeyboard);
+        
         // Reset the simulator
         simulator.loadProgram({
           program: result,
