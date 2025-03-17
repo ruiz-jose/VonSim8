@@ -233,10 +233,10 @@ async function startThread(generator: EventGenerator): Promise<void> {
             if (sourceRegister === "SP") {
            /*  if (currentInstructionName === "CALL" || currentInstructionName === "INT" && jump_yes) {
                 displayMessage = "Ejecución: SP = SP - 1";                             
-              } 
+              } */
               if (currentInstructionName === "RET" || currentInstructionName === "IRET" || (!jump_yes && currentInstructionName === "INT")) {
                 displayMessage = "Ejecución: SP = SP + 1";                 
-              }*/
+              }
             } else if (sourceRegister === "FLAGS") {
               displayMessage = "Interrupción: IF = 0"; 
             } else if (sourceRegister === "DL" && currentInstructionName === "INT") {
@@ -261,7 +261,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
               }           
             }
             executeStageCounter++;
-            if (currentInstructionName !== "INT") {
+            if (currentInstructionName !== "INT" && currentInstructionName !== "CALL") {
               cycleCount++; // Incrementar el contador de ciclos solo si no es INT
             }
 
@@ -340,7 +340,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
                currentInstructionName === "ADD" ||
                currentInstructionName === "SUB" ||
                currentInstructionName === "CMP" ||
-               currentInstructionName === "CALL")
+               currentInstructionName === "CALL"||
+               currentInstructionName === "RET" )
           ) {
             /*(currentInstructionMode &&
               (currentInstructionName === "MOV" ||
@@ -352,6 +353,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
             if (currentInstructionName === "CALL" && jump_yes) {
               messageReadWrite += displayMessageFLAGS;
             }
+            if (currentInstructionName === "RET") {
+              messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";
+            }
             store.set(messageAtom, messageReadWrite);
            /* if (status.until === "cycle-change") {
               pauseSimulation();
@@ -359,6 +363,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
             }*/
 
             cycleCount++; 
+            if (currentInstructionName === "RET") {
+              pauseSimulation();
+            }
           } else if (event.value.type === "cpu:mbr.set") {
             const sourceRegister = event.value.register === "id.l" ? "id" : 
             event.value.register === "FLAGS.l" ? "FLAGS" : 

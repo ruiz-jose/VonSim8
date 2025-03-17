@@ -27,7 +27,7 @@ export function CPU( ) {
       } else {
         setShowRegisters(false);
       }
-      if (instruction === "CALL" || instruction === "RET" || instruction === "INT" || instruction === "IRET" || instruction === "POP" || instruction === "PUSH") {
+      if (instruction === "CALL" || instruction === "INT" || instruction === "IRET" || instruction === "POP" || instruction === "PUSH") {
         setShowid(true);
       } else {
         setShowid(false);
