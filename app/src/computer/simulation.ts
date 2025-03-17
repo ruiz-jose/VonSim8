@@ -261,7 +261,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
               }           
             }
             executeStageCounter++;
-            if (currentInstructionName !== "INT" && currentInstructionName !== "CALL") {
+            if ( currentInstructionName !== "CALL") {
               cycleCount++; // Incrementar el contador de ciclos solo si no es INT
             }
 
@@ -341,6 +341,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
                currentInstructionName === "SUB" ||
                currentInstructionName === "CMP" ||
                currentInstructionName === "CALL"||
+               currentInstructionName === "INT"||
                currentInstructionName === "RET" )
           ) {
             /*(currentInstructionMode &&
@@ -350,7 +351,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
                currentInstructionName === "CMP" ||
                currentInstructionName === "CALL"))*/
             const displayMessageFLAGS = "; SP = SP - 1";  
-            if (currentInstructionName === "CALL" && jump_yes) {
+            if ((currentInstructionName === "CALL"|| currentInstructionName === "INT") && jump_yes) {
               messageReadWrite += displayMessageFLAGS;
             }
             if (currentInstructionName === "RET") {
