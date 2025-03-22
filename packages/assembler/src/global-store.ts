@@ -48,6 +48,8 @@ type LabelsMap = Map<
 export class GlobalStore {
   private readonly codeMemory = new Set<number>();
   private readonly labels: LabelsMap = new Map();
+  private hasORG = false; // Nueva propiedad para almacenar si tiene la directiva ORG
+  
 
   #statementsLoaded = false;
   #computedAddresses = false;
@@ -107,7 +109,11 @@ export class GlobalStore {
     // Verificar si el programa contiene la instrucción INT
     const hasINT = statements.some(statement => statement.isInstruction() && statement.instruction === "INT");
 
-    let codePointer = hasINT ? 0x20 : 0x00; // Comienza en 20h por defecto, o 0h si no hay INT
+    // Verificar si el programa contiene la directiva ORG
+    this.hasORG = statements.some(statement => statement.isOriginChange());
+    
+    // Determinar la dirección inicial del código
+    let codePointer = hasINT || this.hasORG ? 0x20 : 0x00; // Comienza en 20h si hay INT o ORG, de lo contrario en 0x00
     let dataPointer: number | null = null;
     let lastCodeAddress: number = codePointer;
 
@@ -250,5 +256,9 @@ export class GlobalStore {
   addressIsReserved(address: MemoryAddress | number): boolean {
     if (address instanceof MemoryAddress) address = address.value;
     return this.codeMemory.has(address);
+  }
+
+  hasOriginDirective(): boolean {
+    return this.hasORG;
   }
 }

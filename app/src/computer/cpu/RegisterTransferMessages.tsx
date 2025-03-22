@@ -13,7 +13,7 @@ export function RegisterTransferMessages() {
   const messageHistory = useAtomValue(messageHistoryAtom);
 
   const containerRef = useRef<HTMLDivElement>(null); // Referencia al contenedor para el scroll
-  const [position, setPosition] = useState({ x: 250, y: 400 }); // Posición inicial
+  const [position, setPosition] = useState({ x: 250, y: 80 }); // Posición inicial
   const [isDragging, setIsDragging] = useState(false); // Estado de arrastre
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 }); // Offset del mouse al arrastrar
 

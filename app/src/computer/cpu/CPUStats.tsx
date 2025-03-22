@@ -10,7 +10,7 @@ export function CPUStats() {
   const cycleCount = useAtomValue(cycleCountAtom);
   const instructionCount = useAtomValue(instructionCountAtom);
 
-  const [position, setPosition] = useState({ x: 300, y: 760 }); // Posición inicial
+  const [position, setPosition] = useState({ x: 300, y: 450 }); // Posición inicial
   const [isDragging, setIsDragging] = useState(false); // Estado de arrastre
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 }); // Offset del mouse al arrastrar
 

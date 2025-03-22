@@ -101,7 +101,7 @@ let executeStageCounter = 0;
 let messageReadWrite = "";
 let shouldDisplayMessage = true;
 let jump_yes = true;
-let currentInstructionMode = false;
+//let currentInstructionMode = false;
 let cycleCount = 0;
 let instructionCount = 0;
 
@@ -141,7 +141,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
       await handleEvent(event.value);
       if (event.value.type === "cpu:cycle.start") {
         currentInstructionName = event.value.instruction.name;
-        currentInstructionMode = event.value.instruction.willUse.id? true : false;
+        //currentInstructionMode = event.value.instruction.willUse.id? true : false;
       }
 
       if (status.until === "cycle-change" || status.until === "end-of-instruction" || status.until === "infinity") {
@@ -484,7 +484,8 @@ async function dispatch(...args: Action) {
         simulator.loadProgram({
           program: result,
           data: getSettings().dataOnLoad,
-          devices: getSettings().devices,        
+          devices: getSettings().devices, 
+          hasORG: result.hasORG, // Pass the hasORG flag 
         });
 
  

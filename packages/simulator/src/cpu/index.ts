@@ -87,14 +87,19 @@ export class CPU extends Component {
 
     // Stack pointer starts at the "bottom" of the memory
     this.#registers.SP = Byte.fromUnsigned(MemoryAddress.MAX_ADDRESS, 16);
+
     // Verificar si el programa contiene la instrucción INT
     const hasINT = options.program.instructions.some(
       statement => statement.isInstruction() && statement.instruction === "INT"
     );
 
-    // The initial address of the program is 0x20 if it has INT, otherwise 0x00
-    this.#registers.IP = Byte.fromUnsigned(hasINT ? 0x0020 : 0x0000, 16);
-    
+    // Verificar si el programa contiene la directiva ORG
+    const hasORG = options.hasORG ?? false;
+
+    // Determinar la dirección inicial del registro IP
+    const initialIP = hasINT || hasORG ? 0x20 : 0x00;
+    this.#registers.IP = Byte.fromUnsigned(initialIP, 16);
+        
     // Instruction register always starts at 0
     this.#registers.ri = Byte.fromUnsigned(0x0000, 16);
     // Instruction register always starts at 0

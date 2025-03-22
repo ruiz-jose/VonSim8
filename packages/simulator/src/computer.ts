@@ -8,6 +8,7 @@ import { Memory } from "./memory";
 export type ComputerOptions = {
   program: Program;
   devices: DevicesConfiguration;
+  hasORG?: boolean; // Add this property
 } & ({ data: "clean" | "randomize" } | { data: "unchanged"; previous: Computer });
 
 export type DevicesConfiguration = {
