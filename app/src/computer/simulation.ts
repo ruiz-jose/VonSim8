@@ -243,7 +243,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
               /*  if (currentInstructionName === "CALL" || currentInstructionName === "INT" && jump_yes) {
                 displayMessage = "Ejecución: SP = SP - 1";                             
               } */
-              if (currentInstructionName === "RET"  || currentInstructionName === "IRET" || (!jump_yes && currentInstructionName === "INT")) {
+              if (currentInstructionName === "RET"  || currentInstructionName === "IRET"  || currentInstructionName === "POP"|| (!jump_yes && currentInstructionName === "INT")) {
                 displayMessage = "Ejecución: SP = SP + 1";                 
               }
             } else if (sourceRegister === "FLAGS") {
