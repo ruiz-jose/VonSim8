@@ -119,38 +119,44 @@ export class GlobalStore {
 
     // Separar las instrucciones y los datos
     const instructionStatements: Statement[] = [];
+    const directiveStatements: Statement[] = [];
     const dataStatements: Statement[] = [];
 
     for (const statement of statements) {
       if (statement.isInstruction()) {
         instructionStatements.push(statement);
+      } else if (statement.isOriginChange()) {
+        directiveStatements.push(statement);
       } else if (statement.isDataDirective()) {
         dataStatements.push(statement);
       }
     }
 
     const errors = forEachWithErrors(
-      [...instructionStatements, ...dataStatements], // Procesar primero las instrucciones y luego los datos
+      [...instructionStatements, ...directiveStatements, ...dataStatements], // Procesar primero las instrucciones y luego los datos
+      //statements,
       statement => {
        // if (statement.isEnd()) return;
         if (statement.isDataDirective() && statement.directive === "EQU") return;
 
         if (statement.isOriginChange()) {
+          console.log("ORG statement detected:", statement);
           const address = statement.newAddress;
           if (address < 0x20) {
+            console.log("dataPointer", address);
             dataPointer = address;
           } else {
             codePointer = address;
           }
           return;
         }
-
+        console.log("dataPointer", dataPointer);
         let pointer: number;
         if (statement.isDataDirective()) {
           if (dataPointer === null) {
             // Si no se ha definido ORG para datos, los colocamos después del código
             dataPointer = lastCodeAddress;
-          }
+          }          
           pointer = dataPointer;
         } else if (statement.isInstruction()) {
           pointer = codePointer;
@@ -169,6 +175,7 @@ export class GlobalStore {
           if (occupiedMemory.has(address.value)) {
             throw new AssemblerError("occupied-address", address).at(statement);
           }
+
           if (hasINT) {
             if (reservedAddressesForSyscalls.has(address.value)) {
               throw new AssemblerError("reserved-address", address).at(statement);

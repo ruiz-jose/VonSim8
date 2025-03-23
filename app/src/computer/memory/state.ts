@@ -53,7 +53,6 @@ export function resetMemoryState(computer: ComputerState, resetMemoryState = fal
       computer.memory.map(byte => Byte.fromUnsigned(byte, 8)),
     );
   }
-  console.log("Memory state reset", resetMemoryState);
   // Reiniciar la dirección de operación a 0x0020
   store.set(operatingAddressAtom, MemoryAddress.from(0x0020));
 }
