@@ -45,8 +45,8 @@ export class StackInstruction extends InstructionStatement {
    */
   toBytes(): Uint8Array {
     const opcodes: { [key in StackInstructionName]: number } = {
-      PUSH: 0b01100_000,
-      POP: 0b01101_000,
+      PUSH: 0b01101_00,
+      POP: 0b01101_01,
     };
 
     let byte = opcodes[this.instruction];
@@ -77,7 +77,7 @@ export class StackInstruction extends InstructionStatement {
     }
 
     const operand = this.operands[0];
-    if (!operand.isRegister() || operand.size !== 16) {
+    if (!operand.isRegister() || operand.size !== 8) {
       throw new AssemblerError("expects-word-register").at(operand);
     }
 

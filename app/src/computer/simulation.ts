@@ -80,7 +80,7 @@ function invalidAction() {
 
 function resetState(state: ComputerState, clearRegisters = false) {
   resetCPUState(state, clearRegisters);
-  resetMemoryState(state);
+  resetMemoryState(state, clearRegisters);
 
   resetHandshakeState(state);
   resetPICState(state);
@@ -526,7 +526,7 @@ async function dispatch(...args: Action) {
       const shouldReset = args[1];
       if (shouldReset) {
         finishSimulation();
-        resetState(simulator.getComputerState(), shouldReset); // Pasar el parámetro clearRegisters
+        resetState(simulator.getComputerState(), shouldReset); // Pasar el parámetro clearRegisters       
       } else {
         pauseSimulation();
       }

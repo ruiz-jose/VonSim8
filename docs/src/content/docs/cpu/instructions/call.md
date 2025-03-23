@@ -21,14 +21,14 @@ _etiqueta_ debe ser una etiqueta que apunta a una instrucción.
 ### Ejemplo
 
 ```vonsim
-            org 3000h
+            org 30h
 subrutina:  push ax
             ; --- etc ---
             ret
 
-            org 2000h
+            org 20h
             call subrutina ; Válido
-            call 3000h     ; Inválido, debe ser una etiqueta
+            call 30h     ; Inválido, debe ser una etiqueta
             hlt
             end
 ```

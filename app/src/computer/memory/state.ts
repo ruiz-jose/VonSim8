@@ -39,10 +39,21 @@ export const memoryShownAtom = atom<MemoryShown>(get => {
   return result;
 });
 
-export function resetMemoryState(computer: ComputerState) {
-  store.set(
-    memoryAtom,
-    computer.memory.map(byte => Byte.fromUnsigned(byte, 8)),
-  );
+export function resetMemoryState(computer: ComputerState, resetMemoryState = false) {
+  if (resetMemoryState) {
+    // Reiniciar todas las posiciones de memoria con ceros
+    store.set(
+      memoryAtom,
+      new Array<Byte<8>>(MemoryAddress.MAX_ADDRESS + 1).fill(Byte.zero(8)), // Llena la memoria con ceros
+    );
+  } else {
+    // Usar los valores actuales de computer.memory
+    store.set(
+      memoryAtom,
+      computer.memory.map(byte => Byte.fromUnsigned(byte, 8)),
+    );
+  }
+  console.log("Memory state reset", resetMemoryState);
+  // Reiniciar la dirección de operación a 0x0020
   store.set(operatingAddressAtom, MemoryAddress.from(0x0020));
 }
