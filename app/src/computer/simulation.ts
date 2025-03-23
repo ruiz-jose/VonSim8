@@ -225,7 +225,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             store.set(messageAtom, "Ejecución: write(PIO[MAR]) ← MBR");
             executeStageCounter++;
             cycleCount++;                 
-          }
+           } 
 
           if (event.value.type === "cpu:mar.set") {
             const sourceRegister = event.value.register;
@@ -358,6 +358,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
                currentInstructionName === "CALL"||
                currentInstructionName === "INT"||
                currentInstructionName === "PUSH"||
+               currentInstructionName === "IN" ||
                currentInstructionName === "RET" )
           ) {
             /*(currentInstructionMode &&
@@ -374,6 +375,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
             if (currentInstructionName === "RET") {
               messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";
             }
+            if (currentInstructionName === "IN") {
+              messageReadWrite = "Ejecución: MBR ← read(PIO[MAR])";
+            }
             store.set(messageAtom, messageReadWrite);
            /* if (status.until === "cycle-change") {
               pauseSimulation();
@@ -381,7 +385,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             }*/
 
             cycleCount++; 
-            if (currentInstructionName === "RET") {
+            if (currentInstructionName === "RET" || currentInstructionName === "IN" ) {
               pauseSimulation();
             }
           } else if (event.value.type === "cpu:mbr.set") {
