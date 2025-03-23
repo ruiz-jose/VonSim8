@@ -231,7 +231,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             let displayMessage = "";
             shouldDisplayMessage = true;
             if (sourceRegister === "SP") {
-           /*  if (currentInstructionName === "CALL" || currentInstructionName === "INT" && jump_yes) {
+              /*  if (currentInstructionName === "CALL" || currentInstructionName === "INT" && jump_yes) {
                 displayMessage = "Ejecución: SP = SP - 1";                             
               } */
               if (currentInstructionName === "RET"  || currentInstructionName === "IRET" || (!jump_yes && currentInstructionName === "INT")) {
@@ -252,16 +252,17 @@ async function startThread(generator: EventGenerator): Promise<void> {
             } else {
               displayMessage = sourceRegister === "IP" ? "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1" : `Ejecución: MBR ← ${sourceRegister}`;
             }
-            store.set(messageAtom, displayMessage);
+
             if (displayMessage !== "Interrupción: MAR ← (video)"){
               if (status.until === "cycle-change") {
-                if (currentInstructionName !== "CALL"  && jump_yes) {
+                if (currentInstructionName !== "CALL"  && currentInstructionName !== "PUSH" && jump_yes) {
                   pauseSimulation();                          
                 } 
               }           
             }
             executeStageCounter++;
-            if ( currentInstructionName !== "CALL") {
+            if ( currentInstructionName !== "CALL" && currentInstructionName !== "PUSH") {
+              store.set(messageAtom, displayMessage);
               cycleCount++; // Incrementar el contador de ciclos solo si no es INT
             }
 
