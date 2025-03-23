@@ -221,7 +221,12 @@ async function startThread(generator: EventGenerator): Promise<void> {
             messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";           
           } else if (event.value.type === "cpu:wr.on") {
             messageReadWrite = "Ejecución: write(Memoria[MAR]) ← MBR";                  
+          } else if (event.value.type === "pio:write.ok") {
+            store.set(messageAtom, "Ejecución: write(PIO[MAR]) ← MBR");
+            executeStageCounter++;
+            cycleCount++;                 
           }
+
           if (event.value.type === "cpu:mar.set") {
             const sourceRegister = event.value.register;
             const displayRegister = sourceRegister === "ri" ? "MBR" : sourceRegister;

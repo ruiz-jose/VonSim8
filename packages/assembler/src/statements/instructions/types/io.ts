@@ -66,8 +66,8 @@ export class IOInstruction extends InstructionStatement {
     const bytes: number[] = [];
 
     const opcodes: { [key in IOInstructionName]: number } = {
-      IN: 0b0101_00_00,
-      OUT: 0b0101_01_00,
+      IN: 0b1101_10_00,
+      OUT: 0b1101_11_00,
     };
     bytes[0] = opcodes[this.instruction];
 

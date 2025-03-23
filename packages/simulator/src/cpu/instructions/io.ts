@@ -49,7 +49,7 @@ export class IOInstruction extends Instruction<"IN" | "OUT"> {
     yield { type: "cpu:cycle.update", phase: "decoded", next: "fetch-operands" };
 
     if (this.operation.port === "fixed") {
-      yield* computer.cpu.updateWordRegister("ri", Byte.zero(16));
+      //yield* computer.cpu.updateWordRegister("ri", Byte.zero(16));
       yield* super.consumeInstruction(computer, "ri.l");
     } else {
       yield* computer.cpu.copyWordRegister("DX", "ri");
