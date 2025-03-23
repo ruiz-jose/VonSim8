@@ -234,7 +234,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
            /*  if (currentInstructionName === "CALL" || currentInstructionName === "INT" && jump_yes) {
                 displayMessage = "Ejecución: SP = SP - 1";                             
               } */
-              if (currentInstructionName === "RET" || currentInstructionName === "IRET" || (!jump_yes && currentInstructionName === "INT")) {
+              if (currentInstructionName === "RET"  || currentInstructionName === "IRET" || (!jump_yes && currentInstructionName === "INT")) {
                 displayMessage = "Ejecución: SP = SP + 1";                 
               }
             } else if (sourceRegister === "FLAGS") {
@@ -342,6 +342,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
                currentInstructionName === "CMP" ||
                currentInstructionName === "CALL"||
                currentInstructionName === "INT"||
+               currentInstructionName === "PUSH"||
                currentInstructionName === "RET" )
           ) {
             /*(currentInstructionMode &&
@@ -351,7 +352,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
                currentInstructionName === "CMP" ||
                currentInstructionName === "CALL"))*/
             const displayMessageFLAGS = "; SP = SP - 1";  
-            if ((currentInstructionName === "CALL"|| currentInstructionName === "INT") && jump_yes) {
+            //if ((currentInstructionName === "CALL"|| currentInstructionName === "INT" || currentInstructionName === "PUSH") && jump_yes) {
+            if ((currentInstructionName === "CALL"|| currentInstructionName === "INT" || currentInstructionName === "PUSH")) {
               messageReadWrite += displayMessageFLAGS;
             }
             if (currentInstructionName === "RET") {
@@ -376,6 +378,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             if (status.until === "cycle-change") {
               pauseSimulation();
             }
+            executeStageCounter++;
             cycleCount++;
           }  
         }

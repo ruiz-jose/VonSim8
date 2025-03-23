@@ -140,17 +140,15 @@ export class GlobalStore {
         if (statement.isDataDirective() && statement.directive === "EQU") return;
 
         if (statement.isOriginChange()) {
-          console.log("ORG statement detected:", statement);
           const address = statement.newAddress;
           if (address < 0x20) {
-            console.log("dataPointer", address);
             dataPointer = address;
           } else {
             codePointer = address;
           }
           return;
         }
-        console.log("dataPointer", dataPointer);
+       
         let pointer: number;
         if (statement.isDataDirective()) {
           if (dataPointer === null) {

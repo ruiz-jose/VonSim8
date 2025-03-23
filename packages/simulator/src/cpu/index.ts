@@ -4,7 +4,8 @@ import { AnyByte, Byte } from "@vonsim/common/byte";
 import { Component, ComponentInit } from "../component";
 import { SimulatorError } from "../error";
 import type { EventGenerator } from "../events";
-import { InstructionType, statementToInstruction } from "./instructions";
+import type { InstructionType } from "./instructions";
+import { statementToInstruction } from "./instructions";
 import { getSyscallNumber, handleSyscall } from "./syscalls";
 import type {
   ByteRegister,
