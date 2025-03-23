@@ -92,6 +92,15 @@ function resetState(state: ComputerState, clearRegisters = false) {
   resetScreenState(state);
   resetSwitchesState(state);
 
+  cycleCount = 0;
+  instructionCount = 0;
+  store.set(cycleCountAtom, cycleCount);
+  store.set(instructionCountAtom, instructionCount);
+  store.set(messageAtom, ""); // Limpiar el mensaje actual
+  // Limpiar el historial de mensajes si clearRegisters es true
+  if (clearRegisters) {
+    store.set(messageHistoryAtom, []); // Limpia el historial de mensajes
+  }
 
 }
 
@@ -121,7 +130,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
           fetchStageCounter = 0;
           executeStageCounter = 0;
           messageReadWrite = "";
-          store.set(messageAtom, "Ejecución: Detenido"); 
+          //store.set(messageAtom, "Ejecución: Detenido"); 
           break; // stop the thread
         }
         if (status.type === "paused") {
