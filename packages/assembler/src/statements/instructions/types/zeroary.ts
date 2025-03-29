@@ -49,11 +49,11 @@ export class ZeroaryInstruction extends InstructionStatement {
       PUSHF: 0b0111_0000,
       POPF: 0b0111_1000,
       RET: 0b0011_0011,
-      CLI: 0b0001_1000,
-      STI: 0b0001_1001,
-      IRET: 0b0011_1011,
-      NOP: 0b0001_0000,
-      HLT: 0b0001_0001,
+      CLI: 0b1110_0010,
+      STI: 0b1110_0011,
+      IRET: 0b1110_0001,
+      NOP: 0b1111_0000,
+      HLT: 0b1111_0001,
     };
     return new Uint8Array([opcodes[this.instruction]]);
   }
