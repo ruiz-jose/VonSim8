@@ -63,7 +63,7 @@ export function* handleSyscall(
       const char = yield* keyboard.readChar();
 
       //yield* computer.cpu.updateByteRegister("id.l",char);
-      yield* computer.cpu.updateByteRegister("DL",char);
+      yield* computer.cpu.updateByteRegister("AL",char);
 
       //yield* computer.cpu.copyWordRegister("BX", "ri");
       yield* computer.cpu.copyByteRegister("BL", "ri.l");
