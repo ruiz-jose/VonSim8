@@ -245,7 +245,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             const sourceRegister = event.value.register;
             let displayMessage = "";
             shouldDisplayMessage = true;
-            console.log(`sourceRegister: ${sourceRegister}`);
+
             if (sourceRegister === "SP") {
               /*  if (currentInstructionName === "CALL" || currentInstructionName === "INT" && jump_yes) {
                 displayMessage = "Ejecución: SP = SP - 1";                             
@@ -371,7 +371,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
                currentInstructionName === "SUB" ||
                currentInstructionName === "CMP" ||
                currentInstructionName === "CALL"))*/
-            console.log("Bus reset",  executeStageCounter);
+
             const displayMessageFLAGS = "; SP = SP - 1";  
             //if ((currentInstructionName === "CALL"|| currentInstructionName === "INT" || currentInstructionName === "PUSH") && jump_yes) {
             if ((currentInstructionName === "CALL"|| currentInstructionName === "INT" || currentInstructionName === "PUSH")) {
