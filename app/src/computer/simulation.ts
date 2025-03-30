@@ -256,7 +256,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             } else if (sourceRegister === "FLAGS") {
               displayMessage = "Ejecución: IF = 0"; 
             } else if (sourceRegister === "DL" && currentInstructionName === "INT") {
-              displayMessage = "Interrupción: DL ← ASCII";    
+              displayMessage = "Interrupción: AL ← ASCII";    
             } else if (sourceRegister === "right.l" && currentInstructionName === "INT") {
               displayMessage = "Interrupción: SUB AL, 1";     
             } else if (sourceRegister === "right" && currentInstructionName === "INT") {

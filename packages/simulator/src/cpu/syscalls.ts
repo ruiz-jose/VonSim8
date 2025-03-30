@@ -53,7 +53,7 @@ export function* handleSyscall(
         return false;
       }
 
-      if (!(yield* computer.cpu.pushToStack("DL"))) return false; // Stack overflow
+      if (!(yield* computer.cpu.pushToStack("AL"))) return false; // Stack overflow
 
       const keyboard = computer.io.keyboard;
       if (!keyboard) {
@@ -71,7 +71,7 @@ export function* handleSyscall(
       yield* computer.cpu.setMAR("ri");
       yield* computer.cpu.setMBR("DL");
       if (!(yield* computer.cpu.useBus("mem-write"))) return false; // Error writing to memory
-      if (!(yield* computer.cpu.popFromStack("DL"))) return false; // Stack underflow
+      if (!(yield* computer.cpu.popFromStack("AL"))) return false; // Stack underflow
       // Doesn't return -- retrieves machine state
       break;
     }
