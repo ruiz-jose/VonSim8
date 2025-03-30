@@ -63,13 +63,14 @@ export class Memory extends Component {
         // Inject the INT 6 handler routine at address C0h
         if (number === 6) {
           const int6Handler = [
-            0x50, // push AL
-            0xE4, 0x64, // in AL, 64h
-            0x3C, 0x01, // cmp AL, 1
-            0x74, 0xFA, // jz wait_for_key (-6 bytes)
-            0xE4, 0x60, // in AL, 60h
-            0x58, // pop AL
-            0xCF, // iret
+            0xD0, // push AL
+            0xd8, 0x64, // in AL, 64h
+            0x12, 0x01, // cmp AL, 1
+            0xC1, 0xC, // jz wait_for_key (-6 bytes)
+            0xd8, 0x60, // in AL, 60h
+            0xD4, // pop AL
+            0x41, // mov [BX], AL
+            0xE1, // iret
           ];
           const int6HandlerAddress = address.unsigned;
           for (let i = 0; i < int6Handler.length; i++) {
