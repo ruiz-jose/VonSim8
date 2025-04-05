@@ -166,8 +166,8 @@ export class Scanner {
       }
 
       // Identifiers
-      if (this.isAlpha(c)) {
-        while (this.isAlphaNumeric(this.peek())) {
+      if (this.isAlpha(c) || c === ".") {
+        while (this.isAlphaNumeric(this.peek()) || this.peek() === ".") {
           this.advance();
         }
 

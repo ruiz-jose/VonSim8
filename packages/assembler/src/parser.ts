@@ -64,6 +64,7 @@ export class Parser {
    * The tokens that the parser is currently parsing.
    */
   private tokens: Token[];
+  
 
   /**
    * Index of the current token.
@@ -88,9 +89,12 @@ export class Parser {
   }
 
   private statement(): Statement {
+
     const statement =
       this.originChangeStatement() ??
       this.endStatement() ??
+      this.dataBlockStatement() ?? // Validar la directiva .DATA
+      this.codeBlockStatement() ?? // Validar la directiva .CODE
       this.dataDirectiveStatement() ??
       this.instructionStatement();
 
@@ -128,6 +132,20 @@ export class Parser {
 
       throw new AssemblerError("end-must-be-the-last-statement").at(token);
     }
+
+    return new EndStatement(token.position);
+  }
+
+  private dataBlockStatement(): Statement | null {
+    const token = this.match(".DATA");
+    if (!token) return null;
+
+    return new EndStatement(token.position);
+  }
+
+  private codeBlockStatement(): Statement | null {
+    const token = this.match(".CODE");
+    if (!token) return null;
 
     return new EndStatement(token.position);
   }
