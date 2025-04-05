@@ -16,6 +16,8 @@ import { store } from "@/lib/jotai";
 import { getSettings } from "@/lib/settings";
 import { toast } from "@/lib/toast";
 
+import {  programModifiedAtom } from "./state";
+
 // Sync program with CodeMirror
 const programAtom = atomWithStorage(
   "vonsim-program",
@@ -33,6 +35,7 @@ export const syncStatePlugin = ViewPlugin.fromClass(
     update(update: ViewUpdate) {
       if (update.docChanged) {
         store.set(programAtom, this.view.state.doc.toString());
+        store.set(programModifiedAtom, true); // Marca el programa como modificado
       }
     }
   },

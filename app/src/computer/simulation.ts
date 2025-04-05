@@ -9,6 +9,7 @@ import { atom, useAtomValue } from "jotai";
 import { useMemo } from "react";
 
 import { highlightLine, setReadOnly } from "@/editor/methods";
+import { programModifiedAtom } from "@/editor/state"; // Importar programModifiedAtom
 import { translate } from "@/lib/i18n";
 import { store } from "@/lib/jotai";
 import { posthog } from "@/lib/posthog";
@@ -27,7 +28,6 @@ import { resetScreenState } from "./screen/state";
 import { anim, pauseAllAnimations, resumeAllAnimations, stopAllAnimations } from "./shared/animate";
 import { resetSwitchesState } from "./switches/state";
 import { resetTimerState } from "./timer/state";
-
 
 
 // Define el átomo para hasINTInstruction
@@ -125,6 +125,15 @@ async function startThread(generator: EventGenerator): Promise<void> {
     while (true) {
       const status = store.get(simulationAtom);
       const settings = getSettings();
+      const programModified = store.get(programModifiedAtom); // Obtener el estado de programModifiedAtom
+
+        // Verificar si el programa ha sido modificado
+        if (programModified) {
+          console.log("El programa ha sido modificado. Deteniendo y recargando...");
+          store.set(programModifiedAtom, false); // Marcar como no modificado
+          finishSimulation(); // Detener la simulación actual
+          break; // Salir del bucle
+        }
         if (status.type === "stopped") {
 
           fetchStageCounter = 0;
@@ -457,6 +466,7 @@ type Action =
 async function dispatch(...args: Action) {
   const action = args[0];
   const status = store.get(simulationAtom);
+  const programModified = store.get(programModifiedAtom); // Obtener el estado de programModifiedAtom
 
 
   switch (action) {
@@ -537,11 +547,10 @@ async function dispatch(...args: Action) {
         posthog.capture(...event);
 
         store.set(simulationAtom, { type: "running", until, waitingForInput: false });
-
+        
         startThread(simulator.startCPU());
         startClock();
         startPrinter();
-
         
 
       } else {

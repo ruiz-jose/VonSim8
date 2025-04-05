@@ -1,8 +1,11 @@
 import { useAtomValue } from "jotai";
 import { useEffect, useRef, useState } from "react";
 
+import { simulationAtom } from "@/computer/simulation"; // Importar simulationAtom
+import { programModifiedAtom } from "@/editor/state";
 import { useTranslate } from "@/lib/i18n";
 import { store } from "@/lib/jotai";
+import { toast } from "@/lib/toast";
 
 import { cycleCountAtom, messageAtom, messageHistoryAtom } from "./state";
 
@@ -11,6 +14,8 @@ export function RegisterTransferMessages() {
   const message = useAtomValue(messageAtom);
   const cycleCount = useAtomValue(cycleCountAtom);
   const messageHistory = useAtomValue(messageHistoryAtom);
+  const simulationStatus = useAtomValue(simulationAtom);
+  const programModified = useAtomValue(programModifiedAtom);
 
   const containerRef = useRef<HTMLDivElement>(null); // Referencia al contenedor para el scroll
   const [position, setPosition] = useState({ x: 250, y: 80 }); // Posición inicial
@@ -31,6 +36,17 @@ export function RegisterTransferMessages() {
       store.set(messageHistoryAtom, prev => [...prev, parsedMessage]); // Guardar en el historial
     }
   }, [message]); // Ejecutar solo cuando cambien `message` o `cycleCount`
+
+  // Avisar al usuario si el programa en ejecución es modificado
+  useEffect(() => {
+    if (simulationStatus.type === "running" && programModified) {
+      toast({
+        title: "El programa ha sido modificado",
+        description: "La ejecución se reiniciará desde el principio para aplicar los cambios.",
+        variant: "info", // Cambiar a "info" para un aviso menos crítico
+      });
+    }
+  }, [simulationStatus, programModified]);
 
   // Usar useEffect para desplazar el scroll al final cuando se agregue un nuevo mensaje
   useEffect(() => {
