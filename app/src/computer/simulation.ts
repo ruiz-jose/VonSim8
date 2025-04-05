@@ -112,6 +112,7 @@ let shouldDisplayMessage = true;
 //let currentInstructionMode = false;
 let cycleCount = 0;
 let instructionCount = 0;
+let fuenteALU = "";
 
 
 /**
@@ -301,8 +302,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
           } else if (event.value.type === "cpu:register.copy") {
             const sourceRegister = event.value.src.replace(/\.l$/, '');
             const destRegister = event.value.dest.replace(/\.l$/, '');
-            const displaySource = sourceRegister === "result" ? "ALU" : sourceRegister;
+            const displaySource = sourceRegister === "result" ? `${destRegister} ${currentInstructionName} ${fuenteALU}` : sourceRegister;
             let displayMessage = `Ejecución: ${destRegister} ← ${displaySource}`;
+            //let displayMessage = `Ejecución: ${destRegister} ← ${displaySource} (Destino ALU: ${destRegister}, Fuente ALU: ${fuenteALU})`;
 
             if (sourceRegister === "ri" && destRegister === "IP") {
               displayMessage = "Ejecución: IP ← MBR";
@@ -342,7 +344,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
               shouldDisplayMessage = false;
               executeStageCounter++;             
             } else {
-              store.set(messageAtom, displayMessage);
+              fuenteALU = sourceRegister;
+              //store.set(messageAtom, displayMessage);
              // pauseSimulation();
             }   
             if (
@@ -350,6 +353,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
                sourceRegister !== "result" && sourceRegister !== "left" && sourceRegister !== "right") ||
               (sourceRegister === "result" && destRegister !== "MBR")
             ) {
+
+              store.set(messageAtom, displayMessage);
               cycleCount++;
             }
           } else if (
