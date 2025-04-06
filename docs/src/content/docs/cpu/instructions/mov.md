@@ -22,7 +22,7 @@ Las combinaciones válidas de _dest_, _fuente_ son:
 - Dirección de memoria, registro
 - Dirección de memoria, inmediato
 
-(Ver [tipos de operandos](/docs/cpu/assembly/#operandos))
+(Ver [tipos de operandos](/VonSim8/docs/cpu/assembly/#operandos))
 
 ## Codificación
 

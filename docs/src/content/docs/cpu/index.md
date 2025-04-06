@@ -17,7 +17,7 @@ El procesador cuenta con los siguientes puertos:
 - 8 bits de datos (bus de datos, con su respectivo _buffer_ `MBR`)
 - 1 bit para la señal de lectura (`RD`)
 - 1 bit para la señal de escritura (`WR`)
-- 1 bit para indicar si la escritura es a [memoria principal](/docs/memory/) o a un módulo de [entrada/salida](/docs/io/modules/) (`IO/M`, siendo `1` para E/S)
+- 1 bit para indicar si la escritura es a [memoria principal](/VonSim8/docs/memory/) o a un módulo de [entrada/salida](/VonSim8/docs/io/modules/) (`IO/M`, siendo `1` para E/S)
 - 1 bit para la petición de interrupción (`INTR`)
 - 1 bit para la señal de _acknowledge_ de interrupción (`INTA`)
 
@@ -31,7 +31,7 @@ Hay además algunos registros internos que sirven de intermediarios para realiza
 
 ## ALU
 
-La ALU (_Arithmetic Logic Unit_) permite realizar operaciones aritméticas y lógicas de 8 y 16 bits. Las operaciones disponibles son: [`ADD`](/docs/cpu/instructions/add/), [`ADC`](/docs/cpu/instructions/adc/), [`INC`](/docs/cpu/instructions/inc/), [`SUB`](/docs/cpu/instructions/sub/), [`SBB`](/docs/cpu/instructions/sbb/), [`DEC`](/docs/cpu/instructions/dec/), [`NEG`](/docs/cpu/instructions/neg/), [`NOT`](/docs/cpu/instructions/not/), [`AND`](/docs/cpu/instructions/and/) y [`OR`](/docs/cpu/instructions/or/). Todas estas operaciones modifican el registro `FLAGS`.
+La ALU (_Arithmetic Logic Unit_) permite realizar operaciones aritméticas y lógicas de 8 y 16 bits. Las operaciones disponibles son: [`ADD`](/VonSim8/VonSim8/docs/cpu/instructions/add/), [`ADC`](/VonSim8/docs/cpu/instructions/adc/), [`INC`](/docs/cpu/instructions/inc/), [`SUB`]/VonSim8(/docs/cpu/instructions/sub/), [`SBB`](/VonSim8/docs/cpu/instructions/sbb/), [`DEC`](/VonSim8/docs/cpu/instructions/dec/), [`NEG`](/VonSim8/docs/cpu/instructions/neg/), [`NOT`](/VonSim8/docs/cpu/instructions/not/), [`AND`](/VonSim8/docs/cpu/instructions/and/) y [`OR`](/VonSim8/docs/cpu/instructions/or/). Todas estas operaciones modifican el registro `FLAGS`.
 
 ### Flags
 
@@ -53,7 +53,7 @@ El procesador implementa la pila como método de almacenamiento accesible por el
 
 ## Subrutinas
 
-El procesador también implementa subrutinas. Estas son pequeños fragmentos de código que pueden ser llamados desde cualquier parte del programa. Para ello, se utiliza la instrucción [`CALL`](/docs/cpu/instructions/call/). Esta instrucción almacena el `IP` en la [pila](#pila), y luego realiza un salto a la dirección de la subrutina, modificando el `IP` para que este apunte a la primera instrucción de la subrutina. Para volver de la subrutina, se utiliza la instrucción [`RET`](/docs/cpu/instructions/ret/), que desapila la dirección apilada previamente por `CALL` y restaura el `IP`, volviendo a el punto de ejecución posterior a la llamada a la subrutina.
+El procesador también implementa subrutinas. Estas son pequeños fragmentos de código que pueden ser llamados desde cualquier parte del programa. Para ello, se utiliza la instrucción [`CALL`](/VonSim8/docs/cpu/instructions/call/). Esta instrucción almacena el `IP` en la [pila](#pila), y luego realiza un salto a la dirección de la subrutina, modificando el `IP` para que este apunte a la primera instrucción de la subrutina. Para volver de la subrutina, se utiliza la instrucción [`RET`](/VonSim8/docs/cpu/instructions/ret/), que desapila la dirección apilada previamente por `CALL` y restaura el `IP`, volviendo a el punto de ejecución posterior a la llamada a la subrutina.
 
 Ejemplo de subrutina:
 
@@ -75,9 +75,9 @@ sum3: add al, bl
 
 ## Interrupciones
 
-El procesador admite interrupciones por hardware y por software, que pueden ser emitidas por el [PIC](/docs/io/modules/pic/) o por la instrucción [`INT`](/docs/cpu/instructions/int/) respectivamente. Para ejecutar interrupciones por hardware, el proesador debe estar habilitado para recibir interrupciones. Esto es, `IF=1` (la _flag_ de interrupciones activada).
+El procesador admite interrupciones por hardware y por software, que pueden ser emitidas por el [PIC](/VonSim8/docs/io/modules/pic/) o por la instrucción [`INT`](/VonSim8/docs/cpu/instructions/int/) respectivamente. Para ejecutar interrupciones por hardware, el proesador debe estar habilitado para recibir interrupciones. Esto es, `IF=1` (la _flag_ de interrupciones activada).
 
-Ambas interrupciones deben propocionar un número de interrupción. En el caso de las interrupciones por software, esta es dada por el operando de la instrucción `INT` ([ver más](/docs/cpu/instructions/int/)). En el caso de las interrupciones por hardware, esta es dada por el PIC ([ver cómo se obtiene](/docs/io/modules/pic/#funcionamiento)). El número de interrupción debe ser un número entre `0` y `255`.
+Ambas interrupciones deben propocionar un número de interrupción. En el caso de las interrupciones por software, esta es dada por el operando de la instrucción `INT` ([ver más](/VonSim8/docs/cpu/instructions/int/)). En el caso de las interrupciones por hardware, esta es dada por el PIC ([ver cómo se obtiene](/VonSim8/docs/io/modules/pic/#funcionamiento)). El número de interrupción debe ser un número entre `0` y `255`.
 
 Una vez interrumpido, el procesador ejecutará la rutina de interrupción asociada a ese número de interrupción. La dirección de comienzo de esta rutina estará almacenada en el vector de interrupciones. Este vector ocupa las celdas `00h` hasta `0Fh` de la memoria principal, y cada elemento del vector tiene 1 byte de largo y se corresponde con la dirección de inicio de la rutina de interrupción.
 
@@ -90,7 +90,7 @@ Específicamente, el procesador:
 5. obtiene la dirección de la rutina de interrupción del vector de interrupciones,
 6. modifica el `IP` para que apunte a la dirección de la rutina de interrupción.
 
-Y así se comienza a ejecutar la rutina de interrupción. Estas tienen el mismo formato que una [subrutina](#subrutinas) salvo que terminan en [`IRET`](/docs/cpu/instructions/iret/) en vez de [`RET`](/docs/cpu/instructions/ret/).
+Y así se comienza a ejecutar la rutina de interrupción. Estas tienen el mismo formato que una [subrutina](#subrutinas) salvo que terminan en [`IRET`](/VonSim8/docs/cpu/instructions/iret/) en vez de [`RET`](/VonSim8/docs/cpu/instructions/ret/).
 
 ### Llamadas al sistema
 
@@ -98,12 +98,12 @@ El simulador permite realizar llamadas al sistema o _syscalls_. En el simulador,
 
 - `INT 0`: termina la ejecución del programa, equivalente a la instrucción [`HLT`](/docs/cpu/instructions/hlt/);
 - `INT 3`: incia el modo de depuración (_breakpoint_);
-- `INT 6`: lee un carácter del [teclado](/docs/io/devices/keyboard/);
-- `INT 7`: escribe una cadena de caracteres en [pantalla](/docs/io/devices/screen/).
+- `INT 6`: lee un carácter del [teclado](/VonSim8/docs/io/devices/keyboard/);
+- `INT 7`: escribe una cadena de caracteres en [pantalla](/VonSim8/docs/io/devices/screen/).
 
 Las direcciones del vector de interrupciones asociadas a estos números están protegidas por el sistema, impidiendo que el usuario las modifique.
 
-El contenido de estas rutinas se encuentran almacenadas en el [monitor del sistema](/docs/memory/) en las direcciones `A0h`, `B0h`, `C0h` y `D0h` respectivamente.
+El contenido de estas rutinas se encuentran almacenadas en el [monitor del sistema](/VonSim8/docs/memory/) en las direcciones `A0h`, `B0h`, `C0h` y `D0h` respectivamente.
 
 ---
 
