@@ -27,7 +27,7 @@ El procesador cuenta con cuatro registros de propósito general de 8 bits: `AL`,
 
 Dentro de los registros internos que no pueden ser accedidos por el usuario, se encuentra el registro [`FLAGS`](#flags) (_flags register_, 8 bits), el `IP` (_instruction pointer_, 8 bits) que almacena la dirección de la próxima instrucción a ejecutar, el `IR` (_instruction register_, 8 bits) que almacena el byte de la instrucción que se está analizando/decodificando en un instante dado, y el `MAR` (_memory address register_, 8 bits) que almacena la dirección de memoria que se quiere propagar por el bus de direcciones, y el `MBR` (_memory buffer register_, 8 bits) que almacena el byte que se quiere propagar o se ha recibido por el bus de datos.
 
-Hay además algunos registros internos que sirven de intermediarios para realizar ejecutar instrucciones, como pueden ser el `id` para almacenar un dato temporal, o el `left`, `right` y `result` que almacenan los operandos y resultado de una operación aritmética o lógica respectivamente.
+Hay además algunos registros internos que sirven de intermediarios para realizar ejecutar instrucciones, como pueden ser el `id` para almacenar un dato temporal.
 
 ## ALU
 
@@ -40,10 +40,10 @@ El registro `FLAGS` es un registro de 16 bits que contiene las _flags_ mostradas
 | Bit # | Abreviatura | Descripción            |
 | :---: | :---------: | :--------------------- |
 |   0   |    `CF`     | _Flag_ de acarreo      |
-|   6   |    `ZF`     | _Flag_ de cero         |
-|   7   |    `SF`     | _Flag_ de signo        |
-|   9   |    `IF`     | _Flag_ de interrupción |
-|  11   |    `OF`     | _Flag_ de overflow     |
+|   2   |    `ZF`     | _Flag_ de cero         |
+|   3   |    `SF`     | _Flag_ de signo        |
+|   4   |    `IF`     | _Flag_ de interrupción |
+|   7   |    `OF`     | _Flag_ de overflow     |
 
 El resto de bits están reservados / no se utilizan.
 
@@ -58,20 +58,19 @@ El procesador también implementa subrutinas. Estas son pequeños fragmentos de 
 Ejemplo de subrutina:
 
 ```vonsim
-      org 40h
-      ; suma al, bl y cl
-sum3: add al, bl
-      add al, cl
-      ret
-
-      org 20h
       mov al, 1
       mov bl, 2
       mov cl, 3
       call sum3
       ; ax = 6
       hlt
-      end
+
+
+; suma al, bl y cl
+sum3: add al, bl
+      add al, cl
+      ret
+
 ```
 
 ## Interrupciones

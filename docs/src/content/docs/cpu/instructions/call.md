@@ -21,21 +21,19 @@ _etiqueta_ debe ser una etiqueta que apunta a una instrucción.
 ### Ejemplo
 
 ```vonsim
-            org 30h
+            call subrutina ; Válido
+            call 30h     ; Inválido, debe ser una etiqueta
+            hlt
+
 subrutina:  push ax
             ; --- etc ---
             ret
 
-            org 20h
-            call subrutina ; Válido
-            call 30h     ; Inválido, debe ser una etiqueta
-            hlt
-            end
 ```
 
 ## Codificación
 
-`00110001`, _dir-low_, _dir-high_
+`00110001`, _dir_
 
 ---
 

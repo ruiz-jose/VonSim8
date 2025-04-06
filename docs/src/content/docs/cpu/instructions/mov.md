@@ -27,42 +27,32 @@ Las combinaciones válidas de _dest_, _fuente_ son:
 ## Codificación
 
 - REGISTRO a registro  
-  `1000000w`, `00RRRrrr`
+  `0000_RRrr`
 - Memoria (directo) a registro  
-  `1000000w`, `01000rrr`, _dir-low_, _dir-high_
+  `0001_RR00`, _dir_
 - Memoria (indirecto) a registro  
-  `1000000w`, `01010rrr`
-- Memoria (indirecto con desplazamiento) a registro  
-  `1000000w`, `01100rrr`, _desp-low_, _desp-high_
+  `0001_RR01`
 - Inmediato a registro  
-  `1000000w`, `01001rrr`, _dato-low_, _dato-high_
+  `0001_RR10`, _dato_
 - Registro a memoria (directo)  
-  `1000000w`, `11000rrr`, _dir-low_, _dir-high_
+  `0010_00rr`, _dir_
 - Registro a memoria (indirecto)  
-  `1000000w`, `11010rrr`
-- Registro a memoria (indirecto con desplazamiento)  
-  `1000000w`, `11100rrr`, _desp-low_, _desp-high_
+  `0010_01rr`
 - Inmediato a memoria (directo)  
-  `1000000w`, `11001000`, _dir-low_, _dir-high_, _dato-low_, _dato-high_
+  `0010_10_00`, _dir_, _dato_
 - Inmediato a memoria (indirecto)  
-  `1000000w`, `11011000`, _dato-low_, _dato-high_
-- Inmediato a memoria (indirecto con desplazamiento)  
-  `1000000w`, `11101000`, _desp-low_, _desp-high_, _dato-low_, _dato-high_
+  `0010_10_01`, _dato_
 
-Donde `w` es el bit de tamaño de los operandos. `w=0` indica operandos de 8 bits y `w=1` operandos de 16 bits. Cuando `w=0`, _dato-high_ es obviado (la longitud de la instrucción es de un byte menos).
+`rr` o `RR` codifica un registro según la siguiente tabla:
 
-`rrr` o `RRR` codifica un registro según la siguiente tabla:
+| `rr` | `nombre` |
+| :---: | :---: | 
+| `00` | `AL`  | 
+| `01` | `BL`  | 
+| `10` | `BL`  | 
+| `11` | `DL`  | 
 
-| `rrr` | `w=0` | `w=1` |
-| :---: | :---: | :---: |
-| `000` | `AL`  | `AX`  |
-| `001` | `CL`  | `CX`  |
-| `010` | `DL`  | `DX`  |
-| `011` | `BL`  | `BX`  |
-| `100` | `AH`  | `SP`  |
-| `101` | `CH`  |  --   |
-| `110` | `DH`  |  --   |
-| `111` | `BH`  |  --   |
+
 
 ---
 
