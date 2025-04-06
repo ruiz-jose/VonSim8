@@ -416,15 +416,14 @@ async function startThread(generator: EventGenerator): Promise<void> {
               messageReadWrite = "Ejecución: MBR ← read(PIO[MAR])";
             }
             store.set(messageAtom, messageReadWrite);
-           /* if (status.until === "cycle-change") {
-              pauseSimulation();
-            }*/
 
             cycleCount++; 
             if (currentInstructionName === "RET" 
               || currentInstructionName === "IN" 
               || (currentInstructionName === "INT" &&  messageReadWrite ==="Ejecución: MBR ← read(Memoria[MAR]); SP = SP - 1")) {
-              pauseSimulation();
+                if (status.until === "cycle-change") {
+                  pauseSimulation();
+                }
             }
           } else if (event.value.type === "cpu:mbr.set") {
             const sourceRegister = event.value.register === "id.l" ? "id" : 
