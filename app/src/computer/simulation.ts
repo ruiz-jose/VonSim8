@@ -270,7 +270,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             } else if (sourceRegister === "right.l" && currentInstructionName === "INT") {
               displayMessage = "Interrupción: SUB AL, 1";     
             } else if (sourceRegister === "right" && currentInstructionName === "INT") {
-              displayMessage = "Interrupción:ADD BL, 1";  
+              displayMessage = "Interrupción: ADD BL, 1";  
             } else if (sourceRegister === "ri.l" && currentInstructionName === "INT") {
               displayMessage = "Interrupción: MAR ← (video)"; 
               shouldDisplayMessage = false;     
@@ -281,7 +281,11 @@ async function startThread(generator: EventGenerator): Promise<void> {
             if (displayMessage !== "Interrupción: MAR ← (video)"){
               if (status.until === "cycle-change") {
                 if (currentInstructionName !== "CALL" 
-                   && currentInstructionName !== "PUSH" ) {
+                   && currentInstructionName !== "PUSH" 
+                   && currentInstructionName !== "DEC" 
+                   && currentInstructionName !== "INC"
+                   && currentInstructionName !== "NOT"
+                   && currentInstructionName !== "NEG") {
                   pauseSimulation();                          
                 } 
               }           
@@ -289,6 +293,10 @@ async function startThread(generator: EventGenerator): Promise<void> {
             executeStageCounter++;
             if ( currentInstructionName !== "CALL" 
               && currentInstructionName !== "PUSH"
+              && currentInstructionName !== "DEC"
+              && currentInstructionName !== "INC"
+              && currentInstructionName !== "NOT"
+              && currentInstructionName !== "NEG"
               && !(currentInstructionName === "INT" && sourceRegister === "SP")) {
               store.set(messageAtom, displayMessage);
               cycleCount++; 
@@ -311,7 +319,17 @@ async function startThread(generator: EventGenerator): Promise<void> {
           } else if (event.value.type === "cpu:register.copy") {
             const sourceRegister = event.value.src.replace(/\.l$/, '');
             const destRegister = event.value.dest.replace(/\.l$/, '');
-            const displaySource = sourceRegister === "result" ? `${destRegister} ${currentInstructionName} ${fuenteALU}` : sourceRegister;
+            let displaySource = "";
+            if ( currentInstructionName === "DEC"  
+              || currentInstructionName === "INC"
+              || currentInstructionName === "NOT"
+              || currentInstructionName === "NEG"){
+                displaySource = sourceRegister === "result" ? `${currentInstructionName} ${fuenteALU}` : sourceRegister;
+          
+              }else{
+                displaySource = sourceRegister === "result" ? `${destRegister} ${currentInstructionName} ${fuenteALU}` : sourceRegister;
+          
+              }
             let displayMessage = `Ejecución: ${destRegister} ← ${displaySource}`;
             //let displayMessage = `Ejecución: ${destRegister} ← ${displaySource} (Destino ALU: ${destRegister}, Fuente ALU: ${fuenteALU})`;
 

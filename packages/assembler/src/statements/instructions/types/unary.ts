@@ -65,9 +65,13 @@ export class UnaryInstruction extends InstructionStatement {
     const { mode } = this.#initialOperation;
 
     // opcode + mode
-    let length = 2;
+    /*let length = 2;
     if (mode === "mem-direct") {
       length += 2; // 2-byte address
+    }*/
+    let length = 1;
+    if (mode === "mem-direct") {
+      length += 1; // 1-byte address
     }
 
     return length;
@@ -92,8 +96,10 @@ export class UnaryInstruction extends InstructionStatement {
 
     switch (this.operation.mode) {
       case "reg": {
-        bytes[1] = 0b00000_000; // 00000rrr
-        bytes[1] |= registerToBits(this.operation.reg);
+       /* bytes[1] = 0b00000_000; // 00000rrr
+        bytes[1] |= registerToBits(this.operation.reg);*/
+       // bytes[0] = 0b00000_000; // 00000rrr
+        bytes[0] |= registerToBits(this.operation.reg);
         break;
       }
 

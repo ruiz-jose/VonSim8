@@ -33,7 +33,7 @@ export class ALUUnaryInstruction extends Instruction<"NOT" | "NEG" | "INC" | "DE
       }
 
       case "mem-indirect":
-        return ["[BX]"];
+        return ["[BL]"];
 
       default: {
         const _exhaustiveCheck: never = this.operation;
@@ -59,8 +59,8 @@ export class ALUUnaryInstruction extends Instruction<"NOT" | "NEG" | "INC" | "DE
     // All intructions are, at least, 2 bytes long.
     yield* super.consumeInstruction(computer, "IR");
     yield { type: "cpu:decode" };
-    yield* super.consumeInstruction(computer, "IR");
-    yield { type: "cpu:decode" };
+   // yield* super.consumeInstruction(computer, "IR");
+    //yield { type: "cpu:decode" };
 
     yield { type: "cpu:cycle.update", phase: "decoded", next: "fetch-operands" };
 
