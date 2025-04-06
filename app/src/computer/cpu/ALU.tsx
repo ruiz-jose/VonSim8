@@ -20,7 +20,7 @@ export function ALU() {
 
   useEffect(() => {
     const handleInstruction = (instruction: string) => {
-      if (instruction === "ADD" || instruction === "SUB" || instruction === "CMP") {
+      if (instruction === "ADD" || instruction === "SUB" || instruction === "CMP" || instruction === "AND" || instruction === "OR" || instruction === "XOR" || instruction === "NOT") {
         setShowOperation(true);
       } else {
         setShowOperation(false);

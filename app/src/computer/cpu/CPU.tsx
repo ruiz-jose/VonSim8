@@ -22,7 +22,7 @@ export function CPU( ) {
 
   useEffect(() => {
     const handleInstruction = (instruction: string) => {
-      if (instruction === "ADD" || instruction === "SUB" || instruction === "CMP") {
+      if (instruction === "ADD" || instruction === "SUB"  || instruction === "CMP" || instruction === "AND" || instruction === "OR" || instruction === "XOR" || instruction === "NOT") {
         setShowRegisters(true);
       } else {
         setShowRegisters(false);
