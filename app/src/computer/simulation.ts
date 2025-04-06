@@ -421,7 +421,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
             }*/
 
             cycleCount++; 
-            if (currentInstructionName === "RET" || currentInstructionName === "IN" ) {
+            if (currentInstructionName === "RET" 
+              || currentInstructionName === "IN" 
+              || (currentInstructionName === "INT" &&  messageReadWrite ==="Ejecución: MBR ← read(Memoria[MAR]); SP = SP - 1")) {
               pauseSimulation();
             }
           } else if (event.value.type === "cpu:mbr.set") {
