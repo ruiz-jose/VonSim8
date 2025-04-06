@@ -484,7 +484,6 @@ type Action =
 async function dispatch(...args: Action) {
   const action = args[0];
   const status = store.get(simulationAtom);
-  const programModified = store.get(programModifiedAtom); // Obtener el estado de programModifiedAtom
 
 
   switch (action) {
