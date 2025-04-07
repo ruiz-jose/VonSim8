@@ -320,19 +320,22 @@ async function startThread(generator: EventGenerator): Promise<void> {
             const sourceRegister = event.value.src.replace(/\.l$/, '');
             const destRegister = event.value.dest.replace(/\.l$/, '');
             let displaySource = "";
+
             if ( currentInstructionName === "DEC"  
               || currentInstructionName === "INC"
               || currentInstructionName === "NOT"
               || currentInstructionName === "NEG"){
-                displaySource = sourceRegister === "result" ? `${currentInstructionName} ${fuenteALU}` : sourceRegister;
-          
-              }else{
-                displaySource = sourceRegister === "result" ? `${destRegister} ${currentInstructionName} ${fuenteALU}` : sourceRegister;
-          
-              }
-            let displayMessage = `Ejecución: ${destRegister} ← ${displaySource}`;
-            //let displayMessage = `Ejecución: ${destRegister} ← ${displaySource} (Destino ALU: ${destRegister}, Fuente ALU: ${fuenteALU})`;
+              displaySource = sourceRegister === "result" ? `${currentInstructionName} ${fuenteALU}` : sourceRegister;
+        
+            }else{
+              displaySource = sourceRegister === "result" ? `${destRegister} ${currentInstructionName} ${fuenteALU}` : sourceRegister;
+        
+            }
 
+            let displayMessage = `Ejecución: ${destRegister} ← ${displaySource}`;
+
+            const displayMessageFLAGS = "; write(FLAGS)"; // Agregar el mensaje de FLAGS aquí
+            displayMessage += displayMessageFLAGS; // Agregar salto de línea
             if (sourceRegister === "ri" && destRegister === "IP") {
               displayMessage = "Ejecución: IP ← MBR";
               store.set(messageAtom, displayMessage);
