@@ -43,18 +43,14 @@ export const spanish: Locale = {
     },
     example: dedent`
       ; ¡Bienvenido a VonSim 8!
-      ; Este es un ejemplo de código que suma dos variables z = x + y
-      
-      org 10h
+      ; Este es un ejemplo de código que suma dos variables z = x + y      
         x  db 3
         y  db 2
         z  db 0
-      org 20h
         mov al, x
         add al, y
         mov z, al
         hlt
-      end
     `,
   },
 
