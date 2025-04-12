@@ -14,7 +14,6 @@ import { stopAllAnimations } from "@/computer/shared/animate";
 import { useSimulation } from "@/computer/simulation";
 import { useTranslate } from "@/lib/i18n";
 import {
-  DATA_ON_LOAD_VALUES,
   HANDSHAKE_CONNECTIONS,
   PIO_CONNECTIONS,
   useSettings,
@@ -36,65 +35,31 @@ export function Settings({ className }: { className?: string }) {
 
       <Setting>
         <SettingInfo>
-          <SettingTitle>
-            <span className="icon-[lucide--languages] size-6" />
-            {translate("settings.language.label")}
-          </SettingTitle>
+          <SettingTitle>{translate("settings.instructionCycle.label")}</SettingTitle>
         </SettingInfo>
 
-        <Select
-          value={settings.language}
-          onValueChange={value => setSettings(prev => ({ ...prev, language: value as any }))}
-        >
-          <SelectTrigger className="w-32">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="en">
-              <span className="inline-flex items-center gap-2">
-                <span className="icon-[circle-flags--uk] size-4" /> English
-              </span>
-            </SelectItem>
-            <SelectItem value="es">
-              <span className="inline-flex items-center gap-2">
-                <span className="icon-[circle-flags--ar] size-4" /> Español
-              </span>
-            </SelectItem>
-          </SelectContent>
-        </Select>
+        <Switch
+          className="ml-8"
+          checked={settings.showInstructionCycle}
+          onCheckedChange={value =>
+            setSettings(prev => ({ ...prev, showInstructionCycle: value }))
+          }
+        />
       </Setting>
+
 
       <Setting>
         <SettingInfo>
-          <SettingTitle>
-            <span className="icon-[lucide--pilcrow-square] size-6" />
-            {translate("settings.editorFontSize.label")}
-          </SettingTitle>
+          <SettingTitle>{translate("settings.statsCPU.label")}</SettingTitle>
         </SettingInfo>
 
-        <div className="flex items-center rounded-lg border border-stone-600 bg-stone-900">
-          <button
-            className="m-0.5 flex size-8 items-center justify-center rounded-lg text-white transition-colors hover:enabled:bg-stone-800 disabled:cursor-not-allowed"
-            disabled={settings.editorFontSize <= 8}
-            onClick={() =>
-              setSettings(prev => ({ ...prev, editorFontSize: prev.editorFontSize - 1 }))
-            }
-            title={translate("settings.editorFontSize.decrease")}
-          >
-            <span className="icon-[lucide--minus] size-4" />
-          </button>
-          <span className="w-8 text-center text-sm font-normal">{settings.editorFontSize}</span>
-          <button
-            className="m-0.5 flex size-8 items-center justify-center rounded-lg text-white transition-colors hover:enabled:bg-stone-800 disabled:cursor-not-allowed"
-            disabled={settings.editorFontSize >= 64}
-            onClick={() =>
-              setSettings(prev => ({ ...prev, editorFontSize: prev.editorFontSize + 1 }))
-            }
-            title={translate("settings.editorFontSize.increase")}
-          >
-            <span className="icon-[lucide--plus] size-4" />
-          </button>
-        </div>
+        <Switch
+          className="ml-8"
+          checked={settings.showStatsCPU}
+          onCheckedChange={value =>
+            setSettings(prev => ({ ...prev, showStatsCPU: value }))
+          }
+        />
       </Setting>
 
       <hr className="border-stone-600" />
@@ -102,31 +67,43 @@ export function Settings({ className }: { className?: string }) {
       <Setting>
         <SettingInfo>
           <SettingTitle>
-            <span className="icon-[lucide--memory-stick] size-6" />
-            {translate("settings.dataOnLoad.label")}
+            <span className="icon-[lucide--rotate-3d] size-6" />
+            {translate("settings.animations.label")}
           </SettingTitle>
-          <SettingSubtitle>{translate("settings.dataOnLoad.description")}</SettingSubtitle>
+          <SettingSubtitle>{translate("settings.animations.description")}</SettingSubtitle>
         </SettingInfo>
 
-        <Select
-          value={settings.dataOnLoad}
-          onValueChange={value => setSettings(prev => ({ ...prev, dataOnLoad: value as any }))}
-        >
-          <SelectTrigger className="w-32 min-w-[theme(width.32)]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {DATA_ON_LOAD_VALUES.map(value => (
-              <SelectItem key={value} value={value}>
-                {translate(`settings.dataOnLoad.${value}`)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <Switch
+          className="ml-8"
+          checked={settings.animations}
+          onCheckedChange={value => {
+            setSettings(prev => ({ ...prev, animations: value }));
+            if (value === false) stopAllAnimations();
+          }}
+        />
+      </Setting>
+
+      <Setting>
+        <SettingInfo>
+          <SettingTitle>
+            <span className="icon-[lucide--gauge] size-6" />
+            {translate("settings.speeds.executionUnit")}
+          </SettingTitle>
+        </SettingInfo>
+
+        <Slider
+          className="w-44"
+          {...logSlider({
+            value: settings.executionUnit,
+            onValueChange: (value: number) =>
+              setSettings(prev => ({ ...prev, executionUnit: value })),
+            min: 500,
+            max: 1,
+          })}
+        />
       </Setting>
 
       <hr className="border-stone-600" />
-
       <Setting>
         <SettingInfo>
           <SettingTitle>
@@ -173,6 +150,25 @@ export function Settings({ className }: { className?: string }) {
           }
           // Comentando la línea disabled
           // disabled={status.type !== "stopped"}
+        />
+      </Setting>
+
+      <Setting>
+        <SettingInfo>
+          <SettingTitle>
+            <span className="icon-[lucide--clock] size-6" />
+            {translate("settings.speeds.clockSpeed")}
+          </SettingTitle>
+        </SettingInfo>
+
+        <Slider
+          className="w-44"
+          {...logSlider({
+            value: settings.clockSpeed,
+            onValueChange: (value: number) => setSettings(prev => ({ ...prev, clockSpeed: value })),
+            min: 3000,
+            max: 100,
+          })}
         />
       </Setting>
 
@@ -241,66 +237,6 @@ export function Settings({ className }: { className?: string }) {
         </Select>
       </Setting>
 
-      <hr className="border-stone-600" />
-
-      <Setting>
-        <SettingInfo>
-          <SettingTitle>
-            <span className="icon-[lucide--rotate-3d] size-6" />
-            {translate("settings.animations.label")}
-          </SettingTitle>
-          <SettingSubtitle>{translate("settings.animations.description")}</SettingSubtitle>
-        </SettingInfo>
-
-        <Switch
-          className="ml-8"
-          checked={settings.animations}
-          onCheckedChange={value => {
-            setSettings(prev => ({ ...prev, animations: value }));
-            if (value === false) stopAllAnimations();
-          }}
-        />
-      </Setting>
-
-      <Setting>
-        <SettingInfo>
-          <SettingTitle>
-            <span className="icon-[lucide--gauge] size-6" />
-            {translate("settings.speeds.executionUnit")}
-          </SettingTitle>
-        </SettingInfo>
-
-        <Slider
-          className="w-44"
-          {...logSlider({
-            value: settings.executionUnit,
-            onValueChange: (value: number) =>
-              setSettings(prev => ({ ...prev, executionUnit: value })),
-            min: 500,
-            max: 1,
-          })}
-        />
-      </Setting>
-
-      <Setting>
-        <SettingInfo>
-          <SettingTitle>
-            <span className="icon-[lucide--clock] size-6" />
-            {translate("settings.speeds.clockSpeed")}
-          </SettingTitle>
-        </SettingInfo>
-
-        <Slider
-          className="w-44"
-          {...logSlider({
-            value: settings.clockSpeed,
-            onValueChange: (value: number) => setSettings(prev => ({ ...prev, clockSpeed: value })),
-            min: 3000,
-            max: 100,
-          })}
-        />
-      </Setting>
-
       <Setting>
         <SettingInfo>
           <SettingTitle>
@@ -320,6 +256,70 @@ export function Settings({ className }: { className?: string }) {
           })}
         />
       </Setting>
+      <hr className="border-stone-600" />
+      <Setting>
+        <SettingInfo>
+          <SettingTitle>
+            <span className="icon-[lucide--languages] size-6" />
+            {translate("settings.language.label")}
+          </SettingTitle>
+        </SettingInfo>
+
+        <Select
+          value={settings.language}
+          onValueChange={value => setSettings(prev => ({ ...prev, language: value as any }))}
+        >
+          <SelectTrigger className="w-32">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="en">
+              <span className="inline-flex items-center gap-2">
+                <span className="icon-[circle-flags--uk] size-4" /> English
+              </span>
+            </SelectItem>
+            <SelectItem value="es">
+              <span className="inline-flex items-center gap-2">
+                <span className="icon-[circle-flags--ar] size-4" /> Español
+              </span>
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </Setting>
+
+      <Setting>
+        <SettingInfo>
+          <SettingTitle>
+            <span className="icon-[lucide--pilcrow-square] size-6" />
+            {translate("settings.editorFontSize.label")}
+          </SettingTitle>
+        </SettingInfo>
+
+        <div className="flex items-center rounded-lg border border-stone-600 bg-stone-900">
+          <button
+            className="m-0.5 flex size-8 items-center justify-center rounded-lg text-white transition-colors hover:enabled:bg-stone-800 disabled:cursor-not-allowed"
+            disabled={settings.editorFontSize <= 8}
+            onClick={() =>
+              setSettings(prev => ({ ...prev, editorFontSize: prev.editorFontSize - 1 }))
+            }
+            title={translate("settings.editorFontSize.decrease")}
+          >
+            <span className="icon-[lucide--minus] size-4" />
+          </button>
+          <span className="w-8 text-center text-sm font-normal">{settings.editorFontSize}</span>
+          <button
+            className="m-0.5 flex size-8 items-center justify-center rounded-lg text-white transition-colors hover:enabled:bg-stone-800 disabled:cursor-not-allowed"
+            disabled={settings.editorFontSize >= 64}
+            onClick={() =>
+              setSettings(prev => ({ ...prev, editorFontSize: prev.editorFontSize + 1 }))
+            }
+            title={translate("settings.editorFontSize.increase")}
+          >
+            <span className="icon-[lucide--plus] size-4" />
+          </button>
+        </div>
+      </Setting>
+
 
       <hr className="border-stone-600" />
 

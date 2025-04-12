@@ -5,6 +5,18 @@ import { DATA_ON_LOAD_VALUES, LANGUAGES } from "./consts";
 
 export const settingsSchema = z.object({
   /**
+   * Show or hide the instruction cycle.
+   * Controls whether the instruction cycle is visible in the UI.
+   */
+  showInstructionCycle: z.boolean().catch(true),
+
+  /**
+ * Show or hide the CPU statistics.
+ * Controls whether the CPU statistics are visible in the UI.
+ */
+  showStatsCPU: z.boolean().catch(true),
+  
+  /**
    * Interface language.
    */
   language: z.enum(LANGUAGES).catch(getDefaultLanguage),

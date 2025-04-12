@@ -49,6 +49,12 @@ export const getSettings = () => store.get(settingsAtom);
 
 export const useSettings = () => useAtom(settingsAtom);
 
+const showInstructionCycleAtom = atom(get => get(settingsAtom).showInstructionCycle);
+export const useShowInstructionCycle = () => useAtomValue(showInstructionCycleAtom);
+
+const showStatsCPUAtom = atom(get => get(settingsAtom).showStatsCPU);
+export const useShowStatsCPU = () => useAtomValue(showStatsCPUAtom);
+
 const languageAtom = atom(get => get(settingsAtom).language);
 export const useLanguage = () => useAtomValue(languageAtom);
 

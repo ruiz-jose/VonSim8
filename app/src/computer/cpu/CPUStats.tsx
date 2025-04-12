@@ -2,6 +2,7 @@ import { useAtomValue } from "jotai";
 import { useEffect,useState } from "react";
 
 import { useTranslate } from "@/lib/i18n";
+import { useSettings } from "@/lib/settings"; // Importar useSettings
 
 import { cycleCountAtom, instructionCountAtom } from "./state";
 
@@ -10,7 +11,9 @@ export function CPUStats() {
   const cycleCount = useAtomValue(cycleCountAtom);
   const instructionCount = useAtomValue(instructionCountAtom);
 
-  const [position, setPosition] = useState({ x: 300, y: 450 }); // Posición inicial
+  const [settings] = useSettings(); // Obtener settings desde el menú de configuración
+
+  const [position, setPosition] = useState({ x: 250, y: 450 }); // Posición inicial
   const [isDragging, setIsDragging] = useState(false); // Estado de arrastre
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 }); // Offset del mouse al arrastrar
 
@@ -52,9 +55,12 @@ export function CPUStats() {
     };
   }, [isDragging]);
 
+  // Si el usuario desactiva la visibilidad del ciclo de instrucción, no renderizar el componente
+  if (!settings.showStatsCPU) return null;
+
   return (
     <div
-      className="absolute z-10 h-min w-[180px] rounded-lg border border-stone-600 bg-stone-900 [&_*]:z-20"
+      className="absolute z-10 h-min w-[300px] rounded-lg border border-stone-600 bg-stone-900 [&_*]:z-20"
       style={{ left: `${position.x}px`, top: `${position.y}px` }} // Posición dinámica
     >
       <span
@@ -66,8 +72,8 @@ export function CPUStats() {
       <hr className="border-stone-600" />
       <div className="flex flex-col w-full items-start py-2 px-2">
         <div className="text-white pl-1 text-sm text-left">
-          <div className="mb-1">Clock: {cycleCount}</div>
-          <div>Instrucciones: {instructionCount}</div>
+          <div className="mb-1">Total de ciclos: {cycleCount}</div>
+          <div>Recuento de instrucciones: {instructionCount}</div>
         </div>
       </div>
     </div>

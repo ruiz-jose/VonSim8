@@ -5,6 +5,7 @@ import { simulationAtom } from "@/computer/simulation"; // Importar simulationAt
 import { programModifiedAtom } from "@/editor/state";
 import { useTranslate } from "@/lib/i18n";
 import { store } from "@/lib/jotai";
+import { useSettings } from "@/lib/settings"; // Importar useSettings
 import { toast } from "@/lib/toast";
 
 import { cycleCountAtom, messageAtom, messageHistoryAtom } from "./state";
@@ -16,6 +17,8 @@ export function RegisterTransferMessages() {
   const messageHistory = useAtomValue(messageHistoryAtom);
   const simulationStatus = useAtomValue(simulationAtom);
   const programModified = useAtomValue(programModifiedAtom);
+ 
+  const [settings] = useSettings(); // Obtener settings desde el menú de configuración
 
   const containerRef = useRef<HTMLDivElement>(null); // Referencia al contenedor para el scroll
   const [position, setPosition] = useState({ x: 250, y: 80 }); // Posición inicial
@@ -90,6 +93,9 @@ export function RegisterTransferMessages() {
       window.removeEventListener("mouseup", handleMouseUp);
     };
   }, [isDragging]);
+  
+  // Si el usuario desactiva la visibilidad del ciclo de instrucción, no renderizar el componente
+  if (!settings.showInstructionCycle) return null;
 
   return (
     <div

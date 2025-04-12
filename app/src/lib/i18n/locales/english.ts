@@ -154,6 +154,14 @@ export const english = {
   settings: {
     title: "Settings",
 
+    instructionCycle: {
+      label: "Instruction Cycle",
+    },
+
+    statsCPU: {
+      label: "CPU Statistics",
+    },
+
     language: {
       label: "Language",
     },
@@ -176,6 +184,7 @@ export const english = {
     devices: {
       label: "Devices",
       description: "Which devices should be enabled.",
+
 
       "keyboard-and-screen": "Keyboard and screen",
       pic: {

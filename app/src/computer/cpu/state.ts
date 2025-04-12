@@ -29,6 +29,8 @@ export const instructionCountAtom = atom(0); // Variable global para contar las 
 export const messageHistoryAtom = atom<{ cycle: number; stage: string; action: string; }[]>([]);
 // Crear un átomo para almacenar el valor de connectScreenAndKeyboard
 export const connectScreenAndKeyboardAtom = atom(false);
+export const showInstructionCycleAtom = atom(true); // Por defecto, visible
+export const showCPUStatsAtom = atom(true); // Por defecto, visible
 
 const lowAtom = (
   primitive: PrimitiveAtom<Byte<16>>,

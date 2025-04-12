@@ -140,6 +140,14 @@ export const spanish: Locale = {
   settings: {
     title: "Configuración",
 
+    instructionCycle: {
+      label: "Ciclo de Instrucción",
+    },
+
+    statsCPU: {
+      label: "Estadísticas CPU",
+    },
+    
     language: {
       label: "Idioma",
     },
