@@ -132,6 +132,72 @@ export class GlobalStore {
       }
     }
 
+    if (this.hasORG) {
+    const errors: AssemblerError<any>[] = [];
+    forEachWithErrors(
+      statements,
+      statement => {
+       // if (statement.isEnd()) return;
+        if (statement.isDataDirective() && statement.directive === "EQU") return;
+
+        if (statement.isOriginChange()) {
+          const address = statement.newAddress;
+          codePointer = address;
+          return;
+        }
+       
+        let pointer: number;
+        if (statement.isDataDirective()) {
+          if (codePointer === null) {
+            // Si no se ha definido ORG para datos, los colocamos después del código
+            codePointer = lastCodeAddress;
+          }          
+          pointer = codePointer;
+        } else if (statement.isInstruction()) {
+          pointer = codePointer;
+        } else {
+          throw new AssemblerError("missing-org").at(statement);
+        }
+
+        const length = statement.length;
+
+        for (let i = 0; i < length; i++) {
+          if (!MemoryAddress.inRange(pointer + i)) {
+            throw new AssemblerError("instruction-out-of-range", pointer + i).at(statement);
+          }
+          const address = MemoryAddress.from(pointer + i);
+
+          if (occupiedMemory.has(address.value)) {
+            throw new AssemblerError("occupied-address", address).at(statement);
+          }
+
+          if (hasINT) {
+            if (reservedAddressesForSyscalls.has(address.value)) {
+              throw new AssemblerError("reserved-address", address).at(statement);
+            }
+          }
+
+          occupiedMemory.add(address.value);
+          if (statement.isInstruction()) this.codeMemory.add(address.value);
+        }
+
+        const startAddress = MemoryAddress.from(pointer);
+        statement.setStart(startAddress);
+        if (statement.label) {
+          this.labels.set(statement.label, {
+            type: statement.isInstruction() ? "instruction" : statement.directive,
+            address: startAddress,
+          });
+        }
+        if (statement.isDataDirective() || statement.isInstruction()) {
+          codePointer += length;
+          lastCodeAddress = Math.max(lastCodeAddress, codePointer); // Actualizar la última dirección usada por el código
+        }
+      },
+      AssemblerError.from,
+    );
+    return errors;
+    } else {
     const errors = forEachWithErrors(
       [...instructionStatements, ...directiveStatements, ...dataStatements], // Procesar primero las instrucciones y luego los datos
       //statements,
@@ -204,8 +270,9 @@ export class GlobalStore {
       },
       AssemblerError.from,
     );
-
     return errors;
+    }
+
   }
 
   /**
