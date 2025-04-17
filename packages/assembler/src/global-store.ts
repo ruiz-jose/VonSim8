@@ -111,6 +111,11 @@ export class GlobalStore {
 
     // Verificar si el programa contiene la directiva ORG
     this.hasORG = statements.some(statement => statement.isOriginChange());
+
+     // Validar si `this.hasORG` es `true` pero la primera línea no es una directiva ORG
+    if (this.hasORG && !statements[0].isOriginChange()) {
+      throw new AssemblerError("missing-org").at(statements[0].position);
+    }
     
     // Determinar la dirección inicial del código
     let codePointer = hasINT || this.hasORG ? 0x20 : 0x00; // Comienza en 20h si hay INT o ORG, de lo contrario en 0x00
@@ -137,25 +142,18 @@ export class GlobalStore {
     forEachWithErrors(
       statements,
       statement => {
-       // if (statement.isEnd()) return;
+        if (statement.isEnd()) return;
         if (statement.isDataDirective() && statement.directive === "EQU") return;
+
 
         if (statement.isOriginChange()) {
           const address = statement.newAddress;
           codePointer = address;
           return;
-        }
-       
-        let pointer: number;
-        if (statement.isDataDirective()) {
-          if (codePointer === null) {
-            // Si no se ha definido ORG para datos, los colocamos después del código
-            codePointer = lastCodeAddress;
-          }          
-          pointer = codePointer;
-        } else if (statement.isInstruction()) {
-          pointer = codePointer;
-        } else {
+        }  
+
+        const pointer = codePointer;
+        if (pointer === null) {
           throw new AssemblerError("missing-org").at(statement);
         }
 
