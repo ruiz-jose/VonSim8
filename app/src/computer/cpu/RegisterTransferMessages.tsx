@@ -27,6 +27,7 @@ export function RegisterTransferMessages() {
 
   // Función para dividir el mensaje en "Ciclo", "Etapa" y "Acción"
   const parseMessage = (msg: string, cycle: number) => {
+
     const [stage, ...actionParts] = msg.split(":");
     const action = actionParts.join(":").trim(); // Resto del mensaje como acción
     return { cycle, stage: stage.trim(), action };
@@ -126,26 +127,36 @@ export function RegisterTransferMessages() {
                   <div
                     className={`mb-2 ${
                       msg.stage === "Captación"
-                        ? "text-blue-400 text-lg font-serif"
-                        : msg.stage === "Ejecución"
-                        ? "text-green-400 text-lg font-sans"
-                        : "text-white text-sm font-bold"
+                      ? "text-blue-400 text-lg font-serif"
+                      : msg.stage === "Ejecución"
+                      ? "text-green-400 text-lg font-sans"
+                      : msg.stage === "Interrupción"
+                      ? "text-red-400 text-lg font-mono"
+                      : "text-white text-sm font-bold"
                     }`}
                   >
                     Etapa: {msg.stage}
                   </div>
                   {/* Títulos de las columnas */}
-                  <div className="flex text-white text-sm font-bold mb-2 font-serif">
-                    <div className="w-1/4 text-center">Ciclo</div>
-                    <div className="w-3/4 text-left">Acción</div>
-                  </div>
+                  {msg.stage !== "Interrupción" && (
+                    <div className="flex text-white text-sm font-bold mb-2 font-serif">
+                      <div className="w-1/4 text-center">Ciclo</div>
+                      <div className="w-3/4 text-left">Acción</div>
+                    </div>
+                  )}
                 </>
               )}
               {/* Mensaje de la etapa */}
-              <div className="flex text-white text-sm mb-1">
-                <div className="w-1/4 text-center">{msg.cycle}</div>
-                <div className="w-3/4 text-left">{msg.action}</div>
-              </div>
+              {msg.stage === "Interrupción" ? (
+                // Mostrar solo msg.action si la etapa es "Interrupción"
+                <div className="text-white text-sm mb-1">{msg.action}</div>
+              ) : (
+                // Mostrar ciclo y acción para otras etapas
+                <div className="flex text-white text-sm mb-1">
+                  <div className="w-1/4 text-center">{msg.cycle}</div>
+                  <div className="w-3/4 text-left">{msg.action}</div>
+                </div>
+              )}
             </div>
           );
         })}

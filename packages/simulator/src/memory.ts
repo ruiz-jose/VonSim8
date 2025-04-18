@@ -66,7 +66,7 @@ export class Memory extends Component {
             0xD0, // push AL
             0xd8, 0x64, // in AL, 64h
             0x12, 0x01, // cmp AL, 1
-            0xC1, 0xC, // jz wait_for_key (-6 bytes)
+            0xC1, 0xC1, // jz wait_for_key (-6 bytes)
             0xd8, 0x60, // in AL, 60h
             0xD4, // pop AL
             0x41, // mov [BX], AL

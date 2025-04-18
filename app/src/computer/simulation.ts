@@ -181,20 +181,20 @@ async function startThread(generator: EventGenerator): Promise<void> {
           continue;
         }  else if (event.value.type === "cpu:int.6") {            
           //store.set(messageAtom, "PILA ← DL; DL ← ASCII; (BL) ← DL; IRET");
-          store.set(messageAtom, "Rutina leer caracter del teclado");
-          if (status.until === "cycle-change") {
-            pauseSimulation();
-          }
+          store.set(messageAtom, "Interrupción: Rutina leer caracter del teclado");
+        //  if (status.until === "cycle-change") {
+          //  pauseSimulation();
+         // }
         }  else if (event.value.type === "cpu:int.7") {            
           //store.set(messageAtom, "PILA ← DL; Bucle: DL ← (BL); video ← DL; SUB AL, 1; JNZ Bucle; (BL) ← DL; IRET");
           store.set(messageAtom, "Rutina mostrar por pantalla");
           if (status.until === "cycle-change") {
             pauseSimulation();
           }       
-        }     
+        }  
         if (fetchStageCounter < 3 ) {
           if (event.value.type === "cpu:mar.set") {
-            
+
             const sourceRegister = event.value.register;
             if (sourceRegister === "SP") {
               fetchStageCounter = 3;
@@ -239,8 +239,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
           if (event.value.type === "cpu:mar.set") {
             const sourceRegister = event.value.register;
             const displayRegister = sourceRegister === "ri" ? "MBR" : sourceRegister;
-            
-            if (shouldDisplayMessage) {
+    
+            if (shouldDisplayMessage || sourceRegister === "SP") {
               store.set(messageAtom, `Ejecución: MAR ← ${displayRegister}`);
             }
             if (status.until === "cycle-change") {

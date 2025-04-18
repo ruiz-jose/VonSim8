@@ -53,6 +53,30 @@ export function* handleSyscall(
         return false;
       }
 
+
+     /*org 20h
+      int 6
+      hlt         ; Detiene la ejecución
+
+
+      org 0C0h
+      push AL
+      wait_for_key:
+      in AL, 64h
+      cmp AL, 1
+      jz wait_for_key 
+      in AL, 60h
+      pop AL
+      mov [BL], AL
+      iret*/
+
+      //org 0C0h
+      //push AL
+      yield* computer.cpu.setMAR("IP");
+      if (!(yield* computer.cpu.useBus("mem-read"))) return false; // Error reading memory
+      // Incrementar el registro IP manualmente si es necesario
+      yield* computer.cpu.updateWordRegister("IP", IP => IP.add(1));
+      yield* computer.cpu.getMBR("IR");
       if (!(yield* computer.cpu.pushToStack("AL"))) return false; // Stack overflow
 
       const keyboard = computer.io.keyboard;
