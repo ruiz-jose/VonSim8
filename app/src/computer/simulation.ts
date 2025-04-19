@@ -8,6 +8,7 @@ import { ComputerState, EventGenerator, Simulator, SimulatorError } from "@vonsi
 import { atom, useAtomValue } from "jotai";
 import { useMemo } from "react";
 
+import { dataAddressesAtom, programAddressesAtom } from "@/computer/memory/state";
 import { highlightLine, setReadOnly } from "@/editor/methods";
 import { programModifiedAtom } from "@/editor/state"; // Importar programModifiedAtom
 import { translate } from "@/lib/i18n";
@@ -549,7 +550,78 @@ async function dispatch(...args: Action) {
           devices: getSettings().devices, 
           hasORG: result.hasORG, // Pass the hasORG flag 
         });
+        console.log("result:",  result);
 
+
+        const programAddresses = result.instructions
+        .filter(instruction => instruction.type === "instruction") // Filtrar solo instrucciones
+        .flatMap(instruction => {
+          // Construir el nombre completo de la instrucción con sus operandos
+          const operands = instruction.operands
+            .map(operand => {
+              if (operand.type === "register") {
+                return operand.value; // Nombre del registro
+              } else if (operand.type === "number-expression") {
+                return operand.value.value.toString(16) + "h"; // Valor inmediato en hexadecimal
+              } else if (operand.type === "memory-address") {
+                return `[${operand.value.toString(16)}h]`; // Dirección de memoria
+              }
+              return ""; // Otros casos
+            })
+            .join(", "); // Separar los operandos con comas
+      
+          const fullInstruction = `${instruction.instruction} ${operands}`.trim(); // Construir la instrucción completa
+      
+          // Crear la entrada para la instrucción principal
+          const entries = [
+            {
+              address: instruction.start.value, // Dirección de la instrucción
+              name: fullInstruction, // Instrucción completa con operandos
+            },
+          ];
+      
+          // Si la instrucción tiene un segundo byte (como un valor inmediato o dirección), agregarlo
+          if (instruction.operands.some(operand => operand.type === "number-expression" || operand.type === "memory-address")) {
+            const secondByteAddress = instruction.start.value + 1; // Dirección del segundo byte
+            const secondByteName = instruction.operands
+              .filter(operand => operand.type === "number-expression" || operand.type === "memory-address")
+              .map(operand => {
+                if (operand.type === "number-expression") {
+                  return operand.value.value.toString(16) + "h"; // Valor inmediato en hexadecimal
+                } else if (operand.type === "memory-address") {
+                  return `[${operand.value.toString(16)}h]`; // Dirección de memoria
+                }
+                return "";
+              })
+              .join(", "); // Construir el nombre del segundo byte
+      
+            entries.push({
+              address: secondByteAddress,
+              name: secondByteName, // Nombre del segundo byte
+            });
+          }
+      
+          return entries; // Retornar ambas entradas (instrucción principal y segundo byte, si aplica)
+        });
+
+        const dataAddresses = result.data
+        .filter(data => data.type === "data-directive") // Filtrar por el tipo correcto
+        .map(data => ({
+          address: data.start.value, // Dirección de los datos
+          label: data.label || null, // Etiqueta asociada (si existe)
+        }));
+      
+
+      console.log("Direcciones de las instrucciones:", programAddresses);
+      console.log("Direcciones de los datos:", dataAddresses);
+
+      /*  const programAddresses = simulator.getComputerState().memory
+        .map((byte, index) => (byte !== 0 ? index : null)) // Filtrar las direcciones con datos cargados
+        .filter((address): address is number => address !== null); // Eliminar valores nulos
+*/
+        store.set(programAddressesAtom, programAddresses);
+        store.set(dataAddressesAtom, dataAddresses);
+        //console.log("Direcciones del programa cargadas en memoria:", programAddresses);
  
         resetState(simulator.getComputerState()); 
 
