@@ -260,6 +260,32 @@ export function Settings({ className }: { className?: string }) {
       <Setting>
         <SettingInfo>
           <SettingTitle>
+            <span className="icon-[lucide--flag] size-6" />
+            {translate("settings.flags.label")}
+          </SettingTitle>
+          <SettingSubtitle>{translate("settings.flags.description")}</SettingSubtitle>
+        </SettingInfo>
+
+        <Select
+          value={settings.flagsVisibility}
+          onValueChange={value =>
+            setSettings(prev => ({ ...prev, flagsVisibility: value as any }))
+          }
+        >
+          <SelectTrigger className="w-32">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="CF_ZF">CF ZF</SelectItem>
+            <SelectItem value="SF_OF_CF_ZF">SF OF CF ZF</SelectItem>
+          </SelectContent>
+        </Select>
+      </Setting>
+
+      <hr className="border-stone-600" />
+      <Setting>
+        <SettingInfo>
+          <SettingTitle>
             <span className="icon-[lucide--languages] size-6" />
             {translate("settings.language.label")}
           </SettingTitle>

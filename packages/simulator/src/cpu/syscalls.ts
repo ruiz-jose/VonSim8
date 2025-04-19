@@ -79,6 +79,17 @@ export function* handleSyscall(
       yield* computer.cpu.getMBR("IR");
       if (!(yield* computer.cpu.pushToStack("AL"))) return false; // Stack overflow
 
+      // in AL, 64h
+      /*yield* computer.cpu.setMAR("IP");
+      if (!(yield* computer.cpu.useBus("mem-read"))) return false; // Error reading memory
+      // Incrementar el registro IP manualmente si es necesario
+      yield* computer.cpu.updateWordRegister("IP", IP => IP.add(1));
+      yield* computer.cpu.setMAR("IP");
+      if (!(yield* computer.cpu.useBus("mem-read"))) return false; // Error reading memory
+      yield* computer.cpu.setMAR("ri");*/
+
+
+
       const keyboard = computer.io.keyboard;
       if (!keyboard) {
         yield { type: "cpu:error", error: new SimulatorError("device-not-connected", "keyboard") };

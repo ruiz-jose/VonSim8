@@ -162,6 +162,11 @@ export const english = {
       label: "CPU Statistics",
     },
 
+    flags: {
+      label: "Flags",
+      description: "Select which flags to display in the ALU.",
+    },
+
     language: {
       label: "Language",
     },

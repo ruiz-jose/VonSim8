@@ -3,6 +3,7 @@ import { useAtomValue } from "jotai";
 import { useEffect,useState } from "react";
 
 import { animated, getSpring } from "@/computer/shared/springs";
+import { useSettings } from "@/lib/settings";
 
 import { aluOperationAtom, connectScreenAndKeyboardAtom,registerAtoms } from "./state";
 
@@ -16,6 +17,7 @@ export function ALU() {
 
   const connectScreenAndKeyboard = useAtomValue(connectScreenAndKeyboardAtom); // Obtener el valor del átomo
 
+  const [settings] = useSettings(); // Obtener settings desde el menú de configuración
 
 
   useEffect(() => {
@@ -42,9 +44,9 @@ export function ALU() {
   // https://vonsim.github.io/docs/cpu/#flags
   const CF = FLAGS.bit(1);
   const ZF = FLAGS.bit(0);
-  //const SF = FLAGS.bit(3);
+  const SF = FLAGS.bit(3);
   const IF = FLAGS.bit(4);
-  //const OF = FLAGS.bit(2);
+  const OF = FLAGS.bit(2);
 
   return (
     <>
@@ -97,6 +99,16 @@ export function ALU() {
         {connectScreenAndKeyboard && (<span className={clsx("rounded p-1 font-light", IF ? "bg-mantis-400" : "bg-stone-900")}>
           IF
         </span> )}
+        {settings.flagsVisibility === "SF_OF_CF_ZF" && (
+          <>
+            <span className={clsx("rounded p-1 font-light", SF ? "bg-mantis-400" : "bg-stone-900")}>
+              SF
+            </span>
+            <span className={clsx("rounded p-1 font-light", OF ? "bg-mantis-400" : "bg-stone-900")}>
+              OF
+            </span>
+          </>
+        )}
         <span className={clsx("rounded p-1 font-light", CF ? "bg-mantis-400" : "bg-stone-900")}>
           CF
         </span>

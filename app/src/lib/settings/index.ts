@@ -58,6 +58,9 @@ export const useShowStatsCPU = () => useAtomValue(showStatsCPUAtom);
 const languageAtom = atom(get => get(settingsAtom).language);
 export const useLanguage = () => useAtomValue(languageAtom);
 
+const flagsVisibilityAtom = atom(get => get(settingsAtom).flagsVisibility);
+export const useFlagsVisibility = () => useAtomValue(flagsVisibilityAtom);
+
 const editorFontSizeAtom = atom(get => get(settingsAtom).editorFontSize);
 export const useEditorFontSize = () => useAtomValue(editorFontSizeAtom);
 

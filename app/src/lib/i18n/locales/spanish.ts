@@ -143,6 +143,11 @@ export const spanish: Locale = {
     statsCPU: {
       label: "Estadísticas CPU",
     },
+
+    flags: {
+      label: "Banderas",
+      description: "Selecciona qué banderas mostrar en la ALU.",
+    },
     
     language: {
       label: "Idioma",

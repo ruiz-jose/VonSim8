@@ -71,6 +71,12 @@ export const settingsSchema = z.object({
   printerSpeed: z.number().min(500).max(20000).catch(5000),
 
   /**
+  * Flags visibility setting.
+  * Controls which flags are visible in the ALU.
+  */
+  flagsVisibility: z.enum(["CF_ZF", "SF_OF_CF_ZF"]).catch("CF_ZF"),
+
+  /**
    * CSS filter applied to the page.
    */
   filterBightness: z.number().min(0).catch(1),
