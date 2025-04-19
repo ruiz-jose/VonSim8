@@ -561,11 +561,17 @@ async function dispatch(...args: Action) {
             .map(operand => {
               if (operand.type === "register") {
                 return operand.value; // Nombre del registro
-              } else if (operand.type === "number-expression") {
-                return operand.value.value.toString(16) + "h"; // Valor inmediato en hexadecimal
-              } else if (operand.type === "memory-address") {
-                return `[${operand.value.toString(16)}h]`; // Dirección de memoria
-              }
+              } else if (operand.type === "number-expression" ) {
+                if (operand.value.type === "number-literal") {
+                  return operand.value.value.toString(16) + "h"; // Valor inmediato en hexadecimal
+                } else if (operand.value.type === "label") {
+                  return operand.value.value; // Nombre de la etiqueta
+                }
+              } else if (operand.type === "indirect-address") {
+                return '[BL]'; // Fallback for unsupported operand types
+              } else if (operand.type === "direct-address") {
+                return operand.value.value.toString(16) + "h"; // Valor en hexadecimal
+            }
               return ""; // Otros casos
             })
             .join(", "); // Separar los operandos con comas
@@ -581,15 +587,19 @@ async function dispatch(...args: Action) {
           ];
       
           // Si la instrucción tiene un segundo byte (como un valor inmediato o dirección), agregarlo
-          if (instruction.operands.some(operand => operand.type === "number-expression" || operand.type === "memory-address")) {
+          if (instruction.operands.some(operand => operand.type === "number-expression" || operand.type === "direct-address" )) {
             const secondByteAddress = instruction.start.value + 1; // Dirección del segundo byte
             const secondByteName = instruction.operands
-              .filter(operand => operand.type === "number-expression" || operand.type === "memory-address")
+              .filter(operand => operand.type === "number-expression")
               .map(operand => {
-                if (operand.type === "number-expression") {
-                  return operand.value.value.toString(16) + "h"; // Valor inmediato en hexadecimal
-                } else if (operand.type === "memory-address") {
-                  return `[${operand.value.toString(16)}h]`; // Dirección de memoria
+                if (operand.type === "number-expression" ) {
+                  if (operand.value.type === "number-literal") {
+                    return operand.value.value.toString(16) + "h"; // Valor inmediato en hexadecimal
+                  } else if (operand.value.type === "label") {
+                    return operand.value.value; // Nombre de la etiqueta
+                  }
+                } else if (operand.type === "direct-address") {
+                   return operand.value.value.toString(16) + "h"; // Valor en hexadecimal
                 }
                 return "";
               })

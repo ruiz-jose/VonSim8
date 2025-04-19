@@ -59,9 +59,13 @@ export function Memory() {
                       address={cell.address}
                       value={cell.value}
                       isIP={cell.address.valueOf() === ip.valueOf()}
-                      isProgramAddress={programAddresses.find(entry => entry.address === cell.address.value)?.address} // Verificar si la dirección pertenece al programa
-                      isDataAddress={dataAddresses.find(entry => entry.address === cell.address.value)?.address} // Verificar si la dirección pertenece al data
-                      label={programAddresses.find(entry => entry.address === cell.address.value)?.name || dataAddresses.find(entry => entry.address === cell.address.value)?.label || null} 
+                      isProgramAddress={!!programAddresses.find(entry => entry.address === cell.address.value)} // Verificar si la celda pertenece al programa
+                      isDataAddress={!!dataAddresses.find(entry => entry.address === cell.address.value)} // Verificar si la celda pertenece a los datos
+                      label={
+                        programAddresses.find(entry => entry.address === cell.address.value)?.name ||
+                        dataAddresses.find(entry => entry.address === cell.address.value)?.label ||
+                        null
+                      }
                     />
                   </td>
                 ))}
