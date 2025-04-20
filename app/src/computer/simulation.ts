@@ -562,15 +562,19 @@ async function dispatch(...args: Action) {
               if (operand.type === "register") {
                 return operand.value; // Nombre del registro
               } else if (operand.type === "number-expression" ) {
-                if (operand.value.type === "number-literal") {
-                  return operand.value.value.toString(16) + "h"; // Valor inmediato en hexadecimal
-                } else if (operand.value.type === "label") {
-                  return operand.value.value; // Nombre de la etiqueta
+                const value = operand.value;
+                if (value.isNumberLiteral()) {
+                  return value.value.toString(16) + "h"; // Valor inmediato en hexadecimal
+                } else if (value.isLabel()) {
+                  return value.value; // Nombre de la etiqueta
                 }
               } else if (operand.type === "indirect-address") {
                 return '[BL]'; // Fallback for unsupported operand types
               } else if (operand.type === "direct-address") {
-                return operand.value.value.toString(16) + "h"; // Valor en hexadecimal
+                const address = operand.value;
+                if (address.isNumberLiteral()) {
+                return address.value.toString(16) + "h"; // Valor en hexadecimal
+                }
             }
               return ""; // Otros casos
             })
@@ -593,13 +597,17 @@ async function dispatch(...args: Action) {
               .filter(operand => operand.type === "number-expression")
               .map(operand => {
                 if (operand.type === "number-expression" ) {
-                  if (operand.value.type === "number-literal") {
-                    return operand.value.value.toString(16) + "h"; // Valor inmediato en hexadecimal
-                  } else if (operand.value.type === "label") {
-                    return operand.value.value; // Nombre de la etiqueta
+                  const value = operand.value;
+                  if (value.isNumberLiteral()) {
+                    return value.value.toString(16) + "h"; // Valor inmediato en hexadecimal
+                  } else if (value.isLabel()) {
+                    return value.value; // Nombre de la etiqueta
                   }
                 } else if (operand.type === "direct-address") {
-                   return operand.value.value.toString(16) + "h"; // Valor en hexadecimal
+                  const address = operand.value;
+                  if (address.isNumberLiteral()) {
+                  return address.value.toString(16) + "h"; // Valor en hexadecimal
+                  }
                 }
                 return "";
               })

@@ -123,7 +123,13 @@ function MemoryCell({
       </PopoverTrigger>
 
       <PopoverContent className="w-60">
-        <p className="px-4 py-2 font-medium text-white"> {title} {label ? `(${label})` : ""}</p>
+        <p className="px-4 py-2 font-medium text-white"> {title} {" "}
+          {label ? (
+            <span className="text-mantis-400 font-bold">({label})</span> // Texto en verde y negrita
+          ) : (
+            ""
+          )}
+        </p>
         <hr className="border-stone-600" />
         <ul className="px-4 py-2 text-sm">
           {(["hex", "bin", "uint", "int", "safe-ascii"] as const).map(rep => (

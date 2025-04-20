@@ -93,7 +93,10 @@ export function ALU() {
 
       {/* Flags */}
       <animated.div
-        className="absolute left-[215px] top-[190px] flex w-min items-center gap-1 rounded-md border border-mantis-400 bg-stone-800 px-2 py-1 font-mono leading-none"
+        className={clsx(
+          "absolute top-[190px] flex w-min items-center gap-1 rounded-md border border-mantis-400 bg-stone-800 px-2 py-1 font-mono leading-none",
+          settings.flagsVisibility === "SF_OF_CF_ZF" ? "left-[180px]" : "left-[215px]"
+        )}
         style={getSpring("cpu.FLAGS")}
       >
         {connectScreenAndKeyboard && (<span className={clsx("rounded p-1 font-light", IF ? "bg-mantis-400" : "bg-stone-900")}>
