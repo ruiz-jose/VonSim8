@@ -248,7 +248,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
               pauseSimulation();
             }
             executeStageCounter++;
-            if (!(currentInstructionName === "INT" && sourceRegister === "ri")) {
+            //if (!(currentInstructionName === "INT" && sourceRegister === "ri")) {
+            if (!(sourceRegister === "ri")) {
               cycleCount++; 
             }
 
