@@ -100,8 +100,12 @@ export class DirectAddressOperand extends Operand {
     position: Position,
   ) {
     super(position);
-    if (size) this.size = size === "BYTE" ? 8 : 16;
-    else this.size = "auto";
+    // Asumir tamaño de 8 bits si no se especifica
+    if (size) {
+      this.size = size === "BYTE" ? 8 : 16;
+    } else {
+      this.size = 8; // Tamaño predeterminado de 8 bits
+    }
   }
 
   toJSON() {

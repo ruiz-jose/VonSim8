@@ -90,8 +90,11 @@ export class MOVInstruction extends Instruction<"MOV"> {
         else yield* super.consumeInstruction(computer, "ri.l");        
        // yield* super.consumeInstruction(computer, "ri.h");
       } else {
-        // Move BX to ri
-        yield* computer.cpu.copyByteRegister("BL", "ri.l");
+        if (this.operation.mode === "mem<-reg"){
+          // Move BX to ri
+          yield* computer.cpu.copyByteRegister("BL", "ri.l");
+        }  
+
       }
     }
     if (this.operation.mode === "reg<-imd" ) {
@@ -103,11 +106,12 @@ export class MOVInstruction extends Instruction<"MOV"> {
       if (this.operation.size === 16) yield* super.consumeInstruction(computer, "id.h");
     }
 
-    if ( this.operation.mode === "mem<-imd" && this.operation.out.mode !== "indirect") {
+    if ( this.operation.mode === "mem<-imd") {
 
-      // Fetch immediate value and store it in id
-      yield* super.consumeInstruction(computer, "id.l", true); // Pasar true para saltar getMBR
-      if (this.operation.size === 16) yield* super.consumeInstruction(computer, "id.h");
+        // Fetch immediate value and store it in id
+        yield* super.consumeInstruction(computer, "id.l", true); // Pasar true para saltar getMBR
+        if (this.operation.size === 16) yield* super.consumeInstruction(computer, "id.h");
+
     }
 
     yield { type: "cpu:cycle.update", phase: "writeback" };
@@ -178,8 +182,10 @@ export class MOVInstruction extends Instruction<"MOV"> {
         if (out.mode === "direct") {
            // Copiar de ID a RI si no es indirecto
           yield* computer.cpu.copyByteRegister("id.l", "ri.l");
+        } else {
+              // Copiar de BL a RI si es indirecto
+            yield* computer.cpu.copyByteRegister("BL", "ri.l");
         }
-
         yield* computer.cpu.setMAR("ri");
         //yield* computer.cpu.setMBR("id.l");
         if (!(yield* computer.cpu.useBus("mem-write"))) return false; // Error writing to memory

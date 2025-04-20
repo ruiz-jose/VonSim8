@@ -347,10 +347,15 @@ export class BinaryInstruction extends InstructionStatement {
           throw new AssemblerError("double-memory-access").at(this);
         }
 
+                // Asumir automáticamente que el tamaño es de 8 bits si es "auto"
         if (size === "auto") {
-          throw new AssemblerError("unknown-size").at(out);
+          size = 8; // Asignar tamaño de 8 bits
         }
 
+       /* if (size === "auto") {
+          throw new AssemblerError("unknown-size").at(out);
+        }*/
+       
         this.#initialOperation = {
           mode: "mem<-imd",
           size,
