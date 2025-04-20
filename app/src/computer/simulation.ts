@@ -241,7 +241,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
           if (event.value.type === "cpu:mar.set") {
             const sourceRegister = event.value.register;
             const displayRegister = sourceRegister === "ri" ? "MBR" : sourceRegister;
-            console.log("shouldDisplayMessage:", shouldDisplayMessage);
+
             if (shouldDisplayMessage || sourceRegister === "SP") {
               store.set(messageAtom, `Ejecución: MAR ← ${displayRegister}`);
             }
