@@ -103,7 +103,8 @@ export class MOVInstruction extends Instruction<"MOV"> {
       if (this.operation.size === 16) yield* super.consumeInstruction(computer, "id.h");
     }
 
-    if ( this.operation.mode === "mem<-imd") {
+    if ( this.operation.mode === "mem<-imd" && this.operation.out.mode !== "indirect") {
+
       // Fetch immediate value and store it in id
       yield* super.consumeInstruction(computer, "id.l", true); // Pasar true para saltar getMBR
       if (this.operation.size === 16) yield* super.consumeInstruction(computer, "id.h");
@@ -173,7 +174,12 @@ export class MOVInstruction extends Instruction<"MOV"> {
 
       case "mem<-imd": {
         // Write low byte
-        yield* computer.cpu.copyByteRegister("id.l", "ri.l");
+        // Verificar si el direccionamiento es directo
+        if (out.mode === "direct") {
+           // Copiar de ID a RI si no es indirecto
+          yield* computer.cpu.copyByteRegister("id.l", "ri.l");
+        }
+
         yield* computer.cpu.setMAR("ri");
         //yield* computer.cpu.setMBR("id.l");
         if (!(yield* computer.cpu.useBus("mem-write"))) return false; // Error writing to memory
