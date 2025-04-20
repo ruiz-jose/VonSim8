@@ -95,28 +95,28 @@ export function ALU() {
       <animated.div
         className={clsx(
           "absolute top-[190px] flex w-min items-center gap-1 rounded-md border border-mantis-400 bg-stone-800 px-2 py-1 font-mono leading-none",
-          settings.flagsVisibility === "SF_OF_CF_ZF" ? "left-[180px]" : "left-[215px]"
+          settings.flagsVisibility === "SF_OF_CF_ZF" ? "left-[200px]" : "left-[220px]"
         )}
         style={getSpring("cpu.FLAGS")}
       >
         {connectScreenAndKeyboard && (<span className={clsx("rounded p-1 font-light", IF ? "bg-mantis-400" : "bg-stone-900")}>
-          IF
+          I
         </span> )}
         {settings.flagsVisibility === "SF_OF_CF_ZF" && (
           <>
             <span className={clsx("rounded p-1 font-light", SF ? "bg-mantis-400" : "bg-stone-900")}>
-              SF
+              S
             </span>
             <span className={clsx("rounded p-1 font-light", OF ? "bg-mantis-400" : "bg-stone-900")}>
-              OF
+              O
             </span>
           </>
         )}
         <span className={clsx("rounded p-1 font-light", CF ? "bg-mantis-400" : "bg-stone-900")}>
-          CF
+          C
         </span>
         <span className={clsx("rounded p-1 font-light", ZF ? "bg-mantis-400" : "bg-stone-900")}>
-          ZF
+          Z
         </span>
         {/*<span className={clsx("rounded p-1 font-light", SF ? "bg-mantis-400" : "bg-stone-900")}>
           SF

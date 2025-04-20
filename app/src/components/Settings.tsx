@@ -276,8 +276,8 @@ export function Settings({ className }: { className?: string }) {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="CF_ZF">CF ZF</SelectItem>
-            <SelectItem value="SF_OF_CF_ZF">SF OF CF ZF</SelectItem>
+            <SelectItem value="CF_ZF">C Z</SelectItem>
+            <SelectItem value="SF_OF_CF_ZF">S O C Z</SelectItem>
           </SelectContent>
         </Select>
       </Setting>
