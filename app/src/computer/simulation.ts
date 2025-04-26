@@ -110,7 +110,7 @@ let fetchStageCounter = 0;
 let executeStageCounter = 0;
 let messageReadWrite = "";
 let shouldDisplayMessage = true;
-//let currentInstructionMode = false;
+let currentInstructionMode = false;
 let cycleCount = 0;
 let instructionCount = 0;
 let fuenteALU = "";
@@ -160,7 +160,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
       await handleEvent(event.value);
       if (event.value.type === "cpu:cycle.start") {
         currentInstructionName = event.value.instruction.name;
-        //currentInstructionMode = event.value.instruction.willUse.id? true : false;
+        currentInstructionMode = event.value.instruction.willUse.id? true : false;
       }
 
       if (status.until === "cycle-change" || status.until === "end-of-instruction" || status.until === "infinity") {
@@ -189,7 +189,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
          // }
         }  else if (event.value.type === "cpu:int.7") {            
           //store.set(messageAtom, "PILA ← DL; Bucle: DL ← (BL); video ← DL; SUB AL, 1; JNZ Bucle; (BL) ← DL; IRET");
-          store.set(messageAtom, "Rutina mostrar por pantalla");
+          store.set(messageAtom, "Interrupción: Rutina mostrar por pantalla");
           if (status.until === "cycle-change") {
             pauseSimulation();
           }       
@@ -393,7 +393,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
           } else if (
             event.value.type === "bus:reset" &&
             executeStageCounter > 1 &&
-            ( currentInstructionName === "MOV" ||
+            ( !currentInstructionMode &&
+              currentInstructionName === "MOV" ||
                currentInstructionName === "ADD" ||
                currentInstructionName === "SUB" ||
                currentInstructionName === "CMP" ||
@@ -420,6 +421,10 @@ async function startThread(generator: EventGenerator): Promise<void> {
             }
             if (currentInstructionName === "IN") {
               messageReadWrite = "Ejecución: MBR ← read(PIO[MAR])";
+            }
+
+            if (currentInstructionMode ) {
+              console.log("La instrucción es de tipo mem<-imd");
             }
             store.set(messageAtom, messageReadWrite);
 
