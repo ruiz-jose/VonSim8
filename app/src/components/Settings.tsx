@@ -35,37 +35,6 @@ export function Settings({ className }: { className?: string }) {
 
       <Setting>
         <SettingInfo>
-          <SettingTitle>{translate("settings.instructionCycle.label")}</SettingTitle>
-        </SettingInfo>
-
-        <Switch
-          className="ml-8"
-          checked={settings.showInstructionCycle}
-          onCheckedChange={value =>
-            setSettings(prev => ({ ...prev, showInstructionCycle: value }))
-          }
-        />
-      </Setting>
-
-
-      <Setting>
-        <SettingInfo>
-          <SettingTitle>{translate("settings.statsCPU.label")}</SettingTitle>
-        </SettingInfo>
-
-        <Switch
-          className="ml-8"
-          checked={settings.showStatsCPU}
-          onCheckedChange={value =>
-            setSettings(prev => ({ ...prev, showStatsCPU: value }))
-          }
-        />
-      </Setting>
-
-      <hr className="border-stone-600" />
-
-      <Setting>
-        <SettingInfo>
           <SettingTitle>
             <span className="icon-[lucide--rotate-3d] size-6" />
             {translate("settings.animations.label")}
@@ -102,8 +71,40 @@ export function Settings({ className }: { className?: string }) {
           })}
         />
       </Setting>
+      
+      <hr className="border-stone-600" />
+
+      <Setting>
+        <SettingInfo>
+          <SettingTitle>{translate("settings.instructionCycle.label")}</SettingTitle>
+        </SettingInfo>
+
+        <Switch
+          className="ml-8"
+          checked={settings.showInstructionCycle}
+          onCheckedChange={value =>
+            setSettings(prev => ({ ...prev, showInstructionCycle: value }))
+          }
+        />
+      </Setting>
+
+
+      <Setting>
+        <SettingInfo>
+          <SettingTitle>{translate("settings.statsCPU.label")}</SettingTitle>
+        </SettingInfo>
+
+        <Switch
+          className="ml-8"
+          checked={settings.showStatsCPU}
+          onCheckedChange={value =>
+            setSettings(prev => ({ ...prev, showStatsCPU: value }))
+          }
+        />
+      </Setting>
 
       <hr className="border-stone-600" />
+      
       <Setting>
         <SettingInfo>
           <SettingTitle>
