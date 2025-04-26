@@ -405,8 +405,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
           } else if (
             event.value.type === "bus:reset" &&
             executeStageCounter > 1 &&
-            ( !currentInstructionMode &&
-              currentInstructionName === "MOV" ||
+            !currentInstructionMode &&
+             ( currentInstructionName === "MOV" ||
                currentInstructionName === "ADD" ||
                currentInstructionName === "SUB" ||
                currentInstructionName === "CMP" ||
@@ -414,8 +414,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
                currentInstructionName === "INT"||
                currentInstructionName === "PUSH"||
                currentInstructionName === "IN" ||
-               currentInstructionName === "RET" )
-          ) {
+               currentInstructionName === "RET" ))
+           {
             /*(currentInstructionMode &&
               (currentInstructionName === "MOV" ||
                currentInstructionName === "ADD" ||
@@ -435,9 +435,6 @@ async function startThread(generator: EventGenerator): Promise<void> {
               messageReadWrite = "Ejecución: MBR ← read(PIO[MAR])";
             }
 
-            if (currentInstructionMode ) {
-              console.log("La instrucción es de tipo mem<-imd");
-            }
             store.set(messageAtom, messageReadWrite);
 
             cycleCount++; 

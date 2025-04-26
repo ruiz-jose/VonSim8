@@ -100,13 +100,14 @@ export class ALUBinaryInstruction extends Instruction<
         //yield* this.consumeInstruction(computer, "ri.h");
       } else {
         // Move BX to ri
-        yield* computer.cpu.copyWordRegister("BX", "ri");
+        yield* computer.cpu.copyByteRegister("BL", "ri.l");
       }
 
       // Read value from memory
       yield* computer.cpu.setMAR("ri");
       if (!(yield* computer.cpu.useBus("mem-read"))) return false; // Error reading memory
-      yield* computer.cpu.getMBR("left.l");
+      if ( this.operation.mode === "mem<-imd")    yield* computer.cpu.getMBR("id.l");      
+      else  yield* computer.cpu.getMBR("left.l");
       if (size === 16) {
         yield* computer.cpu.updateWordRegister("ri", ri => ri.add(1));
         yield* computer.cpu.setMAR("ri");
@@ -131,7 +132,7 @@ export class ALUBinaryInstruction extends Instruction<
        // yield* this.consumeInstruction(computer, "ri.h");
       } else {
         // Move BX to ri
-        yield* computer.cpu.copyWordRegister("BX", "ri");
+        yield* computer.cpu.copyByteRegister("BL", "ri.l");
       }
 
       // Read value from memory
@@ -149,6 +150,10 @@ export class ALUBinaryInstruction extends Instruction<
         if (size === 8) yield* computer.cpu.copyByteRegister(out, "left.l");
         else yield* computer.cpu.copyWordRegister(out, "left");
       }
+    }
+    if ( mode === "mem<-imd"){
+         yield* computer.cpu.copyByteRegister("id.l", "left.l");     
+         yield* computer.cpu.setMAR("ri");
     }
 
     yield { type: "cpu:cycle.update", phase: "execute" };
