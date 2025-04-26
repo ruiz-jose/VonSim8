@@ -310,15 +310,22 @@ async function startThread(generator: EventGenerator): Promise<void> {
             event.value.register === "IP.l" ? "IP" : 
             event.value.register === "FLAGS.l" ? "FLAGS" : 
             event.value.register;
-            if (String(sourceRegister) !== 'ri.l') {
+
+            if (String(sourceRegister) !== 'ri.l'
+                && String(sourceRegister) !== 'right.l'
+                && String(sourceRegister) !== 'left.l'){
               store.set(messageAtom, `Ejecución: ${sourceRegister} ← MBR`);
               cycleCount++;
-              if (String(sourceRegister) === 'id' || (String(sourceRegister) === "DL" && currentInstructionName === "INT")) {
+              if (String(sourceRegister) === 'id' ||
+               (String(sourceRegister) === "DL" &&  currentInstructionName === "INT")) {
                 if (status.until === "cycle-change") {
                   pauseSimulation();
                 }               
               } 
-            }           
+            }  
+            if (String(sourceRegister) === 'right.l'){
+              fuenteALU = 'MBR';  
+            }       
           } else if (event.value.type === "cpu:register.copy") {
             const sourceRegister = event.value.src.replace(/\.l$/, '');
             const destRegister = event.value.dest.replace(/\.l$/, '');
@@ -377,7 +384,10 @@ async function startThread(generator: EventGenerator): Promise<void> {
               shouldDisplayMessage = false;
               executeStageCounter++;             
             } else {
-              fuenteALU = sourceRegister;
+              if (String(sourceRegister) === 'right.l'){
+                fuenteALU = sourceRegister; 
+              }    
+
               //store.set(messageAtom, displayMessage);
              // pauseSimulation();
             }   
@@ -431,6 +441,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
             cycleCount++; 
             if (currentInstructionName === "RET" 
               || currentInstructionName === "IN" 
+              || currentInstructionName === "ADD" 
+              || currentInstructionName === "SUB" 
+              || currentInstructionName === "CMP" 
               || (currentInstructionName === "INT" &&  messageReadWrite ==="Ejecución: MBR ← read(Memoria[MAR]); SP = SP - 1")) {
                 if (status.until === "cycle-change") {
                   pauseSimulation();
