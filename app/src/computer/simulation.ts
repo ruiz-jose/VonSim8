@@ -114,6 +114,7 @@ let currentInstructionMode = false;
 let cycleCount = 0;
 let instructionCount = 0;
 let fuenteALU = "";
+let MBRALU = "";
 
 
 /**
@@ -323,8 +324,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 }               
               } 
             }  
-            if (String(sourceRegister) === 'right.l'){
-              fuenteALU = 'MBR';  
+            if (String(sourceRegister) === 'right.l' ||
+                String(sourceRegister) === 'left.l'){
+                fuenteALU = 'MBR';  
             }       
           } else if (event.value.type === "cpu:register.copy") {
             const sourceRegister = event.value.src.replace(/\.l$/, '');
@@ -339,13 +341,13 @@ async function startThread(generator: EventGenerator): Promise<void> {
         
             }else{
               displaySource = sourceRegister === "result" ? `${destRegister} ${currentInstructionName} ${fuenteALU}` : sourceRegister;
-        
+              MBRALU =  `${fuenteALU} ${currentInstructionName} ${sourceRegister}` + "; write(FLAGS)"; 
             }
 
             let displayMessage = `Ejecución: ${destRegister} ← ${displaySource}`;
 
             const displayMessageFLAGS = "; write(FLAGS)"; // Agregar el mensaje de FLAGS aquí
-            displayMessage += displayMessageFLAGS; // Agregar salto de línea
+            displayMessage += displayMessageFLAGS; // Agregar salto de línea            
             if (sourceRegister === "ri" && destRegister === "IP") {
               displayMessage = "Ejecución: IP ← MBR";
               store.set(messageAtom, displayMessage);
@@ -453,6 +455,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             const sourceRegister = event.value.register === "id.l" ? "id" : 
             event.value.register === "FLAGS.l" ? "FLAGS" : 
             event.value.register === "IP.l" ? "IP" : 
+            event.value.register === "result.l" ? MBRALU : 
             event.value.register;
             store.set(messageAtom,  `Ejecución: MBR ← ${sourceRegister}`);
             if (status.until === "cycle-change") {
