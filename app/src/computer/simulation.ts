@@ -251,7 +251,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             }
             executeStageCounter++;
             //if (!(currentInstructionName === "INT" && sourceRegister === "ri")) {
-            if (!(sourceRegister === "ri")) {
+            if (!(sourceRegister === "ri") ) {
               cycleCount++; 
             }
 
@@ -405,7 +405,6 @@ async function startThread(generator: EventGenerator): Promise<void> {
           } else if (
             event.value.type === "bus:reset" &&
             executeStageCounter > 1 &&
-            !currentInstructionMode &&
              ( currentInstructionName === "MOV" ||
                currentInstructionName === "ADD" ||
                currentInstructionName === "SUB" ||
@@ -434,7 +433,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             if (currentInstructionName === "IN") {
               messageReadWrite = "Ejecución: MBR ← read(PIO[MAR])";
             }
-
+            if (executeStageCounter !==3 && executeStageCounter !==4)
             store.set(messageAtom, messageReadWrite);
 
             cycleCount++; 
