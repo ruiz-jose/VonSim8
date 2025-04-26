@@ -5,8 +5,8 @@ import { atom } from "jotai";
 
 import { store } from "@/lib/jotai";
 
-export const programAddressesAtom = atom<{ address: number; name: string }[]>([]);
-export const dataAddressesAtom = atom<{ address: number; label: string | null }[]>([]);
+export const programAddressesAtom = atom<{ address: number; name: string, length: string }[]>([]);
+export const dataAddressesAtom = atom<{ address: number; label: string | null, length: string }[]>([]);
 
 export const memoryAtom = atom(
   new Array<Byte<8>>(MemoryAddress.MAX_ADDRESS + 1).fill(Byte.zero(8)),

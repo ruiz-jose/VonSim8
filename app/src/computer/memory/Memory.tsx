@@ -66,6 +66,8 @@ export function Memory() {
                         dataAddresses.find(entry => entry.address === cell.address.value)?.label ||
                         null
                       }
+                      length={programAddresses.find(entry => entry.address === cell.address.value)?.length ?? null} // Verificar si la celda pertenece al programa
+
                     />
                   </td>
                 ))}
@@ -85,6 +87,7 @@ function MemoryCell({
   isProgramAddress,
   isDataAddress,
   label,
+  length, 
 }: {
   address: MemoryAddress;
   value: Byte<8>;
@@ -92,6 +95,7 @@ function MemoryCell({
   isProgramAddress: boolean;
   isDataAddress: boolean;
   label: string | null; // Nueva propiedad para la etiqueta
+  length: string | null; // Nueva propiedad para el tamaño de la instrucción
 }) {   
   const translate = useTranslate();
   const operatingAddress = useAtomValue(operatingAddressAtom);
@@ -123,13 +127,19 @@ function MemoryCell({
       </PopoverTrigger>
 
       <PopoverContent className="w-60">
-        <p className="px-4 py-2 font-medium text-white"> {title} {" "}
-          {label ? (
-            <span className="text-mantis-400 font-bold">({label})</span> // Texto en verde y negrita
-          ) : (
-            ""
-          )}
-        </p>
+      <p className="px-4 py-2 font-medium text-white">
+        {title}{" "}
+        {label ? (
+          <span className="text-mantis-400 font-bold">
+            ({label})
+            {length !== null && length !== "" && (
+              <span className="text-white text-xs font-normal"> Bytes: {length}</span>
+            )}
+          </span>
+        ) : (
+          ""
+        )}
+      </p>
         <hr className="border-stone-600" />
         <ul className="px-4 py-2 text-sm">
           {(["hex", "bin", "uint", "int", "safe-ascii"] as const).map(rep => (

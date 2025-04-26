@@ -604,12 +604,13 @@ async function dispatch(...args: Action) {
             .join(", "); // Separar los operandos con comas
       
           const fullInstruction = `${instruction.instruction} ${operands}`.trim(); // Construir la instrucción completa
-      
+         
           // Crear la entrada para la instrucción principal
           const entries = [
             {
               address: instruction.start.value, // Dirección de la instrucción
               name: fullInstruction, // Instrucción completa con operandos
+              length: instruction.length.toString().trim(), // Tamaño de la instrucción en bytes como cadena sin espacios
             },
           ];
       
@@ -617,7 +618,14 @@ async function dispatch(...args: Action) {
           if (instruction.operands.some(operand => operand.type === "number-expression" || operand.type === "direct-address" )) {
             const secondByteAddress = instruction.start.value + 1; // Dirección del segundo byte
             const secondByteName = instruction.operands
-              .filter(operand => operand.type === "number-expression")
+              .filter((operand, index) => {
+                // Si la instrucción tiene 3 bytes, solo procesar el primer operando
+                if (instruction.length === 3) {
+                  return index === 0 && operand.type === "number-expression";
+                }
+                // Si no, procesar todos los operandos de tipo "number-expression"
+                return operand.type === "number-expression";
+              })
               .map(operand => {
                 if (operand.type === "number-expression" ) {
                   const value = operand.value;
@@ -639,9 +647,33 @@ async function dispatch(...args: Action) {
             entries.push({
               address: secondByteAddress,
               name: secondByteName, // Nombre del segundo byte
+              length: "", // Tamaño del segundo byte (0 si no es aplicable)
             });
           }
-      
+
+          // Si la instrucción es mem<-imd y tiene tres bytes, agregar el tercer byte
+          if (instruction.length === 3) {
+            const thirdByteAddress = instruction.start.value + 2; // Dirección del tercer byte
+            const thirdByteName = instruction.operands
+              .filter(operand => operand.type === "number-expression")
+              .map(operand => {
+                if (operand.type === "number-expression") {
+                  const value = operand.value;
+                  if (value.isNumberLiteral()) {
+                    return value.value.toString(16) + "h"; // Valor inmediato en hexadecimal
+                  }
+                }
+                return "";
+              })
+              .join(" "); // Construir el nombre del tercer byte
+
+            entries.push({
+              address: thirdByteAddress,
+              name: thirdByteName, // Nombre del tercer byte
+              length: "", // Tamaño del segundo byte (0 si no es aplicable)
+            });
+          }
+
           return entries; // Retornar ambas entradas (instrucción principal y segundo byte, si aplica)
         });
 
@@ -650,6 +682,7 @@ async function dispatch(...args: Action) {
         .map(data => ({
           address: data.start.value, // Dirección de los datos
           label: data.label || null, // Etiqueta asociada (si existe)
+          length: "", // Tamaño del segundo byte (0 si no es aplicable)
         }));
       
 
