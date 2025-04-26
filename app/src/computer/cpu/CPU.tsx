@@ -21,13 +21,13 @@ export function CPU( ) {
   const [showRegisters, setShowRegisters] = useState(false);
 
   useEffect(() => {
-    const handleInstruction = (instruction: string) => {
+    const handleInstruction = (instruction: string, mode?: boolean) => {
       if (instruction === "ADD" || instruction === "SUB"  || instruction === "CMP" || instruction === "AND" || instruction === "OR" || instruction === "XOR" || instruction === "NOT" || instruction === "NEG" || instruction === "DEC" || instruction === "INC") {
         setShowRegisters(true);
       } else {
         setShowRegisters(false);
       }
-      if (instruction === "CALL" || instruction === "INT" || instruction === "IRET" ) {
+      if (instruction === "CALL" || instruction === "INT" || instruction === "IRET" || mode ) {
         setShowid(true);
       } else {
         setShowid(false);
@@ -39,7 +39,7 @@ export function CPU( ) {
     // Aquí se muestra un ejemplo con un evento personalizado
     const eventListener = (event: Event) => {
       const customEvent = event as CustomEvent;
-      handleInstruction(customEvent.detail.instruction);
+      handleInstruction(customEvent.detail.instruction, customEvent.detail.mode);
     };
 
     window.addEventListener("instructionChange", eventListener as EventListener);

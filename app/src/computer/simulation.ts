@@ -455,10 +455,10 @@ async function startThread(generator: EventGenerator): Promise<void> {
       console.log(`Ciclos ejecutados: ${cycleCount}`);
       store.set(cycleCountAtom, cycleCount );
 
-        const eventInstruction = new CustomEvent("instructionChange", {
-          detail: { instruction: currentInstructionName },
-        });
-        window.dispatchEvent(eventInstruction);
+      const eventInstruction = new CustomEvent("instructionChange", {
+        detail: { instruction: currentInstructionName, mode: currentInstructionMode },
+      });
+      window.dispatchEvent(eventInstruction);
 
       if (event.value.type === "cpu:cycle.update" || event.value.type === "cpu:cycle.interrupt") {
         if (status.until === "cycle-change") {
