@@ -433,8 +433,12 @@ async function startThread(generator: EventGenerator): Promise<void> {
             if (currentInstructionName === "IN") {
               messageReadWrite = "Ejecución: MBR ← read(PIO[MAR])";
             }
-            if (executeStageCounter !==3 && executeStageCounter !==4)
-            store.set(messageAtom, messageReadWrite);
+            if (!currentInstructionMode || 
+              (executeStageCounter !== 3 && executeStageCounter !== 4) ||
+              (currentInstructionName !== "MOV" &&
+               currentInstructionName !== "ADD" &&
+               currentInstructionName !== "SUB"))
+              store.set(messageAtom, messageReadWrite);
 
             cycleCount++; 
             if (currentInstructionName === "RET" 
