@@ -6,6 +6,7 @@ import { ZoomControls } from "@/components/ZoomControls";
 import { SystemBus } from "./bus/SystemBus";
 import { Clock } from "./clock/Clock";
 import { CPU } from "./cpu/CPU";
+import { CPUStats } from "./cpu/CPUStats";
 import { F10 } from "./f10/F10";
 import { Handshake } from "./handshake/Handshake";
 import { Keyboard } from "./keyboard/Keyboard";
@@ -40,6 +41,8 @@ export function ComputerContainer() {
           <div className="relative h-[1300px] w-[1900px]">
             <SystemBus />
 
+ 
+            <CPUStats />
             <CPU />
             <Memory />
 
