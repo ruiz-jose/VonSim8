@@ -680,22 +680,35 @@ async function dispatch(...args: Action) {
 
         const dataAddresses = result.data
         .filter(data => data.type === "data-directive") // Filtrar por el tipo correcto
-        .map(data => ({
-          address: data.start.value, // Dirección de los datos
-          label: data.label || null, // Etiqueta asociada (si existe)
-          length: "", // Tamaño del segundo byte (0 si no es aplicable)
-        }));
+        .flatMap(data => {
+          // Obtener la dirección inicial y los valores definidos
+          const startAddress = data.start.value;
+          const values = data.getValues().map(value => {
+            // Convertir cada valor a un número
+            if (typeof value === "object" && "toNumber" in value) {
+              if (typeof value === "object" && value !== null && "toNumber" in value && typeof (value as any).toNumber === "function") {
+                return (value as any).toNumber(); // Usar el método toNumber si está disponible
+              }
+              throw new Error("Invalid value type for toNumber");
+            }
+            return Number(value); // Conversión explícita como fallback
+          });
+      
+          // Generar una entrada para cada byte de datos
+          return values.map((value: number, index: number) => ({
+            address: startAddress + index, // Calcular la dirección de cada byte
+            label: index === 0 ? data.label || null : null, // Etiqueta solo para el primer byte
+            value, // Valor del byte
+          }));
+        });
       
 
       console.log("Direcciones de las instrucciones:", programAddresses);
       console.log("Direcciones de los datos:", dataAddresses);
 
-      /*  const programAddresses = simulator.getComputerState().memory
-        .map((byte, index) => (byte !== 0 ? index : null)) // Filtrar las direcciones con datos cargados
-        .filter((address): address is number => address !== null); // Eliminar valores nulos
-*/
+
         store.set(programAddressesAtom, programAddresses);
-        store.set(dataAddressesAtom, dataAddresses);
+        store.set(dataAddressesAtom, dataAddresses.map(data => ({ ...data, length: "" })));
         //console.log("Direcciones del programa cargadas en memoria:", programAddresses);
  
         resetState(simulator.getComputerState()); 
