@@ -242,16 +242,32 @@ async function startThread(generator: EventGenerator): Promise<void> {
           if (event.value.type === "cpu:mar.set") {
             const sourceRegister = event.value.register;
             const displayRegister = sourceRegister === "ri" ? "MBR" : sourceRegister;
+            let showRI = false;
+            if (
+              currentInstructionMode && 
+              (executeStageCounter === 5 && 
+                (currentInstructionName === "ADD" || 
+                 currentInstructionName === "SUB" || 
+                 currentInstructionName === "CMP"))
+            ) {
+              showRI = true;
+            }
 
             if (shouldDisplayMessage || sourceRegister === "SP") {
-              store.set(messageAtom, `Ejecución: MAR ← ${displayRegister}`);
+              if (showRI ) {
+                store.set(messageAtom, `Ejecución: MAR ← ${sourceRegister}`);
+              } else{
+                store.set(messageAtom, `Ejecución: MAR ← ${displayRegister}`);
+              }
             }
             if (status.until === "cycle-change") {
               pauseSimulation();
             }
+
             executeStageCounter++;
             //if (!(currentInstructionName === "INT" && sourceRegister === "ri")) {
-            if (!(sourceRegister === "ri") ) {
+
+            if (!(sourceRegister === "ri") ||  showRI ) {
               cycleCount++; 
             }
 
@@ -433,13 +449,21 @@ async function startThread(generator: EventGenerator): Promise<void> {
             if (currentInstructionName === "IN") {
               messageReadWrite = "Ejecución: MBR ← read(PIO[MAR])";
             }
-            if (!currentInstructionMode || 
-              (executeStageCounter !== 3 && executeStageCounter !== 4) ||
-              (currentInstructionName !== "MOV" &&
-               currentInstructionName !== "ADD" &&
-               currentInstructionName !== "SUB" &&
-               currentInstructionName !== "CMP"))
+           let Tresbytes = false;
+            if ((currentInstructionMode && 
+              executeStageCounter === 3 &&
+                 currentInstructionName === "MOV") ||
+              ((currentInstructionMode &&
+                executeStageCounter === 4 && 
+                (currentInstructionName === "ADD" || 
+                 currentInstructionName === "SUB" || 
+                 currentInstructionName === "CMP"))
+            )) {
+              Tresbytes = true;
+            }
+            if (!Tresbytes) {
               store.set(messageAtom, messageReadWrite);
+            }
 
             cycleCount++; 
             if (currentInstructionName === "RET" 
@@ -683,16 +707,21 @@ async function dispatch(...args: Action) {
         .flatMap(data => {
           // Obtener la dirección inicial y los valores definidos
           const startAddress = data.start.value;
-          const values = data.getValues().map(value => {
-            // Convertir cada valor a un número
-            if (typeof value === "object" && "toNumber" in value) {
-              if (typeof value === "object" && value !== null && "toNumber" in value && typeof (value as any).toNumber === "function") {
-                return (value as any).toNumber(); // Usar el método toNumber si está disponible
-              }
-              throw new Error("Invalid value type for toNumber");
-            }
-            return Number(value); // Conversión explícita como fallback
-          });
+          const values = data.getValues()
+            .map(value => {
+
+                // Verificar si el valor es un objeto con el método toNumber
+                if (typeof value === "object" && value !== null && "toNumber" in value && typeof value.toNumber === "function") {
+                  return value.toNumber(); // Usar el método toNumber si está disponible
+                }
+      
+                // Si el valor es un número, devolverlo directamente
+                if (typeof value === "number") {
+                  return value;
+                }
+                return 0;
+
+            });
       
           // Generar una entrada para cada byte de datos
           return values.map((value: number, index: number) => ({
