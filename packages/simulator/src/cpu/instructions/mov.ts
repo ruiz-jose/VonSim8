@@ -90,7 +90,7 @@ export class MOVInstruction extends Instruction<"MOV"> {
         else yield* super.consumeInstruction(computer, "ri.l");        
        // yield* super.consumeInstruction(computer, "ri.h");
       } else {
-        if (this.operation.mode === "mem<-reg"){
+        if (this.operation.mode === "mem<-reg" || this.operation.mode === "reg<-mem"){
           // Move BX to ri
           yield* computer.cpu.copyByteRegister("BL", "ri.l");
         }  

@@ -437,7 +437,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
               (executeStageCounter !== 3 && executeStageCounter !== 4) ||
               (currentInstructionName !== "MOV" &&
                currentInstructionName !== "ADD" &&
-               currentInstructionName !== "SUB"))
+               currentInstructionName !== "SUB" &&
+               currentInstructionName !== "CMP"))
               store.set(messageAtom, messageReadWrite);
 
             cycleCount++; 
