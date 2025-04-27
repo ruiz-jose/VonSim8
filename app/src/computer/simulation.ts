@@ -311,16 +311,19 @@ async function startThread(generator: EventGenerator): Promise<void> {
               }           
             }
             executeStageCounter++;
+            console.log("executeStageCounter:", executeStageCounter);
             if ( currentInstructionName !== "CALL" 
               && currentInstructionName !== "PUSH"
               && currentInstructionName !== "DEC"
               && currentInstructionName !== "INC"
               && currentInstructionName !== "NOT"
               && currentInstructionName !== "NEG"
-              && !(currentInstructionName === "INT" && sourceRegister === "SP")) {
-              store.set(messageAtom, displayMessage);
-              cycleCount++; 
-            }
+              && !(currentInstructionName === "INT" && sourceRegister === "SP")
+              && !(executeStageCounter === 6 && sourceRegister === "FLAGS")) {   
+                store.set(messageAtom, displayMessage);
+                cycleCount++; 
+             }
+            
 
           } else if (event.value.type === "cpu:mbr.get") {
             const sourceRegister = event.value.register === "id.l" ? "id" : 
@@ -439,9 +442,14 @@ async function startThread(generator: EventGenerator): Promise<void> {
                currentInstructionName === "CALL"))*/
 
             const displayMessageFLAGS = "; SP = SP - 1";  
+            const displayMessageFLAGSI = "; IF = 0";  
             //if ((currentInstructionName === "CALL"|| currentInstructionName === "INT" || currentInstructionName === "PUSH") && jump_yes) {
             if ((currentInstructionName === "CALL"|| currentInstructionName === "INT" || currentInstructionName === "PUSH")) {
               messageReadWrite += displayMessageFLAGS;
+              if ( currentInstructionName === "INT" && currentInstructionMode) {
+                messageReadWrite += displayMessageFLAGSI;
+              }       
+
             }
             if (currentInstructionName === "RET") {
               messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";
