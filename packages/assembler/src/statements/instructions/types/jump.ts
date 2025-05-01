@@ -112,32 +112,48 @@ export class JumpInstruction extends InstructionStatement {
     }
 
     const operand = this.operands[0];
-    if (!operand.isNumberExpression() || !operand.value.isLabel()) {
+   /* if (!operand.isNumberExpression() || !operand.value.isLabel()) {
+      throw new AssemblerError("expects-label").at(operand);
+    }*/
+    // Permitir etiquetas o números literales
+    if (!operand.isNumberExpression() || (!operand.value.isLabel() && !operand.value.isNumberLiteral())) {
       throw new AssemblerError("expects-label").at(operand);
     }
+    
 
-    const label = operand.value.value;
-    const type = store.getLabelType(label);
-
-    if (!type) {
-      throw new AssemblerError("label-not-found", label).at(operand);
+    if (operand.value.isLabel()) {
+      const label = operand.value.value;
+      const type = store.getLabelType(label);
+  
+      if (!type) {
+        throw new AssemblerError("label-not-found", label).at(operand);
+      }
+      if (type !== "instruction") {
+        throw new AssemblerError("label-should-be-an-instruction", label).at(operand);
+      }
+  
+      this.#jumpTo = label;
+    } else if (operand.value.isNumberLiteral()) {
+      const addr = operand.value.value;
+  
+      if (!MemoryAddress.inRange(addr)) {
+        throw new AssemblerError("address-out-of-range", addr).at(operand);
+      }
+  
+      this.#address = MemoryAddress.from(addr);
     }
-    if (type !== "instruction") {
-      throw new AssemblerError("label-should-be-an-instruction", label).at(operand);
-    }
-
-    this.#jumpTo = label;
   }
 
   evaluateExpressions(store: GlobalStore) {
-    if (!this.#jumpTo) throw new Error("Instruction not validated");
-    if (this.#address) throw new Error("Instruction aready evaluated");
+    if (this.#address) return; // Si ya fue evaluado, no hacer nada
 
-    const addr = store.getLabelValue(this.#jumpTo)!;
-    if (!MemoryAddress.inRange(addr)) {
-      throw new AssemblerError("address-out-of-range", addr).at(this);
+    if (this.#jumpTo) {
+      const addr = store.getLabelValue(this.#jumpTo)!;
+      if (!MemoryAddress.inRange(addr)) {
+        throw new AssemblerError("address-out-of-range", addr).at(this);
+      }
+  
+      this.#address = MemoryAddress.from(addr);
     }
-
-    this.#address = MemoryAddress.from(addr);
   }
 }
