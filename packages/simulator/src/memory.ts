@@ -19,7 +19,8 @@ export type MemoryOperation =
         | SimulatorError<"address-has-instruction">
         | SimulatorError<"address-is-reserved">
         | SimulatorError<"address-out-of-range">;
-    };
+    }
+  | { type: "memory:write.warning"; warning: string };
 
 /**
  * Memory.
@@ -146,12 +147,22 @@ export class Memory extends Component {
       return false;
     }
 
-    if (this.#codeMemory.has(address)) {
+   /* if (this.#codeMemory.has(address)) {
       yield {
         type: "memory:write.error",
         error: new SimulatorError("address-has-instruction", address),
       };
       return false;
+    }*/
+
+    if (this.#codeMemory.has(address)) {
+      // Emitir un evento de advertencia en lugar de un error
+      yield {
+        type: "memory:write.warning",
+        warning: `Sobrescribiendo instrucción en la dirección ${MemoryAddress.format(address)}`,
+      };
+      console.warn(`Advertencia: Sobrescribiendo instrucción en la dirección ${MemoryAddress.format(address)}`);
+      // Continuar la ejecución sin detener el programa
     }
 
     if (this.#reservedMemory.has(address)) {

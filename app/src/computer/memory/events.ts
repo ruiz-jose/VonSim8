@@ -5,6 +5,7 @@ import type { SimulatorEvent } from "@/computer/shared/types";
 import { finishSimulation } from "@/computer/simulation";
 import { store } from "@/lib/jotai";
 import { colors } from "@/lib/tailwind";
+import { toast } from "@/lib/toast";
 
 import { memoryAtom, operatingAddressAtom } from "./state";
 
@@ -51,6 +52,15 @@ export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promi
     case "memory:read.error":
     case "memory:write.error": {
       finishSimulation(event.error);
+      return;
+    }
+    case "memory:write.warning": {
+      // Mostrar un mensaje de advertencia con toast
+      toast({
+        title: "Advertencia de Memoria",
+        description: `${event.warning}`,
+        variant: "info", // Usar el estilo de advertencia
+      });
       return;
     }
 
