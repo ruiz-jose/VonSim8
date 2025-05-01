@@ -64,7 +64,7 @@ export class MOVInstruction extends Instruction<"MOV"> {
         willUse: {
           //ri: mode === "mem<-imd",
           id: this.operation.mode === "mem<-imd" && this.operation.out.mode === "direct", // Solo marcar `id` como true si es "mem<-imd" y "direct"        
-          // ri: mode === "reg<-mem" || mode === "mem<-reg" || mode === "mem<-imd",
+          ri: this.operation.mode === "mem<-imd" && this.operation.out.mode === "direct", // Solo marcar `id` como true si es "mem<-imd" y "direct"        
           //id: mode === "reg<-mem" || mode === "reg<-imd" || mode === "mem<-imd",
         },
       },

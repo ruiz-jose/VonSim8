@@ -70,9 +70,9 @@ export class ALUBinaryInstruction extends Instruction<
         position: this.position,
         operands: this.#formatOperands(),
         //willUse: { ri: mode === "reg<-mem" || mode === "mem<-reg" || mode === "mem<-imd" },
-        willUse: {
-          ri: false, 
+        willUse: {        
           id: this.operation.mode === "mem<-imd" && this.operation.out.mode === "direct", // Solo marcar `id` como true si es "mem<-imd" y "direct"        
+          ri: this.operation.mode === "mem<-imd" && this.operation.out.mode === "direct", // Solo marcar `id` como true si es "mem<-imd" y "direct"        
         },       
       },
     };
