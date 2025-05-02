@@ -246,8 +246,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
             const sourceRegister = event.value.register;
             const displayRegister = sourceRegister === "ri" ? "MBR" : sourceRegister;
             let showRI = false;
+            let showRI2 = false;
             if (
-              currentInstructionModeid && 
+              currentInstructionModeri && 
               (executeStageCounter === 5 && 
                 (currentInstructionName === "ADD" || 
                  currentInstructionName === "SUB" || 
@@ -255,11 +256,23 @@ async function startThread(generator: EventGenerator): Promise<void> {
             ) {
               showRI = true;
             }
+            if (
+              currentInstructionModeri && 
+              (executeStageCounter === 2 && 
+                (currentInstructionName === "ADD" || 
+                 currentInstructionName === "SUB" || 
+                 currentInstructionName === "CMP"))
+            ) {
+              showRI2 = true;
+            }
+            console.log("executeStageCounter:", executeStageCounter);
 
             if (shouldDisplayMessage || sourceRegister === "SP") {
               if (showRI ) {
                 store.set(messageAtom, `Ejecución: MAR ← ${sourceRegister}`);
-              } else if(executeStageCounter === 2 && 
+              } else if( showRI2 ){
+               store.set(messageAtom, `Ejecución: MAR ← MBR; ri ← MBR`);
+             } else if(executeStageCounter === 2 && 
                  currentInstructionModeri && 
                 currentInstructionName === "MOV" ){
                 store.set(messageAtom, `Ejecución: ri ← MBR; MAR ← IP`);

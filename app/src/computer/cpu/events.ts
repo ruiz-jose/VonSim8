@@ -37,6 +37,7 @@ const resetDataPath = () =>
 
 let instructionName = "";
 let mode = "";
+let showpath = false;
 export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<void> {
 
   switch (event.type) {
@@ -109,7 +110,8 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
     case "cpu:cycle.start": {  
       instructionName = event.instruction.name; // Obtén el nombre de la instrucción en curso    
       mode = event.instruction.willUse.ri ? "mem<-imd" : ""; // Verifica si willUse.ri es true y establece el modo
-      
+      showpath = event.instruction.willUse.ri && instructionName === "MOV" ? true : false;
+
       highlightLine(event.instruction.position.start);
       store.set(cycleAtom, { phase: "fetching", metadata: event.instruction });
       await anim(
@@ -235,7 +237,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
     case "cpu:mar.set": {
       await anim(
         [
-          { key: "cpu.internalBus.address.path", from: generateAddressPath(event.register) },
+          { key: "cpu.internalBus.address.path", from: generateAddressPath(event.register, showpath) },
           { key: "cpu.internalBus.address.opacity", from: 1 },
           { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
         ],

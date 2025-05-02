@@ -17,7 +17,7 @@ type AddressBusProps = {
  * @returns The path as a SVG path.
  * @throws If there is the register isn't valid.
  */
-export function generateAddressPath(from: MARRegister): string {
+export function generateAddressPath(from: MARRegister, showpath?: boolean): string {
   switch (from) {
     case "SP":
       return "M 451 309 H 550 V 349 H 698";
@@ -26,9 +26,8 @@ export function generateAddressPath(from: MARRegister): string {
       return "M 451 349 H 698";
 
     case "ri":
-      return "M 454 388 H 550 V 349 H 698";
-     // console.log("showri1", showri);
-      //return showri ? "M 454 388 H 550 V 349 H 698" : "";
+     // return "M 454 388 H 550 V 349 H 698";
+      return showpath ? "M 454 388 H 550 V 349 H 698" : "";
 
     default:
       throw new Error(`Invalid register ${from}`);

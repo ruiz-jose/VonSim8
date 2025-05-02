@@ -33,8 +33,7 @@ export function CPU( ) {
       } else {
         setShowid(false);
       }
-      if (instruction === "MOV"  && moderi ) {
-        console.log("moderi", moderi);
+      if (moderi ) {        
         setShowri(true);
       } else {
         setShowri(false);
