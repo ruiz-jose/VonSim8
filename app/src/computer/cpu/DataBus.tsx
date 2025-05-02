@@ -247,11 +247,8 @@ export function generateDataPath(from: DataRegister, to: DataRegister, instructi
     return "";
   }*/
   // Reemplazar 'ri' por 'MAR' si el destino es 'ri'
- /* if (to === "ri" && (instruction === "MOV" && mode !== "mem<-imd")) {
-    const riIndex = path.indexOf("ri");
-    if (riIndex !== -1) {
-      path.splice(riIndex, 1, "IP", "MAR join1", "MAR join2", "MAR");
-    }
+  /*if (to === "ri" && instruction === "MOV" && mode === "mem<-imd") {
+      path = ["MBR", "mbr reg join", "ir join", "IP"];
   }*/
 
   // Cambiar la animación si from es "ri" y to es "IP"
@@ -265,9 +262,9 @@ export function generateDataPath(from: DataRegister, to: DataRegister, instructi
   }
 
   // No dibujar la animación si la instrucción es MOV con mode "mem<-imd"
- /* if (instruction === "MOV" && mode === "mem<-imd") {
-    return "";
-  }*/
+  if (from === "MBR" && to === "ri" && instruction === "MOV" && mode === "mem<-imd") {
+    path = ["MBR", "mbr reg join", "ri join", "ri"];
+  }
 
   if (path.length === 0) throw new Error(`No path from ${from} to ${to}`);
 
@@ -287,12 +284,13 @@ export function generateDataPath(from: DataRegister, to: DataRegister, instructi
 type DataBusProps = {
   showSP: boolean;
   showid: boolean; 
+  showri: boolean; 
 };
 
 /**
  * DataBus component, to be used inside <CPU />
  */
-export function DataBus({ showSP, showid }: DataBusProps) {
+export function DataBus({ showSP, showid, showri }: DataBusProps) {
   const { path, ...style } = getSpring("cpu.internalBus.data");
 
   return (
@@ -319,8 +317,9 @@ export function DataBus({ showSP, showid }: DataBusProps) {
           "M 430 349 H 421", // ri
           "V 250", // Long path to MBR, here to get nice joins
           "M 451 349 H 421", // IP
-          //"M 451 309 H 421", // SP
+          //"M 451 309 H 421", // SP          
           showSP ? "M 451 309 H 421" : "M 451 309", // SP
+          showri ? "M 451 388 H 421 V 300" : "", // ri
           // Data registers
           "M 451 45 H 421", // AX     
           "V 250", // Long path to MBR, here to get nice joins

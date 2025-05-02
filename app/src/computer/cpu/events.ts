@@ -108,7 +108,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
 
     case "cpu:cycle.start": {  
       instructionName = event.instruction.name; // Obtén el nombre de la instrucción en curso    
-      mode = event.instruction.willUse.id ? "mem<-imd" : ""; // Verifica si willUse.id es true y establece el modo
+      mode = event.instruction.willUse.ri ? "mem<-imd" : ""; // Verifica si willUse.ri es true y establece el modo
       
       highlightLine(event.instruction.position.start);
       store.set(cycleAtom, { phase: "fetching", metadata: event.instruction });

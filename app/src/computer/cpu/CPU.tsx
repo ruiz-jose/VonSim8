@@ -17,20 +17,27 @@ export function CPU( ) {
 
   const showSP = useAtomValue(showSPAtom); // Usar el átomo showSPAtom
   const [showid, setShowid] = useState(false);
+  const [showri, setShowri] = useState(false);
 
   const [showRegisters, setShowRegisters] = useState(false);
 
   useEffect(() => {
-    const handleInstruction = (instruction: string, mode?: boolean) => {
+    const handleInstruction = (instruction: string, modeid?: boolean, moderi?: boolean) => {
       if (instruction === "ADD" || instruction === "SUB"  || instruction === "CMP" || instruction === "AND" || instruction === "OR" || instruction === "XOR" || instruction === "NOT" || instruction === "NEG" || instruction === "DEC" || instruction === "INC") {
         setShowRegisters(true);
       } else {
         setShowRegisters(false);
       }
-      if (instruction === "CALL" || instruction === "INT" || instruction === "IRET" || mode ) {
+      if (instruction === "CALL" || instruction === "INT" || instruction === "IRET" || modeid ) {
         setShowid(true);
       } else {
         setShowid(false);
+      }
+      if (instruction === "MOV"  && moderi ) {
+        console.log("moderi", moderi);
+        setShowri(true);
+      } else {
+        setShowri(false);
       }
     };
 
@@ -39,7 +46,7 @@ export function CPU( ) {
     // Aquí se muestra un ejemplo con un evento personalizado
     const eventListener = (event: Event) => {
       const customEvent = event as CustomEvent;
-      handleInstruction(customEvent.detail.instruction, customEvent.detail.mode);
+      handleInstruction(customEvent.detail.instruction, customEvent.detail.modeid, customEvent.detail.moderi);
     };
 
     window.addEventListener("instructionChange", eventListener as EventListener);
@@ -55,8 +62,8 @@ export function CPU( ) {
         {translate("computer.cpu.name")}
       </span>
 
-      <AddressBus showSP={showSP} />
-      <DataBus showSP={showSP} showid={showid} />
+      <AddressBus showSP={showSP} showri={showri} />
+      <DataBus showSP={showSP} showid={showid} showri={showri} />
 
       {showRegisters && (
         <>
@@ -81,7 +88,7 @@ export function CPU( ) {
       {showSP && <Reg name="SP" emphasis className={clsx("left-[450px] top-[292px]", "border-red-color")} />}
       <Reg name="IP" emphasis className={clsx("left-[450px] top-[332px]", "border-red-color")} />
       
-      {showid && showRegisters && <Reg name="ri" emphasis className={clsx("left-[450px] top-[372px]", "border-red-color")} />}
+      {showri && <Reg name="ri" emphasis className={clsx("left-[450px] top-[372px]", "border-red-color")} />}
 
       <Reg name="MAR" className={clsx("right-[-51px] top-[333px]", "border-red-color")} />
 

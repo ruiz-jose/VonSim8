@@ -63,7 +63,7 @@ export class MOVInstruction extends Instruction<"MOV"> {
         operands: this.#formatOperands(),
         willUse: {
           //ri: mode === "mem<-imd",
-          id: this.operation.mode === "mem<-imd" && this.operation.out.mode === "direct", // Solo marcar `id` como true si es "mem<-imd" y "direct"        
+          id: false, 
           ri: this.operation.mode === "mem<-imd" && this.operation.out.mode === "direct", // Solo marcar `id` como true si es "mem<-imd" y "direct"        
           //id: mode === "reg<-mem" || mode === "reg<-imd" || mode === "mem<-imd",
         },
@@ -86,8 +86,9 @@ export class MOVInstruction extends Instruction<"MOV"> {
         this.operation.mode === "reg<-mem" ? this.operation.src.mode : this.operation.out.mode;
       if (mode === "direct") {
         // Fetch memory address
-        if (this.operation.mode === "mem<-imd") yield* super.consumeInstruction(computer, "id.l");
-        else yield* super.consumeInstruction(computer, "ri.l");        
+        //if (this.operation.mode === "mem<-imd") yield* super.consumeInstruction(computer, "ri.l");
+        //else yield* super.consumeInstruction(computer, "ri.l");        
+        yield* super.consumeInstruction(computer, "ri.l");        
        // yield* super.consumeInstruction(computer, "ri.h");
       } else {
         if (this.operation.mode === "mem<-reg" || this.operation.mode === "reg<-mem"){
@@ -109,7 +110,7 @@ export class MOVInstruction extends Instruction<"MOV"> {
     if ( this.operation.mode === "mem<-imd") {
 
         // Fetch immediate value and store it in id
-        yield* super.consumeInstruction(computer, "id.l", true); // Pasar true para saltar getMBR
+        yield* super.consumeInstruction(computer, "ri.l", true); // Pasar true para saltar getMBR
         if (this.operation.size === 16) yield* super.consumeInstruction(computer, "id.h");
 
     }
@@ -181,7 +182,7 @@ export class MOVInstruction extends Instruction<"MOV"> {
         // Verificar si el direccionamiento es directo
         if (out.mode === "direct") {
            // Copiar de ID a RI si no es indirecto
-          yield* computer.cpu.copyByteRegister("id.l", "ri.l");
+         //yield* computer.cpu.copyByteRegister("id.l", "ri.l");
         } else {
               // Copiar de BL a RI si es indirecto
             yield* computer.cpu.copyByteRegister("BL", "ri.l");

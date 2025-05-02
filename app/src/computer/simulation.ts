@@ -17,7 +17,7 @@ import { posthog } from "@/lib/posthog";
 import { getSettings, settingsAtom, useDevices  } from "@/lib/settings";
 import { toast } from "@/lib/toast";
 
-import { connectScreenAndKeyboardAtom, cycleAtom, cycleCountAtom, instructionCountAtom, messageAtom, messageHistoryAtom, resetCPUState, showSPAtom } from "./cpu/state";
+import { connectScreenAndKeyboardAtom, cycleAtom, cycleCountAtom, instructionCountAtom, messageAtom, messageHistoryAtom, resetCPUState, showriAtom,showSPAtom } from "./cpu/state";
 import { eventIsRunning, handleEvent } from "./handle-event";
 import { resetHandshakeState } from "./handshake/state";
 import { resetLedsState } from "./leds/state";
@@ -110,7 +110,8 @@ let fetchStageCounter = 0;
 let executeStageCounter = 0;
 let messageReadWrite = "";
 let shouldDisplayMessage = true;
-let currentInstructionMode = false;
+let currentInstructionModeid = false;
+let currentInstructionModeri = false;
 let cycleCount = 0;
 let instructionCount = 0;
 let fuenteALU = "";
@@ -154,14 +155,16 @@ async function startThread(generator: EventGenerator): Promise<void> {
         });
         continue; // restart loop
       }
-
+      
       // Handle event
       const event = generator.next();
       if (event.done) break;
       await handleEvent(event.value);
       if (event.value.type === "cpu:cycle.start") {
         currentInstructionName = event.value.instruction.name;
-        currentInstructionMode = event.value.instruction.willUse.id? true : false;
+        currentInstructionModeid = event.value.instruction.willUse.id? true : false;
+        currentInstructionModeri = event.value.instruction.willUse.ri? true : false;
+        store.set(showriAtom, currentInstructionModeri);
       }
 
       if (status.until === "cycle-change" || status.until === "end-of-instruction" || status.until === "infinity") {
@@ -244,7 +247,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             const displayRegister = sourceRegister === "ri" ? "MBR" : sourceRegister;
             let showRI = false;
             if (
-              currentInstructionMode && 
+              currentInstructionModeid && 
               (executeStageCounter === 5 && 
                 (currentInstructionName === "ADD" || 
                  currentInstructionName === "SUB" || 
@@ -256,7 +259,15 @@ async function startThread(generator: EventGenerator): Promise<void> {
             if (shouldDisplayMessage || sourceRegister === "SP") {
               if (showRI ) {
                 store.set(messageAtom, `Ejecución: MAR ← ${sourceRegister}`);
-              } else{
+              } else if(executeStageCounter === 2 && 
+                 currentInstructionModeri && 
+                currentInstructionName === "MOV" ){
+                store.set(messageAtom, `Ejecución: MAR ← IP; ri ← MBR`);
+              } else if(executeStageCounter === 4 && 
+                currentInstructionModeri && 
+               currentInstructionName === "MOV" ){
+                store.set(messageAtom, `Ejecución: MAR ← ${sourceRegister}`);
+              } else {  
                 store.set(messageAtom, `Ejecución: MAR ← ${displayRegister}`);
               }
             }
@@ -364,9 +375,14 @@ async function startThread(generator: EventGenerator): Promise<void> {
             }
 
             let displayMessage = `Ejecución: ${destRegister} ← ${displaySource}`;
-
             const displayMessageFLAGS = "; write(FLAGS)"; // Agregar el mensaje de FLAGS aquí
-            displayMessage += displayMessageFLAGS; // Agregar salto de línea            
+   
+            if (  currentInstructionName === "ADD" || 
+              currentInstructionName === "SUB" || 
+              currentInstructionName === "CMP") {
+              displayMessage += displayMessageFLAGS; // Agregar salto de línea   
+            }
+                     
             if (sourceRegister === "ri" && destRegister === "IP") {
               displayMessage = "Ejecución: IP ← MBR";
               store.set(messageAtom, displayMessage);
@@ -446,7 +462,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             //if ((currentInstructionName === "CALL"|| currentInstructionName === "INT" || currentInstructionName === "PUSH") && jump_yes) {
             if ((currentInstructionName === "CALL"|| currentInstructionName === "INT" || currentInstructionName === "PUSH")) {
               messageReadWrite += displayMessageFLAGS;
-              if ( currentInstructionName === "INT" && currentInstructionMode) {
+              if ( currentInstructionName === "INT" && currentInstructionModeid) {
                 messageReadWrite += displayMessageFLAGSI;
               }       
 
@@ -458,10 +474,10 @@ async function startThread(generator: EventGenerator): Promise<void> {
               messageReadWrite = "Ejecución: MBR ← read(PIO[MAR])";
             }
            let Tresbytes = false;
-            if ((currentInstructionMode && 
+            if ((currentInstructionModeri && 
               executeStageCounter === 3 &&
                  currentInstructionName === "MOV") ||
-              ((currentInstructionMode &&
+              ((currentInstructionModeid &&
                 executeStageCounter === 4 && 
                 (currentInstructionName === "ADD" || 
                  currentInstructionName === "SUB" || 
@@ -505,7 +521,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
       store.set(cycleCountAtom, cycleCount );
 
       const eventInstruction = new CustomEvent("instructionChange", {
-        detail: { instruction: currentInstructionName, mode: currentInstructionMode },
+        detail: { instruction: currentInstructionName, modeid: currentInstructionModeid, moderi: currentInstructionModeri },
       });
       window.dispatchEvent(eventInstruction);
 

@@ -5,8 +5,10 @@ import { animated, getSpring } from "@/computer/shared/springs";
 
 export type { MARRegister as AddressRegister };
 
+
 type AddressBusProps = {
   showSP: boolean;
+  showri: boolean; 
 };
 
 /**
@@ -24,9 +26,9 @@ export function generateAddressPath(from: MARRegister): string {
       return "M 451 349 H 698";
 
     case "ri":
-      //return "M 454 388 H 550 V 349 H 698";
-      // Devolver una cadena vacía para evitar la animación
-      return "";
+      return "M 454 388 H 550 V 349 H 698";
+     // console.log("showri1", showri);
+      //return showri ? "M 454 388 H 550 V 349 H 698" : "";
 
     default:
       throw new Error(`Invalid register ${from}`);
@@ -36,13 +38,14 @@ export function generateAddressPath(from: MARRegister): string {
 /**
  * AddressBus component, to be used inside <CPU />
  */
-export function AddressBus({ showSP }: AddressBusProps) {
+export function AddressBus({ showSP, showri }: AddressBusProps) {
   const { path, ...style } = getSpring("cpu.internalBus.address");
   const [highlight] = useState(false);
 
   const paths = [
     showSP ? "M 451 309 H 550 V 250" : "", // SP
     "M 451 349 H 550 V 250", // IP
+    showri ? "M 444 388 H 550 V 300" : "",
     //"M 444 388 H 550 V 300", // ri
     "M 451 349 H 698", // Connection to MAR
   ];
