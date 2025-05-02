@@ -262,7 +262,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
               } else if(executeStageCounter === 2 && 
                  currentInstructionModeri && 
                 currentInstructionName === "MOV" ){
-                store.set(messageAtom, `Ejecución: MAR ← IP; ri ← MBR`);
+                store.set(messageAtom, `Ejecución: ri ← MBR; MAR ← IP`);
               } else if(executeStageCounter === 4 && 
                 currentInstructionModeri && 
                currentInstructionName === "MOV" ){
