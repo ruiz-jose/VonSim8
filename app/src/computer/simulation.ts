@@ -115,6 +115,7 @@ let currentInstructionModeri = false;
 let cycleCount = 0;
 let instructionCount = 0;
 let fuenteALU = "";
+let destinoALU = "";
 let MBRALU = "";
 
 
@@ -251,8 +252,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
               currentInstructionModeri && 
               (executeStageCounter === 5 && 
                 (currentInstructionName === "ADD" || 
-                 currentInstructionName === "SUB" || 
-                 currentInstructionName === "CMP"))
+                 currentInstructionName === "SUB" ))
             ) {
               showRI = true;
             }
@@ -260,8 +260,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
               currentInstructionModeri && 
               (executeStageCounter === 2 && 
                 (currentInstructionName === "ADD" || 
-                 currentInstructionName === "SUB" || 
-                 currentInstructionName === "CMP"))
+                 currentInstructionName === "SUB" ))
             ) {
               showRI2 = true;
             }
@@ -347,8 +346,13 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 store.set(messageAtom, displayMessage);
                 cycleCount++; 
              }
+          } else if (event.value.type === "cpu:alu.execute") { 
             
-
+            if ( currentInstructionName === "CMP" ) {   
+                store.set(messageAtom, `Ejecución: ${destinoALU} ${currentInstructionName} ${fuenteALU} ; write(FLAGS)`);
+                cycleCount++; 
+                pauseSimulation(); 
+             }
           } else if (event.value.type === "cpu:mbr.get") {
             const sourceRegister = event.value.register === "id.l" ? "id" : 
             event.value.register === "IP.l" ? "IP" : 
@@ -369,8 +373,10 @@ async function startThread(generator: EventGenerator): Promise<void> {
             }  
             if (String(sourceRegister) === 'right.l' ||
                 String(sourceRegister) === 'left.l'){
-                fuenteALU = 'MBR';  
-            }       
+                fuenteALU = 'MBR';             
+            }  
+  
+
           } else if (event.value.type === "cpu:register.copy") {
             const sourceRegister = event.value.src.replace(/\.l$/, '');
             const destRegister = event.value.dest.replace(/\.l$/, '');
@@ -386,6 +392,12 @@ async function startThread(generator: EventGenerator): Promise<void> {
               displaySource = sourceRegister === "result" ? `${destRegister} ${currentInstructionName} ${fuenteALU}` : sourceRegister;
               MBRALU =  `${fuenteALU} ${currentInstructionName} ${sourceRegister}` + "; write(FLAGS)"; 
             }
+            if (currentInstructionName === "CMP" && String(destRegister) === 'right'){
+              fuenteALU = sourceRegister; 
+            }     
+            if (currentInstructionName === "CMP" && String(destRegister) === 'left'){
+              destinoALU = sourceRegister; 
+            }    
 
             let displayMessage = `Ejecución: ${destRegister} ← ${displaySource}`;
             const displayMessageFLAGS = "; write(FLAGS)"; // Agregar el mensaje de FLAGS aquí

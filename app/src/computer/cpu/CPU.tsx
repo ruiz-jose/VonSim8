@@ -60,9 +60,9 @@ export function CPU( ) {
       <span className="block w-min rounded-br-lg rounded-tl-lg border-b border-r border-stone-600 bg-mantis-500 px-2 py-1 text-3xl text-white">
         {translate("computer.cpu.name")}
       </span>
-      <DataBus showSP={showSP} showid={showid} showri={showri} />
-      <AddressBus showSP={showSP} showri={showri} />
 
+      <AddressBus showSP={showSP} showri={showri} />
+      <DataBus showSP={showSP} showid={showid} showri={showri} />
 
       {showRegisters && (
         <>
