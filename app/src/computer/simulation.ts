@@ -271,7 +271,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
               if (showRI ) {
                 store.set(messageAtom, `Ejecución: MAR ← ${sourceRegister}`);
               } else if( showRI2 ){
-               store.set(messageAtom, `Ejecución: MAR ← MBR; ri ← MBR`);
+               store.set(messageAtom, `Ejecución: ri ← MBR; MAR ← MBR`);
              } else if(executeStageCounter === 2 && 
                  currentInstructionModeri && 
                 currentInstructionName === "MOV" ){

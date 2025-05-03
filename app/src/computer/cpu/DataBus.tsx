@@ -267,10 +267,10 @@ export function generateDataPath(from: DataRegister, to: DataRegister, instructi
   }
 
   // No dibujar la animación si la instrucción es MOV con mode "mem<-imd"
- // if (from === "MBR" && to === "ri" && instruction === "ADD" && mode === "mem<-imd") {
-    //const path1 = ["MBR", "mbr reg join", "ri join", "ri"];
-  //  path = ["MBR", "outr mbr join", "SP out join", "MAR join2", "MAR"];
-  //}
+ if (from === "MBR" && to === "ri" && instruction === "ADD" && mode === "mem<-imd") {
+    path = ["MBR", "mbr reg join", "ri join", "ri"];
+ //  path = ["MBR", "outr mbr join", "SP out join", "MAR join2", "MAR"];
+ }
 
   if (path.length === 0) throw new Error(`No path from ${from} to ${to}`);
 
