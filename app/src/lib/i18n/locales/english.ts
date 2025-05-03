@@ -212,10 +212,7 @@ export const english = {
     animations: {
       label: "Animations",
       description: [
-        "Disabling animations, you get faster execution.",
-        "Only affects animations affected by the simulation speed (like the CPU).",
-        "Other animations (like the clock and the printer) will run at their own speed.",
-        "Be careful! Very high simulation speeds without animations can saturate the processor.",
+        "Enabling animations.",
       ].join(" "),
     },
 
