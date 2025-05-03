@@ -290,7 +290,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             executeStageCounter++;
             //if (!(currentInstructionName === "INT" && sourceRegister === "ri")) {
 
-            if (!(sourceRegister === "ri") ||  showRI ) {
+            if (!(sourceRegister === "ri") ||  showRI ||  showRI2 ) {
               cycleCount++; 
             }
 
@@ -390,7 +390,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
         
             }else{
               displaySource = sourceRegister === "result" ? `${destRegister} ${currentInstructionName} ${fuenteALU}` : sourceRegister;
-              MBRALU =  `${fuenteALU} ${currentInstructionName} ${sourceRegister}` + "; write(FLAGS)"; 
+              MBRALU =  `${sourceRegister} ${currentInstructionName} ${fuenteALU}` + "; write(FLAGS)"; 
             }
             if (currentInstructionName === "CMP" && String(destRegister) === 'right'){
               fuenteALU = sourceRegister; 
@@ -512,18 +512,19 @@ async function startThread(generator: EventGenerator): Promise<void> {
             }
             if (!Tresbytes) {
               store.set(messageAtom, messageReadWrite);
-            }
 
-            cycleCount++; 
-            if (currentInstructionName === "RET" 
-              || currentInstructionName === "IN" 
-              || currentInstructionName === "ADD" 
-              || currentInstructionName === "SUB" 
-              || currentInstructionName === "CMP" 
-              || (currentInstructionName === "INT" &&  messageReadWrite ==="Ejecución: MBR ← read(Memoria[MAR]); SP = SP - 1")) {
-                if (status.until === "cycle-change") {
-                  pauseSimulation();
-                }
+
+              cycleCount++; 
+              if (currentInstructionName === "RET" 
+                || currentInstructionName === "IN" 
+                || currentInstructionName === "ADD" 
+                || currentInstructionName === "SUB" 
+                || currentInstructionName === "CMP" 
+                || (currentInstructionName === "INT" &&  messageReadWrite ==="Ejecución: MBR ← read(Memoria[MAR]); SP = SP - 1")) {
+                  if (status.until === "cycle-change") {
+                    pauseSimulation();
+                  }
+              }
             }
           } else if (event.value.type === "cpu:mbr.set") {
             const sourceRegister = event.value.register === "id.l" ? "id" : 
