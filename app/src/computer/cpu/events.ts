@@ -39,6 +39,7 @@ let instructionName = "";
 let mode = "";
 let showpath1 = false;
 let showpath2 = false;
+let countersetMAR = 0;
 export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<void> {
 
   switch (event.type) {
@@ -114,7 +115,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       showpath1 = event.instruction.willUse.ri && instructionName === "MOV" ? true : false;
       showpath2 = event.instruction.willUse.ri && 
       (instructionName === "ADD" || instructionName === "SUB" ) ? true : false;
-
+      countersetMAR = 0;
 
       highlightLine(event.instruction.position.start);
       store.set(cycleAtom, { phase: "fetching", metadata: event.instruction });
@@ -238,7 +239,14 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       return;
     }
 
-    case "cpu:mar.set": {
+    case "cpu:mar.set": { 
+      countersetMAR++; 
+      console.log("countersetMAR", countersetMAR); // Debugging line
+      if (countersetMAR ===4 && showpath2 ) {
+        showpath1= true;
+        showpath2 = false;
+      }
+
       await anim(
         [
           { key: "cpu.internalBus.address.path", from: generateAddressPath(event.register, showpath1, showpath2) },

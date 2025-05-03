@@ -121,6 +121,7 @@ export class ALUBinaryInstruction extends Instruction<
       if (size === 8) yield* computer.cpu.copyByteRegister(src, "right.l");
       else yield* computer.cpu.copyWordRegister(src, "right");
     } else if (mode === "reg<-imd" || mode === "mem<-imd") {
+
       // Move immediate value to right register
       yield* this.consumeInstruction(computer, "right.l");
       if (size === 16) yield* this.consumeInstruction(computer, "right.h");
@@ -138,6 +139,7 @@ export class ALUBinaryInstruction extends Instruction<
       // Read value from memory
       yield* computer.cpu.setMAR("ri");
       if (!(yield* computer.cpu.useBus("mem-read"))) return false; // Error reading memory
+
       yield* computer.cpu.getMBR("right.l");
       if (size === 16) {
         yield* computer.cpu.updateWordRegister("ri", ri => ri.add(1));
@@ -152,10 +154,7 @@ export class ALUBinaryInstruction extends Instruction<
       }
     }
     if ( mode === "mem<-imd"){
-         yield* computer.cpu.copyByteRegister("id.l", "left.l"); 
-         if (this.name !== "CMP") {
-          yield* computer.cpu.setMAR("ri");
-         }
+         yield* computer.cpu.copyByteRegister("id.l", "left.l");         
     }
 
     yield { type: "cpu:cycle.update", phase: "execute" };
@@ -254,8 +253,9 @@ export class ALUBinaryInstruction extends Instruction<
       }
 
       // Write low byte
-      //yield* computer.cpu.setMAR("ri");
-      yield* computer.cpu.setMBR("result.l");
+      
+      yield* computer.cpu.setMBR("result.l");      
+      yield* computer.cpu.setMAR("ri");
       if (!(yield* computer.cpu.useBus("mem-write"))) return false; // Error writing memory
     }
 

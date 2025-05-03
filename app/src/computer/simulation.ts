@@ -117,6 +117,9 @@ let instructionCount = 0;
 let fuenteALU = "";
 let destinoALU = "";
 let MBRALU = "";
+let mbridirmar = false;
+let resultmbrimar = false;   
+let displayMessageresultmbr = "";
 
 
 /**
@@ -166,6 +169,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
         currentInstructionModeid = event.value.instruction.willUse.id? true : false;
         currentInstructionModeri = event.value.instruction.willUse.ri? true : false;
         store.set(showriAtom, currentInstructionModeri);
+        mbridirmar = false;
+        resultmbrimar = false; 
+        displayMessageresultmbr= "";
       }
 
       if (status.until === "cycle-change" || status.until === "end-of-instruction" || status.until === "infinity") {
@@ -201,7 +207,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
         }  
         if (fetchStageCounter < 3 ) {
           if (event.value.type === "cpu:mar.set") {
-
+           
             const sourceRegister = event.value.register;
             if (sourceRegister === "SP") {
               fetchStageCounter = 3;
@@ -248,6 +254,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             const displayRegister = sourceRegister === "ri" ? "MBR" : sourceRegister;
             let showRI = false;
             let showRI2 = false;
+
             if (
               currentInstructionModeri && 
               (executeStageCounter === 5 && 
@@ -265,24 +272,33 @@ async function startThread(generator: EventGenerator): Promise<void> {
               showRI2 = true;
             }
             console.log("executeStageCounter:", executeStageCounter);
+            console.log("mbridirmar:", mbridirmar);
+            console.log("resultmbrimar:", resultmbrimar);
+            console.log("displayMessageresultmbr:", displayMessageresultmbr);
+
 
             if (shouldDisplayMessage || sourceRegister === "SP") {
-              if (showRI ) {
+              if (resultmbrimar) {
+                store.set(messageAtom,  displayMessageresultmbr);     
+              } else if (showRI ) {
                 store.set(messageAtom, `Ejecución: MAR ← ${sourceRegister}`);
               } else if( showRI2 ){
-               store.set(messageAtom, `Ejecución: ri ← MBR; MAR ← MBR`);
-             } else if(executeStageCounter === 2 && 
-                 currentInstructionModeri && 
+                store.set(messageAtom, `Ejecución: ri ← MBR; MAR ← MBR`);
+              } else if(executeStageCounter === 2 && 
+                  currentInstructionModeri && 
                 currentInstructionName === "MOV" ){
                 store.set(messageAtom, `Ejecución: ri ← MBR; MAR ← IP`);
               } else if(executeStageCounter === 4 && 
                 currentInstructionModeri && 
-               currentInstructionName === "MOV" ){
+                currentInstructionName === "MOV" ){
                 store.set(messageAtom, `Ejecución: MAR ← ${sourceRegister}`);
+              } else if (mbridirmar) {
+                store.set(messageAtom, `Ejecución: id ← MBR; MAR ← IP`);             
               } else {  
-                store.set(messageAtom, `Ejecución: MAR ← ${displayRegister}`);
+                store.set(messageAtom, `Ejecución: MAR ← ${displayRegister}`);                  
               }
             }
+
             if (status.until === "cycle-change") {
               pauseSimulation();
             }
@@ -359,22 +375,34 @@ async function startThread(generator: EventGenerator): Promise<void> {
             event.value.register === "FLAGS.l" ? "FLAGS" : 
             event.value.register;
 
-            if (String(sourceRegister) !== 'ri.l'
-                && String(sourceRegister) !== 'right.l'
-                && String(sourceRegister) !== 'left.l'){
-              store.set(messageAtom, `Ejecución: ${sourceRegister} ← MBR`);
-              cycleCount++;
-              if (String(sourceRegister) === 'id' ||
-               (String(sourceRegister) === "DL" &&  currentInstructionName === "INT")) {
-                if (status.until === "cycle-change") {
-                  pauseSimulation();
-                }               
-              } 
-            }  
             if (String(sourceRegister) === 'right.l' ||
                 String(sourceRegister) === 'left.l'){
                 fuenteALU = 'MBR';             
             }  
+            if (
+              currentInstructionModeri && 
+              (executeStageCounter === 3 && 
+                (currentInstructionName === "ADD" || 
+                 currentInstructionName === "SUB" || 
+                 currentInstructionName === "CMP" ))
+            ) {
+              mbridirmar = true;
+            }
+            if (!mbridirmar) {
+              if (String(sourceRegister) !== 'ri.l'
+                  && String(sourceRegister) !== 'right.l'
+                  && String(sourceRegister) !== 'left.l'){
+                store.set(messageAtom, `Ejecución: ${sourceRegister} ← MBR`);
+                cycleCount++;
+                if (String(sourceRegister) === 'id' ||
+                (String(sourceRegister) === "DL" &&  currentInstructionName === "INT")) {
+                  if (status.until === "cycle-change") {
+                    pauseSimulation();
+                  }               
+                } 
+              }
+            }  
+
   
 
           } else if (event.value.type === "cpu:register.copy") {
@@ -407,7 +435,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
               currentInstructionName === "CMP") {
               displayMessage += displayMessageFLAGS; // Agregar salto de línea   
             }
-                     
+    
             if (sourceRegister === "ri" && destRegister === "IP") {
               displayMessage = "Ejecución: IP ← MBR";
               store.set(messageAtom, displayMessage);
@@ -532,12 +560,22 @@ async function startThread(generator: EventGenerator): Promise<void> {
             event.value.register === "IP.l" ? "IP" : 
             event.value.register === "result.l" ? MBRALU : 
             event.value.register;
-            store.set(messageAtom,  `Ejecución: MBR ← ${sourceRegister}`);
-            if (status.until === "cycle-change") {
-              pauseSimulation();
+
+            if (currentInstructionModeri && 
+               executeStageCounter === 5 &&
+              (currentInstructionName === "ADD" ||
+               currentInstructionName === "SUB")) {
+              resultmbrimar =true;    
+              displayMessageresultmbr =  `Ejecución: MBR ← ${sourceRegister} ; MAR ← ri`; 
+         
+            } else {
+              store.set(messageAtom,  `Ejecución: MBR ← ${sourceRegister}`);
+              if (status.until === "cycle-change") {
+                pauseSimulation();
+              }
+              executeStageCounter++;
+              cycleCount++;
             }
-            executeStageCounter++;
-            cycleCount++;
           }  
         }
       } else {
