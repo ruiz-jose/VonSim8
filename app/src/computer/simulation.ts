@@ -367,7 +367,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
             if ( currentInstructionName === "CMP" ) {   
                 store.set(messageAtom, `Ejecución: ${destinoALU} ${currentInstructionName} ${fuenteALU} ; write(FLAGS)`);
                 cycleCount++; 
-                pauseSimulation(); 
+                if (status.until === "cycle-change") {
+                  pauseSimulation(); 
+                }
              }
           } else if (event.value.type === "cpu:mbr.get") {
             const sourceRegister = event.value.register === "id.l" ? "id" : 
