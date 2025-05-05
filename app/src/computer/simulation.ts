@@ -314,6 +314,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             const sourceRegister = event.value.register;
             let displayMessage = "";
             shouldDisplayMessage = true;
+            let pause = true;
 
             if (sourceRegister === "SP") {
               /*  if (currentInstructionName === "CALL" || currentInstructionName === "INT" && jump_yes) {
@@ -333,6 +334,10 @@ async function startThread(generator: EventGenerator): Promise<void> {
             } else if (sourceRegister === "ri.l" && currentInstructionName === "INT") {
               displayMessage = "Interrupción: MAR ← (video)"; 
               shouldDisplayMessage = false;     
+            } else if (currentInstructionModeri && executeStageCounter === 3 && currentInstructionName === "MOV"){
+              displayMessage = "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1; MAR ← ri";  
+              pause = false;
+              shouldDisplayMessage = false;
             } else {
               displayMessage = sourceRegister === "IP" ? "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1" : `Ejecución: MBR ← ${sourceRegister}`;
             }
@@ -345,7 +350,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
                    && currentInstructionName !== "INC"
                    && currentInstructionName !== "NOT"
                    && currentInstructionName !== "NEG") {
-                  pauseSimulation();                          
+                    if (pause) {
+                      pauseSimulation();                          
+                    }
                 } 
               }           
             }
