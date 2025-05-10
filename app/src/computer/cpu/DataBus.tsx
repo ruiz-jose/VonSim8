@@ -266,6 +266,11 @@ export function generateDataPath(from: DataRegister, to: DataRegister, instructi
     path = ["MBR", "mbr reg join", "ri join", "ri"];
   }
 
+    // No dibujar la animación si la instrucción es MOV con mode "mem<-imd"
+  if (from === "IP" && to === "MBR" && instruction === "INT") {
+      return "M 510 349 H 550 V 250 H 620";
+  }
+
   // No dibujar la animación si la instrucción es MOV con mode "mem<-imd"
  if (from === "MBR" && to === "ri" && mode === "mem<-imd" &&
   (instruction === "ADD" || 
