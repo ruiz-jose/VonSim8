@@ -112,9 +112,9 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
     case "cpu:cycle.start": {  
       instructionName = event.instruction.name; // Obtén el nombre de la instrucción en curso    
       mode = event.instruction.willUse.ri ? "mem<-imd" : ""; // Verifica si willUse.ri es true y establece el modo
-      showpath1 = event.instruction.willUse.ri && instructionName === "MOV" ? true : false;
+      showpath1 = event.instruction.willUse.ri && (instructionName === "MOV"  ) ? true : false;
       showpath2 = event.instruction.willUse.ri && 
-      (instructionName === "ADD" || instructionName === "SUB" ) ? true : false;
+      (instructionName === "ADD" || instructionName === "SUB" || instructionName === "INT") ? true : false;
       countersetMAR = 0;
 
       highlightLine(event.instruction.position.start);

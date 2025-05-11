@@ -265,6 +265,14 @@ async function startThread(generator: EventGenerator): Promise<void> {
             }
             if (
               currentInstructionModeri && 
+              (executeStageCounter === 9 && "INT" )
+            ) {
+              showRI = true;
+            }
+
+
+            if (
+              currentInstructionModeri && 
               (executeStageCounter === 2 && 
                 (currentInstructionName === "ADD" || 
                  currentInstructionName === "SUB" ))
@@ -275,7 +283,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             console.log("mbridirmar:", mbridirmar);
             console.log("resultmbrimar:", resultmbrimar);
             console.log("displayMessageresultmbr:", displayMessageresultmbr);
-
+            console.log("shouldDisplayMessage:", shouldDisplayMessage);
 
             if (shouldDisplayMessage || sourceRegister === "SP") {
               if (resultmbrimar) {
@@ -293,7 +301,11 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 currentInstructionName === "MOV" ){
                 store.set(messageAtom, `Ejecución: MAR ← ${sourceRegister}`);
               } else if (mbridirmar) {
-                store.set(messageAtom, `Ejecución: id ← MBR; MAR ← IP`);             
+                store.set(messageAtom, `Ejecución: id ← MBR; MAR ← IP`);  
+              } else if(executeStageCounter === 2 && 
+                  currentInstructionModeri && 
+                currentInstructionName === "INT" ){
+                store.set(messageAtom, `Ejecución: ri ← MBR; MAR ← SP`);           
               } else {  
                 store.set(messageAtom, `Ejecución: MAR ← ${displayRegister}`);                  
               }
@@ -317,6 +329,12 @@ async function startThread(generator: EventGenerator): Promise<void> {
             let pause = true;
 
             if (sourceRegister === "SP") {
+              if (currentInstructionModeri && 
+              (executeStageCounter === 4 ) && 
+              currentInstructionName === "INT"){
+              pause = false;
+              shouldDisplayMessage = false;
+              }
               /*  if (currentInstructionName === "CALL" || currentInstructionName === "INT" && jump_yes) {
                 displayMessage = "Ejecución: SP = SP - 1";                             
               } */
@@ -325,6 +343,11 @@ async function startThread(generator: EventGenerator): Promise<void> {
               }
             } else if (sourceRegister === "FLAGS") {
               displayMessage = "Ejecución: IF = 0"; 
+              if (currentInstructionModeri && 
+              executeStageCounter === 5 && 
+              currentInstructionName === "INT"){
+                displayMessage = "Ejecución: write(Memoria[MAR]) ← MBR; SP ← SP - 1; IF = 0";  
+              }
             } else if (sourceRegister === "DL" && currentInstructionName === "INT") {
               displayMessage = "Interrupción: AL ← ASCII";    
             } else if (sourceRegister === "right.l" && currentInstructionName === "INT") {
@@ -341,6 +364,17 @@ async function startThread(generator: EventGenerator): Promise<void> {
             } else {
               displayMessage = sourceRegister === "IP" ? "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1" : `Ejecución: MBR ← ${sourceRegister}`;
             }
+            
+            if (currentInstructionModeri && 
+              (executeStageCounter === 8 ) && 
+              currentInstructionName === "INT"){
+                displayMessage = "Ejecución: write(Memoria[MAR]) ← MBR; SP ← SP - 1";
+              }
+            console.log("displayMessage:", displayMessage);
+            console.log("currentInstructionName:", currentInstructionName);
+            console.log("currentInstructionModeri:", currentInstructionModeri);
+            console.log("executeStageCounter:", executeStageCounter);
+            console.log("pause:", pause);
 
             if (displayMessage !== "Interrupción: MAR ← (video)"){
               if (status.until === "cycle-change") {
@@ -357,15 +391,13 @@ async function startThread(generator: EventGenerator): Promise<void> {
               }           
             }
             executeStageCounter++;
-            console.log("executeStageCounter:", executeStageCounter);
             if ( currentInstructionName !== "CALL" 
               && currentInstructionName !== "PUSH"
               && currentInstructionName !== "DEC"
               && currentInstructionName !== "INC"
               && currentInstructionName !== "NOT"
               && currentInstructionName !== "NEG"
-              && !(currentInstructionName === "INT" && sourceRegister === "SP")
-              && !(executeStageCounter === 6 && sourceRegister === "FLAGS")) {   
+              && !(currentInstructionName === "INT" && executeStageCounter === 5)) {   
                 store.set(messageAtom, displayMessage);
                 cycleCount++; 
              }
@@ -520,14 +552,10 @@ async function startThread(generator: EventGenerator): Promise<void> {
                currentInstructionName === "CALL"))*/
 
             const displayMessageFLAGS = "; SP = SP - 1";  
-            const displayMessageFLAGSI = "; IF = 0";  
-            //if ((currentInstructionName === "CALL"|| currentInstructionName === "INT" || currentInstructionName === "PUSH") && jump_yes) {
-            if ((currentInstructionName === "CALL"|| currentInstructionName === "INT" || currentInstructionName === "PUSH")) {
-              messageReadWrite += displayMessageFLAGS;
-              if ( currentInstructionName === "INT" && currentInstructionModeid) {
-                messageReadWrite += displayMessageFLAGSI;
-              }       
 
+            //if ((currentInstructionName === "CALL"|| currentInstructionName === "INT" || currentInstructionName === "PUSH") && jump_yes) {
+            if ((currentInstructionName === "CALL" || currentInstructionName === "PUSH")) {
+               messageReadWrite += displayMessageFLAGS;
             }
             if (currentInstructionName === "RET") {
               messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";
@@ -535,8 +563,11 @@ async function startThread(generator: EventGenerator): Promise<void> {
             if (currentInstructionName === "IN") {
               messageReadWrite = "Ejecución: MBR ← read(PIO[MAR])";
             }
-           let Tresbytes = false;
+           let ContinuarSinGuardar = false;
             if ((currentInstructionModeri && 
+              (executeStageCounter === 4 || executeStageCounter === 8) &&
+                 currentInstructionName === "INT") ||
+              (currentInstructionModeri && 
               executeStageCounter === 3 &&
                  currentInstructionName === "MOV") ||
               ((currentInstructionModeid &&
@@ -545,19 +576,22 @@ async function startThread(generator: EventGenerator): Promise<void> {
                  currentInstructionName === "SUB" || 
                  currentInstructionName === "CMP"))
             )) {
-              Tresbytes = true;
+              ContinuarSinGuardar = true;
             }
-            if (!Tresbytes) {
-              store.set(messageAtom, messageReadWrite);
+            console.log("executeStageCounter:", executeStageCounter);
+            if (!ContinuarSinGuardar) {
 
-
-              cycleCount++; 
+                store.set(messageAtom, messageReadWrite);
+                cycleCount++; 
+              
+              
               if (currentInstructionName === "RET" 
                 || currentInstructionName === "IN" 
                 || currentInstructionName === "ADD" 
                 || currentInstructionName === "SUB" 
                 || currentInstructionName === "CMP" 
-                || (currentInstructionName === "INT" &&  messageReadWrite ==="Ejecución: MBR ← read(Memoria[MAR]); SP = SP - 1")) {
+                || currentInstructionName === "INT"
+                ) {
                   if (status.until === "cycle-change") {
                     pauseSimulation();
                   }
