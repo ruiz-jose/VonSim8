@@ -11,14 +11,13 @@ Con la llamada `INT 6` se detiene la ejecución del código hasta que se presion
 
 ```vonsim
 org 10h
-car db ?
+car db 0
 
 org 20h
 mov bl, offset car
 int 6
 ; El usuario escribe un carácter
 hlt
-end
 
 ; El carácter escrito se almacenó en 'car'.
 ; Por ejemplo, si el usuario presionó la tecla 'a', entonces

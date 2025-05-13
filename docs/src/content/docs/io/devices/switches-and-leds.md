@@ -28,7 +28,6 @@ mov al, 170
 out 31h, al
 
 hlt
-end
 ```
 
 

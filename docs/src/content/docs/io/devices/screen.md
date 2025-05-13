@@ -22,7 +22,6 @@ mov AL, 5
 int 7
 ; Se imprime "Hola!" (sin las comillas) en la pantalla.
 hlt
-end
 ```
 
 Hay tres caracteres especiales:
