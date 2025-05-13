@@ -104,7 +104,7 @@ export function* handleSyscall(
       yield* computer.cpu.copyByteRegister("BL", "ri.l");
 
       yield* computer.cpu.setMAR("ri");
-      yield* computer.cpu.setMBR("DL");
+      yield* computer.cpu.setMBR("AL");
       if (!(yield* computer.cpu.useBus("mem-write"))) return false; // Error writing to memory
       if (!(yield* computer.cpu.popFromStack("AL"))) return false; // Stack underflow
       // Doesn't return -- retrieves machine state
