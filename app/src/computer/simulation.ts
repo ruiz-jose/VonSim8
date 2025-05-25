@@ -359,6 +359,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
               displayMessage = "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1; MAR ← ri";  
               pause = false;
               shouldDisplayMessage = false;
+            }if (executeStageCounter === 4 && currentInstructionName === "CALL"){   
+              pause = false;
             } else {
               displayMessage = sourceRegister === "IP" ? "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1" : `Ejecución: MBR ← ${sourceRegister}`;
             }
@@ -367,7 +369,11 @@ async function startThread(generator: EventGenerator): Promise<void> {
               (executeStageCounter === 8 ) && 
               currentInstructionName === "INT"){
                 displayMessage = "Ejecución: write(Memoria[MAR]) ← MBR; SP ← SP - 1";
-              }
+            }
+            if (executeStageCounter === 4  && 
+              currentInstructionName === "CALL"){
+                displayMessage = "Ejecución: write(Memoria[MAR]) ← MBR; SP ← SP - 1";
+            }
             console.log("displayMessage:", displayMessage);
             console.log("currentInstructionName:", currentInstructionName);
             console.log("currentInstructionModeri:", currentInstructionModeri);
@@ -376,7 +382,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
 
             if (displayMessage !== "Interrupción: MAR ← (video)"){
               if (status.until === "cycle-change") {
-                if (currentInstructionName !== "PUSH" 
+                if (currentInstructionName !== "PUSH"                    
                    && currentInstructionName !== "DEC" 
                    && currentInstructionName !== "INC"
                    && currentInstructionName !== "NOT"
@@ -565,7 +571,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
                  currentInstructionName === "MOV") ||
               ((currentInstructionModeid &&
                 executeStageCounter === 4 && 
-                (currentInstructionName === "ADD" || 
+                (currentInstructionName === "CALL" || 
+                 currentInstructionName === "ADD" || 
                  currentInstructionName === "SUB" || 
                  currentInstructionName === "CMP"))
             )) {
