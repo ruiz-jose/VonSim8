@@ -333,12 +333,16 @@ async function startThread(generator: EventGenerator): Promise<void> {
               pause = false;
               shouldDisplayMessage = false;
               }
+
               /*  if (currentInstructionName === "CALL" || currentInstructionName === "INT" && jump_yes) {
                 displayMessage = "Ejecución: SP = SP - 1";                             
               } */
-              if (currentInstructionName === "RET"  || currentInstructionName === "IRET"  || currentInstructionName === "POP") {
+              if (currentInstructionName === "RET"  ||
+                 currentInstructionName === "IRET"  || 
+                 currentInstructionName === "POP") {
                 displayMessage = "Ejecución: SP = SP + 1";                 
               }
+
             } else if (sourceRegister === "FLAGS") {
               displayMessage = "Ejecución: IF = 0"; 
               if (currentInstructionModeri && 
@@ -359,7 +363,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
               displayMessage = "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1; MAR ← ri";  
               pause = false;
               shouldDisplayMessage = false;
-            }if (executeStageCounter === 4 && currentInstructionName === "CALL"){   
+            } else if (executeStageCounter === 4 && currentInstructionName === "CALL"){   
               pause = false;
             } else {
               displayMessage = sourceRegister === "IP" ? "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1" : `Ejecución: MBR ← ${sourceRegister}`;
@@ -379,6 +383,16 @@ async function startThread(generator: EventGenerator): Promise<void> {
             console.log("currentInstructionModeri:", currentInstructionModeri);
             console.log("executeStageCounter:", executeStageCounter);
             console.log("pause:", pause);
+            executeStageCounter++;
+            if (  currentInstructionName !== "PUSH"
+              && currentInstructionName !== "DEC"
+              && currentInstructionName !== "INC"
+              && currentInstructionName !== "NOT"
+              && currentInstructionName !== "NEG"
+              && !(currentInstructionName === "INT" && executeStageCounter === 5)) {   
+                store.set(messageAtom, displayMessage);
+                cycleCount++; 
+             }
 
             if (displayMessage !== "Interrupción: MAR ← (video)"){
               if (status.until === "cycle-change") {
@@ -393,16 +407,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 } 
               }           
             }
-            executeStageCounter++;
-            if (  currentInstructionName !== "PUSH"
-              && currentInstructionName !== "DEC"
-              && currentInstructionName !== "INC"
-              && currentInstructionName !== "NOT"
-              && currentInstructionName !== "NEG"
-              && !(currentInstructionName === "INT" && executeStageCounter === 5)) {   
-                store.set(messageAtom, displayMessage);
-                cycleCount++; 
-             }
+
           } else if (event.value.type === "cpu:alu.execute") { 
             
             if ( currentInstructionName === "CMP" ) {   
