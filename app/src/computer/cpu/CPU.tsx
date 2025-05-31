@@ -28,7 +28,7 @@ export function CPU( ) {
       } else {
         setShowRegisters(false);
       }
-      if (instruction === "CALL" || instruction === "IRET" || modeid ) {
+      if (instruction === "IRET" || modeid ) {
         setShowid(true);
       } else {
         setShowid(false);

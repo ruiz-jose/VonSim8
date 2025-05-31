@@ -86,6 +86,7 @@ dataBus.addNode("id out join", { position: [550, 205] });
 
 dataBus.addNode("SP out join", { position: [550, 309] });
 dataBus.addNode("IP out join", { position: [550, 349] });
+dataBus.addNode("ri out join", { position: [550, 388] });
 
 dataBus.addUndirectedEdge("AX", "AX out");
 dataBus.addUndirectedEdge("BX", "BX out");
@@ -119,6 +120,7 @@ dataBus.addUndirectedEdge("bleft2", "bleft3");
 dataBus.addUndirectedEdge("bleft3", "left");
 
 dataBus.addUndirectedEdge("IP out join", "outr mbr join");
+dataBus.addUndirectedEdge("ri out join", "outr mbr join");
 dataBus.addUndirectedEdge("SP out join", "outr mbr join");
 dataBus.addUndirectedEdge("SP out join", "MAR join2");
 
@@ -256,9 +258,18 @@ export function generateDataPath(from: DataRegister, to: DataRegister, instructi
     path = ["MBR", "mbr reg join", "IP join", "IP"];
   }
 
+  if (from === "ri" && to === "IP" &&  instruction === "CALL") {
+    path = ["ri","ri out join", "outr mbr join", "mbr reg join", "IP join", "IP"];
+  }
+
   // No dibujar la animación si from es "MBR" y to es "ri" y la instrucción es JMP, JZ, JC o MOV con mode "mem<-imd"
-  if (from === "MBR" && to === "ri" && ["JMP", "JZ", "JC", "CALL"].includes(instruction ?? "")) {
+  if (from === "MBR" && to === "ri" && ["JMP", "JZ", "JC"].includes(instruction ?? "")) {
     return "";
+  }
+
+  // No dibujar la animación si la instrucción es MOV con mode "mem<-imd"
+  if (from === "MBR" && to === "ri" && instruction === "CALL") {
+    path = ["MBR", "mbr reg join", "ri join", "ri"];
   }
 
   // No dibujar la animación si la instrucción es MOV con mode "mem<-imd"
@@ -267,8 +278,8 @@ export function generateDataPath(from: DataRegister, to: DataRegister, instructi
   }
 
     // No dibujar la animación si la instrucción es MOV con mode "mem<-imd"
-  if (from === "IP" && to === "MBR" && instruction === "INT") {
-      return "M 510 349 H 550 V 250 H 620";
+  if (from === "IP" && to === "MBR" && (instruction === "INT" || instruction === "CALL")) {
+    return "M 510 349 H 550 V 250 H 620";
   }
 
   // No dibujar la animación si la instrucción es MOV con mode "mem<-imd"
