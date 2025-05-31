@@ -50,6 +50,9 @@ export class Memory extends Component {
       this.#buffer = new Uint8Array(Memory.SIZE).fill(0);
     }
 
+    // Inicializar la posición FFh (255) en 1 (dato cargado por el sistema operativo)
+    this.#buffer[0xFF] = 1;
+    
     // Verificar si el programa contiene alguna instrucción INT
     const hasINTInstruction = options.program.instructions.some(instruction => instruction.instruction === "INT");
 
