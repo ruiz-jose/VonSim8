@@ -726,9 +726,26 @@ async function dispatch(...args: Action) {
           return false;
         });
 
+        // Verificar si el programa usa switches (ejemplo: IN AL, 30h o OUT 32h, AL)
+        const usesSwitches = result.instructions.some(instruction => {
+          if (instruction.instruction === "IN" || instruction.instruction === "OUT") {
+            return instruction.operands.some((operand: any) => {
+              if (operand.type === "number-expression" && typeof operand.value.value === "number") {
+                // 0x30 = 48 decimal (PA), 0x32 = 50 decimal (CA)
+                return operand.value.value === 0x30 || operand.value.value === 0x32;
+              }
+              return false;
+            });
+          }
+          return false;
+        });
+
         store.set(settingsAtom, (prev: any) => ({
           ...prev,
-          devices: { ...prev.devices, keyboardAndScreen: connectScreenAndKeyboard },
+          devices: { ...prev.devices, keyboardAndScreen: connectScreenAndKeyboard, 
+                pio: usesSwitches ? "switches-and-leds" : prev.devices.pio,
+            "switches-and-leds": usesSwitches,
+          },
         }));
        
         // Actualizar el átomo con el valor de connectScreenAndKeyboard
@@ -937,10 +954,15 @@ async function dispatch(...args: Action) {
     }
 
     case "switch.toggle": {
-      if (status.type !== "running" || !simulator.devices.switches.connected()) {
+      /*if (
+        (status.type !== "running" && status.type !== "paused") ||
+        !simulator.devices.switches.connected()
+      ) {
+        return invalidAction();
+      }*/
+      if (!simulator.devices.switches.connected()) {
         return invalidAction();
       }
-
       // Prevent simultaneous presses
       if (eventIsRunning("switches:toggle")) return;
 

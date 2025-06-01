@@ -32,19 +32,21 @@ export function Leds() {
 
       <div className="flex flex-row-reverse gap-2 p-4">
         {state.map((on, i) => (
-          <div
-            key={i}
-            className={clsx(
-              "relative h-7 w-7 rounded-full transition",
-              on ? "bg-mantis-400" : "bg-stone-700 shadow-inner shadow-stone-900",
-            )}
-          >
+          <div key={i} className="flex flex-col items-center w-7">
+            <span className="text-xs text-white mb-1 text-center w-full">{i}</span>
             <div
               className={clsx(
-                "absolute inset-0 rounded-full bg-mantis-400 blur-sm transition",
-                on ? "opacity-100" : "opacity-0",
+                "relative h-7 w-7 rounded-full transition",
+                on ? "bg-mantis-400" : "bg-stone-700 shadow-inner shadow-stone-900",
               )}
-            />
+            >
+              <div
+                className={clsx(
+                  "absolute inset-0 rounded-full bg-mantis-400 blur-sm transition",
+                  on ? "opacity-100" : "opacity-0",
+                )}
+              />
+            </div>
           </div>
         ))}
       </div>

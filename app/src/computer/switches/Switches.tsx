@@ -8,7 +8,8 @@ import { switchesAtom } from "./state";
 
 export function Switches() {
   const translate = useTranslate();
-  const { status, dispatch, devices } = useSimulation();
+  //const { status, dispatch, devices } = useSimulation();
+  const { dispatch, devices } = useSimulation();
   const state = useAtomValue(switchesAtom).toArray();
 
   if (!devices.switches) return null;
@@ -25,23 +26,23 @@ export function Switches() {
    */
 
   return (
-    <div className="absolute left-[1300px] top-[700px] z-10 size-min rounded-lg border border-stone-600 bg-stone-900 [&_*]:z-20">
+    <div className="absolute left-[1300px] top-[680px] z-10 size-min rounded-lg border border-stone-600 bg-stone-900 [&_*]:z-20">
       <span className="block size-min rounded-br-lg rounded-tl-lg border-b border-r border-stone-600 bg-mantis-500 px-2 py-1 text-2xl text-white">
         {translate("computer.switches")}
       </span>
 
-      <div className="flex flex-row-reverse gap-3 p-4">
-        {state.map((on, i) => (
-          <div key={i} className="w-6">
-            <Switch
-              checked={on}
-              onCheckedChange={() => dispatch("switch.toggle", i)}
-              className="-translate-x-3 -rotate-90 data-[state=unchecked]:!bg-stone-800"
-              disabled={status.type !== "running"}
-            />
-          </div>
-        ))}
-      </div>
+        <div className="flex flex-row-reverse gap-3 p-4">
+          {state.map((on, i) => (
+            <div key={i} className="w-8 flex flex-col items-center">
+              <span className="text-xs text-white mb-1 text-center w-full">{i}</span>
+              <Switch
+                checked={on}
+                onCheckedChange={() => dispatch("switch.toggle", i)}
+                className="-translate-x-3 -rotate-90 data-[state=unchecked]:!bg-stone-800"
+              />
+            </div>
+          ))}
+        </div>
     </div>
   );
 }
