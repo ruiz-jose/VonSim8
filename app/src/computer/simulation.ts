@@ -120,6 +120,8 @@ let MBRALU = "";
 let mbridirmar = false;
 let resultmbrimar = false;   
 let displayMessageresultmbr = "";
+let displayMessagepop = "";
+
 
 
 /**
@@ -215,6 +217,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
               store.set(messageAtom, "Ejecución: MAR ← SP");
             } else {
               store.set(messageAtom, "Captación: MAR ← IP");
+              executeStageCounter++; 
             }
             if (status.until === "cycle-change") {
               pauseSimulation();
@@ -227,6 +230,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             if (status.until === "cycle-change") {
               pauseSimulation();
             }
+            executeStageCounter++;
             fetchStageCounter++;
             cycleCount++;
           } else if (event.value.type === "cpu:mbr.get") {
@@ -341,10 +345,13 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 displayMessage = "Ejecución: SP = SP - 1";                             
               } 
               if (currentInstructionName === "RET"  ||
-                 currentInstructionName === "IRET"  || 
-                 currentInstructionName === "POP") {
+                 currentInstructionName === "IRET" ) {
                 displayMessage = "Ejecución: SP = SP + 1";                 
               }
+              if(  executeStageCounter === 3 && currentInstructionName === "POP"){
+                 displayMessage = displayMessagepop + "; SP = SP + 1"; 
+              }
+
 
             } else if (sourceRegister === "FLAGS") {
               displayMessage = "Ejecución: IF = 0"; 
@@ -432,15 +439,21 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 String(sourceRegister) === 'left.l'){
                 fuenteALU = 'MBR';             
             }  
+           
             if (
-              currentInstructionModeri && 
+              (currentInstructionModeri && 
               (executeStageCounter === 3 && 
                 (currentInstructionName === "ADD" || 
                  currentInstructionName === "SUB" || 
                  currentInstructionName === "CMP" ))
-            ) {
+            ) || (executeStageCounter === 3 && currentInstructionName === "POP")) {
               mbridirmar = true;
             }
+            
+            if (currentInstructionName === "POP" && executeStageCounter === 3) {
+              displayMessagepop =  `Ejecución: ${sourceRegister} ← MBR`;
+            }
+
             if (!mbridirmar) {
               if (String(sourceRegister) !== 'ri.l'
                   && String(sourceRegister) !== 'right.l'
