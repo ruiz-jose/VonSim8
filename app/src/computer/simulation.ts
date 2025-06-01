@@ -337,6 +337,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
               /*  if (currentInstructionName === "CALL" || currentInstructionName === "INT" && jump_yes) {
                 displayMessage = "Ejecución: SP = SP - 1";                             
               } */
+              if (currentInstructionName === "PUSH") {
+                displayMessage = "Ejecución: SP = SP - 1";                             
+              } 
               if (currentInstructionName === "RET"  ||
                  currentInstructionName === "IRET"  || 
                  currentInstructionName === "POP") {
@@ -374,6 +377,10 @@ async function startThread(generator: EventGenerator): Promise<void> {
               currentInstructionName === "INT"){
                 displayMessage = "Ejecución: write(Memoria[MAR]) ← MBR; SP ← SP - 1";
             }
+            if (executeStageCounter === 2  && 
+              currentInstructionName === "CALL"){
+                displayMessage = "Ejecución: ri ← MBR; SP ← SP - 1";
+            }
             if (executeStageCounter === 4  && 
               currentInstructionName === "CALL"){
                 displayMessage = "Ejecución: write(Memoria[MAR]) ← MBR; SP ← SP - 1";
@@ -384,8 +391,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             console.log("executeStageCounter:", executeStageCounter);
             console.log("pause:", pause);
             executeStageCounter++;
-            if (  currentInstructionName !== "PUSH"
-              && currentInstructionName !== "DEC"
+            if (  currentInstructionName !== "DEC"
               && currentInstructionName !== "INC"
               && currentInstructionName !== "NOT"
               && currentInstructionName !== "NEG"
@@ -396,8 +402,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
 
             if (displayMessage !== "Interrupción: MAR ← (video)"){
               if (status.until === "cycle-change") {
-                if (currentInstructionName !== "PUSH"                    
-                   && currentInstructionName !== "DEC" 
+                if (currentInstructionName !== "DEC" 
                    && currentInstructionName !== "INC"
                    && currentInstructionName !== "NOT"
                    && currentInstructionName !== "NEG") {
@@ -483,6 +488,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
     
             if (sourceRegister === "ri" && destRegister === "IP") {
               displayMessage = "Ejecución: IP ← MBR";
+              if (  currentInstructionName === "CALL") {
+                 displayMessage = "Ejecución: IP ← ri";
+              }
               store.set(messageAtom, displayMessage);
               if (status.until === "cycle-change") {
                 pauseSimulation();
@@ -545,6 +553,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
                currentInstructionName === "CALL"||
                currentInstructionName === "INT"||
                currentInstructionName === "PUSH"||
+               currentInstructionName === "POP"||
                currentInstructionName === "IN" ||
                currentInstructionName === "RET" ))
            {
@@ -555,12 +564,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
                currentInstructionName === "CMP" ||
                currentInstructionName === "CALL"))*/
 
-            const displayMessageFLAGS = "; SP = SP - 1";  
 
-            //if ((currentInstructionName === "CALL"|| currentInstructionName === "INT" || currentInstructionName === "PUSH") && jump_yes) {
-            if ((currentInstructionName === "CALL" || currentInstructionName === "PUSH")) {
-               messageReadWrite += displayMessageFLAGS;
-            }
             if (currentInstructionName === "RET") {
               messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";
             }
