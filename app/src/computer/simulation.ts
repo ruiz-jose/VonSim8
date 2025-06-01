@@ -27,7 +27,7 @@ import { resetPIOState } from "./pio/state";
 import { resetPrinterState } from "./printer/state";
 import { resetScreenState } from "./screen/state";
 import { anim, pauseAllAnimations, resumeAllAnimations, stopAllAnimations } from "./shared/animate";
-import { resetSwitchesState } from "./switches/state";
+import { resetSwitchesState, switchesAtom } from "./switches/state";
 import { resetTimerState } from "./timer/state";
 
 
@@ -966,8 +966,20 @@ async function dispatch(...args: Action) {
       // Prevent simultaneous presses
       if (eventIsRunning("switches:toggle")) return;
 
+
       const index = args[1];
-      startThread(simulator.devices.switches.toggle(index)!);
+
+
+      if (status.type === "running") {
+        // Solo ejecuta el toggle en el simulador, el evento actualizará el átomo
+        startThread(simulator.devices.switches.toggle(index)!);
+      } else {
+        // Si NO está corriendo, actualiza el átomo directamente
+        store.set(switchesAtom, switches =>
+          switches.withBit(index, !switches.bit(index)),
+        );
+      }
+
       return;
     }
 

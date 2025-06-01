@@ -93,8 +93,8 @@ export function ControlLines() {
 
       {devices.pio === "switches-and-leds" && (
         <>
-          <ControlLine springs="bus.switches->pio" d="M 1300 868 H 1120" />
-          <ControlLine springs="bus.pio->leds" d="M 1120 758 H 1300" />
+          <ControlLine springs="bus.switches->pio" d="M 1300 758 H 1120" />
+          <ControlLine springs="bus.pio->leds" d="M 1120 868 H 1300" />
         </>
       )}
 
