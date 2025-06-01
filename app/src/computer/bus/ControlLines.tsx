@@ -100,9 +100,9 @@ export function ControlLines() {
 
       {devices.pio === "printer" && (
         <>
-          <ControlLine springs="bus.printer.strobe" d="M 1120 667 H 1225 V 992 H 1300" />
-          <ControlLine springs="bus.printer.busy" d="M 1300 1007 H 1210 V 682 H 1120" />
-          <ControlLine springs="bus.printer.data" d="M 1120 737 H 1175 V 1062 H 1300" />
+          <ControlLine springs="bus.printer.strobe" d="M 1120 770 H 1225 V 992 H 1300" />
+          <ControlLine springs="bus.printer.busy" d="M 1300 1007 H 1210 V 782 H 1120" />
+          <ControlLine springs="bus.printer.data" d="M 1120 850 H 1175 V 1062 H 1300" />
         </>
       )}
 
