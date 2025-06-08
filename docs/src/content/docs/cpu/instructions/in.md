@@ -2,10 +2,10 @@
 title: IN
 head:
   - tag: meta
-    attrs: { property: og:image, content: https://vonsim.github.io/docs/og/cpu/instructions/in.png }
+    attrs: { property: og:image, content: https://vonsim.github.io/VonSim8/docs/og/cpu/instructions/in.png }
 ---
 
-Esta instrucción obtiene un byte de la [memoria E/S](/docs/io/modules/) y lo almacena en el operando destino. Los [_flags_](/docs/cpu/#flags) no se modifican.
+Esta instrucción obtiene un byte de la [memoria E/S](/VonSim8/docs/io/modules/) y lo almacena en el operando destino. Los [_flags_](/VonSim8/docs/cpu/#flags) no se modifican.
 
 ## Uso
 
@@ -13,7 +13,7 @@ Esta instrucción obtiene un byte de la [memoria E/S](/docs/io/modules/) y lo al
 IN dest, fuente
 ```
 
-_fuente_ refiere al puerto o dirección de la memoria E/S. Puede ser un valor inmediato de 8 bits (ver [tipos de operandos](/docs/cpu/assembly/#operandos)) o el registro `DX`. En el caso de utilizar `DX`, se utilizará la palabra almacenada en el registro como dirección de memoria E/S.
+_fuente_ refiere al puerto o dirección de la memoria E/S. Puede ser un valor inmediato de 8 bits (ver [tipos de operandos](/VonSim8/docs/cpu/assembly/#operandos)) o el registro `DX`. En el caso de utilizar `DX`, se utilizará la palabra almacenada en el registro como dirección de memoria E/S.
 
 _dest_ puede ser `AL` o `AX`. Si es `AX`, primero se leerá del puerto especificado por _fuente_ y se almacenará en `AL`, y luego se leerá del puerto siguiente y se almacenará en `AH`.
 

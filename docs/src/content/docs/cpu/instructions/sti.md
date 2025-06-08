@@ -6,7 +6,7 @@ head:
       { property: og:image, content: https://vonsim.github.io/docs/og/cpu/instructions/sti.png }
 ---
 
-Esta instrucción habilita las [interrupciones](/docs/cpu/#interrupciones) por hardware, cambiando la [_flag_](/docs/cpu/#flags) `IF=1`.
+Esta instrucción habilita las [interrupciones](/VonSim8/docs/cpu/#interrupciones) por hardware, cambiando la [_flag_](/VonSim8/docs/cpu/#flags) `IF=1`.
 
 ## Uso
 

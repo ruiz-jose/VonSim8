@@ -2,10 +2,10 @@
 title: JO
 head:
   - tag: meta
-    attrs: { property: og:image, content: https://vonsim.github.io/docs/og/cpu/instructions/jo.png }
+    attrs: { property: og:image, content: https://ruiz-jose.github.io/VonSim8/docs/og/cpu/instructions/jo.png }
 ---
 
-Esta instrucción salta solo sí `OF=1`. Los [_flags_](/docs/cpu/#flags) no se modifican.
+Esta instrucción salta solo sí `OF=1`. Los [_flags_](/VonSim8/docs/cpu/#flags) no se modifican.
 
 De saltar, copiará la dirección de salto en `IP`.
 

@@ -2,7 +2,7 @@
 title: Ciclo de instrucción
 head:
   - tag: meta
-    attrs: { property: og:image, content: https://vonsim.github.io/docs/og/codification.png }
+    attrs: { property: og:image, content: https://vonsim.github.io/VonSim8/docs/og/codification.png }
 ---
 
 ## Ciclo de la instrucción: Etapas de captación y ejecución

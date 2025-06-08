@@ -3,10 +3,10 @@ title: JNO
 head:
   - tag: meta
     attrs:
-      { property: og:image, content: https://vonsim.github.io/docs/og/cpu/instructions/jno.png }
+      { property: og:image, content: https://vonsim.github.io/VonSim8/docs/og/cpu/instructions/jno.png }
 ---
 
-Esta instrucción salta solo sí `OF=0`. Los [_flags_](/docs/cpu/#flags) no se modifican.
+Esta instrucción salta solo sí `OF=0`. Los [_flags_](/VonSim8/docs/cpu/#flags) no se modifican.
 
 De saltar, copiará la dirección de salto en `IP`.
 

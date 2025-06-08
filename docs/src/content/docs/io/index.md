@@ -5,7 +5,7 @@ head:
     attrs: { property: og:image, content: https://vonsim.github.io/docs/og/io.png }
 ---
 
-Por defecto, los únicos componentes conectados al bus la [CPU](/docs/cpu/) y la [memoria principal](/VonSim8/docs/memory/). El simulador puede configurarse para conectar [módulos]/VonSim8(/docs/io/modules/) de entrada/salida al bus y otros [dispositivos](/VonSim8/docs/io/devices/). Estos se encuentrar agrupados en conjuntos o configuraciones:
+Por defecto, los únicos componentes conectados al bus la [CPU](/VonSim8/docs/cpu/) y la [memoria principal](/VonSim8/docs/memory/). El simulador puede configurarse para conectar [módulos]/VonSim8/docs/io/modules/) de entrada/salida al bus y otros [dispositivos](/VonSim8/docs/io/devices/). Estos se encuentrar agrupados en conjuntos o configuraciones:
 
 - **Teclado y pantalla**: un [teclado](/VonSim8/docs/io/devices/keyboard/) y una [pantalla](/VonSim8/docs/io/devices/screen/).
 - **PIO con llaves y luces**: un [PIO](/VonSim8/docs/io/modules/pio/) conectado a [llaves y luces](/VonSim8/docs/io/devices/switches-and-leds/).

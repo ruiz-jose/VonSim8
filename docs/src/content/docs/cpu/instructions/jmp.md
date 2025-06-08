@@ -6,7 +6,7 @@ head:
       { property: og:image, content: https://vonsim.github.io/docs/og/cpu/instructions/jmp.png }
 ---
 
-Esta instrucción salta incondicionalmente. Los [_flags_](/docs/cpu/#flags) no se modifican.
+Esta instrucción salta incondicionalmente. Los [_flags_](/VonSim8/docs/cpu/#flags) no se modifican.
 
 Copiará la dirección de salto en `IP`.
 

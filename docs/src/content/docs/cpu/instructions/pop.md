@@ -6,7 +6,7 @@ head:
       { property: og:image, content: https://vonsim.github.io/docs/og/cpu/instructions/pop.png }
 ---
 
-Esta instrucción desapila el elemento en el tope en la [pila](/docs/cpu/#pila) y lo almacena en el operando destino. Los [_flags_](/docs/cpu/#flags) no se modifican.
+Esta instrucción desapila el elemento en el tope en la [pila](/VonSim8/docs/cpu/#pila) y lo almacena en el operando destino. Los [_flags_](/VonSim8/docs/cpu/#flags) no se modifican.
 
 Esta instrucción primero lee el valor apuntado por `SP` y lo guarda en el operando destino, para luego incrementar el registro `SP` en 2.
 
@@ -16,7 +16,7 @@ Esta instrucción primero lee el valor apuntado por `SP` y lo guarda en el opera
 POP dest
 ```
 
-_dest_ solo puede ser un registro de 16 bits (ver [tipos de operandos](/docs/cpu/assembly/#operandos)).
+_dest_ solo puede ser un registro de 16 bits (ver [tipos de operandos](/VonSim8/docs/cpu/assembly/#operandos)).
 
 ## Codificación
 

@@ -6,7 +6,7 @@ head:
       { property: og:image, content: https://vonsim.github.io/docs/og/cpu/instructions/push.png }
 ---
 
-Esta instrucción apila un elemento en la [pila](/docs/cpu/#pila). El operando fuente no se modifica. Los [_flags_](/docs/cpu/#flags) no se modifican.
+Esta instrucción apila un elemento en la [pila](/VonSim8/docs/cpu/#pila). El operando fuente no se modifica. Los [_flags_](/VonSim8/docs/cpu/#flags) no se modifican.
 
 Esta instrucción primero decrementa el registro `SP` en 2 y luego almacena el operando fuente en la dirección apuntada por `SP`.
 
@@ -16,7 +16,7 @@ Esta instrucción primero decrementa el registro `SP` en 2 y luego almacena el o
 PUSH fuente
 ```
 
-_fuente_ solo puede ser un registro de 16 bits (ver [tipos de operandos](/docs/cpu/assembly/#operandos)).
+_fuente_ solo puede ser un registro de 16 bits (ver [tipos de operandos](/VonSim8/docs/cpu/assembly/#operandos)).
 
 ## Codificación
 

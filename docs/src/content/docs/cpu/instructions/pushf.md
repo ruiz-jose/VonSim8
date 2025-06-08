@@ -6,7 +6,7 @@ head:
       { property: og:image, content: https://vonsim.github.io/docs/og/cpu/instructions/pushf.png }
 ---
 
-Esta instrucción apila el registro [`FLAGS`](/docs/cpu/#flags) en la [pila](/docs/cpu/#pila). Los [_flags_](/docs/cpu/#flags) no se modifican.
+Esta instrucción apila el registro [`FLAGS`](/VonSim8/docs/cpu/#flags) en la [pila](/VonSim8/docs/cpu/#pila). Los [_flags_](/VonSim8/docs/cpu/#flags) no se modifican.
 
 Esta instrucción primero decrementa el registro `SP` en 2 y luego almacena el registro `FLAGS` en la dirección apuntada por `SP`.
 

@@ -2,16 +2,16 @@
 title: Listado
 head:
   - tag: meta
-    attrs: { property: og:image, content: https://vonsim.github.io/docs/og/io/devices.png }
+    attrs: { property: og:image, content: https://vonsim.github.io/VonSim8/docs/og/io/devices.png }
 ---
 
-VonSim cuenta con los siguientes dispotiivos:
+VonSim8 cuenta con los siguientes dispotiivos:
 
-- [Tecla F10](/docs/io/devices/f10/)
-- [Reloj](/docs/io/devices/clock/)
-- [Teclado](/docs/io/devices/keyboard/) y [pantalla](/docs/io/devices/screen/)
-- [Llaves y luces](/docs/io/devices/switches-and-leds/)
-- [Impresora Centronics](/docs/io/devices/printer/)
+- [Tecla F10](/VonSim8/docs/io/devices/f10/)
+- [Reloj](/VonSim8/docs/io/devices/clock/)
+- [Teclado](/VonSim8/docs/io/devices/keyboard/) y [pantalla](/VonSim8/docs/io/devices/screen/)
+- [Llaves y luces](/VonSim8/docs/io/devices/switches-and-leds/)
+- [Impresora Centronics](/VonSim8/docs/io/devices/printer/)
 
 ---
 

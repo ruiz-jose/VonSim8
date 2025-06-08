@@ -6,7 +6,7 @@ head:
       { property: og:image, content: https://vonsim.github.io/docs/og/cpu/instructions/nop.png }
 ---
 
-Esta instrucción no hace nada. Los [_flags_](/docs/cpu/#flags) no se modifican.
+Esta instrucción no hace nada. Los [_flags_](/VonSim8/docs/cpu/#flags) no se modifican.
 
 ## Uso
 

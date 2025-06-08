@@ -51,7 +51,7 @@ Aquí se listan todas las instrucciones que soporta el simulador. Cada instrucci
 | [`JNC etiqueta`](/VonSim8/docs/cpu/instructions/jnc/)   | Salta a _etiqueta_ si `CF=0`                |  --  |  --  |  --  |  --  |  --  |
 | [`JZ etiqueta`](/VonSim8/docs/cpu/instructions/jz/)     | Salta a _etiqueta_ si `ZF=1`                |  --  |  --  |  --  |  --  |  --  |
 | [`JNZ etiqueta`](/VonSim8/docs/cpu/instructions/jnz/)   | Salta a _etiqueta_ si `ZF=0`                |  --  |  --  |  --  |  --  |  --  |
-| [`JS etiqueta`](/docs/cpu/instructions/js/)     | Salta a _etiqueta_ si `SF=1`                |  --  |  --  |  --  |  --  |  --  |
+| [`JS etiqueta`](/VonSim8/docs/cpu/instructions/js/)     | Salta a _etiqueta_ si `SF=1`                |  --  |  --  |  --  |  --  |  --  |
 | [`JNS etiqueta`](/VonSim8/docs/cpu/instructions/jns/)   | Salta a _etiqueta_ si `SF=0`                |  --  |  --  |  --  |  --  |  --  |
 | [`JO etiqueta`](/VonSim8/docs/cpu/instructions/jo/)     | Salta a _etiqueta_ si `OF=1`                |  --  |  --  |  --  |  --  |  --  |
 | [`JNO etiqueta`](/VonSim8/docs/cpu/instructions/jno/)   | Salta a _etiqueta_ si `OF=0`                |  --  |  --  |  --  |  --  |  --  |

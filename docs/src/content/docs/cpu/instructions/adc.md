@@ -3,12 +3,12 @@ title: ADC
 head:
   - tag: meta
     attrs:
-      { property: og:image, content: https://vonsim.github.io/docs/og/cpu/instructions/adc.png }
+      { property: og:image, content: https://vonsim.github.io/VonSim8/docs/og/cpu/instructions/adc.png }
 ---
 
 Esta instrucción suma dos operandos y guarda el resultado en el operando destino. Si `CF=1`, entonces se suma `1` al resultado. El operando fuente no se modifica.
 
-Los [_flags_](/docs/cpu/#flags) se modifican de la siguiente manera:
+Los [_flags_](/VonSim8/docs/cpu/#flags) se modifican de la siguiente manera:
 
 - Si la suma no entra en el operando destino, entonces `CF=1`. De lo contrario, `CF=0`.
 - Si el resultado es cero, entonces `ZF=1`. De lo contrario, `ZF=0`.
@@ -29,7 +29,7 @@ Las combinaciones válidas de _dest_, _fuente_ son:
 - Dirección de memoria, registro
 - Dirección de memoria, inmediato
 
-(Ver [tipos de operandos](/docs/cpu/assembly/#operandos))
+(Ver [tipos de operandos](/VonSim8/docs/cpu/assembly/#operandos))
 
 ## Codificación
 

@@ -2,7 +2,7 @@
 title: Tabla ASCII
 head:
   - tag: meta
-    attrs: { property: og:image, content: https://vonsim.github.io/docs/og/ascii.png }
+    attrs: { property: og:image, content: https://vonsim.github.io/VonSim8/docs/og/ascii.png }
 ---
 
 Tabla ASCII utilizada por VonSim, mostrando sus representaciones en decimal, hexadecimal y carácter según el estándar Unicode.

@@ -3,12 +3,12 @@ title: RET
 head:
   - tag: meta
     attrs:
-      { property: og:image, content: https://vonsim.github.io/docs/og/cpu/instructions/ret.png }
+      { property: og:image, content: https://ruiz-jose.github.io/VonSim8/docs/og/cpu/instructions/ret.png }
 ---
 
-Esta instrucción retorna de una [subrutina](/docs/cpu/#subrutinas). Los [_flags_](/docs/cpu/#flags) no se modifican.
+Esta instrucción retorna de una [subrutina](/VonSim8/docs/cpu/#subrutinas). Los [_flags_](/VonSim8/docs/cpu/#flags) no se modifican.
 
-Primero, se desapila el tope de la [pila](/docs/cpu/#pila) (que debería contener la dirección de retorno dada por un [`CALL`](/docs/cpu/instructions/call/)). Luego, se salta a la dirección obtenida, es decir, copia la dirección de salto en `IP`.
+Primero, se desapila el tope de la [pila](/VonSim8/docs/cpu/#pila) (que debería contener la dirección de retorno dada por un [`CALL`](/VonSim8/docs/cpu/instructions/call/)). Luego, se salta a la dirección obtenida, es decir, copia la dirección de salto en `IP`.
 
 ## Uso
 

@@ -3,10 +3,10 @@ title: MOV
 head:
   - tag: meta
     attrs:
-      { property: og:image, content: https://vonsim.github.io/docs/og/cpu/instructions/mov.png }
+      { property: og:image, content: https://vonsim.github.io/VonSim8/docs/og/cpu/instructions/mov.png }
 ---
 
-Esta instrucción copia el operando fuente en el operando destino. El operando fuente no se modifica. Los [_flags_](/docs/cpu/#flags) no se modifican.
+Esta instrucción copia el operando fuente en el operando destino. El operando fuente no se modifica. Los [_flags_](/VonSim8/docs/cpu/#flags) no se modifican.
 
 ## Uso
 

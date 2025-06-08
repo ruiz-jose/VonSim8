@@ -3,12 +3,12 @@ title: CALL
 head:
   - tag: meta
     attrs:
-      { property: og:image, content: https://vonsim.github.io/docs/og/cpu/instructions/call.png }
+      { property: og:image, content: https://vonsim.github.io/VonSim8/docs/og/cpu/instructions/call.png }
 ---
 
-Esta instrucción inicializa una [subrutina](/docs/cpu/#subrutinas). Los [_flags_](/docs/cpu/#flags) no se modifican.
+Esta instrucción inicializa una [subrutina](/VonSim8/docs/cpu/#subrutinas). Los [_flags_](/VonSim8/docs/cpu/#flags) no se modifican.
 
-Primero, se apila la dirección de retorno (la dirección de la instrucción siguiente a `CALL`) en la [pila](/docs/cpu/#pila). Luego, se salta a la dirección de la subrutina, es decir, copia la dirección de salto en `IP`.
+Primero, se apila la dirección de retorno (la dirección de la instrucción siguiente a `CALL`) en la [pila](/VonSim8/docs/cpu/#pila). Luego, se salta a la dirección de la subrutina, es decir, copia la dirección de salto en `IP`.
 
 ## Uso
 

@@ -31,7 +31,7 @@ Hay además algunos registros internos que sirven de intermediarios para realiza
 
 ## ALU
 
-La ALU (_Arithmetic Logic Unit_) permite realizar operaciones aritméticas y lógicas de 8 y 16 bits. Las operaciones disponibles son: [`ADD`](/VonSim8/VonSim8/docs/cpu/instructions/add/), [`ADC`](/VonSim8/docs/cpu/instructions/adc/), [`INC`](/docs/cpu/instructions/inc/), [`SUB`]/VonSim8(/docs/cpu/instructions/sub/), [`SBB`](/VonSim8/docs/cpu/instructions/sbb/), [`DEC`](/VonSim8/docs/cpu/instructions/dec/), [`NEG`](/VonSim8/docs/cpu/instructions/neg/), [`NOT`](/VonSim8/docs/cpu/instructions/not/), [`AND`](/VonSim8/docs/cpu/instructions/and/) y [`OR`](/VonSim8/docs/cpu/instructions/or/). Todas estas operaciones modifican el registro `FLAGS`.
+La ALU (_Arithmetic Logic Unit_) permite realizar operaciones aritméticas y lógicas de 8 y 16 bits. Las operaciones disponibles son: [`ADD`](/VonSim8/VonSim8/docs/cpu/instructions/add/), [`ADC`](/VonSim8/docs/cpu/instructions/adc/), [`INC`](/VonSim8/docs/cpu/instructions/inc/), [`SUB`]/VonSim8/docs/cpu/instructions/sub/), [`SBB`](/VonSim8/docs/cpu/instructions/sbb/), [`DEC`](/VonSim8/docs/cpu/instructions/dec/), [`NEG`](/VonSim8/docs/cpu/instructions/neg/), [`NOT`](/VonSim8/docs/cpu/instructions/not/), [`AND`](/VonSim8/docs/cpu/instructions/and/) y [`OR`](/VonSim8/docs/cpu/instructions/or/). Todas estas operaciones modifican el registro `FLAGS`.
 
 ### Flags
 
@@ -96,7 +96,7 @@ Y así se comienza a ejecutar la rutina de interrupción. Estas tienen el mismo 
 
 El simulador permite realizar llamadas al sistema o _syscalls_. En el simulador, estas llamadas son realizadas idénticamente a las interrupciones. Así, para realizar una _syscall_ basta con interrumpir a la CPU con el número de interrupción correspondiente. Estos números son:
 
-- `INT 0`: termina la ejecución del programa, equivalente a la instrucción [`HLT`](/docs/cpu/instructions/hlt/);
+- `INT 0`: termina la ejecución del programa, equivalente a la instrucción [`HLT`](/VonSim8/docs/cpu/instructions/hlt/);
 - `INT 3`: incia el modo de depuración (_breakpoint_);
 - `INT 6`: lee un carácter del [teclado](/VonSim8/docs/io/devices/keyboard/);
 - `INT 7`: escribe una cadena de caracteres en [pantalla](/VonSim8/docs/io/devices/screen/).

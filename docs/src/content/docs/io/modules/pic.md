@@ -2,10 +2,10 @@
 title: PIC
 head:
   - tag: meta
-    attrs: { property: og:image, content: https://vonsim.github.io/docs/og/io/modules/pic.png }
+    attrs: { property: og:image, content: https://ruiz-jose.github.io/VonSim8/VonSim8/docs/og/io/modules/pic.png }
 ---
 
-El _programmable interrupt controller_ (PIC) es un módulo que se encuentra entre los dispositvos que emiten [interrupciones](/docs/cpu/#interrupciones) y la CPU. Como la CPU tiene solo una línea de entrada, este dispositivo se encarga de recibir interrupciones de múltiples dispositivos y multiplexar sus pedidos en esta única línea.
+El _programmable interrupt controller_ (PIC) es un módulo que se encuentra entre los dispositvos que emiten [interrupciones](/VonSim8/docs/cpu/#interrupciones) y la CPU. Como la CPU tiene solo una línea de entrada, este dispositivo se encarga de recibir interrupciones de múltiples dispositivos y multiplexar sus pedidos en esta única línea.
 
 Está basado en el PIC 8259A de Intel, pero con algunas modificaciones para simplificar su funcionamiento.
 
@@ -19,9 +19,9 @@ Las líneas están conectadas a los siguientes dispositivos:
 
 | Línea  | Módulo/Disp.                             |
 | :----: | :--------------------------------------- |
-| `INT0` | [Tecla F10](/docs/io/devices/f10/)       |
-| `INT1` | [Timer](/docs/io/modules/timer/)         |
-| `INT2` | [Handshake](/docs/io/modules/handshake/) |
+| `INT0` | [Tecla F10](/VonSim8/docs/io/devices/f10/)       |
+| `INT1` | [Timer](/VonSim8/docs/io/modules/timer/)         |
+| `INT2` | [Handshake](/VonSim8/docs/io/modules/handshake/) |
 | `INT3` | --                                       |
 | `INT4` | --                                       |
 | `INT5` | --                                       |
@@ -32,11 +32,11 @@ Las líneas están conectadas a los siguientes dispositivos:
 
 El PIC cuenta con tres registros adiciones de control. En los siguientes registros, cada bit corresponde con una línea de interrupción: el bit menos significativo corresponde a la línea `INT0` y el más significativo a la línea `INT7`.
 
-El registro `IMR` o _interrupt mask register_ (dirección `21h` de la [memoria E/S](/docs/io/modules/)) es el que se utiliza para enmascarar (o "inhabilitar") líneas de interrupción. Si el bit correspondiente a una línea es `1`, esta línea está enmascarada y no se emitirá la interrupción a la CPU. Si el bit es `0`, la línea está habilitada y se emitirá la interrupción a la CPU. Este puede ser modificado por la CPU.
+El registro `IMR` o _interrupt mask register_ (dirección `21h` de la [memoria E/S](/VonSim8/docs/io/modules/)) es el que se utiliza para enmascarar (o "inhabilitar") líneas de interrupción. Si el bit correspondiente a una línea es `1`, esta línea está enmascarada y no se emitirá la interrupción a la CPU. Si el bit es `0`, la línea está habilitada y se emitirá la interrupción a la CPU. Este puede ser modificado por la CPU.
 
-El registro `IRR` o _interrupt request register_ (dirección `22h` de la [memoria E/S](/docs/io/modules/)) indica las interrupciones pendientes. Si el bit correspondiente a una línea es `1`, esta línea tiene una interrupción pendiente. Si el bit es `0`, no tiene interrupciones pendientes. Este es modificado por el PIC y es de solo lectura para la CPU.
+El registro `IRR` o _interrupt request register_ (dirección `22h` de la [memoria E/S](/VonSim8/docs/io/modules/)) indica las interrupciones pendientes. Si el bit correspondiente a una línea es `1`, esta línea tiene una interrupción pendiente. Si el bit es `0`, no tiene interrupciones pendientes. Este es modificado por el PIC y es de solo lectura para la CPU.
 
-El registro `ISR` o _in-service register_ (dirección `23h` de la [memoria E/S](/docs/io/modules/)) indica qué interrupción está siendo atendida en un instante dado. Si el bit correspondiente a una línea es `1`, esta línea está siendo atendida. Si el bit es `0`, no está siendo atendida. Este es modificado por el PIC y es de solo lectura para la CPU.
+El registro `ISR` o _in-service register_ (dirección `23h` de la [memoria E/S](/VonSim8/docs/io/modules/)) indica qué interrupción está siendo atendida en un instante dado. Si el bit correspondiente a una línea es `1`, esta línea está siendo atendida. Si el bit es `0`, no está siendo atendida. Este es modificado por el PIC y es de solo lectura para la CPU.
 
 ## Funcionamiento
 
@@ -50,7 +50,7 @@ Cuando la CPU esté lista para atender la interrupción, comienza el ciclo de _i
 4. La CPU envía nuevamente un pulso por la línea `INTA`.
 5. El PIC apaga la línea `INTR`.
 
-Para indicarle al PIC que la rutina de interrupción terminó, la CPU escribe en la dirección `20h` de la [memoria E/S](/docs/io/modules/) el byte de fin de interrupción o `EOI`, que es, coincidentemente, `20h`. Al leer este byte, el PIC desmarca la línea como _in-service_ en el registro `ISR`. Si hay interrupciones pendientes, el PIC activa la línea `INTR` nuevamente, repitiendo el proceso.
+Para indicarle al PIC que la rutina de interrupción terminó, la CPU escribe en la dirección `20h` de la [memoria E/S](/VonSim8/docs/io/modules/) el byte de fin de interrupción o `EOI`, que es, coincidentemente, `20h`. Al leer este byte, el PIC desmarca la línea como _in-service_ en el registro `ISR`. Si hay interrupciones pendientes, el PIC activa la línea `INTR` nuevamente, repitiendo el proceso.
 
 :::note[Nota]
 Este PIC no soporta interrupciones anidadas. Si una interrupción ocurre mientras otra está siendo atendida, la segunda se encolará en el registro `IRR` y se atenderá cuando la primera termine, sin importar su prioridad.

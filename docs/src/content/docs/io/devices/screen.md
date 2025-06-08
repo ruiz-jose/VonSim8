@@ -5,7 +5,7 @@ head:
     attrs: { property: og:image, content: https://vonsim.github.io/docs/og/io/devices/screen.png }
 ---
 
-La pantalla es un dispositivo de salida que permite mostrar caracteres. La forma de comunicarse con la pantalla es mediante una [llamada al sistema](/docs/cpu/#llamadas-al-sistema). Esto es así por simplicidad, ya que una pantalla real es mucho más compleja.
+La pantalla es un dispositivo de salida que permite mostrar caracteres. La forma de comunicarse con la pantalla es mediante una [llamada al sistema](/VonSim8/docs/cpu/#llamadas-al-sistema). Esto es así por simplicidad, ya que una pantalla real es mucho más compleja.
 
 Con la llamada `INT 7` se escribe una cadena de caracteres en la pantalla. Recibe dos parámetros:
 

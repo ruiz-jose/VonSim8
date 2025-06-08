@@ -8,7 +8,7 @@ head:
 
 Esta instrucción realiza la operación lógica NOT sobre el operando destino (NOT destino). El resultado se almacena en el operando destino.
 
-Los [_flags_](/docs/cpu/#flags) se modifican de la siguiente manera:
+Los [_flags_](/VonSim8/docs/cpu/#flags) se modifican de la siguiente manera:
 
 - `CF=0`.
 - Si el resultado es cero, entonces `ZF=1`. De lo contrario, `ZF=0`.
@@ -21,7 +21,7 @@ Los [_flags_](/docs/cpu/#flags) se modifican de la siguiente manera:
 NOT dest
 ```
 
-_dest_ puede ser un registro o una dirección de memoria (ver [tipos de operandos](/docs/cpu/assembly/#operandos)).
+_dest_ puede ser un registro o una dirección de memoria (ver [tipos de operandos](/VonSim8/docs/cpu/assembly/#operandos)).
 
 ## Codificación
 

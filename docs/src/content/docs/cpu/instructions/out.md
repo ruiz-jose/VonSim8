@@ -3,10 +3,10 @@ title: OUT
 head:
   - tag: meta
     attrs:
-      { property: og:image, content: https://vonsim.github.io/docs/og/cpu/instructions/out.png }
+      { property: og:image, content: https://vonsim.github.io/VonSim8/docs/og/cpu/instructions/out.png }
 ---
 
-Esta instrucción escribe un byte en la [memoria E/S](/docs/io/modules/). Los [_flags_](/docs/cpu/#flags) no se modifican.
+Esta instrucción escribe un byte en la [memoria E/S](/VonSim8/docs/io/modules/). Los [_flags_](/VonSim8/docs/cpu/#flags) no se modifican.
 
 ## Uso
 
@@ -14,7 +14,7 @@ Esta instrucción escribe un byte en la [memoria E/S](/docs/io/modules/). Los [_
 OUT dest, fuente
 ```
 
-_dest_ refiere al puerto o dirección de la memoria E/S. Puede ser un valor inmediato de 8 bits (ver [tipos de operandos](/docs/cpu/assembly/#operandos)) o el registro `DX`. En el caso de utilizar `DX`, se utilizará la palabra almacenada en el registro como dirección de memoria E/S.
+_dest_ refiere al puerto o dirección de la memoria E/S. Puede ser un valor inmediato de 8 bits (ver [tipos de operandos](/VonSim8/docs/cpu/assembly/#operandos)) o el registro `DX`. En el caso de utilizar `DX`, se utilizará la palabra almacenada en el registro como dirección de memoria E/S.
 
 _fuente_ puede ser `AL` o `AX`. Si es `AX`, primero se escribirá del puerto especificado por _dest_ el valor en `AL`, y luego se escribirá en el puerto siguiente el valor de `AH`.
 
