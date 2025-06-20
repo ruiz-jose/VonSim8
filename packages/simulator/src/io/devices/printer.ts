@@ -143,6 +143,10 @@ export abstract class Printer extends Component {
     }
   }
 
+  public get hasPending() {
+    return this.#buffer.length > 0;
+  }
+
   toJSON() {
     return {
       paper: this.#paper,

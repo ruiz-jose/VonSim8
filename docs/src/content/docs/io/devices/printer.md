@@ -35,6 +35,52 @@ En resumen, para imprimir un carácter, hay que
 3. poner el _strobe_ en 0,
 4. poner el _strobe_ en 1.
 
+```vonsim
+;escriba un programa que imprima el string "hola"
+;a traves de la impresora utilizando el PIO
+
+dato db "hola", 0
+
+PA EQU 30h
+PB EQU 31h
+CA EQU 32h
+CB EQU 33h
+
+; Configurar PIO
+mov al, 0      ; PA como salida (strobe como salida)
+out CA, al
+mov al, 0      ; PB como salida (datos como salida)
+out CB, al
+
+; Inicializar strobe en 0
+in al, PA
+and al, 11111101b
+out PA, al
+
+mov bl, offset dato
+
+poll:
+    in al, PA
+    and al, 00000001b
+    jnz poll
+    mov al, [bl]
+    cmp al, 0
+    jz fin
+    out PB, al
+    ; S=1
+    in al, PA
+    or al, 00000010b
+    out PA, al
+    ; S=0
+    in al, PA
+    and al, 11111101b
+    out PA, al
+    inc bl
+    jmp poll
+fin:
+hlt
+```
+
 ## Imprimir con Handshake
 
 A diferencia del PIO, el [Handshake](/VonSim8/docs/io/modules/handshake/) es un módulo diseñado específicamente para las impresoras Centronics.

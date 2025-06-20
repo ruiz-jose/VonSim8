@@ -1030,7 +1030,11 @@ async function startClock(): Promise<void> {
 async function startPrinter(): Promise<void> {
   if (!simulator.devices.printer.connected()) return;
 
-  while (store.get(simulationAtom).type !== "stopped") {
+ // Sigue imprimiendo mientras el simulador no esté detenido O el buffer no esté vacío
+  while (
+    store.get(simulationAtom).type !== "stopped" ||
+    ("hasPending" in print && (print as any).hasPending)  // <-- accede al buffer real
+  ) {
     const duration = getSettings().printerSpeed;
     await anim(
       [
