@@ -104,6 +104,33 @@ Además de los caracteres ASCII comunes, hay otros dos que pueden resultar útil
 - el carácter de salto de línea (`LF`, 10 en decimal) imprime, en efecto, un salto de línea — útil para no imprimir todo en una sola línea;
 - el carácter de _form feed_ (`FF`, 12 en decimal) limpia la impresora (dicho de otra forma, arranca la hoja).
 
+```vonsim
+; Imprime el string "hola" en la impresora usando Handshake
+
+dato db "hola", 0         ; String a imprimir, terminado en 0
+
+HS_DATA EQU 40h           ; Registro de datos del Handshake
+HS_STATUS EQU 41h         ; Registro de estado del Handshake
+
+mov bl, offset dato       ; BL apunta al inicio del string
+
+ciclo:
+    in  al, HS_STATUS
+    and al, 00000001b     ; ¿Buffer lleno? (busy)
+    jnz ciclo             ; Si busy=1, espera
+
+    mov al, [bl]          ; Siguiente carácter
+    cmp al, 0             ; ¿Fin del string?
+    jz fin
+
+    out HS_DATA, al       ; Enviar carácter a la impresora
+
+    inc bl                ; Siguiente carácter
+    jmp ciclo
+
+fin:
+    hlt
+```
 ---
 
 <small>Esta obra está bajo la licencia <a target="_blank" rel="license noopener noreferrer" href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.</small>
