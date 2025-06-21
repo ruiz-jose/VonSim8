@@ -98,6 +98,7 @@ export class Simulator {
           if (this.#computer.io.printer) return this.#computer.io.printer.print();
           else console.warn("No printer connected to the computer!");
         },
+        hasPending: () => this.#computer.io.printer?.hasPending ?? false, // <-- usa función, no getter
       },
       screen: {
         connected: () => "screen" in this.#computer.io,

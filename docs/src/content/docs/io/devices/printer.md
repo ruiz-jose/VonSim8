@@ -58,13 +58,13 @@ out PA, al
 
 mov bl, offset dato       ; BL apunta al inicio del string
 
-imprimir_cadena:
+sondeo:
     in  al, PA
     and al, 00000001b     ; ¿Buffer lleno? (busy)
-    jz  listo             ; Si busy es 0, salta a imprimir
-    jmp imprimir_cadena   ; Si busy es 1, sigue esperando
+    jz  imprimir_cadena   ; Si busy es 0, salta a imprimir
+    jmp sondeo            ; Si busy es 1, sigue esperando
 
-listo:
+imprimir_cadena:
     mov al, [bl]          ; Siguiente carácter
     cmp al, 0             ; ¿Fin del string?
     jz  fin
@@ -80,7 +80,7 @@ listo:
     out PA, al
 
     inc bl                ; Siguiente carácter
-    jmp imprimir_cadena
+    jmp sondeo
 
 fin:
     hlt

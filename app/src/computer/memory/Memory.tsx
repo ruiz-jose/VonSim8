@@ -20,7 +20,7 @@ export function Memory() {
   const sp = useAtomValue(registerAtoms.SP); // <-- Agrega esto
   const showSP = useAtomValue(showSPAtom); 
 
-  console.log("Direcciones del programa:", showSP);
+  //console.log("Direcciones del programa:", showSP);
 
   const renderMemoryRows = () => {
     const rows = [];

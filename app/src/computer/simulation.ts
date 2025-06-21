@@ -1029,23 +1029,47 @@ async function startClock(): Promise<void> {
 
 async function startPrinter(): Promise<void> {
   if (!simulator.devices.printer.connected()) return;
-
- // Sigue imprimiendo mientras el simulador no esté detenido O el buffer no esté vacío
+  
   while (
-    store.get(simulationAtom).type !== "stopped"
+    store.get(simulationAtom).type !== "stopped"  
   ) {
-    
-    const duration = getSettings().printerSpeed;
-    await anim(
-      [
-        { key: "printer.printing.opacity", from: 1 },
-        { key: "printer.printing.progress", from: 0, to: 1 },
-      ],
-      { duration, forceMs: true, easing: "easeInOutSine" },
-    );
-    await anim({ key: "printer.printing.opacity", to: 0 }, { duration: 1, easing: "easeInSine" });
-    startThread(simulator.devices.printer.print()!);
+      const duration = getSettings().printerSpeed;
+      await anim(
+        [
+          { key: "printer.printing.opacity", from: 1 },
+          { key: "printer.printing.progress", from: 0, to: 1 },
+        ],
+        { duration, forceMs: true, easing: "easeInOutSine" },
+      );
+      await anim({ key: "printer.printing.opacity", to: 0 }, { duration: 1, easing: "easeInSine" });
+      await startThread(simulator.devices.printer.print()!);
   }
+
+  // Sigue imprimiendo mientras la simulación esté corriendo o el buffer no esté vacío
+    if (store.get(simulationAtom).type === "stopped" &&
+        simulator.devices.printer.hasPending()) {
+        while (
+            store.get(simulationAtom).type !== "stopped"  ||
+            simulator.devices.printer.hasPending()
+          ) {
+              const duration = getSettings().printerSpeed;
+              await anim(
+                [
+                  { key: "printer.printing.opacity", from: 1 },
+                  { key: "printer.printing.progress", from: 0, to: 1 },
+                ],
+                { duration, forceMs: true, easing: "easeInOutSine" },
+              );
+              await anim({ key: "printer.printing.opacity", to: 0 }, { duration: 1, easing: "easeInSine" });
+              // Procesar el generador manualmente si la simulación está detenida
+              const gen = simulator.devices.printer.print()!;
+              let result = gen.next();
+              while (!result.done) {
+                await handleEvent(result.value);
+                result = gen.next();
+              }
+            }
+    }
 }
 
 export function useSimulation() {
