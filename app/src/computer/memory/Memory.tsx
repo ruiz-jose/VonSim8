@@ -3,7 +3,7 @@ import type { Byte } from "@vonsim/common/byte";
 import { useAtomValue } from "jotai";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover";
-import { registerAtoms } from "@/computer/cpu/state"; // Importa los átomos de los registros
+import { registerAtoms, showSPAtom } from "@/computer/cpu/state"; // Importa los átomos de los registros
 import { dataAddressesAtom, programAddressesAtom } from "@/computer/memory/state";
 import { animated, getSpring } from "@/computer/shared/springs";
 import { useTranslate } from "@/lib/i18n";
@@ -17,8 +17,10 @@ export function Memory() {
   const ip = useAtomValue(registerAtoms.IP); // Obtén el valor del registro IP
   const programAddresses = useAtomValue(programAddressesAtom); // Obtener las direcciones del programa
   const dataAddresses = useAtomValue(dataAddressesAtom); // Obtener las direcciones del programa
+  const sp = useAtomValue(registerAtoms.SP); // <-- Agrega esto
+  const showSP = useAtomValue(showSPAtom); 
 
-  //console.log("Direcciones del programa:", programAddresses);
+  console.log("Direcciones del programa:", showSP);
 
   const renderMemoryRows = () => {
     const rows = [];
@@ -59,6 +61,7 @@ export function Memory() {
                       address={cell.address}
                       value={cell.value}
                       isIP={cell.address.valueOf() === ip.valueOf()}
+                      isSP={showSP && cell.address.valueOf() === sp.valueOf()} // <-- NUEVO
                       isProgramAddress={!!programAddresses.find(entry => entry.address === cell.address.value)} // Verificar si la celda pertenece al programa
                       isDataAddress={!!dataAddresses.find(entry => entry.address === cell.address.value)} // Verificar si la celda pertenece a los datos
                       label={
@@ -84,6 +87,7 @@ function MemoryCell({
   address,
   value,
   isIP,
+  isSP, // <-- NUEVO
   isProgramAddress,
   isDataAddress,
   label,
@@ -92,6 +96,7 @@ function MemoryCell({
   address: MemoryAddress;
   value: Byte<8>;
   isIP: boolean;
+  isSP?: boolean; // <-- NUEVO
   isProgramAddress: boolean;
   isDataAddress: boolean;
   label: string | null; // Nueva propiedad para la etiqueta
@@ -110,6 +115,8 @@ function MemoryCell({
           className={`cursor-pointer border border-stone-600 w-8 h-8 flex items-center justify-center ${
             isIP
             ? "bg-red-500" // Fondo rojo para la celda apuntada por el IP
+            : isSP
+            ? "bg-yellow-400 text-black" // <-- Color para SP
             : isProgramAddress
             ? "bg-blue-500" // Fondo azul para las celdas del programa
             : isDataAddress
