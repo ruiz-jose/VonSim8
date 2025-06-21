@@ -36,49 +36,54 @@ En resumen, para imprimir un carácter, hay que
 4. poner el _strobe_ en 1.
 
 ```vonsim
-;escriba un programa que imprima el string "hola"
-;a traves de la impresora utilizando el PIO
+; Imprime el string "hola" en la impresora usando PIO
 
-dato db "hola", 0
+dato db "hola", 0         ; String a imprimir, terminado en 0
 
-PA EQU 30h
-PB EQU 31h
-CA EQU 32h
-CB EQU 33h
+PA EQU 30h                ; Puerto A: strobe y busy
+PB EQU 31h                ; Puerto B: datos
+CA EQU 32h                ; Control A
+CB EQU 33h                ; Control B
 
-; Configurar PIO
-mov al, 0      ; PA como salida (strobe como salida)
+; --- Configuración de PIO ---
+mov al, 0                 ; PA como salida (strobe)
 out CA, al
-mov al, 0      ; PB como salida (datos como salida)
+mov al, 0                 ; PB como salida (datos)
 out CB, al
 
-; Inicializar strobe en 0
-in al, PA
-and al, 11111101b
+; --- Inicializar strobe en 0 ---
+in  al, PA
+and al, 11111101b         ; Bit 1 (strobe) a 0
 out PA, al
 
-mov bl, offset dato
+mov bl, offset dato       ; BL apunta al inicio del string
 
-poll:
-    in al, PA
-    and al, 00000001b
-    jnz poll
-    mov al, [bl]
-    cmp al, 0
-    jz fin
-    out PB, al
-    ; S=1
-    in al, PA
-    or al, 00000010b
+imprimir_cadena:
+    in  al, PA
+    and al, 00000001b     ; ¿Buffer lleno? (busy)
+    jz  listo             ; Si busy es 0, salta a imprimir
+    jmp imprimir_cadena   ; Si busy es 1, sigue esperando
+
+listo:
+    mov al, [bl]          ; Siguiente carácter
+    cmp al, 0             ; ¿Fin del string?
+    jz  fin
+
+    out PB, al            ; Enviar carácter a PB
+
+    ; --- Generar flanco ascendente en strobe ---
+    in  al, PA
+    or  al, 00000010b     ; Strobe a 1
     out PA, al
-    ; S=0
-    in al, PA
-    and al, 11111101b
+    in  al, PA
+    and al, 11111101b     ; Strobe a 0
     out PA, al
-    inc bl
-    jmp poll
+
+    inc bl                ; Siguiente carácter
+    jmp imprimir_cadena
+
 fin:
-hlt
+    hlt
 ```
 
 ## Imprimir con Handshake
