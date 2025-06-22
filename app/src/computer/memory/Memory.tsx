@@ -6,6 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover
 import { registerAtoms, showSPAtom } from "@/computer/cpu/state"; // Importa los átomos de los registros
 import { dataAddressesAtom, programAddressesAtom } from "@/computer/memory/state";
 import { animated, getSpring } from "@/computer/shared/springs";
+import { hasINTInstructionAtom } from "@/computer/simulation";
 import { useTranslate } from "@/lib/i18n";
 
 import { memoryShownAtom, operatingAddressAtom } from "./state";
@@ -19,6 +20,7 @@ export function Memory() {
   const dataAddresses = useAtomValue(dataAddressesAtom); // Obtener las direcciones del programa
   const sp = useAtomValue(registerAtoms.SP); // <-- Agrega esto
   const showSP = useAtomValue(showSPAtom); 
+  const hasINT = useAtomValue(hasINTInstructionAtom);
 
   //console.log("Direcciones del programa:", showSP);
 
@@ -64,6 +66,8 @@ export function Memory() {
                       isSP={showSP && cell.address.valueOf() === sp.valueOf()} // <-- NUEVO
                       isProgramAddress={!!programAddresses.find(entry => entry.address === cell.address.value)} // Verificar si la celda pertenece al programa
                       isDataAddress={!!dataAddresses.find(entry => entry.address === cell.address.value)} // Verificar si la celda pertenece a los datos
+                      isInterruptVector={hasINT && cell.address.valueOf() >= 0 && cell.address.valueOf() <= 7} // <-- NUEVO
+
                       label={
                         programAddresses.find(entry => entry.address === cell.address.value)?.name ||
                         dataAddresses.find(entry => entry.address === cell.address.value)?.label ||
@@ -90,6 +94,7 @@ function MemoryCell({
   isSP, // <-- NUEVO
   isProgramAddress,
   isDataAddress,
+  isInterruptVector, // <-- NUEVO
   label,
   length, 
 }: {
@@ -99,6 +104,7 @@ function MemoryCell({
   isSP?: boolean; // <-- NUEVO
   isProgramAddress: boolean;
   isDataAddress: boolean;
+  isInterruptVector?: boolean; // <-- NUEVO
   label: string | null; // Nueva propiedad para la etiqueta
   length: string | null; // Nueva propiedad para el tamaño de la instrucción
 }) {   
@@ -117,6 +123,8 @@ function MemoryCell({
             ? "bg-red-500" // Fondo rojo para la celda apuntada por el IP
             : isSP
             ? "bg-yellow-400 text-black" // <-- Color para SP
+            : isInterruptVector
+            ? "bg-purple-600" // <-- Color para vector de interrupciones
             : isProgramAddress
             ? "bg-blue-500" // Fondo azul para las celdas del programa
             : isDataAddress

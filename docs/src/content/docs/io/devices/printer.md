@@ -114,11 +114,13 @@ HS_STATUS EQU 41h         ; Registro de estado del Handshake
 
 mov bl, offset dato       ; BL apunta al inicio del string
 
-ciclo:
+sondeo:
     in  al, HS_STATUS
     and al, 00000001b     ; ¿Buffer lleno? (busy)
-    jnz ciclo             ; Si busy=1, espera
+    jz  imprimir_cadena   ; Si busy es 0, salta a imprimir
+    jmp sondeo            ; Si busy es 1, sigue esperando
 
+imprimir_cadena:
     mov al, [bl]          ; Siguiente carácter
     cmp al, 0             ; ¿Fin del string?
     jz fin
@@ -126,7 +128,7 @@ ciclo:
     out HS_DATA, al       ; Enviar carácter a la impresora
 
     inc bl                ; Siguiente carácter
-    jmp ciclo
+    jmp sondeo
 
 fin:
     hlt

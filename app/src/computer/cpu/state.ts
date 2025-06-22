@@ -32,6 +32,7 @@ export const messageHistoryAtom = atom<{ cycle: number; stage: string; action: s
 export const connectScreenAndKeyboardAtom = atom(false);
 export const showInstructionCycleAtom = atom(true); // Por defecto, visible
 export const showCPUStatsAtom = atom(true); // Por defecto, visible
+export const hasINTInstructionAtom = atom(false);
 
 const lowAtom = (
   primitive: PrimitiveAtom<Byte<16>>,

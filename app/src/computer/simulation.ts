@@ -8,6 +8,7 @@ import { ComputerState, EventGenerator, Simulator, SimulatorError } from "@vonsi
 import { atom, useAtomValue } from "jotai";
 import { useMemo } from "react";
 
+import { hasINTInstructionAtom } from "@/computer/cpu/state";
 import { dataAddressesAtom, programAddressesAtom } from "@/computer/memory/state";
 import { highlightLine, setReadOnly } from "@/editor/methods";
 import { programModifiedAtom } from "@/editor/state"; // Importar programModifiedAtom
@@ -713,6 +714,9 @@ async function dispatch(...args: Action) {
         // Actualizar el estado showSP en consecuencia
         store.set(showSPAtom, hasSPInstruction);
 
+        const hasINT = instructions.includes("INT");
+        store.set(hasINTInstructionAtom, hasINT);
+        
         // Verificar si el programa contiene INT 6 o INT 7
         const connectScreenAndKeyboard = result.instructions.some(instruction => {
           if (instruction.instruction === "INT") {
