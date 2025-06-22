@@ -95,6 +95,45 @@ Con el Handshake no hay que preocuparse por el _strobe_, ya que este automatiza 
 1. verificar que el _buffer_ no esté lleno (flag _busy_),
 2. escribir el carácter en el registro de datos.
 
+
+
+```vonsim
+; Imprime el string "hola" en la impresora usando Handshake
+
+dato db "hola", 0         ; String a imprimir, terminado en 0 (carácter nulo)
+
+HS_DATA   EQU 40h         ; Dirección del registro de datos del Handshake
+HS_STATUS EQU 41h         ; Dirección del registro de estado del Handshake
+
+; --- Deshabilita las interrupciones del Handshake (bit 7 en 0) ---
+in  al, HS_STATUS
+and al, 01111111b         ; Fuerza el bit 7 a 0 (sin interrupciones)
+out HS_STATUS, al
+
+; --- Inicializa el puntero al string ---
+mov bl, offset dato       ; BL apunta al primer carácter del string
+
+; --- Bucle principal: espera espacio en el buffer e imprime ---
+sondeo:
+    in  al, HS_STATUS
+    and al, 00000001b     ; Lee el flag busy (bit 0): 1=lleno, 0=libre
+    jz  imprimir_cadena   ; Si busy=0, hay espacio y puede imprimir
+    jmp sondeo            ; Si busy=1, espera hasta que haya espacio
+
+imprimir_cadena:
+    mov al, [bl]          ; Carga el siguiente carácter del string
+    cmp al, 0             ; ¿Es el final del string? (carácter nulo)
+    jz fin                ; Si sí, termina el programa
+
+    out HS_DATA, al       ; Envía el carácter al registro de datos del Handshake
+
+    inc bl                ; Avanza al siguiente carácter del string
+    jmp sondeo            ; Repite el proceso para el próximo carácter
+
+fin:
+    hlt                   ; Detiene la ejecución
+```
+
 Más información sobre el Handshake y sus funcionalidades [aquí](/VonSim8/docs/io/modules/handshake).
 
 ## Caracteres especiales
@@ -103,36 +142,6 @@ Además de los caracteres ASCII comunes, hay otros dos que pueden resultar útil
 
 - el carácter de salto de línea (`LF`, 10 en decimal) imprime, en efecto, un salto de línea — útil para no imprimir todo en una sola línea;
 - el carácter de _form feed_ (`FF`, 12 en decimal) limpia la impresora (dicho de otra forma, arranca la hoja).
-
-```vonsim
-; Imprime el string "hola" en la impresora usando Handshake
-
-dato db "hola", 0         ; String a imprimir, terminado en 0
-
-HS_DATA EQU 40h           ; Registro de datos del Handshake
-HS_STATUS EQU 41h         ; Registro de estado del Handshake
-
-mov bl, offset dato       ; BL apunta al inicio del string
-
-sondeo:
-    in  al, HS_STATUS
-    and al, 00000001b     ; ¿Buffer lleno? (busy)
-    jz  imprimir_cadena   ; Si busy es 0, salta a imprimir
-    jmp sondeo            ; Si busy es 1, sigue esperando
-
-imprimir_cadena:
-    mov al, [bl]          ; Siguiente carácter
-    cmp al, 0             ; ¿Fin del string?
-    jz fin
-
-    out HS_DATA, al       ; Enviar carácter a la impresora
-
-    inc bl                ; Siguiente carácter
-    jmp sondeo
-
-fin:
-    hlt
-```
 ---
 
 <small>Esta obra está bajo la licencia <a target="_blank" rel="license noopener noreferrer" href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.</small>

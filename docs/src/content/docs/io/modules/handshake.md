@@ -26,46 +26,82 @@ En el registro de estado, los dos bits menos significativos son el _strobe_ y _b
 
 Además, el bit más significativo del registro de estado habilita/inhabilita las interrupciones. Si este bit es `1`, mientras la impresora no esté ocupada (`B=0`), el Handshake disparará una interrupción por hardware. Está conectado al puerto `INT2` del [PIC](/VonSim8/docs/io/modules/pic/).
 
+
+```vonsim
+; Imprime el string "hola" en la impresora usando Handshake
+
+dato db "hola", 0         ; String a imprimir, terminado en 0 (carácter nulo)
+
+HS_DATA   EQU 40h         ; Dirección del registro de datos del Handshake
+HS_STATUS EQU 41h         ; Dirección del registro de estado del Handshake
+
+; --- Deshabilita las interrupciones del Handshake (bit 7 en 0) ---
+in  al, HS_STATUS
+and al, 01111111b         ; Fuerza el bit 7 a 0 (sin interrupciones)
+out HS_STATUS, al
+
+; --- Inicializa el puntero al string ---
+mov bl, offset dato       ; BL apunta al primer carácter del string
+
+; --- Bucle principal: espera espacio en el buffer e imprime ---
+sondeo:
+    in  al, HS_STATUS
+    and al, 00000001b     ; Lee el flag busy (bit 0): 1=lleno, 0=libre
+    jz  imprimir_cadena   ; Si busy=0, hay espacio y puede imprimir
+    jmp sondeo            ; Si busy=1, espera hasta que haya espacio
+
+imprimir_cadena:
+    mov al, [bl]          ; Carga el siguiente carácter del string
+    cmp al, 0             ; ¿Es el final del string? (carácter nulo)
+    jz fin                ; Si sí, termina el programa
+
+    out HS_DATA, al       ; Envía el carácter al registro de datos del Handshake
+
+    inc bl                ; Avanza al siguiente carácter del string
+    jmp sondeo            ; Repite el proceso para el próximo carácter
+
+fin:
+    hlt                   ; Detiene la ejecución
+```
+
+Con interrupción INT 2
+
 ```vonsim
 ; Imprime el string "hola" en la impresora usando Handshake e interrupción INT 2
 
+org 10h
 dato db "hola", 0         ; String a imprimir, terminado en 0
 
 HS_DATA   EQU 40h         ; Registro de datos del Handshake
 HS_STATUS EQU 41h         ; Registro de estado del Handshake
 
 org 20h
-
-; --- Habilitar interrupciones y Handshake ---
-sti                         ; Habilita interrupciones globales
-
 in  al, HS_STATUS
 or  al, 10000000b           ; Habilita interrupciones del Handshake (bit 7)
 out HS_STATUS, al
 
-mov si, offset dato         ; SI apunta al string
+mov bl, offset dato         ; SI apunta al string
 
 ; Esperar a que termine
-esperar:
-    hlt                     ; Espera interrupción
-    jmp esperar
+esperar:       
+    jmp esperar ; Espera interrupción
 
 ; --- Rutina de interrupción INT 2 ---
 org 80h
 int2_handler:
-    push ax
-    push si
+    push al
+    push bl
 
-    mov al, [si]            ; Siguiente carácter
+    mov al, [bl]            ; Siguiente carácter
     cmp al, 0
     jz  fin_impresion
 
     out HS_DATA, al         ; Enviar carácter a la impresora
-    inc si                  ; Siguiente carácter
+    inc bl                  ; Siguiente carácter
 
 fin_impresion:
-    pop si
-    pop ax
+    pop bl
+    pop al
     iret
 ```
 ---
