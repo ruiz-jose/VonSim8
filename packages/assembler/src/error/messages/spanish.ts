@@ -89,6 +89,7 @@ export const spanish: Messages = {
     "indirect-addressing-must-be-bx": "El único registro válido para el direccionamiento indirecto es BL.",
     "unclosed-parenthesis": "Paréntesis sin cerrar.",
     // prettier-ignore
-    "unexpected-identifier": "Identificador inesperado. Tal vez te olvidaste agregar dos puntos (:) para hacerlo una etiqueta.",    
+    "unexpected-identifier": "Identificador inesperado. Tal vez te olvidaste agregar dos puntos (:) para hacerlo una etiqueta.",
+    "parser.data-block-no-parameters": "La directiva .DATA no debe tener parámetros. Solo se permiten comentarios en la misma línea.",
   },
 };

@@ -139,12 +139,16 @@ export class GlobalStore {
 
     if (this.hasORG) {
     const errors: AssemblerError<any>[] = [];
+    // --- NUEVO: Guardar rangos de secciones para detectar solapamientos ---
+    type SectionRange = { start: number, end: number, statement: Statement };
+    const sectionRanges: SectionRange[] = [];
+    // --- FIN NUEVO ---
+
     forEachWithErrors(
       statements,
       statement => {
         if (statement.isEnd()) return;
         if (statement.isDataDirective() && statement.directive === "EQU") return;
-
 
         if (statement.isOriginChange()) {
           const address = statement.newAddress;
@@ -158,6 +162,23 @@ export class GlobalStore {
         }
 
         const length = statement.length;
+        const start = pointer;
+        const end = pointer + length - 1;
+
+        // --- NUEVO: Validar solapamiento de secciones ---
+        for (const range of sectionRanges) {
+          if (Math.max(start, range.start) <= Math.min(end, range.end)) {
+            errors.push(
+              new AssemblerError(
+                "occupied-address",
+                MemoryAddress.from(start)
+              ).at(statement)
+            );
+            return; // No cargar esta sección
+          }
+        }
+        sectionRanges.push({ start, end, statement });
+        // --- FIN NUEVO ---
 
         for (let i = 0; i < length; i++) {
           if (!MemoryAddress.inRange(pointer + i)) {
