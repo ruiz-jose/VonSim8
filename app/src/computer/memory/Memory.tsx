@@ -118,19 +118,24 @@ function MemoryCell({
       <PopoverTrigger asChild>
         <animated.div
           title={title}
-          className={`cursor-pointer border border-stone-600 w-8 h-8 flex items-center justify-center ${
-            isIP
-            ? "bg-red-500" // Fondo rojo para la celda apuntada por el IP
-            : isSP
-            ? "bg-yellow-400 text-black" // <-- Color para SP
-            : isInterruptVector
-            ? "bg-purple-600" // <-- Color para vector de interrupciones
-            : isProgramAddress
-            ? "bg-blue-500" // Fondo azul para las celdas del programa
-            : isDataAddress
-            ? "bg-teal-500" // Fondo verde suave para las celdas de datos
-            : "bg-stone-800" // Fondo gris oscuro para las demás celdas
-          } text-white`}
+          className={`cursor-pointer border border-stone-600 w-8 h-8 flex items-center justify-center relative
+            ${
+              isIP
+                ? "ring-2 ring-red-500 ring-offset-2 animate-pulse shadow-lg shadow-red-500/50 outline outline-2 outline-red-500"
+                : ""
+            }
+            ${
+              isSP
+                ? "bg-yellow-400 text-black"
+                : isInterruptVector
+                ? "bg-purple-600"
+                : isProgramAddress
+                ? "bg-blue-500"
+                : isDataAddress
+                ? "bg-teal-500"
+                : "bg-stone-800"
+            } text-white`
+          }
           style={
             address.value === operatingAddress.value
               ? getSpring("memory.operating-cell")
@@ -138,6 +143,15 @@ function MemoryCell({
           }
         >
           {value.toString("hex")}
+          {isIP && (
+            <span
+              className="absolute top-0 right-0 text-red-500 text-xs"
+              title="IP"
+              style={{ lineHeight: 1 }}
+            >
+              ▲
+            </span>
+          )}
         </animated.div>
       </PopoverTrigger>
 
