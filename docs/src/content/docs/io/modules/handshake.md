@@ -64,27 +64,45 @@ fin:
     hlt                   ; Detiene la ejecución
 ```
 
-Con interrupción INT 2
+Imprimir un string en la impresora a través del handshake en modo interrupciones
 
 ```vonsim
 ; Imprime el string "hola" en la impresora usando Handshake e interrupción INT 2
 
 org 10h
-dato db "hola", 0         ; String a imprimir, terminado en 0
+mensaje  db "hola", 0         ; String a imprimir, terminado en 0
+restantes db 4
 
 HS_DATA   EQU 40h         ; Registro de datos del Handshake
 HS_STATUS EQU 41h         ; Registro de estado del Handshake
+EOI equ 20h
+IMR equ 21h
+INT2 equ 2h
 
 org 20h
+sti
+
 in  al, HS_STATUS
 or  al, 10000000b           ; Habilita interrupciones del Handshake (bit 7)
 out HS_STATUS, al
 
-mov bl, offset dato         ; SI apunta al string
+; configurar el PIC
+; 0) Elegir el ID de interrupciones = 4
+; 1) Configurar el IMR = 1111 1011
+mov al, 0FBh ;1111 1011
+out IMR,al
 
-; Esperar a que termine
-esperar:       
-    jmp esperar ; Espera interrupción
+; 2) Configurar el registro INT2 (donde se conecta el HS): INT2 = 4
+mov al, 4 
+out INT2,al
+
+mov bl, offset mensaje          ; BL apunta al string
+cli
+
+; esperar se termine de imprimir
+loop: cmp restantes,0
+	  jnz loop
+hlt
 
 ; --- Rutina de interrupción INT 2 ---
 org 80h
@@ -98,6 +116,7 @@ int2_handler:
 
     out HS_DATA, al         ; Enviar carácter a la impresora
     inc bl                  ; Siguiente carácter
+    dec restantes
 
 fin_impresion:
     pop bl
