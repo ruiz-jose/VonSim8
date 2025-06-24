@@ -63,18 +63,17 @@ export function Memory() {
                       address={cell.address}
                       value={cell.value}
                       isIP={cell.address.valueOf() === ip.valueOf()}
-                      isSP={showSP && cell.address.valueOf() === sp.valueOf()} // <-- NUEVO
-                      isProgramAddress={!!programAddresses.find(entry => entry.address === cell.address.value)} // Verificar si la celda pertenece al programa
-                      isDataAddress={!!dataAddresses.find(entry => entry.address === cell.address.value)} // Verificar si la celda pertenece a los datos
-                      isInterruptVector={hasINT && cell.address.valueOf() >= 0 && cell.address.valueOf() <= 7} // <-- NUEVO
-
+                      isSP={showSP && cell.address.valueOf() === sp.valueOf()}
+                      isStackData={showSP && cell.address.valueOf() > sp.valueOf()} // NUEVO: zona de pila activa
+                      isProgramAddress={!!programAddresses.find(entry => entry.address === cell.address.value)}
+                      isDataAddress={!!dataAddresses.find(entry => entry.address === cell.address.value)}
+                      isInterruptVector={hasINT && cell.address.valueOf() >= 0 && cell.address.valueOf() <= 7}
                       label={
                         programAddresses.find(entry => entry.address === cell.address.value)?.name ||
                         dataAddresses.find(entry => entry.address === cell.address.value)?.label ||
                         null
                       }
-                      length={programAddresses.find(entry => entry.address === cell.address.value)?.length ?? null} // Verificar si la celda pertenece al programa
-
+                      length={programAddresses.find(entry => entry.address === cell.address.value)?.length ?? null}
                     />
                   </td>
                 ))}
@@ -91,22 +90,24 @@ function MemoryCell({
   address,
   value,
   isIP,
-  isSP, // <-- NUEVO
+  isSP,
+  isStackData, // NUEVO
   isProgramAddress,
   isDataAddress,
-  isInterruptVector, // <-- NUEVO
+  isInterruptVector,
   label,
   length, 
 }: {
   address: MemoryAddress;
   value: Byte<8>;
   isIP: boolean;
-  isSP?: boolean; // <-- NUEVO
+  isSP?: boolean;
+  isStackData?: boolean; // NUEVO
   isProgramAddress: boolean;
   isDataAddress: boolean;
-  isInterruptVector?: boolean; // <-- NUEVO
-  label: string | null; // Nueva propiedad para la etiqueta
-  length: string | null; // Nueva propiedad para el tamaño de la instrucción
+  isInterruptVector?: boolean;
+  label: string | null;
+  length: string | null;
 }) {   
   const translate = useTranslate();
   const operatingAddress = useAtomValue(operatingAddressAtom);
@@ -122,11 +123,15 @@ function MemoryCell({
             ${
               isIP
                 ? "ring-2 ring-red-500 ring-offset-2 animate-pulse shadow-lg shadow-red-500/50 outline outline-2 outline-red-500"
+                : isSP
+                ? "ring-2 ring-yellow-400 ring-offset-2 animate-pulse shadow-lg shadow-yellow-400/50 outline outline-2 outline-yellow-400"
                 : ""
             }
             ${
               isSP
                 ? "bg-yellow-400 text-black"
+                : isStackData
+                ? "bg-yellow-200 text-black" // NUEVO: color para zona de pila activa
                 : isInterruptVector
                 ? "bg-purple-600"
                 : isProgramAddress
@@ -147,6 +152,15 @@ function MemoryCell({
             <span
               className="absolute top-0 right-0 text-red-500 text-xs"
               title="IP"
+              style={{ lineHeight: 1 }}
+            >
+              ▲
+            </span>
+          )}
+          {isSP && (
+            <span
+              className="absolute top-0 left-0 text-yellow-500 text-xs"
+              title="SP"
               style={{ lineHeight: 1 }}
             >
               ▲
