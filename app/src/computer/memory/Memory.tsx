@@ -131,15 +131,18 @@ function MemoryCell({
               isSP
                 ? "bg-yellow-400 text-black"
                 : isStackData
-                ? "bg-yellow-200 text-black" // NUEVO: color para zona de pila activa
+                ? "bg-yellow-200 text-black"
                 : isInterruptVector
                 ? "bg-purple-600"
-                : isProgramAddress
-                ? "bg-blue-500"
-                : isDataAddress
-                ? "bg-teal-500"
                 : "bg-stone-800"
-            } text-white`
+            }
+            ${
+              isProgramAddress && !isSP && !isStackData ? "border-l-4 border-blue-500" : ""
+            }
+            ${
+              isDataAddress && !isSP && !isStackData && !isProgramAddress ? "border-l-4 border-green-500" : ""
+            }
+            text-white`
           }
           style={
             address.value === operatingAddress.value
@@ -147,6 +150,17 @@ function MemoryCell({
               : undefined
           }
         >
+          {/* Íconos para instrucciones y datos */}
+          {isProgramAddress && !isSP && !isStackData && (
+            <span className="absolute top-0 left-0 text-blue-400 text-xs" title="Instrucción" style={{lineHeight:1}}>
+              📘
+            </span>
+          )}
+          {isDataAddress && !isSP && !isStackData && !isProgramAddress && (
+            <span className="absolute top-0 left-0 text-green-400 text-xs" title="Dato" style={{lineHeight:1}}>
+              📦
+            </span>
+          )}
           {value.toString("hex")}
           {isIP && (
             <span
