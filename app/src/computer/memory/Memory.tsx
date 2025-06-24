@@ -129,20 +129,25 @@ function MemoryCell({
             }
             ${
               isSP
-                ? "bg-yellow-400 text-black"
+                ? "bg-yellow-400"
                 : isStackData
-                ? "bg-yellow-200 text-black"
+                ? "bg-yellow-200"
                 : isInterruptVector
-                ? "bg-purple-600"
+                ? "bg-purple-100"
                 : "bg-stone-800"
             }
             ${
-              isProgramAddress && !isSP && !isStackData ? "border-l-4 border-blue-500" : ""
+              isInterruptVector && !isSP && !isStackData ? "border-l-4 border-purple-500" : ""
             }
             ${
-              isDataAddress && !isSP && !isStackData && !isProgramAddress ? "border-l-4 border-green-500" : ""
+              isProgramAddress && !isSP && !isStackData && !isInterruptVector ? "border-l-4 border-blue-500" : ""
             }
-            text-white`
+            ${
+              isDataAddress && !isSP && !isStackData && !isProgramAddress && !isInterruptVector ? "border-l-4 border-green-500" : ""
+            }
+            ${
+              isSP || isStackData ? "text-black" : isInterruptVector ? "text-black" : "text-white"
+            }`
           }
           style={
             address.value === operatingAddress.value
@@ -150,13 +155,18 @@ function MemoryCell({
               : undefined
           }
         >
-          {/* Íconos para instrucciones y datos */}
-          {isProgramAddress && !isSP && !isStackData && (
+          {/* Íconos para instrucciones, datos y vector de interrupciones */}
+          {isInterruptVector && !isSP && !isStackData && (
+            <span className="absolute top-0 left-0 text-purple-500 text-xs" title="Vector de interrupción" style={{lineHeight:1}}>
+              ⚡
+            </span>
+          )}
+          {isProgramAddress && !isSP && !isStackData && !isInterruptVector && (
             <span className="absolute top-0 left-0 text-blue-400 text-xs" title="Instrucción" style={{lineHeight:1}}>
               📘
             </span>
           )}
-          {isDataAddress && !isSP && !isStackData && !isProgramAddress && (
+          {isDataAddress && !isSP && !isStackData && !isProgramAddress && !isInterruptVector && (
             <span className="absolute top-0 left-0 text-green-400 text-xs" title="Dato" style={{lineHeight:1}}>
               📦
             </span>
