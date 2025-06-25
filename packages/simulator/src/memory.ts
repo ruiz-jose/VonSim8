@@ -182,13 +182,13 @@ export class Memory extends Component {
       // Continuar la ejecución sin detener el programa
     }
 
-    if (this.#reservedMemory.has(address)) {
+    /*if (this.#reservedMemory.has(address)) {
       yield {
         type: "memory:write.error",
         error: new SimulatorError("address-is-reserved", address),
       };
       return false;
-    }
+    }*/
 
     this.#buffer.set([value.unsigned], address);
     yield { type: "memory:write.ok", address: MemoryAddress.from(address), value };

@@ -21,7 +21,7 @@ export type SyscallNumber = Syscalls[number][0];
  */
 export const reservedAddressesForSyscalls: ReadonlySet<number> = new Set(
   ...syscalls.map(([n]) => {
-    // Each element of the interrupt vector table is 4 bytes long.
+    // Each element of the interrupt vector table is 1 byte.
     return [n, n + 1, n + 2, n + 3];
   }),
 );
