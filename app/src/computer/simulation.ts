@@ -8,7 +8,7 @@ import { ComputerState, EventGenerator, Simulator, SimulatorError } from "@vonsi
 import { atom, useAtomValue } from "jotai";
 import { useMemo } from "react";
 
-import { hasINTInstructionAtom } from "@/computer/cpu/state";
+// import { hasINTInstructionAtom } from "@/computer/cpu/state";
 import { dataAddressesAtom, programAddressesAtom } from "@/computer/memory/state";
 import { highlightLine, setReadOnly } from "@/editor/methods";
 import { programModifiedAtom } from "@/editor/state"; // Importar programModifiedAtom
@@ -18,7 +18,7 @@ import { posthog } from "@/lib/posthog";
 import { getSettings, settingsAtom, useDevices  } from "@/lib/settings";
 import { toast } from "@/lib/toast";
 
-import { connectScreenAndKeyboardAtom, cycleAtom, cycleCountAtom, instructionCountAtom, messageAtom, messageHistoryAtom, resetCPUState, showriAtom,showSPAtom } from "./cpu/state";
+import { connectScreenAndKeyboardAtom, cycleAtom, cycleCountAtom, hasINTInstructionAtom, instructionCountAtom, messageAtom, messageHistoryAtom, resetCPUState, showriAtom,showSPAtom } from "./cpu/state";
 import { eventIsRunning, handleEvent } from "./handle-event";
 import { resetHandshakeState } from "./handshake/state";
 import { resetLedsState } from "./leds/state";
@@ -33,7 +33,7 @@ import { resetTimerState } from "./timer/state";
 
 
 // Define el átomo para hasINTInstruction
-export const hasINTInstructionAtom = atom(false);
+// export const hasINTInstructionAtom = atom(false);
 
 const simulator = new Simulator();
 
