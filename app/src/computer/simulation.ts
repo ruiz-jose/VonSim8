@@ -31,10 +31,6 @@ import { anim, pauseAllAnimations, resumeAllAnimations, stopAllAnimations } from
 import { resetSwitchesState, switchesAtom } from "./switches/state";
 import { resetTimerState } from "./timer/state";
 
-
-// Define el átomo para hasINTInstruction
-export const hasINTInstructionAtom = atom(false);
-
 const simulator = new Simulator();
 
 type RunUntil = "cycle-change" | "end-of-instruction" | "infinity";

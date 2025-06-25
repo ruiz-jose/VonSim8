@@ -6,7 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover
 import { registerAtoms, showSPAtom } from "@/computer/cpu/state"; // Importa los átomos de los registros
 import { dataAddressesAtom, programAddressesAtom } from "@/computer/memory/state";
 import { animated, getSpring } from "@/computer/shared/springs";
-import { hasINTInstructionAtom } from "@/computer/simulation";
+import { hasINTInstructionAtom } from "@/computer/cpu/state";
 import { useTranslate } from "@/lib/i18n";
 
 import { memoryShownAtom, operatingAddressAtom } from "./state";
