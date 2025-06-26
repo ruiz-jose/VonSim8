@@ -104,15 +104,15 @@ export class UnaryInstruction extends InstructionStatement {
       }
 
       case "mem-direct": {
-        bytes[1] = 0b11000000;
+       // bytes[1] = 0b11000000;
         const address = this.operation.address.byte;
         bytes.push(address.low.unsigned);
-        bytes.push(address.high.unsigned);
+        //bytes.push(address.high.unsigned);
         break;
       }
 
       case "mem-indirect": {
-        bytes[1] = 0b11010000;
+        //bytes[1] = 0b11010000;
         break;
       }
 

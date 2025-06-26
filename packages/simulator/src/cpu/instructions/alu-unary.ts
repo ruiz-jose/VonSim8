@@ -76,10 +76,10 @@ export class ALUUnaryInstruction extends Instruction<"NOT" | "NEG" | "INC" | "DE
       if (this.operation.mode === "mem-direct") {
         // Fetch memory address
         yield* this.consumeInstruction(computer, "ri.l");
-        yield* this.consumeInstruction(computer, "ri.h");
+       // yield* this.consumeInstruction(computer, "ri.h");
       } else {
         // Move BX to ri
-        yield* computer.cpu.copyWordRegister("BX", "ri");
+        yield* computer.cpu.copyByteRegister("BL", "ri.l");
       }
 
       // Read value from memory
