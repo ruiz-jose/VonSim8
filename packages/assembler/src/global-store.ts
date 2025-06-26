@@ -118,7 +118,10 @@ export class GlobalStore {
     }
     
     // Determinar la dirección inicial del código
-    let codePointer = hasINT || this.hasORG ? 0x20 : 0x00; // Comienza en 20h si hay INT o ORG, de lo contrario en 0x00
+    // Si hay INT pero no ORG, comienza en 0x08 (después del vector de interrupciones)
+    // Si hay ORG, se maneja por la directiva ORG (por defecto 0x20)
+    // Si no hay INT ni ORG, comienza en 0x00
+    let codePointer = (hasINT && !this.hasORG) ? 0x08 : (this.hasORG ? 0x20 : 0x00);
     let dataPointer: number | null = null;
     let lastCodeAddress: number = codePointer;
 

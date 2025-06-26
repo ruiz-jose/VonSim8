@@ -98,7 +98,14 @@ export class CPU extends Component {
     const hasORG = options.hasORG ?? false;
 
     // Determinar la dirección inicial del registro IP
-    const initialIP = hasINT || hasORG ? 0x20 : 0x00;
+    let initialIP: number;
+    if (hasORG) {
+      initialIP = 0x20;
+    } else if (hasINT) {
+      initialIP = 0x08;
+    } else {
+      initialIP = 0x00;
+    }
     this.#registers.IP = Byte.fromUnsigned(initialIP, 16);
         
     // Instruction register always starts at 0
