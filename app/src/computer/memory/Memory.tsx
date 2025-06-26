@@ -157,21 +157,34 @@ function MemoryCell({
         >
           {/* Íconos para instrucciones, datos y vector de interrupciones */}
           {isInterruptVector && !isSP && !isStackData && (
-            <span className="absolute top-0 left-0 text-purple-500 text-xs" title="Vector de interrupción" style={{lineHeight:1}}>
+            <span
+              className="absolute top-0.5 left-0.5 text-purple-500 text-[10px] bg-stone-900/80 px-0.5 rounded pointer-events-none"
+              title="Vector de interrupción"
+              style={{lineHeight:1}}
+            >
               ⚡
             </span>
           )}
           {isProgramAddress && !isSP && !isStackData && !isInterruptVector && (
-            <span className="absolute top-0 left-0 text-blue-400 text-xs" title="Instrucción" style={{lineHeight:1}}>
+            <span
+              className="absolute top-0.5 left-0.5 text-blue-400 text-[10px] bg-stone-900/80 px-0.5 rounded pointer-events-none"
+              title="Instrucción"
+              style={{lineHeight:1}}
+            >
               📘
             </span>
           )}
           {isDataAddress && !isSP && !isStackData && !isProgramAddress && !isInterruptVector && (
-            <span className="absolute top-0 left-0 text-green-400 text-xs" title="Dato" style={{lineHeight:1}}>
+            <span
+              className="absolute top-0.5 left-0.5 text-green-400 text-[10px] bg-stone-900/80 px-0.5 rounded pointer-events-none"
+              title="Dato"
+              style={{lineHeight:1}}
+            >
               📦
             </span>
           )}
-          {value.toString("hex")}
+          {/* Valor de la celda */}
+          <span className="z-10 mt-3 block">{value.toString("hex")}</span>
           {isIP && (
             <span
               className="absolute top-0 right-0 text-red-500 text-xs"
