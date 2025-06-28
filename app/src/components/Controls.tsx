@@ -47,6 +47,20 @@ export function Controls({ className }: { className?: string }) {
     handleReset();
   }, undefined, [handleReset]);
 
+  // Agregar tecla Space para pausar o resetear
+  useKey(" ",
+    ev => {
+      ev.preventDefault();
+      if (status.type === "running") {
+        handlePause();
+      } else if (status.type !== "stopped") {
+        handleReset();
+      }
+    },
+    { event: "keydown" },
+    [status.type, handlePause, handleReset]
+  );
+
   return (
     <div
       className={clsx(
@@ -99,7 +113,7 @@ export function Controls({ className }: { className?: string }) {
         >
           <span className="flex items-center justify-center">
             <FontAwesomeIcon icon={faPause} size="lg" className="text-red-400 group-hover:scale-110 transition" />
-            <span className="ml-1 text-[10px] text-stone-400 font-mono opacity-80 pointer-events-none">⎵</span>
+            <span className="ml-1 text-[10px] text-stone-400 font-mono opacity-80 pointer-events-none">F9</span>
           </span>
           <span className="text-xs mt-1">{translate("control.action.pause")}</span>
         </button>

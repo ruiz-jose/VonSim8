@@ -76,7 +76,8 @@ export function Register({
           <span className={clsx(
             "rounded px-1 py-0.5 font-light",
             isGeneralPurpose
-              ? "bg-mantis-900 text-mantis-200 border-mantis-400 border"
+              // Fondo más oscuro y letra verde clara para mejor contraste
+              ? "bg-stone-950 text-mantis-300 border-mantis-400 border"
               : isFlags
               ? "border border-yellow-400 bg-yellow-950 text-yellow-200"
               : "bg-stone-900"
