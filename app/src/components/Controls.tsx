@@ -1,4 +1,4 @@
-import { faInfinity, faPause,faPlay, faRedo, faStepForward } from '@fortawesome/free-solid-svg-icons';
+import { faInfinity, faPause, faPlay, faRedo, faStepForward } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import clsx from "clsx";
 import { useCallback } from "react";
@@ -15,92 +15,108 @@ export function Controls({ className }: { className?: string }) {
     if (status.type === "running") return;
     dispatch("cpu.run", "cycle-change");
   }, [status.type, dispatch]);
-  useKey(
-    "F7",
-    ev => {
-      ev.preventDefault();
-      runCycle();
-    },
-    undefined,
-    [runCycle],
-  );
+  useKey("F7", ev => { ev.preventDefault(); runCycle(); }, undefined, [runCycle]);
 
   const runInstruction = useCallback(() => {
     if (status.type === "running") return;
     dispatch("cpu.run", "end-of-instruction");
   }, [status.type, dispatch]);
-  useKey(
-    "F8",
-    ev => {
-      ev.preventDefault();
-      runInstruction();
-    },
-    undefined,
-    [runInstruction],
-  );
+  useKey("F8", ev => { ev.preventDefault(); runInstruction(); }, undefined, [runInstruction]);
 
   const runInfinity = useCallback(() => {
     if (status.type === "running") return;
     dispatch("cpu.run", "infinity");
   }, [status.type, dispatch]);
-  useKey(
-    "F4",
-    ev => {
-      ev.preventDefault();
-      runInfinity();
-    },
-    undefined,
-    [runInfinity],
-  );
+  useKey("F4", ev => { ev.preventDefault(); runInfinity(); }, undefined, [runInfinity]);
 
-  const handleStopPause = useCallback(() => {
+  const handlePause = useCallback(() => {
     if (status.type === "running") {
-      dispatch("cpu.stop", false); //pausar
-    } else {
-      dispatch("cpu.stop", true); //reset
+      dispatch("cpu.stop", false); // pausar
     }
   }, [status.type, dispatch]);
 
+  const handleReset = useCallback(() => {
+    if (status.type !== "running") {
+      dispatch("cpu.stop", true); // reset
+    }
+  }, [status.type, dispatch]);
+
+  // Agregar tecla F9 para reset
+  useKey("F9", ev => {
+    ev.preventDefault();
+    handleReset();
+  }, undefined, [handleReset]);
 
   return (
-  <div className={clsx("flex items-center justify-center gap-4", className)}>
-    <button
-      disabled={status.type === "running"}
-      onClick={runCycle}
-      className="bg-mantis-500 inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md px-3 text-sm text-white ring-offset-stone-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+    <div
+      className={clsx(
+        // Reduce py-4 a py-1 y px-8 a px-4 para menor altura
+        "flex items-center justify-center gap-6 rounded-xl border border-stone-700 bg-stone-900/80 px-4 py-1 shadow-lg",
+        className
+      )}
     >
-      <FontAwesomeIcon icon={faPlay} className="md:mr-2" />
-      <span className="hidden text-sm font-medium md:inline">{translate("control.action.run.cycle-change")}</span>
-      <kbd className="ml-2 hidden text-stone-600 md:inline">F7</kbd>
-    </button>
-    <button
-      disabled={status.type === "running"}
-      onClick={runInstruction}
-      className="inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md bg-blue-500 px-3 text-sm text-white ring-offset-stone-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-    >
-      <FontAwesomeIcon icon={faStepForward} className="md:mr-2" />
-      <span className="hidden text-sm font-medium md:inline">{translate("control.action.run.end-of-instruction")}</span>
-      <kbd className="ml-2 hidden text-stone-600 md:inline">F8</kbd>
-    </button>
-    <button
-      disabled={status.type === "running"}
-      onClick={runInfinity}
-      className="inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md bg-orange-500 px-3 text-sm text-white ring-offset-stone-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-    >
-      <FontAwesomeIcon icon={faInfinity} className="md:mr-2" />
-      <span className="hidden text-sm font-medium md:inline">{translate("control.action.run.infinity")}</span>
-      <kbd className="ml-2 hidden text-stone-600 md:inline">F4</kbd>
-    </button>
-    <button
-       // Comentando la línea disabled
-      //disabled={status.type === "stopped" || status.type === "paused"}
-      disabled={status.type === "stopped"}
-      onClick={handleStopPause}
-      className="inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md bg-red-500 px-3 text-sm text-white ring-offset-stone-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-    >
-      <FontAwesomeIcon icon={status.type === "running" ? faPause : faRedo} className="md:mr-2" />
-      <span className="hidden text-sm font-medium md:inline">{translate(status.type === "running" ? "control.action.pause" : "control.action.reset")}</span>
-    </button>
-  </div>
+      <button
+        disabled={status.type === "running"}
+        onClick={runCycle}
+        title={translate("control.action.run.cycle-change")}
+        className="group flex flex-col items-center focus-visible:ring-2 focus-visible:ring-mantis-400 rounded-lg px-2 py-1 transition hover:bg-mantis-600/20 disabled:opacity-50 relative"
+      >
+        <span className="flex items-center justify-center">
+          <FontAwesomeIcon icon={faPlay} size="lg" className="text-mantis-400 group-hover:scale-110 transition" />
+          <span className="ml-1 text-[10px] text-stone-400 font-mono opacity-80 pointer-events-none">F7</span>
+        </span>
+        <span className="text-xs mt-1">{translate("control.action.run.cycle-change")}</span>
+      </button>
+      <button
+        disabled={status.type === "running"}
+        onClick={runInstruction}
+        title={translate("control.action.run.end-of-instruction")}
+        className="group flex flex-col items-center focus-visible:ring-2 focus-visible:ring-blue-400 rounded-lg px-2 py-1 transition hover:bg-blue-600/20 disabled:opacity-50 relative"
+      >
+        <span className="flex items-center justify-center">
+          <FontAwesomeIcon icon={faStepForward} size="lg" className="text-blue-400 group-hover:scale-110 transition" />
+          <span className="ml-1 text-[10px] text-stone-400 font-mono opacity-80 pointer-events-none">F8</span>
+        </span>
+        <span className="text-xs mt-1">{translate("control.action.run.end-of-instruction")}</span>
+      </button>
+      <button
+        disabled={status.type === "running"}
+        onClick={runInfinity}
+        title={translate("control.action.run.infinity")}
+        className="group flex flex-col items-center focus-visible:ring-2 focus-visible:ring-orange-400 rounded-lg px-2 py-1 transition hover:bg-orange-600/20 disabled:opacity-50 relative"
+      >
+        <span className="flex items-center justify-center">
+          <FontAwesomeIcon icon={faInfinity} size="lg" className="text-orange-400 group-hover:scale-110 transition" />
+          <span className="ml-1 text-[10px] text-stone-400 font-mono opacity-80 pointer-events-none">F4</span>
+        </span>
+        <span className="text-xs mt-1">{translate("control.action.run.infinity")}</span>
+      </button>
+      {status.type === "running" ? (
+        <button
+          onClick={handlePause}
+          title={translate("control.action.pause")}
+          className="group flex flex-col items-center focus-visible:ring-2 focus-visible:ring-red-400 rounded-lg px-2 py-1 transition hover:bg-red-600/20 relative"
+        >
+          <span className="flex items-center justify-center">
+            <FontAwesomeIcon icon={faPause} size="lg" className="text-red-400 group-hover:scale-110 transition" />
+            <span className="ml-1 text-[10px] text-stone-400 font-mono opacity-80 pointer-events-none">⎵</span>
+          </span>
+          <span className="text-xs mt-1">{translate("control.action.pause")}</span>
+        </button>
+      ) : (
+        <button
+          onClick={handleReset}
+          disabled={status.type === "stopped"}
+          title={translate("control.action.reset")}
+          className="group flex flex-col items-center focus-visible:ring-2 focus-visible:ring-red-400 rounded-lg px-2 py-1 transition hover:bg-red-600/20 disabled:opacity-50 relative"
+        >
+          <span className="flex items-center justify-center">
+            <FontAwesomeIcon icon={faRedo} size="lg" className="text-red-400 group-hover:scale-110 transition" />
+            <span className="ml-1 text-[10px] text-stone-400 font-mono opacity-80 pointer-events-none">F9</span>
+          </span>
+          <span className="text-xs mt-1">{translate("control.action.reset")}</span>
+        </button>
+      )}
+    </div>
   );
 }

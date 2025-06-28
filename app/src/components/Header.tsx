@@ -11,19 +11,25 @@ export function Header() {
 
   return (
     <header className="relative p-2 text-sm text-white">
-      <Controls className=" absolute inset-0" />
-
       <div className="flex items-center justify-between">
+        {/* Logo y título */}
         <div className="flex select-none items-center justify-center">
-          <img src={`${import.meta.env.BASE_URL}favicon.svg`} className="mr-2 h-10 w-10" />
+          <img
+            src={`${import.meta.env.BASE_URL}favicon.svg`}
+            className="mr-2 h-10 w-10"
+            style={{ filter: "none", opacity: 1 }}
+            draggable={false}
+          />
           <h1 className="text-xl font-bold max-sm:hidden">
             Von<span className="text-mantis-400">Sim</span>8
           </h1>
         </div>
-
+        {/* Controles */}
+        <Controls />
+        {/* Botón de configuración */}
         <button
           className={clsx(
-            "h-min w-min rounded-full p-2 transition-colors focus:outline-stone-400",
+            "h-min w-min rounded-full p-2 transition-colors focus:outline-stone-400 ml-4",
             settingsOpen
               ? "bg-stone-700 hover:bg-stone-600 focus:bg-stone-600"
               : "hover:bg-stone-800 focus:bg-stone-800",
