@@ -94,36 +94,48 @@ export function ALU() {
       {/* Flags */}
       <animated.div
         className={clsx(
-          "absolute top-[190px] flex w-min items-center gap-1 rounded-md border border-mantis-400 bg-stone-800 px-2 py-1 font-mono leading-none",
-          settings.flagsVisibility === "SF_OF_CF_ZF" ? "left-[200px]" : "left-[220px]"
+          // Borde y formato igual a los registros de propósito general, pero con color diferencial para FLAGS
+          "absolute flex w-min items-center gap-1 rounded-lg border-2 border-yellow-400 bg-yellow-950/90 px-1.5 py-0.5 text-yellow-200 font-bold min-w-[60px] min-h-[20px] shadow ring-1 ring-yellow-300",
+          settings.flagsVisibility === "SF_OF_CF_ZF" ? "top-[190px] left-[190px]" : "top-[190px] left-[210px]"
         )}
         style={getSpring("cpu.FLAGS")}
       >
-        {connectScreenAndKeyboard && (<span className={clsx("rounded p-1 font-light", IF ? "bg-mantis-400" : "bg-stone-900")}>
-          I
-        </span> )}
+        {connectScreenAndKeyboard && (
+          <span className={clsx(
+            "rounded px-1 py-0.5 font-light border border-yellow-400",
+            IF ? "bg-yellow-400 text-yellow-950" : "bg-yellow-950 text-yellow-200"
+          )}>
+            I
+          </span>
+        )}
         {settings.flagsVisibility === "SF_OF_CF_ZF" && (
           <>
-            <span className={clsx("rounded p-1 font-light", SF ? "bg-mantis-400" : "bg-stone-900")}>
+            <span className={clsx(
+              "rounded px-1 py-0.5 font-light border border-yellow-400",
+              SF ? "bg-yellow-400 text-yellow-950" : "bg-yellow-950 text-yellow-200"
+            )}>
               S
             </span>
-            <span className={clsx("rounded p-1 font-light", OF ? "bg-mantis-400" : "bg-stone-900")}>
+            <span className={clsx(
+              "rounded px-1 py-0.5 font-light border border-yellow-400",
+              OF ? "bg-yellow-400 text-yellow-950" : "bg-yellow-950 text-yellow-200"
+            )}>
               O
             </span>
           </>
         )}
-        <span className={clsx("rounded p-1 font-light", CF ? "bg-mantis-400" : "bg-stone-900")}>
+        <span className={clsx(
+          "rounded px-1 py-0.5 font-light border border-yellow-400",
+          CF ? "bg-yellow-400 text-yellow-950" : "bg-yellow-950 text-yellow-200"
+        )}>
           C
         </span>
-        <span className={clsx("rounded p-1 font-light", ZF ? "bg-mantis-400" : "bg-stone-900")}>
+        <span className={clsx(
+          "rounded px-1 py-0.5 font-light border border-yellow-400",
+          ZF ? "bg-yellow-400 text-yellow-950" : "bg-yellow-950 text-yellow-200"
+        )}>
           Z
         </span>
-        {/*<span className={clsx("rounded p-1 font-light", SF ? "bg-mantis-400" : "bg-stone-900")}>
-          SF
-        </span>
-        <span className={clsx("rounded p-1 font-light", OF ? "bg-mantis-400" : "bg-stone-900")}>
-          OF
-        </span>*/}
       </animated.div>
     </>
   );
