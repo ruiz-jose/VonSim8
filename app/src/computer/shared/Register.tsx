@@ -49,9 +49,9 @@ export function Register({
           className={clsx(
             "flex w-min cursor-pointer items-center font-mono leading-none transition-opacity",
             isGeneralPurpose
-              ? "rounded-lg border-2 border-mantis-500 bg-stone-900/90 shadow-[0_2px_8px_0_rgba(60,180,120,0.10)] px-1.5 py-0.5 ring-1 ring-mantis-300 min-w-[68px] min-h-[28px]"
+              ? "border-mantis-500 ring-mantis-300 min-h-[28px] min-w-[68px] rounded-lg border-2 bg-stone-900/90 px-1.5 py-0.5 shadow-[0_2px_8px_0_rgba(60,180,120,0.10)] ring-1"
               : isFlags
-              ? "rounded border-2 border-yellow-400 bg-gradient-to-br from-yellow-900 via-yellow-800 to-stone-900 shadow-[0_2px_8px_0_rgba(250,204,21,0.10)] px-2.5 py-0.5 text-yellow-200 font-bold min-w-[90px] min-h-[32px] gap-2"
+              ? "min-h-[32px] min-w-[90px] gap-2 rounded border-2 border-yellow-400 bg-gradient-to-br from-yellow-900 via-yellow-800 to-stone-900 px-2.5 py-0.5 font-bold text-yellow-200 shadow-[0_2px_8px_0_rgba(250,204,21,0.10)]"
               : "rounded-md border bg-stone-800 px-2 py-1",
             isGeneralPurpose
               ? "text-mantis-300 font-bold"
@@ -76,9 +76,9 @@ export function Register({
           <span className={clsx(
             "rounded px-1 py-0.5 font-light",
             isGeneralPurpose
-              ? "bg-mantis-900 text-mantis-200 border border-mantis-400"
+              ? "bg-mantis-900 text-mantis-200 border-mantis-400 border"
               : isFlags
-              ? "bg-yellow-950 text-yellow-200 border border-yellow-400"
+              ? "border border-yellow-400 bg-yellow-950 text-yellow-200"
               : "bg-stone-900"
           )}>
             {low.toString("hex")}
@@ -86,12 +86,12 @@ export function Register({
           {isFlags && (
             <span className="flex gap-1 ml-2">
               <span className={clsx(
-                "px-1 rounded text-xs font-bold border",
-                (low.toNumber() & 0b10) ? "bg-yellow-400 text-yellow-950 border-yellow-300" : "bg-stone-800 text-yellow-300 border-yellow-700"
+                "px-1 text-xs font-bold rounded border",
+                (Number(low) & 0b10) ? "border-yellow-300 bg-yellow-400 text-yellow-950" : "border-yellow-700 bg-stone-800 text-yellow-300"
               )}>Z</span>
               <span className={clsx(
-                "px-1 rounded text-xs font-bold border",
-                (low.toNumber() & 0b01) ? "bg-yellow-400 text-yellow-950 border-yellow-300" : "bg-stone-800 text-yellow-300 border-yellow-700"
+                "px-1 text-xs font-bold rounded border",
+                (Number(low) & 0b01) ? "border-yellow-300 bg-yellow-400 text-yellow-950" : "border-yellow-700 bg-stone-800 text-yellow-300"
               )}>C</span>
             </span>
           )}
