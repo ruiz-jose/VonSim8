@@ -47,18 +47,22 @@ export function Controls({ className }: { className?: string }) {
     handleReset();
   }, undefined, [handleReset]);
 
-  // Agregar tecla Space para pausar o resetear
+  // Tecla Space solo para pausar cuando está corriendo y no estamos en un input/textarea
   useKey(" ",
     ev => {
+      // Solo prevenir si no estamos en un elemento de entrada de texto
+      const target = ev.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.contentEditable === 'true') {
+        return; // No interferir con la escritura
+      }
+      
       ev.preventDefault();
       if (status.type === "running") {
         handlePause();
-      } else if (status.type !== "stopped") {
-        handleReset();
       }
     },
     { event: "keydown" },
-    [status.type, handlePause, handleReset]
+    [status.type, handlePause]
   );
 
   return (
@@ -134,3 +138,4 @@ export function Controls({ className }: { className?: string }) {
     </div>
   );
 }
+
