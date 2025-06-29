@@ -51,8 +51,9 @@ export function ALU() {
   return (
     <>
       <svg viewBox="0 0 650 500" className="pointer-events-none absolute inset-0">
+        {/* Buses de entrada con mejor animación */}
         <animated.path
-          className="fill-none stroke-mantis-400 stroke-bus"
+          className="fill-none stroke-mantis-400 stroke-bus drop-shadow-[0_0_4px_rgba(60,180,120,0.4)]"
           strokeLinejoin="round"
           d="M 120 85 H 220"
           pathLength={1}
@@ -60,23 +61,44 @@ export function ALU() {
           style={getSpring("cpu.alu.operands")}
         />
         <animated.path
-          className="fill-none stroke-mantis-400 stroke-bus"
+          className="fill-none stroke-mantis-400 stroke-bus drop-shadow-[0_0_4px_rgba(60,180,120,0.4)]"
           strokeLinejoin="round"
           d="M 120 145 H 220"
           pathLength={1}
           strokeDasharray={1}
           style={getSpring("cpu.alu.operands")}
-        />       
-        {/* ALU */}
-        <path
-          d="M 220 65 v 40 l 17.32 10 l -17.32 10 v 40 l 51.96 -30 v -40 Z"
-          className="fill-stone-800 stroke-stone-600"
-          strokeLinejoin="round"
         />
+        
+        {/* ALU con gradiente mejorado */}
+        <defs>
+          <linearGradient id="aluGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#374151" />
+            <stop offset="50%" stopColor="#4B5563" />
+            <stop offset="100%" stopColor="#1F2937" />
+          </linearGradient>
+          <filter id="aluShadow">
+            <feDropShadow dx="2" dy="2" stdDeviation="3" floodColor="rgba(0,0,0,0.3)" />
+          </filter>
+        </defs>
+        
+        {/* ALU más grande */}
+        <path
+          d="M 220 60 v 50 l 20 12 l -20 12 v 50 l 60 -36 v -52 Z"
+          fill="url(#aluGradient)"
+          stroke="#6B7280"
+          strokeWidth="2"
+          strokeLinejoin="round"
+          filter="url(#aluShadow)"
+        />
+        
+        {/* Etiqueta ALU centrada */}
+        <text x="250" y="105" fill="#E5E7EB" fontSize="12" fontWeight="bold" textAnchor="middle">
+          ALU
+        </text>
       </svg>
 
       <animated.span
-        className="icon-[lucide--settings] absolute left-[242px] top-[103px] block h-6 w-6 text-stone-300"
+        className="icon-[lucide--settings] absolute left-[244px] top-[120px] block h-5 w-5 text-stone-300"
         style={{
           transform: getSpring("cpu.alu.cog").rot.to(t => `rotate(${t * 60}deg)`),
         }}
@@ -84,55 +106,58 @@ export function ALU() {
 
       {showOperation && (
         <animated.span
-          className="absolute left-[260px] top-[50px] flex w-min items-center rounded-md border border-stone-600 px-2 py-1 font-mono leading-none"
+          className="absolute left-[244px] top-[40px] flex w-min items-center rounded-md border border-stone-600 px-2 py-1 font-mono leading-none z-30"
           style={getSpring("cpu.alu.operation")}
         >
           {operation}
         </animated.span>
       )}
 
-      {/* Flags */}
+      {/* Flags mejoradas */}
       <animated.div
         className={clsx(
-          // Borde y formato igual a los registros de propósito general, pero con color diferencial para FLAGS
-          "absolute flex w-min items-center gap-1 rounded-lg border-2 border-yellow-400 bg-yellow-950/90 px-1.5 py-0.5 text-yellow-200 font-bold min-w-[60px] min-h-[20px] shadow ring-1 ring-yellow-300",
-          settings.flagsVisibility === "SF_OF_CF_ZF" ? "top-[190px] left-[190px]" : "top-[190px] left-[210px]"
+          "absolute flex w-min items-center gap-1.5 rounded-lg border-2 border-yellow-400 bg-gradient-to-br from-yellow-900 via-yellow-800 to-stone-900 px-2 py-1 text-yellow-200 font-bold min-w-[80px] min-h-[32px] shadow-lg ring-1 ring-yellow-300",
+          settings.flagsVisibility === "SF_OF_CF_ZF" ? "top-[200px] left-[185px]" : "top-[200px] left-[205px]"
         )}
         style={getSpring("cpu.FLAGS")}
       >
+        <div className="text-yellow-200 text-xs font-bold mr-1">FLAGS</div>
+        
         {connectScreenAndKeyboard && (
           <span className={clsx(
-            "rounded px-1 py-0.5 font-light border border-yellow-400",
-            IF ? "bg-yellow-400 text-yellow-950" : "bg-yellow-950 text-yellow-200"
+            "px-1 py-0.5 text-xs font-bold rounded border transition-all duration-200",
+            IF ? "border-yellow-300 bg-yellow-400 text-yellow-950 shadow-[0_0_4px_rgba(250,204,21,0.6)]" : "border-yellow-700 bg-stone-800 text-yellow-300"
           )}>
             I
           </span>
         )}
+        
         {settings.flagsVisibility === "SF_OF_CF_ZF" && (
           <>
             <span className={clsx(
-              "rounded px-1 py-0.5 font-light border border-yellow-400",
-              SF ? "bg-yellow-400 text-yellow-950" : "bg-yellow-950 text-yellow-200"
+              "px-1 py-0.5 text-xs font-bold rounded border transition-all duration-200",
+              SF ? "border-yellow-300 bg-yellow-400 text-yellow-950 shadow-[0_0_4px_rgba(250,204,21,0.6)]" : "border-yellow-700 bg-stone-800 text-yellow-300"
             )}>
               S
             </span>
             <span className={clsx(
-              "rounded px-1 py-0.5 font-light border border-yellow-400",
-              OF ? "bg-yellow-400 text-yellow-950" : "bg-yellow-950 text-yellow-200"
+              "px-1 py-0.5 text-xs font-bold rounded border transition-all duration-200",
+              OF ? "border-yellow-300 bg-yellow-400 text-yellow-950 shadow-[0_0_4px_rgba(250,204,21,0.6)]" : "border-yellow-700 bg-stone-800 text-yellow-300"
             )}>
               O
             </span>
           </>
         )}
+        
         <span className={clsx(
-          "rounded px-1 py-0.5 font-light border border-yellow-400",
-          CF ? "bg-yellow-400 text-yellow-950" : "bg-yellow-950 text-yellow-200"
+          "px-1 py-0.5 text-xs font-bold rounded border transition-all duration-200",
+          CF ? "border-yellow-300 bg-yellow-400 text-yellow-950 shadow-[0_0_4px_rgba(250,204,21,0.6)]" : "border-yellow-700 bg-stone-800 text-yellow-300"
         )}>
           C
         </span>
         <span className={clsx(
-          "rounded px-1 py-0.5 font-light border border-yellow-400",
-          ZF ? "bg-yellow-400 text-yellow-950" : "bg-yellow-950 text-yellow-200"
+          "px-1 py-0.5 text-xs font-bold rounded border transition-all duration-200",
+          ZF ? "border-yellow-300 bg-yellow-400 text-yellow-950 shadow-[0_0_4px_rgba(250,204,21,0.6)]" : "border-yellow-700 bg-stone-800 text-yellow-300"
         )}>
           Z
         </span>
