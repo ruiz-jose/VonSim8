@@ -122,7 +122,7 @@ export function resetCPUState(computer: ComputerState, clearRegisters = false) {
     store.set(registerAtoms.BX, Byte.zero(16));
     store.set(registerAtoms.CX, Byte.zero(16));
     store.set(registerAtoms.DX, Byte.zero(16));
-    store.set(registerAtoms.SP, Byte.zero(16));
+    store.set(registerAtoms.SP, Byte.fromUnsigned(0xFF, 16));
     store.set(registerAtoms.IP, Byte.zero(16));
     store.set(registerAtoms.IR, Byte.zero(8));
     store.set(registerAtoms.ri, Byte.zero(16));
