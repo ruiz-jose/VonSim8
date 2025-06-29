@@ -67,61 +67,123 @@ fin:
 Imprimir un string en la impresora a través del handshake en modo interrupciones
 
 ```vonsim
-; Imprime el string "hola" en la impresora usando Handshake e interrupción INT 2
+; ===============================================================================
+; PROGRAMA: Impresión de string usando Handshake con interrupciones
+; DESCRIPCIÓN: Imprime el string "hola" en la impresora utilizando el módulo 
+;              Handshake con interrupciones por hardware (INT2)
+; AUTOR: VonSim
+; ===============================================================================
 
+; --- SECCIÓN DE DATOS ---
 org 10h
-mensaje  db "hola", 0         ; String a imprimir, terminado en 0
-restantes db 4
+mensaje     db "hola", 0    ; String a imprimir, terminado en carácter nulo
+restantes   db 4           ; Contador de caracteres restantes por imprimir
 
-HS_DATA   EQU 40h         ; Registro de datos del Handshake
-HS_STATUS EQU 41h         ; Registro de estado del Handshake
-EOI equ 20h
-IMR equ 21h
-INT2 equ 2h
+; --- CONSTANTES DE HANDSHAKE ---
+HS_DATA     EQU 40h        ; Registro de datos del Handshake (puerto E/S)
+HS_STATUS   EQU 41h        ; Registro de estado del Handshake (puerto E/S)
 
+; --- CONSTANTES DE INTERRUPCIONES ---
+ID          EQU 2          ; ID de la interrupción para Handshake (0-7)
+IMR         EQU 21h        ; Registro de máscara de interrupciones del PIC
+EOI         EQU 20h        ; Puerto para enviar End Of Interrupt al PIC
+INT2        EQU 26h        ; Puerto para configurar la línea INT2
+
+; ===============================================================================
+; PROGRAMA PRINCIPAL
+; ===============================================================================
 org 20h
-sti
 
-in  al, HS_STATUS
-or  al, 10000000b           ; Habilita interrupciones del Handshake (bit 7)
-out HS_STATUS, al
+; --- 1) CONFIGURACIÓN INICIAL ---
+cli                        ; Deshabilitar interrupciones globales
 
-; configurar el PIC
-; 0) Elegir el ID de interrupciones = 4
-; 1) Configurar el IMR = 1111 1011
-mov al, 0FBh ;1111 1011
-out IMR,al
+; --- 2) CONFIGURACIÓN DEL HANDSHAKE ---
+; Habilitar interrupciones del Handshake (bit 7 = 1)
+in  al, HS_STATUS         ; Leer estado actual del Handshake
+or  al, 10000000b         ; Activar bit 7 (habilitar interrupciones)
+out HS_STATUS, al         ; Escribir configuración al Handshake
 
-; 2) Configurar el registro INT2 (donde se conecta el HS): INT2 = 4
-mov al, 4 
-out INT2,al
+; --- 3) CONFIGURACIÓN DEL PIC (Controlador de Interrupciones) ---
 
-mov bl, offset mensaje          ; BL apunta al string
-cli
+; 3.1) Configurar máscara de interrupciones - Solo habilitar INT2
+mov al, 11111011b         ; Máscara: habilita solo INT2 (bit 2=0), resto deshabilitado
+out IMR, al               ; Aplicar máscara al PIC
 
-; esperar se termine de imprimir
-loop: cmp restantes,0
-	  jnz loop
-hlt
+; 3.2) Asignar ID de interrupción a la línea INT2
+mov al, ID                ; Cargar ID de interrupción (2)
+out INT2, al              ; Configurar línea INT2 con este ID
 
-; --- Rutina de interrupción INT 2 ---
+; 3.3) Configurar vector de interrupción en memoria
+mov bl, ID                ; BL = posición en tabla de vectores (ID=2)
+mov [bl], int2_handler    ; Almacenar dirección de rutina en vector[2]
+
+; --- 4) INICIALIZACIÓN DE VARIABLES ---
+mov bl, offset mensaje    ; BL = puntero al primer carácter del string
+
+; --- 5) HABILITAR INTERRUPCIONES Y ESPERAR ---
+sti                       ; Habilitar interrupciones globales
+
+; --- 6) BUCLE DE ESPERA ---
+; El programa principal espera hasta que se impriman todos los caracteres
+bucle_espera:
+    cmp restantes, 0      ; ¿Quedan caracteres por imprimir?
+    jnz bucle_espera      ; Si quedan, seguir esperando
+    
+; --- 7) FINALIZACIÓN ---
+hlt                       ; Detener ejecución del programa
+
+; ===============================================================================
+; RUTINA DE INTERRUPCIÓN INT2 - HANDSHAKE
+; ===============================================================================
+; DESCRIPCIÓN: Se ejecuta automáticamente cuando la impresora está lista
+;              para recibir un nuevo carácter (busy = 0)
+; ENTRADA: BL = puntero al siguiente carácter a imprimir
+; SALIDA: Carácter enviado a la impresora, puntero actualizado
+; ===============================================================================
 org 80h
 int2_handler:
-    push al
-    push bl
+    ; --- PRESERVAR CONTEXTO ---
+    push ax               ; Guardar registros que se van a modificar
+    push bx               ; (el resto se preserva automáticamente en INT)
 
-    mov al, [bl]            ; Siguiente carácter
-    cmp al, 0
-    jz  fin_impresion
+    ; --- OBTENER SIGUIENTE CARÁCTER ---
+    mov al, [bl]          ; AL = carácter apuntado por BL
+    cmp al, 0             ; ¿Es el carácter nulo (fin de string)?
+    jz  fin_impresion     ; Si es 0, terminar impresión
 
-    out HS_DATA, al         ; Enviar carácter a la impresora
-    inc bl                  ; Siguiente carácter
-    dec restantes
+    ; --- ENVIAR CARÁCTER A LA IMPRESORA ---
+    out HS_DATA, al       ; Escribir carácter al registro de datos del Handshake
+                          ; (esto automáticamente genera el pulso strobe)
+
+    ; --- ACTUALIZAR PUNTEROS Y CONTADORES ---
+    inc bl                ; Avanzar al siguiente carácter
+    dec restantes         ; Decrementar contador de caracteres restantes
 
 fin_impresion:
-    pop bl
-    pop al
-    iret
+    ; --- RESTAURAR CONTEXTO ---
+    pop bx                ; Restaurar registros preservados
+    pop ax
+    
+    ; --- RETORNO DE INTERRUPCIÓN ---
+    iret                  ; Retorno de interrupción (restaura FLAGS, IP automáticamente)
+
+; ===============================================================================
+; NOTAS TÉCNICAS:
+; ===============================================================================
+; 1. El Handshake genera una interrupción cuando la impresora no está ocupada
+;    (bit busy = 0 en el registro de estado)
+; 
+; 2. Al escribir en HS_DATA, el Handshake automáticamente:
+;    - Genera un pulso en la línea strobe
+;    - La impresora procesa el carácter
+;    - Cuando termina, pone busy = 0 y se genera nueva interrupción
+;
+; 3. El programa principal solo inicializa y espera, toda la lógica de 
+;    impresión está en la rutina de interrupción
+;
+; 4. La variable 'restantes' permite al programa principal saber cuándo
+;    ha terminado la impresión completa
+; ===============================================================================
 ```
 ---
 
