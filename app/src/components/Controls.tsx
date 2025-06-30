@@ -1,7 +1,7 @@
 import { faInfinity, faPause, faPlay, faRedo, faStepForward } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import clsx from "clsx";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useKey } from "react-use";
 
 import { useSimulation } from "@/computer/simulation";
@@ -65,6 +65,21 @@ export function Controls({ className }: { className?: string }) {
     [status.type, handlePause]
   );
 
+  // Detectar si es móvil/PWA
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const checkMobile = () => {
+      // Considera móvil si ancho de pantalla <= 600px o si es standalone PWA
+      setIsMobile(
+        window.innerWidth <= 600 ||
+        (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches)
+      );
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
   return (
     <div
       className={clsx(
@@ -81,9 +96,11 @@ export function Controls({ className }: { className?: string }) {
       >
         <span className="flex items-center justify-center">
           <FontAwesomeIcon icon={faPlay} size="lg" className="text-mantis-400 group-hover:scale-110 transition" />
-          <span className="ml-1 text-[10px] text-stone-400 font-mono opacity-80 pointer-events-none">F7</span>
+          {!isMobile && (
+            <span className="ml-1 text-[10px] text-stone-400 font-mono opacity-80 pointer-events-none">F7</span>
+          )}
         </span>
-        <span className="text-xs mt-1">{translate("control.action.run.cycle-change")}</span>
+        {!isMobile && <span className="text-xs mt-1">{translate("control.action.run.cycle-change")}</span>}
       </button>
       <button
         disabled={status.type === "running"}
@@ -93,9 +110,11 @@ export function Controls({ className }: { className?: string }) {
       >
         <span className="flex items-center justify-center">
           <FontAwesomeIcon icon={faStepForward} size="lg" className="text-blue-400 group-hover:scale-110 transition" />
-          <span className="ml-1 text-[10px] text-stone-400 font-mono opacity-80 pointer-events-none">F8</span>
+          {!isMobile && (
+            <span className="ml-1 text-[10px] text-stone-400 font-mono opacity-80 pointer-events-none">F8</span>
+          )}
         </span>
-        <span className="text-xs mt-1">{translate("control.action.run.end-of-instruction")}</span>
+        {!isMobile && <span className="text-xs mt-1">{translate("control.action.run.end-of-instruction")}</span>}
       </button>
       <button
         disabled={status.type === "running"}
@@ -105,9 +124,11 @@ export function Controls({ className }: { className?: string }) {
       >
         <span className="flex items-center justify-center">
           <FontAwesomeIcon icon={faInfinity} size="lg" className="text-orange-400 group-hover:scale-110 transition" />
-          <span className="ml-1 text-[10px] text-stone-400 font-mono opacity-80 pointer-events-none">F4</span>
+          {!isMobile && (
+            <span className="ml-1 text-[10px] text-stone-400 font-mono opacity-80 pointer-events-none">F4</span>
+          )}
         </span>
-        <span className="text-xs mt-1">{translate("control.action.run.infinity")}</span>
+        {!isMobile && <span className="text-xs mt-1">{translate("control.action.run.infinity")}</span>}
       </button>
       {status.type === "running" ? (
         <button
@@ -117,9 +138,11 @@ export function Controls({ className }: { className?: string }) {
         >
           <span className="flex items-center justify-center">
             <FontAwesomeIcon icon={faPause} size="lg" className="text-red-400 group-hover:scale-110 transition" />
-            <span className="ml-1 text-[10px] text-stone-400 font-mono opacity-80 pointer-events-none">F9</span>
+            {!isMobile && (
+              <span className="ml-1 text-[10px] text-stone-400 font-mono opacity-80 pointer-events-none">F9</span>
+            )}
           </span>
-          <span className="text-xs mt-1">{translate("control.action.pause")}</span>
+          {!isMobile && <span className="text-xs mt-1">{translate("control.action.pause")}</span>}
         </button>
       ) : (
         <button
@@ -130,9 +153,11 @@ export function Controls({ className }: { className?: string }) {
         >
           <span className="flex items-center justify-center">
             <FontAwesomeIcon icon={faRedo} size="lg" className="text-red-400 group-hover:scale-110 transition" />
-            <span className="ml-1 text-[10px] text-stone-400 font-mono opacity-80 pointer-events-none">F9</span>
+            {!isMobile && (
+              <span className="ml-1 text-[10px] text-stone-400 font-mono opacity-80 pointer-events-none">F9</span>
+            )}
           </span>
-          <span className="text-xs mt-1">{translate("control.action.reset")}</span>
+          {!isMobile && <span className="text-xs mt-1">{translate("control.action.reset")}</span>}
         </button>
       )}
     </div>
