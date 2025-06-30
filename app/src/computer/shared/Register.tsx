@@ -41,6 +41,9 @@ export function Register({
   // Estilo distintivo para FLAGS, acorde al simulador
   const isFlags = displayName === "FLAGS";
 
+  // Nuevo: estilo especial para registros temporales id y ri
+  const isTemporal = ["id", "ri"].includes(name);
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -52,10 +55,14 @@ export function Register({
               ? "border-mantis-500 ring-mantis-300 min-h-[28px] min-w-[68px] rounded-lg border-2 bg-stone-900/90 px-1.5 py-0.5 shadow-[0_2px_8px_0_rgba(60,180,120,0.10)] ring-1"
               : isFlags
               ? "min-h-[32px] min-w-[90px] gap-2 rounded border-2 border-yellow-400 bg-gradient-to-br from-yellow-900 via-yellow-800 to-stone-900 px-2.5 py-0.5 font-bold text-yellow-200 shadow-[0_2px_8px_0_rgba(250,204,21,0.10)]"
+              : isTemporal
+              ? "rounded-md border-2 border-cyan-400 bg-cyan-950/80 px-2 py-1 shadow-[0_2px_8px_0_rgba(34,211,238,0.10)] text-cyan-300 font-semibold"
               : "rounded-md border bg-stone-800 px-2 py-1",
             isGeneralPurpose
               ? "text-mantis-300 font-bold"
               : isFlags
+              ? ""
+              : isTemporal
               ? ""
               : emphasis
               ? "border-mantis-400 text-lg"
@@ -68,7 +75,8 @@ export function Register({
             className={clsx(
               "mr-2 font-extrabold tracking-wide",
               isGeneralPurpose && "text-mantis-300 drop-shadow",
-              isFlags && "text-yellow-200"
+              isFlags && "text-yellow-200",
+              isTemporal && "text-cyan-300"
             )}
           >
             {displayName}
@@ -80,7 +88,9 @@ export function Register({
               ? "bg-stone-950 text-mantis-300 border-mantis-400 border"
               : isFlags
               ? "border border-yellow-400 bg-yellow-950 text-yellow-200"
-              : "bg-stone-900"
+              : isTemporal
+              ? "border border-cyan-400 bg-cyan-950 text-cyan-200"
+              : "border border-stone-600 bg-stone-900 text-white"
           )}>
             {low.toString("hex")}
           </span>
