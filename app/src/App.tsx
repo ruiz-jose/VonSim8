@@ -1,5 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useMedia } from "react-use";
@@ -15,6 +15,7 @@ import { Editor } from "@/editor";
 import { useTranslate } from "@/lib/i18n";
 import { useFilters, useLanguage } from "@/lib/settings";
 import { toast } from "@/lib/toast";
+import { cycleAtom } from "@/computer/cpu/state"; // Importa el ciclo actual
 
 export default function App() {
   const lang = useLanguage();
@@ -113,9 +114,22 @@ function MobileLayout() {
     setSelectedTab(tab as typeof selectedTab);
   };
 
+  // Nuevo: obtener la instrucción en curso
+  const cycle = useAtomValue(cycleAtom);
+  const currentInstruction =
+    "metadata" in cycle && cycle.metadata
+      ? `${cycle.metadata.name}${cycle.metadata.operands.length ? " " + cycle.metadata.operands.join(", ") : ""}`
+      : "";
+
   return (
     <Tabs value={tab} onValueChange={setTab} asChild>
       <>
+        {/* Mostrar instrucción en curso arriba si está en modo computadora */}
+        {tab === "computer" && (
+          <div className="sticky top-0 z-30 w-full bg-stone-900 border-b border-stone-700 px-4 py-2 text-center font-mono text-base text-mantis-400">
+            {currentInstruction || <span className="text-stone-400 italic">Sin instrucción</span>}
+          </div>
+        )}
         <TabsContent value="editor" asChild>
           <section className="mx-2 grow overflow-hidden rounded-lg border border-stone-600 bg-stone-800 data-[state=inactive]:hidden">
             <Editor className="h-full w-full" />
