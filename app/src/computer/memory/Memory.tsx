@@ -1,6 +1,8 @@
 import { MemoryAddress } from "@vonsim/common/address";
 import type { Byte } from "@vonsim/common/byte";
 import { useAtomValue } from "jotai";
+import clsx from "clsx";
+import { useState, useRef, useEffect } from "react"; // <-- Agrega esto
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover";
 import { registerAtoms, showSPAtom } from "@/computer/cpu/state"; // Importa los átomos de los registros
@@ -34,18 +36,24 @@ export function Memory() {
   };
 
   return (
-    <div className="absolute left-[800px] top-0 z-10 h-auto w-auto rounded-lg border border-stone-600 bg-stone-900 [&_*]:z-20">
-      <span className="block w-min rounded-br-lg rounded-tl-lg border-b border-r border-stone-600 bg-mantis-500 px-2 py-1 text-3xl text-white">
+    <div className="absolute left-[800px] top-0 z-10 h-auto w-auto rounded-lg border border-stone-600 bg-stone-900 [&_*]:z-20 shadow-2xl">
+      <span className="block w-min rounded-br-lg rounded-tl-lg border-b border-r border-stone-600 bg-mantis-500 px-2 py-1 text-3xl text-white shadow">
         {translate("computer.memory.name")}
       </span>
 
       <div className="m-4 overflow-x-auto">
-        <table className="border-collapse w-auto mx-auto text-center font-mono">
+        <table className="border-separate w-auto mx-auto text-center font-mono text-base min-w-[600px]">
           <thead>
             <tr>
               <th></th>
               {Array.from({ length: 16 }).map((_, index) => (
-                <th key={index} className="border border-gray-300 w-8 h-8 bg-mantis-500">
+                <th
+                  key={index}
+                  className={clsx(
+                    "border border-gray-500 w-10 h-10 bg-mantis-500",
+                    index % 4 === 0 && index !== 0 ? "border-l-4 border-mantis-700" : ""
+                  )}
+                >
                   {index.toString(16).toUpperCase()}
                 </th>
               ))}
@@ -53,18 +61,27 @@ export function Memory() {
           </thead>
           <tbody>
             {renderMemoryRows().map((row, rowIndex) => (
-              <tr key={rowIndex}>
-                <th className="border border-gray-300 w-8 h-8 bg-mantis-500">
+              <tr
+                key={rowIndex}
+                className={rowIndex % 4 === 0 && rowIndex !== 0 ? "border-t-4 border-mantis-700" : ""}
+              >
+                <th className="border border-gray-500 w-10 h-10 bg-mantis-500">
                   {rowIndex.toString(16).toUpperCase()}
                 </th>
                 {row.map((cell, cellIndex) => (
-                  <td key={cellIndex} className="border border-gray-300 w-8 h-8">
+                  <td
+                    key={cellIndex}
+                    className={clsx(
+                      "border border-gray-500 w-10 h-10 p-0 transition-shadow duration-200",
+                      cellIndex % 4 === 0 && cellIndex !== 0 ? "border-l-4 border-mantis-700" : "",
+                    )}
+                  >
                     <MemoryCell
                       address={cell.address}
                       value={cell.value}
                       isIP={cell.address.valueOf() === ip.valueOf()}
                       isSP={showSP && cell.address.valueOf() === sp.valueOf()}
-                      isStackData={showSP && cell.address.valueOf() > sp.valueOf()} // NUEVO: zona de pila activa
+                      isStackData={showSP && cell.address.valueOf() > sp.valueOf()}
                       isProgramAddress={!!programAddresses.find(entry => entry.address === cell.address.value)}
                       isDataAddress={!!dataAddresses.find(entry => entry.address === cell.address.value)}
                       isInterruptVector={hasINT && cell.address.valueOf() >= 0 && cell.address.valueOf() <= 7}
@@ -91,26 +108,37 @@ function MemoryCell({
   value,
   isIP,
   isSP,
-  isStackData, // NUEVO
+  isStackData,
   isProgramAddress,
   isDataAddress,
   isInterruptVector,
   label,
-  length, 
+  length,
 }: {
   address: MemoryAddress;
   value: Byte<8>;
   isIP: boolean;
   isSP?: boolean;
-  isStackData?: boolean; // NUEVO
+  isStackData?: boolean;
   isProgramAddress: boolean;
   isDataAddress: boolean;
   isInterruptVector?: boolean;
   label: string | null;
   length: string | null;
-}) {   
+}) {
   const translate = useTranslate();
   const operatingAddress = useAtomValue(operatingAddressAtom);
+
+  // Animación de destello al actualizar valor
+  const [flash, setFlash] = useState(false);
+  const prevValue = useRef(value);
+  useEffect(() => {
+    if (prevValue.current !== value) {
+      setFlash(true);
+      setTimeout(() => setFlash(false), 300);
+      prevValue.current = value;
+    }
+  }, [value]);
 
   const title = translate("computer.memory.cell", address);
 
@@ -119,48 +147,46 @@ function MemoryCell({
       <PopoverTrigger asChild>
         <animated.div
           title={title}
-          className={`cursor-pointer border border-stone-600 w-8 h-8 flex items-center justify-center relative
-            ${
-              isIP
-                ? "ring-2 ring-red-500 ring-offset-2 animate-pulse shadow-lg shadow-red-500/50 outline outline-2 outline-red-500"
-                : isSP
-                ? "ring-2 ring-yellow-400 ring-offset-2 animate-pulse shadow-lg shadow-yellow-400/50 outline outline-2 outline-yellow-400"
-                : ""
-            }
-            ${
-              isSP
-                ? "bg-yellow-400"
-                : isStackData
-                ? "bg-yellow-200"
-                : isInterruptVector
-                ? "bg-purple-100"
-                : "bg-stone-800"
-            }
-            ${
-              isInterruptVector && !isSP && !isStackData ? "border-l-4 border-purple-500" : ""
-            }
-            ${
-              isProgramAddress && !isSP && !isStackData && !isInterruptVector ? "border-l-4 border-blue-500" : ""
-            }
-            ${
-              isDataAddress && !isSP && !isStackData && !isProgramAddress && !isInterruptVector ? "border-l-4 border-green-500" : ""
-            }
-            ${
-              isSP || isStackData ? "text-black" : isInterruptVector ? "text-black" : "text-white"
-            }`
-          }
+          className={clsx(
+            "cursor-pointer border w-10 h-10 flex items-center justify-center relative font-mono text-base select-none transition-all duration-200",
+            // Colores de fondo y borde según tipo
+            isIP
+              ? "ring-2 ring-red-500 ring-offset-2 shadow-lg shadow-red-500/50 outline outline-2 outline-red-500 z-10"
+              : isSP
+              ? "ring-2 ring-yellow-400 ring-offset-2 shadow-lg shadow-yellow-400/50 outline outline-2 outline-yellow-400 z-10"
+              : "",
+            isSP
+              ? "bg-yellow-400"
+              : isStackData
+              ? "bg-yellow-200"
+              : isInterruptVector
+              ? "bg-purple-100"
+              // Cambia instrucciones y datos a fondo oscuro
+              : isProgramAddress
+              ? "bg-stone-800"
+              : isDataAddress
+              ? "bg-stone-800"
+              : "bg-stone-900",
+            isInterruptVector && !isSP && !isStackData ? "border-l-4 border-purple-500" : "",
+            isProgramAddress && !isSP && !isStackData && !isInterruptVector ? "border-l-4 border-blue-500" : "",
+            isDataAddress && !isSP && !isStackData && !isProgramAddress && !isInterruptVector ? "border-l-4 border-green-500" : "",
+            isSP || isStackData ? "text-black" : isInterruptVector ? "text-black" : "text-stone-100",
+            // Hover y animación de destello
+            "hover:shadow-xl hover:z-20 hover:scale-110",
+            flash && "animate-pulse-fast bg-white/70"
+          )}
           style={
             address.value === operatingAddress.value
               ? getSpring("memory.operating-cell")
               : undefined
           }
         >
-          {/* Íconos para instrucciones, datos y vector de interrupciones */}
+          {/* Iconos para instrucciones, datos y vector de interrupciones */}
           {isInterruptVector && !isSP && !isStackData && (
             <span
               className="absolute top-0.5 left-0.5 text-purple-500 text-[10px] bg-stone-900/80 px-0.5 rounded pointer-events-none"
               title="Vector de interrupción"
-              style={{lineHeight:1}}
+              style={{ lineHeight: 1 }}
             >
               ⚡
             </span>
@@ -169,7 +195,7 @@ function MemoryCell({
             <span
               className="absolute top-0.5 left-0.5 text-blue-400 text-[10px] bg-stone-900/80 px-0.5 rounded pointer-events-none"
               title="Instrucción"
-              style={{lineHeight:1}}
+              style={{ lineHeight: 1 }}
             >
               📘
             </span>
@@ -178,13 +204,15 @@ function MemoryCell({
             <span
               className="absolute top-0.5 left-0.5 text-green-400 text-[10px] bg-stone-900/80 px-0.5 rounded pointer-events-none"
               title="Dato"
-              style={{lineHeight:1}}
+              style={{ lineHeight: 1 }}
             >
               📦
             </span>
           )}
           {/* Valor de la celda */}
-          <span className="z-10 mt-3 block">{value.toString("hex")}</span>
+          <span className="z-10 mt-3 block font-mono text-lg font-bold">
+            {value.toString("hex")}
+          </span>
           {isIP && (
             <span
               className="absolute top-0 right-0 text-red-500 text-xs"
@@ -207,19 +235,19 @@ function MemoryCell({
       </PopoverTrigger>
 
       <PopoverContent className="w-60">
-      <p className="px-4 py-2 font-medium text-white">
-        {title}{" "}
-        {label ? (
-          <span className="text-mantis-400 font-bold">
-            ({label})
-            {length !== null && length !== "" && (
-              <span className="text-white text-xs font-normal"> Bytes: {length}</span>
-            )}
-          </span>
-        ) : (
-          ""
-        )}
-      </p>
+        <p className="px-4 py-2 font-medium text-white">
+          {title}{" "}
+          {label ? (
+            <span className="text-mantis-400 font-bold">
+              ({label})
+              {length !== null && length !== "" && (
+                <span className="text-white text-xs font-normal"> Bytes: {length}</span>
+              )}
+            </span>
+          ) : (
+            ""
+          )}
+        </p>
         <hr className="border-stone-600" />
         <ul className="px-4 py-2 text-sm">
           {(["hex", "bin", "uint", "int", "safe-ascii"] as const).map(rep => (
