@@ -2,10 +2,10 @@ import { MemoryAddress } from "@vonsim/common/address";
 import type { Byte } from "@vonsim/common/byte";
 import { useAtomValue } from "jotai";
 import clsx from "clsx";
-import { useState, useRef, useEffect } from "react"; // <-- Agrega esto
+import { useState, useRef, useEffect } from "react";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover";
-import { registerAtoms, showSPAtom } from "@/computer/cpu/state"; // Importa los átomos de los registros
+import { registerAtoms, showSPAtom } from "@/computer/cpu/state";
 import { dataAddressesAtom, programAddressesAtom } from "@/computer/memory/state";
 import { animated, getSpring } from "@/computer/shared/springs";
 import { hasINTInstructionAtom } from "@/computer/cpu/state";
@@ -17,14 +17,12 @@ export function Memory() {
   const translate = useTranslate();
 
   const memory = useAtomValue(memoryShownAtom);
-  const ip = useAtomValue(registerAtoms.IP); // Obtén el valor del registro IP
-  const programAddresses = useAtomValue(programAddressesAtom); // Obtener las direcciones del programa
-  const dataAddresses = useAtomValue(dataAddressesAtom); // Obtener las direcciones del programa
-  const sp = useAtomValue(registerAtoms.SP); // <-- Agrega esto
-  const showSP = useAtomValue(showSPAtom); 
+  const ip = useAtomValue(registerAtoms.IP);
+  const programAddresses = useAtomValue(programAddressesAtom);
+  const dataAddresses = useAtomValue(dataAddressesAtom);
+  const sp = useAtomValue(registerAtoms.SP);
+  const showSP = useAtomValue(showSPAtom);
   const hasINT = useAtomValue(hasINTInstructionAtom);
-
-  //console.log("Direcciones del programa:", showSP);
 
   const renderMemoryRows = () => {
     const rows = [];
@@ -161,7 +159,6 @@ function MemoryCell({
               ? "bg-yellow-200"
               : isInterruptVector
               ? "bg-purple-100"
-              // Cambia instrucciones y datos a fondo oscuro
               : isProgramAddress
               ? "bg-stone-800"
               : isDataAddress
@@ -173,7 +170,7 @@ function MemoryCell({
             isSP || isStackData ? "text-black" : isInterruptVector ? "text-black" : "text-stone-100",
             // Hover y animación de destello
             "hover:shadow-xl hover:z-20 hover:scale-110",
-            flash && "animate-pulse-fast bg-white/70"
+            flash && "animate-pulse-fast"
           )}
           style={
             address.value === operatingAddress.value
