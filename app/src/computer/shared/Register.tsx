@@ -24,7 +24,6 @@ export function Register({
   const translate = useTranslate();
   const reg = useAtomValue(valueAtom);
   const low = reg.low;
-  //const high = reg.is16bits() ? reg.high : null;
 
   // Cambio aquí: Mapeo de nombres de registros a su versión de parte baja
   const nameMapping: Record<string, string> = {
@@ -35,14 +34,17 @@ export function Register({
   };
   const displayName = nameMapping[name] || name;
 
-  // Estilo alternativo profesional para AL, BL, CL y DL usando la paleta del simulador
+  // Estilo alternativo profesional para AL, BL, CL, DL, IP, SP, MBR, MAR, IR, id y ri
   const isGeneralPurpose = ["AX", "BX", "CX", "DX"].includes(name);
+  const isIP = name === "IP";
+  const isSP = name === "SP";
+  const isMBR = name === "MBR";
+  const isMAR = name === "MAR";
+  const isIR = name === "IR";
+  const isTemporal = ["id", "ri"].includes(name);
 
   // Estilo distintivo para FLAGS, acorde al simulador
   const isFlags = displayName === "FLAGS";
-
-  // Nuevo: estilo especial para registros temporales id y ri
-  const isTemporal = ["id", "ri"].includes(name);
 
   return (
     <Popover>
@@ -51,18 +53,23 @@ export function Register({
           title={displayName !== "left" && displayName !== "right" ? `Registro ${displayName}` : displayName}
           className={clsx(
             "flex cursor-pointer items-center font-mono leading-none transition-opacity",
-            isGeneralPurpose
-              ? "w-10 h-10 justify-center rounded border-2 border-mantis-500 bg-stone-800 text-mantis-300 font-bold text-lg shadow-[0_2px_8px_0_rgba(60,180,120,0.10)] hover:shadow-xl hover:scale-110 transition-all duration-200"
+            isGeneralPurpose || isIP || isSP || isMBR || isMAR || isIR || isTemporal
+              ? "w-10 h-10 justify-center rounded border-2 font-bold text-lg shadow-[0_2px_8px_0_rgba(60,180,120,0.10)] hover:shadow-xl hover:scale-110 transition-all duration-200"
               : isFlags
               ? "min-h-[32px] min-w-[90px] gap-2 rounded border-2 border-yellow-400 bg-gradient-to-br from-yellow-900 via-yellow-800 to-stone-900 px-2.5 py-0.5 font-bold text-yellow-200 shadow-[0_2px_8px_0_rgba(250,204,21,0.10)]"
-              : isTemporal
-              ? "rounded-md border-2 border-cyan-400 bg-cyan-950/80 px-2 py-1 shadow-[0_2px_8px_0_rgba(34,211,238,0.10)] text-cyan-300 font-semibold"
               : "rounded-md border bg-stone-800 px-2 py-1",
+            // Colores específicos para cada tipo
             isGeneralPurpose
-              ? ""
-              : isFlags
-              ? ""
+              ? "border-mantis-500 bg-stone-800 text-mantis-300"
+              : isIP
+              ? "border-red-500 bg-stone-800 text-red-300"
+              : isSP
+              ? "border-yellow-400 bg-stone-800 text-yellow-300"
+              : isMBR || isMAR || isIR
+              ? "border-indigo-400 bg-stone-800 text-indigo-300"
               : isTemporal
+              ? "border-cyan-400 bg-stone-800 text-cyan-300"
+              : isFlags
               ? ""
               : emphasis
               ? "border-mantis-400 text-lg"
@@ -71,10 +78,17 @@ export function Register({
           )}
           style={displayName === "left" || displayName === "right" ? { backgroundColor: "transparent" } : getSpring(springs)}
         >
-          {isGeneralPurpose ? (
-            // Formato tipo celda de memoria para registros generales
+          {isGeneralPurpose || isIP || isSP || isMBR || isMAR || isIR || isTemporal ? (
+            // Formato tipo celda de memoria para registros generales, IP, SP, MBR, MAR, IR, id y ri
             <>
-              <span className="absolute top-0.5 left-0.5 text-mantis-400 text-[8px] bg-stone-900/80 px-0.5 rounded pointer-events-none font-bold">
+              <span className={clsx(
+                "absolute top-0.5 left-0.5 text-[8px] bg-stone-900/80 px-0.5 rounded pointer-events-none font-bold",
+                isGeneralPurpose ? "text-mantis-400" : 
+                isIP ? "text-red-400" : 
+                isSP ? "text-yellow-400" :
+                isTemporal ? "text-cyan-400" :
+                "text-indigo-400"
+              )}>
                 {displayName}
               </span>
               <span className="mt-2 font-mono text-base font-bold">

@@ -79,17 +79,17 @@ export function CPU( ) {
       <Reg name="DX" emphasis className="left-[450px] top-[150px]" />
       {showid && <Reg name="id" className={clsx("left-[450px] top-[190px]", "border-cyan-400")} />}
 
-      <Reg name="MBR" className={clsx("right-[-51px] top-[233px]", "border-indigo-400")} />
+      <Reg name="MBR" className={clsx("right-[-11px] top-[233px]", "border-indigo-400")} />
 
-      <Reg name="IR" className={clsx("left-[171px] top-[270px]", "border-red-color")} />
+      <Reg name="IR" className={clsx("left-[185px] top-[270px]", "border-indigo-400")} />
 
       <Control />
-      {showSP && <Reg name="SP" emphasis className={clsx("left-[450px] top-[292px]", "border-red-color")} />}
+      {showSP && <Reg name="SP" emphasis className={clsx("left-[450px] top-[292px]", "border-yellow-400")} />}
       <Reg name="IP" emphasis className={clsx("left-[450px] top-[332px]", "border-red-color")} />
       
-      {showri && <Reg name="ri" emphasis className={clsx("left-[450px] top-[372px]", "border-cyan-400")} />}
+      {showri && <Reg name="ri" emphasis className={clsx("left-[470px] top-[372px]", "border-cyan-400")} />}
 
-      <Reg name="MAR" className={clsx("right-[-51px] top-[333px]", "border-indigo-400")} />
+      <Reg name="MAR" className={clsx("right-[-11px] top-[333px]", "border-indigo-400")} />
 
     </div>
   );

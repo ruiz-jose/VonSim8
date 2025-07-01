@@ -5,7 +5,7 @@ export function DataLines() {
   const { devices } = useSimulation();
 
   const addressPath = [
-    "M 699 349 H 800", // CPU -> Memory
+    "M 659 349 H 800", // CPU -> Memory - ajustado para conectar con el registro MAR redimensionado
     devices.pic && "M 725 349 V 770 H 450",
     devices.pio && "M 725 349 V 770 H 900",
     devices.timer && "M 725 349 V 770 H 618 V 875",
@@ -15,7 +15,7 @@ export function DataLines() {
     .join(" ");
 
   const dataPath = [
-    "M 687 249 H 800", // CPU -> Memory - ajustado para conectar con registros más pequeños
+    "M 629 249 H 800", // CPU -> Memory - ajustado para conectar con el registro MBR redimensionado
     devices.pic && "M 765 249 V 790 H 450",
     devices.pio && "M 765 249 V 790 H 900",
     devices.timer && "M 765 249 V 790 H 598 V 875",

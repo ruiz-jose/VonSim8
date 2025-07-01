@@ -20,20 +20,19 @@ type AddressBusProps = {
 export function generateAddressPath(from: MARRegister, showpath1?: boolean, showpath2?: boolean): string {
   let path = "";
   if (showpath1) {
-    path = "M 454 388 H 550 V 349 H 698"; // ri
+    path = "M 470 388 H 550 V 349 H 659"; // ri - ajustado para conectar con MAR desde registro redimensionado
   }
   if (showpath2) {
-    path = "M 680 250 H 550 V 349 H 698"; // mbr
+    path = "M 629 250 H 550 V 349 H 659"; // mbr - ajustado para conectar con MAR
   }  
   switch (from) {
     case "SP":
-      return "M 451 309 H 550 V 349 H 698";
+      return "M 451 309 H 550 V 349 H 659";
 
     case "IP":
-      return "M 451 349 H 698";
+      return "M 451 349 H 659";
 
     case "ri":
-     // return "M 454 388 H 550 V 349 H 698";
       return showpath1 || showpath2 ? path : "";
 
     default:
@@ -51,9 +50,8 @@ export function AddressBus({ showSP, showri }: AddressBusProps) {
   const paths = [
     showSP ? "M 451 309 H 550 V 250" : "", // SP
     "M 451 349 H 550 V 255", // IP
-    showri ? "M 444 388 H 550 V 300" : "",
-    //"M 444 388 H 550 V 300", // ri
-    "M 451 349 H 698", // Connection to MAR
+    showri ? "M 470 388 H 550 V 300" : "", // ri - ajustado para conectar con registro redimensionado
+    "M 451 349 H 659", // Connection to MAR - ajustado
   ];
 
   return (
@@ -78,3 +76,4 @@ export function AddressBus({ showSP, showri }: AddressBusProps) {
     </svg>
   );
 }
+

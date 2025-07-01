@@ -72,7 +72,7 @@ dataBus.addNode("AX out", { position: [465, 45] }); // Ajustado para la salida d
 dataBus.addNode("BX out", { position: [465, 85] }); // Ajustado para la salida del registro más pequeño
 dataBus.addNode("CX out", { position: [465, 125] }); // Ajustado para la salida del registro más pequeño
 dataBus.addNode("DX out", { position: [465, 165] }); // Ajustado para la salida del registro más pequeño
-dataBus.addNode("id out", { position: [510, 205] });
+dataBus.addNode("id out", { position: [460, 205] }); // Ajustado para conectar con el registro id redimensionado
 
 dataBus.addNode("SP out", { position: [510, 309] });
 dataBus.addNode("IP out", { position: [510, 349] });
@@ -341,22 +341,22 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
           "M 430 349 H 421", // ri
           "V 250", // Long path to MBR, here to get nice joins
           "M 451 349 H 421", // IP
-          //"M 451 309 H 421", // SP          
           showSP ? "M 451 309 H 421" : "M 451 309", // SP
-          showri ? "M 451 388 H 421 V 300" : "", // ri
+          showri ? "M 470 388 H 421 V 300" : "", // ri - ajustado para conectar con registro redimensionado
           // Data registers - ajustados para conectar con registros más pequeños
           "M 455 45 H 425", // AX - ajustado
           "V 250", // Long path to MBR, here to get nice joins
           "M 455 85 H 425", // BX - ajustado
           "M 455 125 H 425", // CX - ajustado
           "M 455 165 H 425", // DX - ajustado
-          showid ? "M 451 205 H 421" : "",// id
+          showid ? "M 455 205 H 425" : "",// id - ajustado para conectar con registro redimensionado
           // Output buses - ajustados para registros más pequeños
           "M 550 45 H 465", // AX out - ajustado
           "M 550 85 H 465", // BX out - ajustado
           "M 550 125 H 465", // CX out - ajustado
           "M 550 165 H 465", // DX out - ajustado
-          showid ? "M 550 205 H 510" : "", // id out
+          showid ? "M 550 205 H 460" : "", // id out - ajustado
+          showri ? "M 550 388 H 480" : "", // ri out - ajustado para conectar con registro redimensionado
          //"M 550 10 V 250", // Vertical join for output buses
           "M 550 40 V 250", // Vertical join for output buses
          // "M 550 45 H 492", // Connect to data mbr join
