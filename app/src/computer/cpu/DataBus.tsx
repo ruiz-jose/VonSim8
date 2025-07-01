@@ -25,10 +25,10 @@ const dataBus = new UndirectedGraph<Node>({ allowSelfLoops: false });
 
 // These are the endpoints of the bus
 dataBus.addNode("MBR", { position: [620, 250] });
-dataBus.addNode("AX", { position: [451, 45] });
-dataBus.addNode("BX", { position: [451, 85] });
-dataBus.addNode("CX", { position: [451, 125] });
-dataBus.addNode("DX", { position: [451, 165] });
+dataBus.addNode("AX", { position: [455, 45] }); // Ajustado para el centro del registro más pequeño
+dataBus.addNode("BX", { position: [455, 85] }); // Ajustado para el centro del registro más pequeño
+dataBus.addNode("CX", { position: [455, 125] }); // Ajustado para el centro del registro más pequeño
+dataBus.addNode("DX", { position: [455, 165] }); // Ajustado para el centro del registro más pequeño
 dataBus.addNode("id", { position: [451, 205] });
 dataBus.addNode("SP", { position: [451, 309] });
 dataBus.addNode("IP", { position: [451, 349] });
@@ -46,10 +46,10 @@ dataBus.addNode("bleft2", { position: [90, 16] });
 dataBus.addNode("bleft3", { position: [90, 85] });
 
 // These are the intermediate nodes
-dataBus.addNode("AX join", { position: [421, 45] });
-dataBus.addNode("BX join", { position: [421, 85] });
-dataBus.addNode("CX join", { position: [421, 125] });
-dataBus.addNode("DX join", { position: [421, 165] });
+dataBus.addNode("AX join", { position: [425, 45] }); // Ajustado para conectar con el registro más pequeño
+dataBus.addNode("BX join", { position: [425, 85] }); // Ajustado para conectar con el registro más pequeño
+dataBus.addNode("CX join", { position: [425, 125] }); // Ajustado para conectar con el registro más pequeño
+dataBus.addNode("DX join", { position: [425, 165] }); // Ajustado para conectar con el registro más pequeño
 dataBus.addNode("id join", { position: [421, 205] });
 dataBus.addNode("data mbr join", { position: [421, 250] });
 dataBus.addNode("SP join", { position: [421, 309] });
@@ -68,10 +68,10 @@ dataBus.addNode("outr mbr join", { position: [550, 250] });
 dataBus.addNode("mbr reg join", { position: [421, 250] });
 
 // Añadir nodos de unión para los registros AX, BX, CX, DX e id
-dataBus.addNode("AX out", { position: [510, 45] });
-dataBus.addNode("BX out", { position: [510, 85] });
-dataBus.addNode("CX out", { position: [510, 125] });
-dataBus.addNode("DX out", { position: [510, 165] });
+dataBus.addNode("AX out", { position: [465, 45] }); // Ajustado para la salida del registro más pequeño
+dataBus.addNode("BX out", { position: [465, 85] }); // Ajustado para la salida del registro más pequeño
+dataBus.addNode("CX out", { position: [465, 125] }); // Ajustado para la salida del registro más pequeño
+dataBus.addNode("DX out", { position: [465, 165] }); // Ajustado para la salida del registro más pequeño
 dataBus.addNode("id out", { position: [510, 205] });
 
 dataBus.addNode("SP out", { position: [510, 309] });
@@ -344,18 +344,18 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
           //"M 451 309 H 421", // SP          
           showSP ? "M 451 309 H 421" : "M 451 309", // SP
           showri ? "M 451 388 H 421 V 300" : "", // ri
-          // Data registers
-          "M 451 45 H 421", // AX     
+          // Data registers - ajustados para conectar con registros más pequeños
+          "M 455 45 H 425", // AX - ajustado
           "V 250", // Long path to MBR, here to get nice joins
-          "M 451 85 H 421", // BX
-          "M 451 125 H 421", // CX
-          "M 451 165 H 421", // DX
+          "M 455 85 H 425", // BX - ajustado
+          "M 455 125 H 425", // CX - ajustado
+          "M 455 165 H 425", // DX - ajustado
           showid ? "M 451 205 H 421" : "",// id
-            // Output buses
-          "M 550 45 H 520", // AX out
-          "M 550 85 H 510", // BX out
-          "M 550 125 H 510", // CX out
-          "M 550 165 H 510", // DX out
+          // Output buses - ajustados para registros más pequeños
+          "M 550 45 H 465", // AX out - ajustado
+          "M 550 85 H 465", // BX out - ajustado
+          "M 550 125 H 465", // CX out - ajustado
+          "M 550 165 H 465", // DX out - ajustado
           showid ? "M 550 205 H 510" : "", // id out
          //"M 550 10 V 250", // Vertical join for output buses
           "M 550 40 V 250", // Vertical join for output buses

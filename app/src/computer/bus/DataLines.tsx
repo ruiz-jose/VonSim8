@@ -15,7 +15,7 @@ export function DataLines() {
     .join(" ");
 
   const dataPath = [
-    "M 687 249 H 800", // CPU -> Memory
+    "M 687 249 H 800", // CPU -> Memory - ajustado para conectar con registros más pequeños
     devices.pic && "M 765 249 V 790 H 450",
     devices.pio && "M 765 249 V 790 H 900",
     devices.timer && "M 765 249 V 790 H 598 V 875",
