@@ -50,16 +50,16 @@ export function Register({
         <animated.button
           title={displayName !== "left" && displayName !== "right" ? `Registro ${displayName}` : displayName}
           className={clsx(
-            "flex w-min cursor-pointer items-center font-mono leading-none transition-opacity",
+            "flex cursor-pointer items-center font-mono leading-none transition-opacity",
             isGeneralPurpose
-              ? "border-mantis-500 ring-mantis-300 min-h-[28px] min-w-[68px] rounded-lg border-2 bg-stone-900/90 px-1.5 py-0.5 shadow-[0_2px_8px_0_rgba(60,180,120,0.10)] ring-1"
+              ? "w-10 h-10 justify-center rounded border-2 border-mantis-500 bg-stone-800 text-mantis-300 font-bold text-lg shadow-[0_2px_8px_0_rgba(60,180,120,0.10)] hover:shadow-xl hover:scale-110 transition-all duration-200"
               : isFlags
               ? "min-h-[32px] min-w-[90px] gap-2 rounded border-2 border-yellow-400 bg-gradient-to-br from-yellow-900 via-yellow-800 to-stone-900 px-2.5 py-0.5 font-bold text-yellow-200 shadow-[0_2px_8px_0_rgba(250,204,21,0.10)]"
               : isTemporal
               ? "rounded-md border-2 border-cyan-400 bg-cyan-950/80 px-2 py-1 shadow-[0_2px_8px_0_rgba(34,211,238,0.10)] text-cyan-300 font-semibold"
               : "rounded-md border bg-stone-800 px-2 py-1",
             isGeneralPurpose
-              ? "text-mantis-300 font-bold"
+              ? ""
               : isFlags
               ? ""
               : isTemporal
@@ -71,29 +71,43 @@ export function Register({
           )}
           style={displayName === "left" || displayName === "right" ? { backgroundColor: "transparent" } : getSpring(springs)}
         >
-          <span
-            className={clsx(
-              "mr-2 font-extrabold tracking-wide",
-              isGeneralPurpose && "text-mantis-300 drop-shadow",
-              isFlags && "text-yellow-200",
-              isTemporal && "text-cyan-300"
-            )}
-          >
-            {displayName}
-          </span>
-          <span className={clsx(
-            "rounded px-1 py-0.5 font-light",
-            isGeneralPurpose
-              // Fondo más oscuro y letra verde clara para mejor contraste
-              ? "bg-stone-950 text-mantis-300 border-mantis-400 border"
-              : isFlags
-              ? "border border-yellow-400 bg-yellow-950 text-yellow-200"
-              : isTemporal
-              ? "border border-cyan-400 bg-cyan-950 text-cyan-200"
-              : "border border-stone-600 bg-stone-900 text-white"
-          )}>
-            {low.toString("hex")}
-          </span>
+          {isGeneralPurpose ? (
+            // Formato tipo celda de memoria para registros generales
+            <>
+              <span className="absolute top-0.5 left-0.5 text-mantis-400 text-[8px] bg-stone-900/80 px-0.5 rounded pointer-events-none font-bold">
+                {displayName}
+              </span>
+              <span className="mt-2 font-mono text-base font-bold">
+                {low.toString("hex")}
+              </span>
+            </>
+          ) : (
+            // Formato original para otros registros
+            <>
+              <span
+                className={clsx(
+                  "mr-2 font-extrabold tracking-wide",
+                  isGeneralPurpose && "text-mantis-300 drop-shadow",
+                  isFlags && "text-yellow-200",
+                  isTemporal && "text-cyan-300"
+                )}
+              >
+                {displayName}
+              </span>
+              <span className={clsx(
+                "rounded px-1 py-0.5 font-light",
+                isGeneralPurpose
+                  ? "bg-stone-950 text-mantis-300 border-mantis-400 border"
+                  : isFlags
+                  ? "border border-yellow-400 bg-yellow-950 text-yellow-200"
+                  : isTemporal
+                  ? "border border-cyan-400 bg-cyan-950 text-cyan-200"
+                  : "border border-stone-600 bg-stone-900 text-white"
+              )}>
+                {low.toString("hex")}
+              </span>
+            </>
+          )}
           {isFlags && (
             <span className="flex gap-1 ml-2">
               <span className={clsx(
