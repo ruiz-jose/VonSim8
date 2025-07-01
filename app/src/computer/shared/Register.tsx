@@ -103,7 +103,9 @@ export function Register({
                   "mr-2 font-extrabold tracking-wide",
                   isGeneralPurpose && "text-mantis-300 drop-shadow",
                   isFlags && "text-yellow-200",
-                  isTemporal && "text-cyan-300"
+                  isTemporal && "text-cyan-300",
+                  // Reducir tamaño para left y right
+                  (displayName === "left" || displayName === "right") && "text-xs"
                 )}
               >
                 {displayName}
