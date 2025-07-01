@@ -116,51 +116,56 @@ export function ALU() {
       {/* Flags mejoradas */}
       <animated.div
         className={clsx(
-          "absolute flex w-min items-center gap-1.5 rounded-lg border-2 border-yellow-400 bg-gradient-to-br from-yellow-900 via-yellow-800 to-stone-900 px-2 py-1 text-yellow-200 font-bold min-w-[80px] min-h-[32px] shadow-lg ring-1 ring-yellow-300",
-          settings.flagsVisibility === "SF_OF_CF_ZF" ? "top-[200px] left-[185px]" : "top-[200px] left-[205px]"
+          "absolute flex w-min items-center gap-0.5 rounded-lg border-2 border-yellow-400 bg-gradient-to-br from-yellow-900 via-yellow-800 to-stone-900 px-0.5 py-1 text-yellow-200 font-bold min-w-[38px] min-h-[30px] shadow-lg ring-1 ring-yellow-300",
+          settings.flagsVisibility === "SF_OF_CF_ZF" ? "top-[190px] left-[210px]" : "top-[190px] left-[230px]"
         )}
         style={getSpring("cpu.FLAGS")}
       >
-        <div className="text-yellow-200 text-xs font-bold mr-1">FLAGS</div>
+        <span className="absolute top-0.5 left-0.5 text-yellow-200 text-[6px] bg-stone-900/80 px-0.5 rounded pointer-events-none font-bold">
+          FLAGS
+        </span>
         
-        {connectScreenAndKeyboard && (
+        {/* Espaciado adicional para evitar solapamiento con el título */}
+        <div className="mt-2 flex items-center gap-0.5">
+          {connectScreenAndKeyboard && (
+            <span className={clsx(
+              "px-0.5 py-0 text-[10px] font-bold rounded border transition-all duration-200",
+              IF ? "border-yellow-300 bg-yellow-400 text-yellow-950 shadow-[0_0_4px_rgba(250,204,21,0.6)]" : "border-yellow-700 bg-stone-800 text-yellow-300"
+            )}>
+              I
+            </span>
+          )}
+          
+          {settings.flagsVisibility === "SF_OF_CF_ZF" && (
+            <>
+              <span className={clsx(
+                "px-0.5 py-0 text-[10px] font-bold rounded border transition-all duration-200",
+                SF ? "border-yellow-300 bg-yellow-400 text-yellow-950 shadow-[0_0_4px_rgba(250,204,21,0.6)]" : "border-yellow-700 bg-stone-800 text-yellow-300"
+              )}>
+                S
+              </span>
+              <span className={clsx(
+                "px-0.5 py-0 text-[10px] font-bold rounded border transition-all duration-200",
+                OF ? "border-yellow-300 bg-yellow-400 text-yellow-950 shadow-[0_0_4px_rgba(250,204,21,0.6)]" : "border-yellow-700 bg-stone-800 text-yellow-300"
+              )}>
+                O
+              </span>
+            </>
+          )}
+          
           <span className={clsx(
-            "px-1 py-0.5 text-xs font-bold rounded border transition-all duration-200",
-            IF ? "border-yellow-300 bg-yellow-400 text-yellow-950 shadow-[0_0_4px_rgba(250,204,21,0.6)]" : "border-yellow-700 bg-stone-800 text-yellow-300"
+            "px-0.5 py-0 text-[10px] font-bold rounded border transition-all duration-200",
+            CF ? "border-yellow-300 bg-yellow-400 text-yellow-950 shadow-[0_0_4px_rgba(250,204,21,0.6)]" : "border-yellow-700 bg-stone-800 text-yellow-300"
           )}>
-            I
+            C
           </span>
-        )}
-        
-        {settings.flagsVisibility === "SF_OF_CF_ZF" && (
-          <>
-            <span className={clsx(
-              "px-1 py-0.5 text-xs font-bold rounded border transition-all duration-200",
-              SF ? "border-yellow-300 bg-yellow-400 text-yellow-950 shadow-[0_0_4px_rgba(250,204,21,0.6)]" : "border-yellow-700 bg-stone-800 text-yellow-300"
-            )}>
-              S
-            </span>
-            <span className={clsx(
-              "px-1 py-0.5 text-xs font-bold rounded border transition-all duration-200",
-              OF ? "border-yellow-300 bg-yellow-400 text-yellow-950 shadow-[0_0_4px_rgba(250,204,21,0.6)]" : "border-yellow-700 bg-stone-800 text-yellow-300"
-            )}>
-              O
-            </span>
-          </>
-        )}
-        
-        <span className={clsx(
-          "px-1 py-0.5 text-xs font-bold rounded border transition-all duration-200",
-          CF ? "border-yellow-300 bg-yellow-400 text-yellow-950 shadow-[0_0_4px_rgba(250,204,21,0.6)]" : "border-yellow-700 bg-stone-800 text-yellow-300"
-        )}>
-          C
-        </span>
-        <span className={clsx(
-          "px-1 py-0.5 text-xs font-bold rounded border transition-all duration-200",
-          ZF ? "border-yellow-300 bg-yellow-400 text-yellow-950 shadow-[0_0_4px_rgba(250,204,21,0.6)]" : "border-yellow-700 bg-stone-800 text-yellow-300"
-        )}>
-          Z
-        </span>
+          <span className={clsx(
+            "px-0.5 py-0 text-[10px] font-bold rounded border transition-all duration-200",
+            ZF ? "border-yellow-300 bg-yellow-400 text-yellow-950 shadow-[0_0_4px_rgba(250,204,21,0.6)]" : "border-yellow-700 bg-stone-800 text-yellow-300"
+          )}>
+            Z
+          </span>
+        </div>
       </animated.div>
     </>
   );
