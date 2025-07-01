@@ -153,21 +153,16 @@ function MemoryCell({
               : isSP
               ? "ring-2 ring-yellow-400 ring-offset-2 shadow-lg shadow-yellow-400/50 outline outline-2 outline-yellow-400 z-10"
               : "",
-            isSP
-              ? "bg-yellow-400"
-              : isStackData
-              ? "bg-yellow-200"
-              : isInterruptVector
-              ? "bg-purple-100"
-              : isProgramAddress
-              ? "bg-stone-800"
-              : isDataAddress
-              ? "bg-stone-800"
-              : "bg-stone-900",
+            // Cambiar fondos de colores sólidos por fondo oscuro consistente
+            "bg-stone-800",
             isInterruptVector && !isSP && !isStackData ? "border-l-4 border-purple-500" : "",
             isProgramAddress && !isSP && !isStackData && !isInterruptVector ? "border-l-4 border-blue-500" : "",
             isDataAddress && !isSP && !isStackData && !isProgramAddress && !isInterruptVector ? "border-l-4 border-green-500" : "",
-            isSP || isStackData ? "text-black" : isInterruptVector ? "text-black" : "text-stone-100",
+            // Agregar bordes laterales para stack data y SP
+            isStackData && !isSP ? "border-l-4 border-yellow-500" : "",
+            isSP ? "border-l-4 border-yellow-400" : "",
+            // Color de texto consistente
+            "text-stone-100",
             // Hover y animación de destello
             "hover:shadow-xl hover:z-20 hover:scale-110",
             flash && "animate-pulse-fast"
@@ -181,7 +176,7 @@ function MemoryCell({
           {/* Iconos para instrucciones, datos y vector de interrupciones */}
           {isInterruptVector && !isSP && !isStackData && (
             <span
-              className="absolute top-0.5 left-0.5 text-purple-500 text-[10px] bg-stone-900/80 px-0.5 rounded pointer-events-none"
+              className="absolute top-0.5 left-0.5 text-purple-400 text-[10px] bg-stone-900/80 px-0.5 rounded pointer-events-none"
               title="Vector de interrupción"
               style={{ lineHeight: 1 }}
             >
@@ -206,6 +201,26 @@ function MemoryCell({
               📦
             </span>
           )}
+          {/* Nuevo: Icono para datos de la pila */}
+          {isStackData && !isSP && (
+            <span
+              className="absolute top-0.5 left-0.5 text-yellow-400 text-[10px] bg-stone-900/80 px-0.5 rounded pointer-events-none"
+              title="Dato de la pila"
+              style={{ lineHeight: 1 }}
+            >
+              📚
+            </span>
+          )}
+          {/* Nuevo: Icono para SP */}
+          {isSP && (
+            <span
+              className="absolute top-0.5 left-0.5 text-yellow-300 text-[10px] bg-stone-900/80 px-0.5 rounded pointer-events-none"
+              title="Stack Pointer"
+              style={{ lineHeight: 1 }}
+            >
+              📍
+            </span>
+          )}
           {/* Valor de la celda */}
           <span className="z-10 mt-3 block font-mono text-lg font-bold">
             {value.toString("hex")}
@@ -221,7 +236,7 @@ function MemoryCell({
           )}
           {isSP && (
             <span
-              className="absolute top-0 left-0 text-yellow-500 text-xs"
+              className="absolute top-0 right-0 text-yellow-500 text-xs"
               title="SP"
               style={{ lineHeight: 1 }}
             >
