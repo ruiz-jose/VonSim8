@@ -78,6 +78,7 @@ Imprimir un string en la impresora a través del handshake en modo interrupcione
 org 10h
 mensaje     db "hola", 0    ; String a imprimir, terminado en carácter nulo
 restantes   db 4           ; Contador de caracteres restantes por imprimir
+puntero     db 0           ; Puntero al siguiente carácter (8 bits)
 
 ; --- CONSTANTES DE HANDSHAKE ---
 HS_DATA     EQU 40h        ; Registro de datos del Handshake (puerto E/S)
@@ -118,18 +119,38 @@ mov bl, ID                ; BL = posición en tabla de vectores (ID=2)
 mov [bl], int2_handler    ; Almacenar dirección de rutina en vector[2]
 
 ; --- 4) INICIALIZACIÓN DE VARIABLES ---
-mov bl, offset mensaje    ; BL = puntero al primer carácter del string
+mov al, offset mensaje    ; AL = dirección del primer carácter del string
+mov puntero, al           ; Guardar en variable puntero
 
-; --- 5) HABILITAR INTERRUPCIONES Y ESPERAR ---
+; --- 5) ENVIAR PRIMER CARÁCTER PARA INICIAR EL PROCESO ---
+; Esperar que la impresora esté lista
+esperar_listo:
+    in al, HS_STATUS
+    and al, 00000001b     ; Verificar bit busy
+    jnz esperar_listo     ; Si busy=1, esperar
+
+; Enviar primer carácter
+mov bl, puntero           ; Cargar puntero
+mov al, [bl]              ; Obtener primer carácter
+cmp al, 0                 ; ¿Es string vacío?
+jz fin                    ; Si está vacío, terminar
+
+out HS_DATA, al           ; Enviar primer carácter
+inc bl                    ; Avanzar puntero
+mov puntero, bl           ; Guardar puntero actualizado
+dec restantes             ; Decrementar contador
+
+; --- 6) HABILITAR INTERRUPCIONES Y ESPERAR ---
 sti                       ; Habilitar interrupciones globales
 
-; --- 6) BUCLE DE ESPERA ---
+; --- 7) BUCLE DE ESPERA ---
 ; El programa principal espera hasta que se impriman todos los caracteres
 bucle_espera:
     cmp restantes, 0      ; ¿Quedan caracteres por imprimir?
     jnz bucle_espera      ; Si quedan, seguir esperando
     
-; --- 7) FINALIZACIÓN ---
+; --- 8) FINALIZACIÓN ---
+fin:
 hlt                       ; Detener ejecución del programa
 
 ; ===============================================================================
@@ -137,53 +158,44 @@ hlt                       ; Detener ejecución del programa
 ; ===============================================================================
 ; DESCRIPCIÓN: Se ejecuta automáticamente cuando la impresora está lista
 ;              para recibir un nuevo carácter (busy = 0)
-; ENTRADA: BL = puntero al siguiente carácter a imprimir
+; ENTRADA: Variable puntero = dirección del siguiente carácter a imprimir
 ; SALIDA: Carácter enviado a la impresora, puntero actualizado
 ; ===============================================================================
 org 80h
 int2_handler:
     ; --- PRESERVAR CONTEXTO ---
-    push ax               ; Guardar registros que se van a modificar
-    push bx               ; (el resto se preserva automáticamente en INT)
+    push al               ; Guardar registros que se van a modificar
+    push bl
+
+    ; --- VERIFICAR SI HAY MÁS CARACTERES ---
+    cmp restantes, 0      ; ¿Quedan caracteres por imprimir?
+    jz fin_interrupcion   ; Si no quedan, terminar
 
     ; --- OBTENER SIGUIENTE CARÁCTER ---
+    mov bl, puntero       ; BL = puntero al siguiente carácter
     mov al, [bl]          ; AL = carácter apuntado por BL
     cmp al, 0             ; ¿Es el carácter nulo (fin de string)?
-    jz  fin_impresion     ; Si es 0, terminar impresión
+    jz fin_interrupcion   ; Si es 0, terminar
 
     ; --- ENVIAR CARÁCTER A LA IMPRESORA ---
     out HS_DATA, al       ; Escribir carácter al registro de datos del Handshake
-                          ; (esto automáticamente genera el pulso strobe)
 
     ; --- ACTUALIZAR PUNTEROS Y CONTADORES ---
     inc bl                ; Avanzar al siguiente carácter
+    mov puntero, bl       ; Guardar puntero actualizado
     dec restantes         ; Decrementar contador de caracteres restantes
 
-fin_impresion:
-    ; --- RESTAURAR CONTEXTO ---
-    pop bx                ; Restaurar registros preservados
-    pop ax
-    
-    ; --- RETORNO DE INTERRUPCIÓN ---
-    iret                  ; Retorno de interrupción (restaura FLAGS, IP automáticamente)
+fin_interrupcion:
+    ; --- ENVIAR EOI AL PIC ---
+    mov al, 20h           ; Señal de fin de interrupción
+    out EOI, al           ; Notificar al PIC
 
-; ===============================================================================
-; NOTAS TÉCNICAS:
-; ===============================================================================
-; 1. El Handshake genera una interrupción cuando la impresora no está ocupada
-;    (bit busy = 0 en el registro de estado)
-; 
-; 2. Al escribir en HS_DATA, el Handshake automáticamente:
-;    - Genera un pulso en la línea strobe
-;    - La impresora procesa el carácter
-;    - Cuando termina, pone busy = 0 y se genera nueva interrupción
-;
-; 3. El programa principal solo inicializa y espera, toda la lógica de 
-;    impresión está en la rutina de interrupción
-;
-; 4. La variable 'restantes' permite al programa principal saber cuándo
-;    ha terminado la impresión completa
-; ===============================================================================
+    ; --- RESTAURAR CONTEXTO ---
+    pop bl                ; Restaurar registros preservados
+    pop al
+
+    ; --- RETORNO DE INTERRUPCIÓN ---
+    iret                  ; Retorno de interrupción
 ```
 ---
 
