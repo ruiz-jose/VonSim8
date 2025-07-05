@@ -11,7 +11,20 @@ import { SpringValue } from "@react-spring/web";
 import getFromPath, { Path, PathValue } from "@vonsim/common/paths";
 import type { Opaque, UnknownRecord } from "type-fest";
 
-import { colors } from "@/lib/tailwind";
+// Define colors inline to avoid import issues
+const colors = {
+  stone: {
+    700: "#44403c",
+    800: "#292524",
+  },
+  red: {
+    500: "#ef4444",
+  },
+  white: "#ffffff",
+  mantis: {
+    400: "#82bd69",
+  },
+};
 
 // Common sets of springs
 

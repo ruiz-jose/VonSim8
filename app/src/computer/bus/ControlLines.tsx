@@ -45,9 +45,7 @@ export function ControlLines() {
         y="410"
         className="pointer-events-none fill-red-500 font-mono text-xs font-bold"
         textAnchor="middle"
-        style={{
-          opacity: getSpring("bus.rd").opacity,
-        }}
+        style={getSpring("bus.rd")}
       >
         LEER MEMORIA
       </animated.text>
@@ -66,9 +64,7 @@ export function ControlLines() {
         y="455"
         className="pointer-events-none fill-blue-500 font-mono text-xs font-bold"
         textAnchor="middle"
-        style={{
-          opacity: getSpring("bus.wr").opacity,
-        }}
+        style={getSpring("bus.wr")}
       >
         ESCRIBIR MEMORIA
       </animated.text>
