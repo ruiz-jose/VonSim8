@@ -39,6 +39,19 @@ export function ControlLines() {
         style={getSpring("bus.rd")}
       />
 
+      {/* Animated command text for READ operations */}
+      <animated.text
+        x="590"
+        y="410"
+        className="pointer-events-none fill-red-500 font-mono text-xs font-bold"
+        textAnchor="middle"
+        style={{
+          opacity: getSpring("bus.rd").opacity,
+        }}
+      >
+        LEER MEMORIA
+      </animated.text>
+
       <path className="fill-none stroke-stone-900 stroke-[6px]" strokeLinejoin="round" d={wrPath} />
       <animated.path
         className="fill-none stroke-[4px]"
@@ -46,6 +59,19 @@ export function ControlLines() {
         d={wrPath}
         style={getSpring("bus.wr")}
       />
+
+      {/* Animated command text for WRITE operations */}
+      <animated.text
+        x="590"
+        y="455"
+        className="pointer-events-none fill-blue-500 font-mono text-xs font-bold"
+        textAnchor="middle"
+        style={{
+          opacity: getSpring("bus.wr").opacity,
+        }}
+      >
+        ESCRIBIR MEMORIA
+      </animated.text>
 
       {/* Chip select */}
 

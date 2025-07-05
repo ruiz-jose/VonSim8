@@ -44,33 +44,13 @@ const SimplePath = () =>
  */
 const springs = {
   bus: {
-    address: { 
-      stroke: new SpringValue(colors.stone[700]),
-      strokeDashoffset: new SpringValue(1),
-      opacity: new SpringValue(1)
-    },
-    data: { 
-      stroke: new SpringValue(colors.stone[700]),
-      strokeDashoffset: new SpringValue(1),
-      opacity: new SpringValue(1)
-    },
-    rd: {
-      stroke: new SpringValue(colors.stone[700]),
-      strokeDashoffset: new SpringValue(1),
-      opacity: new SpringValue(1)
-    },
-    wr: {
-      stroke: new SpringValue(colors.stone[700]),
-      strokeDashoffset: new SpringValue(1),
-      opacity: new SpringValue(1)
-    },
+    address: { stroke: new SpringValue(colors.stone[700]) },
+    data: { stroke: new SpringValue(colors.stone[700]) },
+    rd: { stroke: new SpringValue(colors.stone[700]) },
+    wr: { stroke: new SpringValue(colors.stone[700]) },
 
     iom: SimplePath(),
-    mem: { 
-      stroke: new SpringValue(colors.red[500]),
-      strokeDashoffset: new SpringValue(1),
-      opacity: new SpringValue(1)
-    },
+    mem: { stroke: new SpringValue(colors.red[500]) },
 
     handshake: SimplePath(),
     pic: SimplePath(),

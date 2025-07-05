@@ -30,10 +30,10 @@ const Toast = forwardRef<
       ref={ref}
       data-variant={variant}
       className={clsx(
-        "group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-md p-6 pr-8 shadow-lg transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-bottom-full data-[state=open]:slide-in-from-top-full",
+        "group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-md p-6 pr-8 shadow-lg transition-all",
         variant === "default" && "border border-stone-600 bg-stone-900 text-white",
-        variant === "error" && "group bg-red-900 text-red-50",
-        variant === "info" && "border border-green-500 border-stone-600 bg-stone-900 text-white",
+        variant === "error" && "border border-red-600 bg-red-900 text-red-50",
+        variant === "info" && "border border-green-500 bg-stone-900 text-white",
         className,
       )}
       {...props}
@@ -65,13 +65,13 @@ const ToastClose = forwardRef<
   <ToastPrimitives.Close
     ref={ref}
     className={clsx(
-      "text-current/50 absolute right-2 top-2 rounded-md p-1 opacity-0 transition-opacity hover:text-current focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100 group-data-[variant=error]:text-red-300 group-data-[variant=error]:hover:text-red-50 group-data-[variant=error]:focus:ring-red-400 group-data-[variant=error]:focus:ring-offset-red-600",
+      "absolute right-2 top-2 rounded-md p-1 text-current/50 opacity-0 transition-opacity hover:text-current focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100",
       className,
     )}
     toast-close=""
     {...props}
   >
-    <span className="icon-[lucide--x] block h-4 w-4" />
+    <span className="block size-4">✕</span>
   </ToastPrimitives.Close>
 ));
 ToastClose.displayName = ToastPrimitives.Close.displayName;

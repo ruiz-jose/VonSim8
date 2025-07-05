@@ -138,6 +138,11 @@ export const english = {
       handshake: "handshake",
     },
 
+    bus: {
+      "read-memory": "READ MEMORY",
+      "write-memory": "WRITE MEMORY",
+    },
+
     f10: "F10 key",
     keyboard: "Keyboard",
     leds: "LEDs",

@@ -120,6 +120,11 @@ export const spanish: Locale = {
       handshake: "handshake",
     },
 
+    bus: {
+      "read-memory": "LEER MEMORIA",
+      "write-memory": "ESCRIBIR MEMORIA",
+    },
+
     f10: "Tecla F10",
     keyboard: "Teclado",
     leds: "Leds",

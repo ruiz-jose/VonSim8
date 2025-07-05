@@ -219,14 +219,20 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
     case "cpu:rd.on":
     case "cpu:wr.on": {
       const line = event.type.slice(4, 6) as "rd" | "wr";
+      
+      // Animate address bus
       await anim(
         { key: "bus.address.stroke", to: colors.blue[500] },
         { duration: 5, easing: "easeInOutSine" },
       );
+      
+      // Animate control line 
       await anim(
-        { key: `bus.${line}.stroke`, to: colors.red[500] },
+        { key: `bus.${line}.stroke`, to: line === "rd" ? colors.red[500] : colors.blue[500] },
         { duration: 5, easing: "easeOutSine" },
       );
+      
+      // Animate data bus
       await anim(
         { key: "bus.data.stroke", to: colors.mantis[400] },
         { duration: 5, easing: "easeOutSine" },
@@ -287,7 +293,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       );*/
       await Promise.all([deactivateRegister("cpu.MBR"), resetDataPath()]);
       return;
-    }
+    }   
 
     case "cpu:register.copy": {
       const [src] = parseRegister(event.src);
@@ -315,3 +321,5 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
     }
   }
 }
+
+
