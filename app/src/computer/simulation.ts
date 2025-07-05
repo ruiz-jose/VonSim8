@@ -740,21 +740,119 @@ async function dispatch(...args: Action) {
           return false;
         });
 
+        // Verificar si el programa usa PIC (registros 0x20-0x2B)
+        const usesPIC = result.instructions.some(instruction => {
+          if (instruction.instruction === "IN" || instruction.instruction === "OUT") {
+            return instruction.operands.some((operand: any) => {
+              if (operand.type === "number-expression") {
+                // Verificar valores directos
+                if (typeof operand.value.value === "number") {
+                  return operand.value.value >= 0x20 && operand.value.value <= 0x2B;
+                }
+                // Verificar expresiones que se resuelven a direcciones PIC
+                try {
+                  if (operand.value && typeof operand.value.resolve === "function") {
+                    const resolvedValue = operand.value.resolve();
+                    if (typeof resolvedValue === "number") {
+                      return resolvedValue >= 0x20 && resolvedValue <= 0x2B;
+                    }
+                  }
+                } catch (error) {
+                  // Si no se puede resolver, continuar sin error
+                  console.warn("No se pudo resolver operando PIC:", error);
+                }
+              }
+              return false;
+            });
+          }
+          return false;
+        });
+
+        // Verificar si el programa usa Handshake (registros 0x40-0x41)
+        const usesHandshake = result.instructions.some(instruction => {
+          if (instruction.instruction === "IN" || instruction.instruction === "OUT") {
+            return instruction.operands.some((operand: any) => {
+              if (operand.type === "number-expression") {
+                // Verificar valores directos
+                if (typeof operand.value.value === "number") {
+                  return operand.value.value === 0x40 || operand.value.value === 0x41;
+                }
+                // Verificar expresiones que se resuelven a direcciones Handshake
+                try {
+                  if (operand.value && typeof operand.value.resolve === "function") {
+                    const resolvedValue = operand.value.resolve();
+                    if (typeof resolvedValue === "number") {
+                      return resolvedValue === 0x40 || resolvedValue === 0x41;
+                    }
+                  }
+                } catch (error) {
+                  // Si no se puede resolver, continuar sin error
+                  console.warn("No se pudo resolver operando Handshake:", error);
+                }
+              }
+              return false;
+            });
+          }
+          return false;
+        });
+
+        // Verificar si el programa usa Timer (registros 0x10-0x11)
+        const usesTimer = result.instructions.some(instruction => {
+          if (instruction.instruction === "IN" || instruction.instruction === "OUT") {
+            return instruction.operands.some((operand: any) => {
+              if (operand.type === "number-expression") {
+                // Verificar valores directos
+                if (typeof operand.value.value === "number") {
+                  return operand.value.value === 0x10 || operand.value.value === 0x11;
+                }
+                // Verificar expresiones que se resuelven a direcciones Timer
+                try {
+                  if (operand.value && typeof operand.value.resolve === "function") {
+                    const resolvedValue = operand.value.resolve();
+                    if (typeof resolvedValue === "number") {
+                      return resolvedValue === 0x10 || resolvedValue === 0x11;
+                    }
+                  }
+                } catch (error) {
+                  // Si no se puede resolver, continuar sin error
+                  console.warn("No se pudo resolver operando Timer:", error);
+                }
+              }
+              return false;
+            });
+          }
+          return false;
+        });
+
+        // Configurar dispositivos basado en detección
+        const currentSettings = getSettings();
         store.set(settingsAtom, (prev: any) => ({
           ...prev,
-          devices: { ...prev.devices, keyboardAndScreen: connectScreenAndKeyboard, 
-                pio: usesSwitches ? "switches-and-leds" : prev.devices.pio,
+          devices: { 
+            ...prev.devices, 
+            keyboardAndScreen: connectScreenAndKeyboard,
+            pio: usesSwitches ? "switches-and-leds" : (usesHandshake ? "printer" : prev.devices.pio),
+            handshake: usesHandshake ? "printer" : prev.devices.handshake,
+            pic: usesPIC || prev.devices.pic,
             "switches-and-leds": usesSwitches,
           },
         }));
        
         // Actualizar el átomo con el valor de connectScreenAndKeyboard
         store.set(connectScreenAndKeyboardAtom, connectScreenAndKeyboard);
+
+        // Determinar si se necesita mostrar el vector de interrupciones
+        // Se muestra si hay INT, o si se usan dispositivos que pueden generar interrupciones
+        const hasINTOrInterruptDevices = hasINT || usesPIC || usesHandshake || usesTimer || connectScreenAndKeyboard;
+        store.set(hasINTInstructionAtom, hasINTOrInterruptDevices);
+        
+        console.log("Detectado - PIC:", usesPIC, "Handshake:", usesHandshake, "Timer:", usesTimer, "INT:", hasINT);
+        console.log("Habilitando vector de interrupciones:", hasINTOrInterruptDevices);
         
         // Reset the simulator
         simulator.loadProgram({
           program: result,
-          data: getSettings().dataOnLoad,
+          data: currentSettings.dataOnLoad,
           devices: getSettings().devices, 
           hasORG: result.hasORG, // Pass the hasORG flag 
         });

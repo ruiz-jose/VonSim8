@@ -1,15 +1,15 @@
 import { MemoryAddress } from "@vonsim/common/address";
 import type { Byte } from "@vonsim/common/byte";
-import { useAtomValue } from "jotai";
 import clsx from "clsx";
-import { useState, useRef, useEffect } from "react";
+import { useAtomValue } from "jotai";
+import { useEffect, useRef, useState } from "react";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover";
-import { registerAtoms, showSPAtom } from "@/computer/cpu/state";
+import { hasINTInstructionAtom, registerAtoms, showSPAtom } from "@/computer/cpu/state";
 import { dataAddressesAtom, programAddressesAtom } from "@/computer/memory/state";
 import { animated, getSpring } from "@/computer/shared/springs";
-import { hasINTInstructionAtom } from "@/computer/cpu/state";
 import { useTranslate } from "@/lib/i18n";
+import { useDevices } from "@/lib/settings";
 
 import { memoryShownAtom, operatingAddressAtom } from "./state";
 
@@ -23,6 +23,11 @@ export function Memory() {
   const sp = useAtomValue(registerAtoms.SP);
   const showSP = useAtomValue(showSPAtom);
   const hasINT = useAtomValue(hasINTInstructionAtom);
+  const deviceSettings = useDevices();
+
+  // Determinar si se debe mostrar el vector de interrupciones
+  // Se muestra si hay instrucciones INT o si están activados dispositivos que usan interrupciones
+  const showInterruptVector = hasINT || deviceSettings.pic || deviceSettings.handshake !== null;
 
   const renderMemoryRows = () => {
     const rows = [];
@@ -34,13 +39,13 @@ export function Memory() {
   };
 
   return (
-    <div className="absolute left-[800px] top-0 z-10 h-auto w-auto rounded-lg border border-stone-600 bg-stone-900 [&_*]:z-20 shadow-2xl">
+    <div className="absolute left-[800px] top-0 z-10 h-auto w-auto rounded-lg border border-stone-600 bg-stone-900 shadow-2xl [&_*]:z-20">
       <span className="block w-min rounded-br-lg rounded-tl-lg border-b border-r border-stone-600 bg-mantis-500 px-2 py-1 text-3xl text-white shadow">
         {translate("computer.memory.name")}
       </span>
 
       <div className="m-4 overflow-x-auto">
-        <table className="border-separate w-auto mx-auto text-center font-mono text-base min-w-[600px]">
+        <table className="mx-auto w-auto min-w-[600px] border-separate text-center font-mono text-base">
           <thead>
             <tr>
               <th></th>
@@ -48,8 +53,8 @@ export function Memory() {
                 <th
                   key={index}
                   className={clsx(
-                    "border border-gray-500 w-10 h-10 bg-mantis-500",
-                    index % 4 === 0 && index !== 0 ? "border-l-4 border-mantis-700" : ""
+                    "size-10 border border-gray-500 bg-mantis-500",
+                    index % 4 === 0 && index !== 0 ? "border-l-4 border-mantis-600" : ""
                   )}
                 >
                   {index.toString(16).toUpperCase()}
@@ -61,17 +66,17 @@ export function Memory() {
             {renderMemoryRows().map((row, rowIndex) => (
               <tr
                 key={rowIndex}
-                className={rowIndex % 4 === 0 && rowIndex !== 0 ? "border-t-4 border-mantis-700" : ""}
+                className={rowIndex % 4 === 0 && rowIndex !== 0 ? "border-t-4 border-mantis-600" : ""}
               >
-                <th className="border border-gray-500 w-10 h-10 bg-mantis-500">
+                <th className="size-10 border border-gray-500 bg-mantis-500">
                   {rowIndex.toString(16).toUpperCase()}
                 </th>
                 {row.map((cell, cellIndex) => (
                   <td
                     key={cellIndex}
                     className={clsx(
-                      "border border-gray-500 w-10 h-10 p-0 transition-shadow duration-200",
-                      cellIndex % 4 === 0 && cellIndex !== 0 ? "border-l-4 border-mantis-700" : "",
+                      "size-10 border border-gray-500 p-0 transition-shadow duration-200",
+                      cellIndex % 4 === 0 && cellIndex !== 0 ? "border-l-4 border-mantis-600" : "",
                     )}
                   >
                     <MemoryCell
@@ -82,7 +87,7 @@ export function Memory() {
                       isStackData={showSP && cell.address.valueOf() > sp.valueOf()}
                       isProgramAddress={!!programAddresses.find(entry => entry.address === cell.address.value)}
                       isDataAddress={!!dataAddresses.find(entry => entry.address === cell.address.value)}
-                      isInterruptVector={hasINT && cell.address.valueOf() >= 0 && cell.address.valueOf() <= 7}
+                      isInterruptVector={showInterruptVector && cell.address.valueOf() >= 0 && cell.address.valueOf() <= 7}
                       label={
                         programAddresses.find(entry => entry.address === cell.address.value)?.name ||
                         dataAddresses.find(entry => entry.address === cell.address.value)?.label ||
@@ -146,12 +151,12 @@ function MemoryCell({
         <animated.div
           title={title}
           className={clsx(
-            "cursor-pointer border w-10 h-10 flex items-center justify-center relative font-mono text-base select-none transition-all duration-200",
+            "relative flex size-10 cursor-pointer select-none items-center justify-center border font-mono text-base transition-all duration-200",
             // Colores de fondo y borde según tipo
             isIP
-              ? "ring-2 ring-red-500 ring-offset-2 shadow-lg shadow-red-500/50 outline outline-2 outline-red-500 z-10"
+              ? "z-10 shadow-lg shadow-red-500/50 outline outline-2 outline-red-500 ring-2 ring-red-500 ring-offset-2"
               : isSP
-              ? "ring-2 ring-yellow-400 ring-offset-2 shadow-lg shadow-yellow-400/50 outline outline-2 outline-yellow-400 z-10"
+              ? "z-10 shadow-lg shadow-yellow-400/50 outline outline-2 outline-yellow-400 ring-2 ring-yellow-400 ring-offset-2"
               : "",
             // Cambiar fondos de colores sólidos por fondo oscuro consistente
             "bg-stone-800",
@@ -164,8 +169,8 @@ function MemoryCell({
             // Color de texto consistente
             "text-stone-100",
             // Hover y animación de destello
-            "hover:shadow-xl hover:z-20 hover:scale-110",
-            flash && "animate-pulse-fast"
+            "hover:z-20 hover:scale-110 hover:shadow-xl",
+            flash && "animate-pulse"
           )}
           style={
             address.value === operatingAddress.value
@@ -176,7 +181,7 @@ function MemoryCell({
           {/* Iconos para instrucciones, datos y vector de interrupciones */}
           {isInterruptVector && !isSP && !isStackData && (
             <span
-              className="absolute top-0.5 left-0.5 text-purple-400 text-[10px] bg-stone-900/80 px-0.5 rounded pointer-events-none"
+              className="pointer-events-none absolute left-0.5 top-0.5 rounded bg-stone-900/80 px-0.5 text-[10px] text-purple-400"
               title="Vector de interrupción"
               style={{ lineHeight: 1 }}
             >
@@ -185,7 +190,7 @@ function MemoryCell({
           )}
           {isProgramAddress && !isSP && !isStackData && !isInterruptVector && (
             <span
-              className="absolute top-0.5 left-0.5 text-blue-400 text-[10px] bg-stone-900/80 px-0.5 rounded pointer-events-none"
+              className="pointer-events-none absolute left-0.5 top-0.5 rounded bg-stone-900/80 px-0.5 text-[10px] text-blue-400"
               title="Instrucción"
               style={{ lineHeight: 1 }}
             >
@@ -194,7 +199,7 @@ function MemoryCell({
           )}
           {isDataAddress && !isSP && !isStackData && !isProgramAddress && !isInterruptVector && (
             <span
-              className="absolute top-0.5 left-0.5 text-green-400 text-[10px] bg-stone-900/80 px-0.5 rounded pointer-events-none"
+              className="pointer-events-none absolute left-0.5 top-0.5 rounded bg-stone-900/80 px-0.5 text-[10px] text-green-400"
               title="Dato"
               style={{ lineHeight: 1 }}
             >
@@ -204,7 +209,7 @@ function MemoryCell({
           {/* Nuevo: Icono para datos de la pila */}
           {isStackData && !isSP && (
             <span
-              className="absolute top-0.5 left-0.5 text-yellow-400 text-[10px] bg-stone-900/80 px-0.5 rounded pointer-events-none"
+              className="pointer-events-none absolute left-0.5 top-0.5 rounded bg-stone-900/80 px-0.5 text-[10px] text-yellow-400"
               title="Dato de la pila"
               style={{ lineHeight: 1 }}
             >
@@ -214,7 +219,7 @@ function MemoryCell({
           {/* Nuevo: Icono para SP */}
           {isSP && (
             <span
-              className="absolute top-0.5 left-0.5 text-yellow-300 text-[10px] bg-stone-900/80 px-0.5 rounded pointer-events-none"
+              className="pointer-events-none absolute left-0.5 top-0.5 rounded bg-stone-900/80 px-0.5 text-[10px] text-yellow-300"
               title="Stack Pointer"
               style={{ lineHeight: 1 }}
             >
@@ -227,7 +232,7 @@ function MemoryCell({
           </span>
           {isIP && (
             <span
-              className="absolute top-0 right-0 text-red-500 text-xs"
+              className="absolute right-0 top-0 text-xs text-red-500"
               title="IP"
               style={{ lineHeight: 1 }}
             >
@@ -236,7 +241,7 @@ function MemoryCell({
           )}
           {isSP && (
             <span
-              className="absolute top-0 right-0 text-yellow-500 text-xs"
+              className="absolute right-0 top-0 text-xs text-yellow-500"
               title="SP"
               style={{ lineHeight: 1 }}
             >
@@ -250,10 +255,10 @@ function MemoryCell({
         <p className="px-4 py-2 font-medium text-white">
           {title}{" "}
           {label ? (
-            <span className="text-mantis-400 font-bold">
+            <span className="font-bold text-mantis-400">
               ({label})
               {length !== null && length !== "" && (
-                <span className="text-white text-xs font-normal"> Bytes: {length}</span>
+                <span className="text-xs font-normal text-white"> Bytes: {length}</span>
               )}
             </span>
           ) : (
