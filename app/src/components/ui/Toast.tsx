@@ -65,7 +65,7 @@ const ToastClose = forwardRef<
   <ToastPrimitives.Close
     ref={ref}
     className={clsx(
-      "absolute right-2 top-2 rounded-md p-1 text-current/50 opacity-0 transition-opacity hover:text-current focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100",
+      "text-current/50 absolute right-2 top-2 rounded-md p-1 opacity-0 transition-opacity hover:text-current focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100",
       className,
     )}
     toast-close=""

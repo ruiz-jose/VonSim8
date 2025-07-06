@@ -33,8 +33,8 @@ export function Switches() {
 
       <div className="flex flex-row-reverse gap-3 p-4">
         {state.map((on, i) => (
-          <div key={i} className="w-8 flex flex-col items-center">
-            <span className="text-xs text-white mb-1 text-center w-full">{i}</span>
+          <div key={i} className="flex w-8 flex-col items-center">
+            <span className="mb-1 w-full text-center text-xs text-white">{i}</span>
             <Switch
               checked={on}
               onCheckedChange={() => dispatch("switch.toggle", i)}

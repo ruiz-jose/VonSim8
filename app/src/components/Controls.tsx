@@ -132,108 +132,108 @@ export function Controls({ className }: { className?: string }) {
         disabled={status.type === "running"}
         onClick={runCycle}
         title={translate("control.action.run.cycle-change")}
-        className="group flex flex-col items-center focus-visible:ring-2 focus-visible:ring-mantis-400 rounded-lg px-2 py-1 transition hover:bg-mantis-600/20 disabled:opacity-50 relative"
+        className="group relative flex flex-col items-center rounded-lg px-2 py-1 transition hover:bg-mantis-600/20 focus-visible:ring-2 focus-visible:ring-mantis-400 disabled:opacity-50"
       >
         <span className="flex items-center justify-center">
           <FontAwesomeIcon
             icon={faPlay}
             size="lg"
-            className="text-mantis-400 group-hover:scale-110 transition"
+            className="text-mantis-400 transition group-hover:scale-110"
           />
           {!isMobile && (
-            <span className="ml-1 text-[10px] text-stone-400 font-mono opacity-80 pointer-events-none">
+            <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
               F7
             </span>
           )}
         </span>
         {!isMobile && (
-          <span className="text-xs mt-1">{translate("control.action.run.cycle-change")}</span>
+          <span className="mt-1 text-xs">{translate("control.action.run.cycle-change")}</span>
         )}
       </button>
       <button
         disabled={status.type === "running"}
         onClick={runInstruction}
         title={translate("control.action.run.end-of-instruction")}
-        className="group flex flex-col items-center focus-visible:ring-2 focus-visible:ring-blue-400 rounded-lg px-2 py-1 transition hover:bg-blue-600/20 disabled:opacity-50 relative"
+        className="group relative flex flex-col items-center rounded-lg px-2 py-1 transition hover:bg-blue-600/20 focus-visible:ring-2 focus-visible:ring-blue-400 disabled:opacity-50"
       >
         <span className="flex items-center justify-center">
           <FontAwesomeIcon
             icon={faStepForward}
             size="lg"
-            className="text-blue-400 group-hover:scale-110 transition"
+            className="text-blue-400 transition group-hover:scale-110"
           />
           {!isMobile && (
-            <span className="ml-1 text-[10px] text-stone-400 font-mono opacity-80 pointer-events-none">
+            <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
               F8
             </span>
           )}
         </span>
         {!isMobile && (
-          <span className="text-xs mt-1">{translate("control.action.run.end-of-instruction")}</span>
+          <span className="mt-1 text-xs">{translate("control.action.run.end-of-instruction")}</span>
         )}
       </button>
       <button
         disabled={status.type === "running"}
         onClick={runInfinity}
         title={translate("control.action.run.infinity")}
-        className="group flex flex-col items-center focus-visible:ring-2 focus-visible:ring-orange-400 rounded-lg px-2 py-1 transition hover:bg-orange-600/20 disabled:opacity-50 relative"
+        className="group relative flex flex-col items-center rounded-lg px-2 py-1 transition hover:bg-orange-600/20 focus-visible:ring-2 focus-visible:ring-orange-400 disabled:opacity-50"
       >
         <span className="flex items-center justify-center">
           <FontAwesomeIcon
             icon={faInfinity}
             size="lg"
-            className="text-orange-400 group-hover:scale-110 transition"
+            className="text-orange-400 transition group-hover:scale-110"
           />
           {!isMobile && (
-            <span className="ml-1 text-[10px] text-stone-400 font-mono opacity-80 pointer-events-none">
+            <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
               F4
             </span>
           )}
         </span>
         {!isMobile && (
-          <span className="text-xs mt-1">{translate("control.action.run.infinity")}</span>
+          <span className="mt-1 text-xs">{translate("control.action.run.infinity")}</span>
         )}
       </button>
       {status.type === "running" ? (
         <button
           onClick={handlePause}
           title={translate("control.action.pause")}
-          className="group flex flex-col items-center focus-visible:ring-2 focus-visible:ring-red-400 rounded-lg px-2 py-1 transition hover:bg-red-600/20 relative"
+          className="group relative flex flex-col items-center rounded-lg px-2 py-1 transition hover:bg-red-600/20 focus-visible:ring-2 focus-visible:ring-red-400"
         >
           <span className="flex items-center justify-center">
             <FontAwesomeIcon
               icon={faPause}
               size="lg"
-              className="text-red-400 group-hover:scale-110 transition"
+              className="text-red-400 transition group-hover:scale-110"
             />
             {!isMobile && (
-              <span className="ml-1 text-[10px] text-stone-400 font-mono opacity-80 pointer-events-none">
+              <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
                 F9
               </span>
             )}
           </span>
-          {!isMobile && <span className="text-xs mt-1">{translate("control.action.pause")}</span>}
+          {!isMobile && <span className="mt-1 text-xs">{translate("control.action.pause")}</span>}
         </button>
       ) : (
         <button
           onClick={handleReset}
           disabled={status.type === "stopped"}
           title={translate("control.action.reset")}
-          className="group flex flex-col items-center focus-visible:ring-2 focus-visible:ring-red-400 rounded-lg px-2 py-1 transition hover:bg-red-600/20 disabled:opacity-50 relative"
+          className="group relative flex flex-col items-center rounded-lg px-2 py-1 transition hover:bg-red-600/20 focus-visible:ring-2 focus-visible:ring-red-400 disabled:opacity-50"
         >
           <span className="flex items-center justify-center">
             <FontAwesomeIcon
               icon={faRedo}
               size="lg"
-              className="text-red-400 group-hover:scale-110 transition"
+              className="text-red-400 transition group-hover:scale-110"
             />
             {!isMobile && (
-              <span className="ml-1 text-[10px] text-stone-400 font-mono opacity-80 pointer-events-none">
+              <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
                 F9
               </span>
             )}
           </span>
-          {!isMobile && <span className="text-xs mt-1">{translate("control.action.reset")}</span>}
+          {!isMobile && <span className="mt-1 text-xs">{translate("control.action.reset")}</span>}
         </button>
       )}
     </div>

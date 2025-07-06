@@ -198,7 +198,7 @@ export class CPU extends Component {
 
     // Get interrupt routine address low
     //let vector = Byte.fromUnsigned(number.unsigned * 4, 16);
-    let vector = Byte.fromUnsigned(number.unsigned, 8);
+    const vector = Byte.fromUnsigned(number.unsigned, 8);
     yield* this.updateByteRegister("ri.l", vector);
     //yield* this.getMBR("IP.l");
     yield* this.copyWordRegister("ri", "IP");

@@ -1,5 +1,3 @@
-import { Byte } from "@vonsim/common/byte";
-
 import type { Computer } from "../../computer";
 import { SimulatorError } from "../../error";
 import type { EventGenerator } from "../../events";

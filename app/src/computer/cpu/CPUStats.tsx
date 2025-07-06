@@ -17,12 +17,12 @@ export function CPUStats() {
 
   return (
     <div className="absolute left-[120px] top-[-120px] z-10 h-min w-[300px] rounded-lg border border-stone-600 bg-stone-900 [&_*]:z-20">
-      <span className="mb-2 block h-min w-full rounded-br-lg rounded-tl-lg border-b border-r border-stone-600 bg-blue-500 px-2 py-1 text-lg text-white cursor-move">
+      <span className="mb-2 block h-min w-full cursor-move rounded-br-lg rounded-tl-lg border-b border-r border-stone-600 bg-blue-500 px-2 py-1 text-lg text-white">
         {translate("computer.cpu.stats")}
       </span>
       <hr className="border-stone-600" />
-      <div className="flex flex-col w-full items-start py-2 px-2">
-        <div className="text-white pl-1 text-sm text-left">
+      <div className="flex w-full flex-col items-start p-2">
+        <div className="pl-1 text-left text-sm text-white">
           <div className="mb-1">Total de ciclos: {cycleCount}</div>
           <div>Recuento de instrucciones: {instructionCount}</div>
         </div>

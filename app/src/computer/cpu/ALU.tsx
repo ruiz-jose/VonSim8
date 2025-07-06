@@ -108,7 +108,7 @@ export function ALU() {
       </svg>
 
       <animated.span
-        className="icon-[lucide--settings] absolute left-[244px] top-[120px] block h-5 w-5 text-stone-300"
+        className="icon-[lucide--settings] absolute left-[244px] top-[120px] block size-5 text-stone-300"
         style={{
           transform: getSpring("cpu.alu.cog").rot.to(t => `rotate(${t * 60}deg)`),
         }}
@@ -116,7 +116,7 @@ export function ALU() {
 
       {showOperation && (
         <animated.span
-          className="absolute left-[244px] top-[40px] flex w-min items-center rounded-md border border-stone-600 px-2 py-1 font-mono leading-none z-30"
+          className="absolute left-[244px] top-[40px] z-30 flex w-min items-center rounded-md border border-stone-600 px-2 py-1 font-mono leading-none"
           style={getSpring("cpu.alu.operation")}
         >
           {operation}
@@ -126,14 +126,14 @@ export function ALU() {
       {/* Flags mejoradas */}
       <animated.div
         className={clsx(
-          "absolute flex w-min items-center gap-0.5 rounded-lg border-2 border-stone-400 bg-gradient-to-br from-stone-700 via-stone-600 to-stone-800 px-0.5 py-1 text-stone-200 font-bold min-w-[38px] min-h-[30px] shadow-lg ring-1 ring-stone-300",
+          "absolute flex min-h-[30px] w-min min-w-[38px] items-center gap-0.5 rounded-lg border-2 border-stone-400 bg-gradient-to-br from-stone-700 via-stone-600 to-stone-800 px-0.5 py-1 font-bold text-stone-200 shadow-lg ring-1 ring-stone-300",
           settings.flagsVisibility === "SF_OF_CF_ZF"
-            ? "top-[190px] left-[210px]"
-            : "top-[190px] left-[230px]",
+            ? "left-[210px] top-[190px]"
+            : "left-[230px] top-[190px]",
         )}
         style={getSpring("cpu.FLAGS")}
       >
-        <span className="absolute top-0.5 left-0.5 text-stone-300 text-[6px] bg-stone-900/80 px-0.5 rounded pointer-events-none font-bold">
+        <span className="pointer-events-none absolute left-0.5 top-0.5 rounded bg-stone-900/80 px-0.5 text-[6px] font-bold text-stone-300">
           FLAGS
         </span>
 
@@ -142,7 +142,7 @@ export function ALU() {
           {connectScreenAndKeyboard && (
             <span
               className={clsx(
-                "px-0.5 py-0 text-[10px] font-bold rounded border transition-all duration-200",
+                "rounded border px-0.5 py-0 text-[10px] font-bold transition-all duration-200",
                 IF
                   ? "border-stone-300 bg-stone-300 text-stone-950 shadow-[0_0_4px_rgba(120,113,108,0.6)]"
                   : "border-stone-600 bg-stone-800 text-stone-300",
@@ -156,7 +156,7 @@ export function ALU() {
             <>
               <span
                 className={clsx(
-                  "px-0.5 py-0 text-[10px] font-bold rounded border transition-all duration-200",
+                  "rounded border px-0.5 py-0 text-[10px] font-bold transition-all duration-200",
                   SF
                     ? "border-stone-300 bg-stone-300 text-stone-950 shadow-[0_0_4px_rgba(120,113,108,0.6)]"
                     : "border-stone-600 bg-stone-800 text-stone-300",
@@ -166,7 +166,7 @@ export function ALU() {
               </span>
               <span
                 className={clsx(
-                  "px-0.5 py-0 text-[10px] font-bold rounded border transition-all duration-200",
+                  "rounded border px-0.5 py-0 text-[10px] font-bold transition-all duration-200",
                   OF
                     ? "border-stone-300 bg-stone-300 text-stone-950 shadow-[0_0_4px_rgba(120,113,108,0.6)]"
                     : "border-stone-600 bg-stone-800 text-stone-300",
@@ -179,7 +179,7 @@ export function ALU() {
 
           <span
             className={clsx(
-              "px-0.5 py-0 text-[10px] font-bold rounded border transition-all duration-200",
+              "rounded border px-0.5 py-0 text-[10px] font-bold transition-all duration-200",
               CF
                 ? "border-stone-300 bg-stone-300 text-stone-950 shadow-[0_0_4px_rgba(120,113,108,0.6)]"
                 : "border-stone-600 bg-stone-800 text-stone-300",
@@ -189,7 +189,7 @@ export function ALU() {
           </span>
           <span
             className={clsx(
-              "px-0.5 py-0 text-[10px] font-bold rounded border transition-all duration-200",
+              "rounded border px-0.5 py-0 text-[10px] font-bold transition-all duration-200",
               ZF
                 ? "border-stone-300 bg-stone-300 text-stone-950 shadow-[0_0_4px_rgba(120,113,108,0.6)]"
                 : "border-stone-600 bg-stone-800 text-stone-300",

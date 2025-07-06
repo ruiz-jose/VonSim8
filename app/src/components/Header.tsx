@@ -16,7 +16,7 @@ export function Header() {
         <div className="flex select-none items-center justify-center">
           <img
             src={`${import.meta.env.BASE_URL}favicon.svg`}
-            className="mr-2 h-10 w-10"
+            className="mr-2 size-10"
             style={{ filter: "none", opacity: 1 }}
             draggable={false}
           />
@@ -29,7 +29,7 @@ export function Header() {
         {/* Botón de configuración */}
         <button
           className={clsx(
-            "h-min w-min rounded-full p-2 transition-colors focus:outline-stone-400 ml-4",
+            "ml-4 size-min rounded-full p-2 transition-colors focus:outline-stone-400",
             settingsOpen
               ? "bg-stone-700 hover:bg-stone-600 focus:bg-stone-600"
               : "hover:bg-stone-800 focus:bg-stone-800",
@@ -37,7 +37,7 @@ export function Header() {
           title={translate("settings.title")}
           onClick={() => setSettingsOpen(!settingsOpen)}
         >
-          <span className="icon-[lucide--settings] block h-6 w-6" />
+          <span className="icon-[lucide--settings] block size-6" />
         </button>
       </div>
     </header>

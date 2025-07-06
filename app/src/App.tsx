@@ -10,12 +10,11 @@ import { Header } from "@/components/Header";
 import { Settings, settingsOpenAtom } from "@/components/Settings";
 import { ToastAction } from "@/components/ui/Toast";
 import { ComputerContainer } from "@/computer";
-
+import { cycleAtom } from "@/computer/cpu/state"; // Importa el ciclo actual
 import { Editor } from "@/editor";
 import { useTranslate } from "@/lib/i18n";
 import { useFilters, useLanguage } from "@/lib/settings";
 import { toast } from "@/lib/toast";
-import { cycleAtom } from "@/computer/cpu/state"; // Importa el ciclo actual
 
 export default function App() {
   const lang = useLanguage();
@@ -72,7 +71,7 @@ function DesktopLayout() {
         tagName="section"
         className="rounded-lg border border-stone-600 bg-stone-800"
       >
-        <Editor className="h-full w-full" />
+        <Editor className="size-full" />
       </Panel>
       <PanelResizeHandle className="w-2" />
       <Panel
@@ -94,7 +93,7 @@ function DesktopLayout() {
             tagName="section"
             className="rounded-lg border border-stone-600 bg-stone-800"
           >
-            <Settings className="h-full w-full" />
+            <Settings className="size-full" />
           </Panel>
         </>
       )}
@@ -126,13 +125,13 @@ function MobileLayout() {
       <>
         {/* Mostrar instrucción en curso arriba si está en modo computadora */}
         {tab === "computer" && (
-          <div className="sticky top-0 z-30 w-full bg-stone-900 border-b border-stone-700 px-4 py-2 text-center font-mono text-base text-mantis-400">
-            {currentInstruction || <span className="text-stone-400 italic">Sin instrucción</span>}
+          <div className="sticky top-0 z-30 w-full border-b border-stone-700 bg-stone-900 px-4 py-2 text-center font-mono text-base text-mantis-400">
+            {currentInstruction || <span className="italic text-stone-400">Sin instrucción</span>}
           </div>
         )}
         <TabsContent value="editor" asChild>
           <section className="mx-2 grow overflow-hidden rounded-lg border border-stone-600 bg-stone-800 data-[state=inactive]:hidden">
-            <Editor className="h-full w-full" />
+            <Editor className="size-full" />
           </section>
         </TabsContent>
         <TabsContent value="computer" asChild>
@@ -142,7 +141,7 @@ function MobileLayout() {
         </TabsContent>
         <TabsContent value="settings" asChild>
           <section className="mx-2 grow overflow-hidden rounded-lg border border-stone-600 bg-stone-800 data-[state=inactive]:hidden">
-            <Settings className="h-full w-full" />
+            <Settings className="size-full" />
           </section>
         </TabsContent>
 
@@ -151,14 +150,14 @@ function MobileLayout() {
             value="editor"
             className="inline-flex items-center justify-center rounded-lg py-2 text-sm font-semibold text-stone-400 transition-colors hover:bg-stone-800 hover:text-white data-[state=active]:bg-stone-700 data-[state=active]:text-white"
           >
-            <span className="icon-[lucide--file-terminal] mr-2 h-4 w-4" />
+            <span className="icon-[lucide--file-terminal] mr-2 size-4" />
             {translate("control.tabs.editor")}
           </TabsTrigger>
           <TabsTrigger
             value="computer"
             className="inline-flex items-center justify-center rounded-lg py-2 text-sm font-semibold text-stone-400 transition-colors hover:bg-stone-800 hover:text-white data-[state=active]:bg-stone-700 data-[state=active]:text-white"
           >
-            <span className="icon-[lucide--computer] mr-2 h-4 w-4" />
+            <span className="icon-[lucide--computer] mr-2 size-4" />
             {translate("control.tabs.computer")}
           </TabsTrigger>
         </TabsList>

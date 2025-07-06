@@ -9,11 +9,11 @@ export function ZoomControls({ wrapperRef }: { wrapperRef: RefObject<ReactZoomPa
   return (
     <div className="absolute right-2 top-2 flex flex-col rounded-lg border border-stone-600 bg-stone-900 shadow">
       <button
-        className="m-0.5 flex h-8 w-8 items-center justify-center rounded-t-lg text-white transition-colors hover:enabled:bg-stone-800"
+        className="m-0.5 flex size-8 items-center justify-center rounded-t-lg text-white transition-colors hover:enabled:bg-stone-800"
         onClick={() => wrapperRef.current?.zoomIn()}
         title={translate("control.zoom.in")}
       >
-        <span className="h-4 w-4">
+        <span className="size-4">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -31,11 +31,11 @@ export function ZoomControls({ wrapperRef }: { wrapperRef: RefObject<ReactZoomPa
       </button>
       <hr className="border-stone-600" />
       <button
-        className="m-0.5 flex h-8 w-8 items-center justify-center rounded-b-lg text-white transition-colors hover:enabled:bg-stone-800"
+        className="m-0.5 flex size-8 items-center justify-center rounded-b-lg text-white transition-colors hover:enabled:bg-stone-800"
         onClick={() => wrapperRef.current?.zoomOut()}
         title={translate("control.zoom.out")}
       >
-        <span className="h-4 w-4">
+        <span className="size-4">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"

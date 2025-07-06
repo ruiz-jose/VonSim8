@@ -13,7 +13,6 @@ import { cycleCountAtom, messageAtom, messageHistoryAtom } from "./state";
 export function RegisterTransferMessages() {
   const translate = useTranslate();
   const message = useAtomValue(messageAtom);
-  const cycleCount = useAtomValue(cycleCountAtom);
   const messageHistory = useAtomValue(messageHistoryAtom);
   const simulationStatus = useAtomValue(simulationAtom);
   const programModified = useAtomValue(programModifiedAtom);
@@ -32,10 +31,12 @@ export function RegisterTransferMessages() {
   // Usar useEffect para agregar el mensaje actual al historial
   useEffect(() => {
     if (message) {
-      const parsedMessage = parseMessage(message, cycleCount); // Parsear el mensaje con el ciclo
-      store.set(messageHistoryAtom, prev => [...prev, parsedMessage]); // Guardar en el historial
+      // Capturar el valor actual de cycleCount en el momento del cambio de mensaje
+      const currentCycleCount = store.get(cycleCountAtom);
+      const parsedMessage = parseMessage(message, currentCycleCount);
+      store.set(messageHistoryAtom, prev => [...prev, parsedMessage]);
     }
-  }, [message]); // Ejecutar solo cuando cambien `message` o `cycleCount`
+  }, [message]); // Solo cuando cambie message
 
   // Avisar al usuario si el programa en ejecución es modificado
   useEffect(() => {
@@ -61,13 +62,13 @@ export function RegisterTransferMessages() {
 
   return (
     <div className="absolute left-[120px] top-[520px] z-10 h-min w-[300px] rounded-lg border border-stone-600 bg-stone-900 [&_*]:z-20">
-      <span className="mb-2 block h-min w-full rounded-br-lg rounded-tl-lg border-b border-stone-600 bg-purple-500 px-2 py-1 text-lg text-white cursor-move">
+      <span className="mb-2 block h-min w-full cursor-move rounded-br-lg rounded-tl-lg border-b border-stone-600 bg-purple-500 px-2 py-1 text-lg text-white">
         {translate("computer.cpu.instruction-cycle")}
       </span>
       <hr className="border-stone-600" />
       <div
         ref={containerRef} // Referencia al contenedor para el scroll
-        className="flex flex-col w-full py-2 px-2 overflow-y-auto max-h-[300px]"
+        className="flex max-h-[300px] w-full flex-col overflow-y-auto p-2"
       >
         {/* Renderizar mensajes con títulos dinámicos */}
         {messageHistory.map((msg, index) => {
@@ -81,19 +82,19 @@ export function RegisterTransferMessages() {
                   <div
                     className={`mb-2 ${
                       msg.stage === "Captación"
-                        ? "text-blue-400 text-lg font-serif"
+                        ? "font-serif text-lg text-blue-400"
                         : msg.stage === "Ejecución"
-                          ? "text-green-400 text-lg font-sans"
+                          ? "font-sans text-lg text-green-400"
                           : msg.stage === "Interrupción"
-                            ? "text-red-400 text-lg font-mono"
-                            : "text-white text-sm font-bold"
+                            ? "font-mono text-lg text-red-400"
+                            : "text-sm font-bold text-white"
                     }`}
                   >
                     Etapa: {msg.stage}
                   </div>
                   {/* Títulos de las columnas */}
                   {msg.stage !== "Interrupción" && (
-                    <div className="flex text-white text-sm font-bold mb-2 font-serif">
+                    <div className="mb-2 flex font-serif text-sm font-bold text-white">
                       <div className="w-1/4 text-center">Ciclo</div>
                       <div className="w-3/4 text-left">Acción</div>
                     </div>
@@ -103,10 +104,10 @@ export function RegisterTransferMessages() {
               {/* Mensaje de la etapa */}
               {msg.stage === "Interrupción" ? (
                 // Mostrar solo msg.action si la etapa es "Interrupción"
-                <div className="text-white text-sm mb-1">{msg.action}</div>
+                <div className="mb-1 text-sm text-white">{msg.action}</div>
               ) : (
                 // Mostrar ciclo y acción para otras etapas
-                <div className="flex text-white text-sm mb-1">
+                <div className="mb-1 flex text-sm text-white">
                   <div className="w-1/4 text-center">{msg.cycle}</div>
                   <div className="w-3/4 text-left">{msg.action}</div>
                 </div>
