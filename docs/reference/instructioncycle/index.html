@@ -73,42 +73,35 @@ Se lee (read) de memoria el contenido de la dirección indicada por <code dir="a
 El contenido de <code dir="auto">MBR</code> se transfiere a <code dir="auto">MAR</code>.</li>
 <li><strong><code dir="auto">MBR</code> ← <code dir="auto">read(Memoria[MAR])</code></strong>:
 Se lee de memoria el contenido de la dirección indicada por <code dir="auto">MAR</code> y se almacena en <code dir="auto">MBR</code>.</li>
-<li><strong><code dir="auto">Rx</code>  ← <code dir="auto">MBR</code></strong>:
+<li><strong><code dir="auto">Rx</code> ← <code dir="auto">MBR</code></strong>:
 El contenido del <code dir="auto">MBR</code> se copia al registro <code dir="auto">Rx</code>.</li>
 </ol>
 </li>
 <li>
 <p>MOV <code dir="auto">[Dirección]</code>, <code dir="auto">Ry</code> (Almacenar en memoria)<br>
-1, 2, 3. Igual que MOV <code dir="auto">Rx</code>, <code dir="auto">[Dirección]</code>.
-4. <strong><code dir="auto">MBR</code> ← <code dir="auto">Ry</code></strong>:
-El contenido de <code dir="auto">Ry</code> se transfiere a <code dir="auto">MBR</code>.
-5. <strong><code dir="auto">write(Memoria[MAR])</code> ← <code dir="auto">MBR</code></strong>:
+1, 2, 3. Igual que MOV <code dir="auto">Rx</code>, <code dir="auto">[Dirección]</code>. 4. <strong><code dir="auto">MBR</code> ← <code dir="auto">Ry</code></strong>:
+El contenido de <code dir="auto">Ry</code> se transfiere a <code dir="auto">MBR</code>. 5. <strong><code dir="auto">write(Memoria[MAR])</code> ← <code dir="auto">MBR</code></strong>:
 El contenido de <code dir="auto">MBR</code> se escribe (write) en memoria en la dirección apuntada por el <code dir="auto">MAR</code>.</p>
 </li>
 <li>
-<p>ADD  <code dir="auto">Rx</code>, <code dir="auto">[Dirección]</code> (Sumar a registro)
-1, 2, 3, 4. Igual que MOV <code dir="auto">Rx</code>, <code dir="auto">[Dirección]</code>.
-5. <strong><code dir="auto">Rx</code>  ← <code dir="auto">Rx</code> + <code dir="auto">MBR</code></strong>:
+<p>ADD <code dir="auto">Rx</code>, <code dir="auto">[Dirección]</code> (Sumar a registro)
+1, 2, 3, 4. Igual que MOV <code dir="auto">Rx</code>, <code dir="auto">[Dirección]</code>. 5. <strong><code dir="auto">Rx</code> ← <code dir="auto">Rx</code> + <code dir="auto">MBR</code></strong>:
 La Unidad Aritmético-Lógica (ALU) realiza la suma entre <code dir="auto">Rx</code> y <code dir="auto">MBR</code>, almacenando el resultado en <code dir="auto">Rx</code>. El Registro de Estado <code dir="auto">RS</code> se actualiza con los indicadores correspondientes.</p>
 </li>
 <li>
 <p>SUB <code dir="auto">[Dirección]</code>, <code dir="auto">Ry</code> (Restar a memoria)
-1, 2, 3, 4. Igual que MOV <code dir="auto">Rx</code>, <code dir="auto">[Dirección]</code>.
-5. <strong><code dir="auto">MBR</code> ← <code dir="auto">Ry</code> - <code dir="auto">MBR</code></strong>:
-La ALU resta el contenido de <code dir="auto">MBR</code> al de <code dir="auto">Ry</code>, almacenando el resultado en <code dir="auto">MBR</code>. El <code dir="auto">RS</code> se actualiza.
-6. <strong><code dir="auto">write(Memoria[MAR])</code> ← <code dir="auto">MBR</code></strong>:
+1, 2, 3, 4. Igual que MOV <code dir="auto">Rx</code>, <code dir="auto">[Dirección]</code>. 5. <strong><code dir="auto">MBR</code> ← <code dir="auto">Ry</code> - <code dir="auto">MBR</code></strong>:
+La ALU resta el contenido de <code dir="auto">MBR</code> al de <code dir="auto">Ry</code>, almacenando el resultado en <code dir="auto">MBR</code>. El <code dir="auto">RS</code> se actualiza. 6. <strong><code dir="auto">write(Memoria[MAR])</code> ← <code dir="auto">MBR</code></strong>:
 El contenido de <code dir="auto">MBR</code> se escribe en memoria en la dirección apuntada por el <code dir="auto">MAR</code>.</p>
 </li>
 <li>
-<p>CMP <code dir="auto">Rx</code>,  <code dir="auto">[Dirección]</code> (Comparar a registro)
-1, 2, 3, 4. Igual que MOV <code dir="auto">Rx</code>, <code dir="auto">[Dirección]</code>.
-5. <strong><code dir="auto">Rx</code> - <code dir="auto">MBR</code></strong>:
+<p>CMP <code dir="auto">Rx</code>, <code dir="auto">[Dirección]</code> (Comparar a registro)
+1, 2, 3, 4. Igual que MOV <code dir="auto">Rx</code>, <code dir="auto">[Dirección]</code>. 5. <strong><code dir="auto">Rx</code> - <code dir="auto">MBR</code></strong>:
 La ALU realiza la resta entre el contenido de <code dir="auto">Rx</code> y <code dir="auto">MBR</code>. Aunque el resultado no se almacena, el <code dir="auto">RS</code> se actualiza con los indicadores de comparación.</p>
 </li>
 <li>
-<p>JMP  <code dir="auto">Dirección</code> (Salto incondicional)
-1, 2. Igual que MOV <code dir="auto">Rx</code>, <code dir="auto">[Dirección]</code>.
-3. <strong><code dir="auto">IP</code> ← <code dir="auto">MBR</code></strong>:
+<p>JMP <code dir="auto">Dirección</code> (Salto incondicional)
+1, 2. Igual que MOV <code dir="auto">Rx</code>, <code dir="auto">[Dirección]</code>. 3. <strong><code dir="auto">IP</code> ← <code dir="auto">MBR</code></strong>:
 El contenido del <code dir="auto">MBR</code> se transfiere al registro <code dir="auto">IP</code>, estableciendo la nueva dirección de ejecución.</p>
 </li>
-</ul> </div> <footer class="astro-ghn4rc6o"> <div class="meta sl-flex astro-ghn4rc6o"> <a href="https://github.com/ruiz-jose/VonSim8/edit/main/docs/src/content/docs/reference/instructioncycle.md" class="sl-flex astro-lzqe35uj"><svg aria-hidden="true" class="astro-lzqe35uj astro-3rlhdmva" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.2em;"><path d="M22 7.24a1 1 0 0 0-.29-.71l-4.24-4.24a1 1 0 0 0-1.1-.22 1 1 0 0 0-.32.22l-2.83 2.83L2.29 16.05a1 1 0 0 0-.29.71V21a1 1 0 0 0 1 1h4.24a1 1 0 0 0 .76-.29l10.87-10.93L21.71 8c.1-.1.17-.2.22-.33a1 1 0 0 0 0-.24v-.14l.07-.05ZM6.83 20H4v-2.83l9.93-9.93 2.83 2.83L6.83 20ZM18.17 8.66l-2.83-2.83 1.42-1.41 2.82 2.82-1.41 1.42Z"/></svg> Edita esta página</a> <p>Última actualización: <time datetime="2025-07-05T21:26:27.000Z">5 jul 2025</time></p> </div> <div class="pagination-links astro-36poiiwv" dir="ltr">   </div>  </footer>  </div> </div>   </main> </div> </div>  </div> </div>  </body></html>
+</ul> </div> <footer class="astro-ghn4rc6o"> <div class="meta sl-flex astro-ghn4rc6o"> <a href="https://github.com/ruiz-jose/VonSim8/edit/main/docs/src/content/docs/reference/instructioncycle.md" class="sl-flex astro-lzqe35uj"><svg aria-hidden="true" class="astro-lzqe35uj astro-3rlhdmva" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.2em;"><path d="M22 7.24a1 1 0 0 0-.29-.71l-4.24-4.24a1 1 0 0 0-1.1-.22 1 1 0 0 0-.32.22l-2.83 2.83L2.29 16.05a1 1 0 0 0-.29.71V21a1 1 0 0 0 1 1h4.24a1 1 0 0 0 .76-.29l10.87-10.93L21.71 8c.1-.1.17-.2.22-.33a1 1 0 0 0 0-.24v-.14l.07-.05ZM6.83 20H4v-2.83l9.93-9.93 2.83 2.83L6.83 20ZM18.17 8.66l-2.83-2.83 1.42-1.41 2.82 2.82-1.41 1.42Z"/></svg> Edita esta página</a> <p>Última actualización: <time datetime="2025-07-06T11:58:23.000Z">6 jul 2025</time></p> </div> <div class="pagination-links astro-36poiiwv" dir="ltr">   </div>  </footer>  </div> </div>   </main> </div> </div>  </div> </div>  </body></html>
