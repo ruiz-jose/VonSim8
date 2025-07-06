@@ -139,7 +139,8 @@ export class Byte<TSize extends ByteSize> {
       throw new RangeError(`Index ${index} out of bounds for byte of size ${this.#size}`);
     }
 
-    if (value) return Byte.fromUnsigned(this.#value | (1 << index), this.#size); // Set bit
+    if (value)
+      return Byte.fromUnsigned(this.#value | (1 << index), this.#size); // Set bit
     else return Byte.fromUnsigned(this.#value & ~(1 << index), this.#size); // Clear bit
   }
 

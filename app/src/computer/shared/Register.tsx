@@ -50,50 +50,62 @@ export function Register({
     <Popover>
       <PopoverTrigger asChild>
         <animated.button
-          title={displayName !== "left" && displayName !== "right" ? `Registro ${displayName}` : displayName}
+          title={
+            displayName !== "left" && displayName !== "right"
+              ? `Registro ${displayName}`
+              : displayName
+          }
           className={clsx(
             "flex cursor-pointer items-center font-mono leading-none transition-opacity",
             isGeneralPurpose || isIP || isSP || isMBR || isMAR || isIR || isTemporal
               ? "w-10 h-10 justify-center rounded border-2 font-bold text-lg shadow-[0_2px_8px_0_rgba(60,180,120,0.10)] hover:shadow-xl hover:scale-110 transition-all duration-200"
               : isFlags
-              ? "min-h-[32px] min-w-[90px] gap-2 rounded border-2 border-yellow-400 bg-gradient-to-br from-yellow-900 via-yellow-800 to-stone-900 px-2.5 py-0.5 font-bold text-yellow-200 shadow-[0_2px_8px_0_rgba(250,204,21,0.10)]"
-              : "rounded-md border bg-stone-800 px-2 py-1",
+                ? "min-h-[32px] min-w-[90px] gap-2 rounded border-2 border-yellow-400 bg-gradient-to-br from-yellow-900 via-yellow-800 to-stone-900 px-2.5 py-0.5 font-bold text-yellow-200 shadow-[0_2px_8px_0_rgba(250,204,21,0.10)]"
+                : "rounded-md border bg-stone-800 px-2 py-1",
             // Colores específicos para cada tipo
             isGeneralPurpose
               ? "border-mantis-500 bg-stone-800 text-mantis-300"
               : isIP
-              ? "border-red-500 bg-stone-800 text-red-300"
-              : isSP
-              ? "border-yellow-400 bg-stone-800 text-yellow-300"
-              : isMBR || isMAR || isIR
-              ? "border-indigo-400 bg-stone-800 text-indigo-300"
-              : isTemporal
-              ? "border-cyan-400 bg-stone-800 text-cyan-300"
-              : isFlags
-              ? ""
-              : emphasis
-              ? "border-mantis-400 text-lg"
-              : "border-stone-600 text-base",
+                ? "border-red-500 bg-stone-800 text-red-300"
+                : isSP
+                  ? "border-yellow-400 bg-stone-800 text-yellow-300"
+                  : isMBR || isMAR || isIR
+                    ? "border-indigo-400 bg-stone-800 text-indigo-300"
+                    : isTemporal
+                      ? "border-cyan-400 bg-stone-800 text-cyan-300"
+                      : isFlags
+                        ? ""
+                        : emphasis
+                          ? "border-mantis-400 text-lg"
+                          : "border-stone-600 text-base",
             className,
           )}
-          style={displayName === "left" || displayName === "right" ? { backgroundColor: "transparent" } : getSpring(springs)}
+          style={
+            displayName === "left" || displayName === "right"
+              ? { backgroundColor: "transparent" }
+              : getSpring(springs)
+          }
         >
           {isGeneralPurpose || isIP || isSP || isMBR || isMAR || isIR || isTemporal ? (
             // Formato tipo celda de memoria para registros generales, IP, SP, MBR, MAR, IR, id y ri
             <>
-              <span className={clsx(
-                "absolute top-0.5 left-0.5 text-[8px] bg-stone-900/80 px-0.5 rounded pointer-events-none font-bold",
-                isGeneralPurpose ? "text-mantis-400" : 
-                isIP ? "text-red-400" : 
-                isSP ? "text-yellow-400" :
-                isTemporal ? "text-cyan-400" :
-                "text-indigo-400"
-              )}>
+              <span
+                className={clsx(
+                  "absolute top-0.5 left-0.5 text-[8px] bg-stone-900/80 px-0.5 rounded pointer-events-none font-bold",
+                  isGeneralPurpose
+                    ? "text-mantis-400"
+                    : isIP
+                      ? "text-red-400"
+                      : isSP
+                        ? "text-yellow-400"
+                        : isTemporal
+                          ? "text-cyan-400"
+                          : "text-indigo-400",
+                )}
+              >
                 {displayName}
               </span>
-              <span className="mt-2 font-mono text-base font-bold">
-                {low.toString("hex")}
-              </span>
+              <span className="mt-2 font-mono text-base font-bold">{low.toString("hex")}</span>
             </>
           ) : (
             // Formato original para otros registros
@@ -105,35 +117,49 @@ export function Register({
                   isFlags && "text-yellow-200",
                   isTemporal && "text-cyan-300",
                   // Reducir tamaño para left y right
-                  (displayName === "left" || displayName === "right") && "text-xs"
+                  (displayName === "left" || displayName === "right") && "text-xs",
                 )}
               >
                 {displayName}
               </span>
-              <span className={clsx(
-                "rounded px-1 py-0.5 font-light",
-                isGeneralPurpose
-                  ? "bg-stone-950 text-mantis-300 border-mantis-400 border"
-                  : isFlags
-                  ? "border border-yellow-400 bg-yellow-950 text-yellow-200"
-                  : isTemporal
-                  ? "border border-cyan-400 bg-cyan-950 text-cyan-200"
-                  : "border border-stone-600 bg-stone-900 text-white"
-              )}>
+              <span
+                className={clsx(
+                  "rounded px-1 py-0.5 font-light",
+                  isGeneralPurpose
+                    ? "bg-stone-950 text-mantis-300 border-mantis-400 border"
+                    : isFlags
+                      ? "border border-yellow-400 bg-yellow-950 text-yellow-200"
+                      : isTemporal
+                        ? "border border-cyan-400 bg-cyan-950 text-cyan-200"
+                        : "border border-stone-600 bg-stone-900 text-white",
+                )}
+              >
                 {low.toString("hex")}
               </span>
             </>
           )}
           {isFlags && (
             <span className="flex gap-1 ml-2">
-              <span className={clsx(
-                "px-1 text-xs font-bold rounded border",
-                (Number(low) & 0b10) ? "border-yellow-300 bg-yellow-400 text-yellow-950" : "border-yellow-700 bg-stone-800 text-yellow-300"
-              )}>Z</span>
-              <span className={clsx(
-                "px-1 text-xs font-bold rounded border",
-                (Number(low) & 0b01) ? "border-yellow-300 bg-yellow-400 text-yellow-950" : "border-yellow-700 bg-stone-800 text-yellow-300"
-              )}>C</span>
+              <span
+                className={clsx(
+                  "px-1 text-xs font-bold rounded border",
+                  Number(low) & 0b10
+                    ? "border-yellow-300 bg-yellow-400 text-yellow-950"
+                    : "border-yellow-700 bg-stone-800 text-yellow-300",
+                )}
+              >
+                Z
+              </span>
+              <span
+                className={clsx(
+                  "px-1 text-xs font-bold rounded border",
+                  Number(low) & 0b01
+                    ? "border-yellow-300 bg-yellow-400 text-yellow-950"
+                    : "border-yellow-700 bg-stone-800 text-yellow-300",
+                )}
+              >
+                C
+              </span>
             </span>
           )}
         </animated.button>
@@ -141,7 +167,9 @@ export function Register({
 
       <PopoverContent className="w-60">
         <p className="px-4 py-2 font-medium text-white">
-          {displayName !== "left" && displayName !== "right" ? `Registro ${displayName}` : displayName}
+          {displayName !== "left" && displayName !== "right"
+            ? `Registro ${displayName}`
+            : displayName}
         </p>
         <hr className="border-stone-600" />
         <ul className="px-4 py-2 text-sm">

@@ -79,7 +79,7 @@ export class JumpInstruction extends InstructionStatement {
 
     bytes.push(opcodes[this.instruction]);
     bytes.push(this.address.byte.low.unsigned);
-   // bytes.push(this.address.byte.high.unsigned);
+    // bytes.push(this.address.byte.high.unsigned);
 
     return new Uint8Array(bytes);
   }
@@ -112,34 +112,36 @@ export class JumpInstruction extends InstructionStatement {
     }
 
     const operand = this.operands[0];
-   /* if (!operand.isNumberExpression() || !operand.value.isLabel()) {
+    /* if (!operand.isNumberExpression() || !operand.value.isLabel()) {
       throw new AssemblerError("expects-label").at(operand);
     }*/
     // Permitir etiquetas o números literales
-    if (!operand.isNumberExpression() || (!operand.value.isLabel() && !operand.value.isNumberLiteral())) {
+    if (
+      !operand.isNumberExpression() ||
+      (!operand.value.isLabel() && !operand.value.isNumberLiteral())
+    ) {
       throw new AssemblerError("expects-label").at(operand);
     }
-    
 
     if (operand.value.isLabel()) {
       const label = operand.value.value;
       const type = store.getLabelType(label);
-  
+
       if (!type) {
         throw new AssemblerError("label-not-found", label).at(operand);
       }
       if (type !== "instruction") {
         throw new AssemblerError("label-should-be-an-instruction", label).at(operand);
       }
-  
+
       this.#jumpTo = label;
     } else if (operand.value.isNumberLiteral()) {
       const addr = operand.value.value;
-  
+
       if (!MemoryAddress.inRange(addr)) {
         throw new AssemblerError("address-out-of-range", addr).at(operand);
       }
-  
+
       this.#address = MemoryAddress.from(addr);
     }
   }
@@ -152,7 +154,7 @@ export class JumpInstruction extends InstructionStatement {
       if (!MemoryAddress.inRange(addr)) {
         throw new AssemblerError("address-out-of-range", addr).at(this);
       }
-  
+
       this.#address = MemoryAddress.from(addr);
     }
   }

@@ -51,10 +51,12 @@ export class Memory extends Component {
     }
 
     // Inicializar la posición FFh (255) en 1 (dato cargado por el sistema operativo)
-    this.#buffer[0xFF] = 1;
-    
+    this.#buffer[0xff] = 1;
+
     // Verificar si el programa contiene alguna instrucción INT
-    const hasINTInstruction = options.program.instructions.some(instruction => instruction.instruction === "INT");
+    const hasINTInstruction = options.program.instructions.some(
+      instruction => instruction.instruction === "INT",
+    );
 
     // Load syscalls addresses into memory only if hasINTInstruction is true
     this.#reservedMemory = new Set();
@@ -64,22 +66,25 @@ export class Memory extends Component {
         this.#buffer[start] = address.unsigned;
         this.#reservedMemory.add(start);
 
-
-                // Inject the INT 6 handler routine at address C0h
+        // Inject the INT 6 handler routine at address C0h
         if (number === 6) {
           const int6Handler = [
-            0xD0, // push AL
-            0xd8, 0x30, // in AL, 30h
-            0x12, 0x01, // cmp AL, 1
-            0xC1, 0xC1, // jz wait_for_key (-6 bytes)
-            0xd8, 0x31, // in AL, 31h
-            0xD4, // pop AL
+            0xd0, // push AL
+            0xd8,
+            0x30, // in AL, 30h
+            0x12,
+            0x01, // cmp AL, 1
+            0xc1,
+            0xc1, // jz wait_for_key (-6 bytes)
+            0xd8,
+            0x31, // in AL, 31h
+            0xd4, // pop AL
             0x41, // mov [BX], AL
-            0xE1, // iret
+            0xe1, // iret
           ];
-      
-        // Inject the INT 6 handler routine at address C0h
-      /*  if (number === 6) {
+
+          // Inject the INT 6 handler routine at address C0h
+          /*  if (number === 6) {
           const int6Handler = [
             0xD0, // push AL
             0xd8, 0x64, // in AL, 64h
@@ -95,10 +100,10 @@ export class Memory extends Component {
             this.#buffer[int6HandlerAddress + i] = int6Handler[i];
             this.#reservedMemory.add(int6HandlerAddress + i);
           }
-        }  
+        }
       }
     }
-   
+
     // Load data directives into memory
     for (const directive of options.program.data) {
       let offset = directive.start.value;
@@ -164,7 +169,7 @@ export class Memory extends Component {
       return false;
     }
 
-   /* if (this.#codeMemory.has(address)) {
+    /* if (this.#codeMemory.has(address)) {
       yield {
         type: "memory:write.error",
         error: new SimulatorError("address-has-instruction", address),
@@ -178,7 +183,9 @@ export class Memory extends Component {
         type: "memory:write.warning",
         warning: `Sobrescribiendo instrucción en la dirección ${MemoryAddress.format(address)}`,
       };
-      console.warn(`Advertencia: Sobrescribiendo instrucción en la dirección ${MemoryAddress.format(address)}`);
+      console.warn(
+        `Advertencia: Sobrescribiendo instrucción en la dirección ${MemoryAddress.format(address)}`,
+      );
       // Continuar la ejecución sin detener el programa
     }
 

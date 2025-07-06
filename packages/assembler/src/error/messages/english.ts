@@ -34,8 +34,10 @@ export const english = {
   "expects-one-operand": "This instruction expects one operand.",
   "expects-two-operands": "This instruction expects two operands.",
   "expects-word-register": "This instruction expects a 16-bits register as its operand.",
-  "parser.data-block-no-parameters": "La directiva .DATA no debe tener parámetros. Solo se permiten comentarios en la misma línea.",
-  "parser.code-block-no-parameters": "La directiva .CODE no debe tener parámetros. Solo se permiten comentarios en la misma línea.",
+  "parser.data-block-no-parameters":
+    "La directiva .DATA no debe tener parámetros. Solo se permiten comentarios en la misma línea.",
+  "parser.code-block-no-parameters":
+    "La directiva .CODE no debe tener parámetros. Solo se permiten comentarios en la misma línea.",
   // prettier-ignore
   "instruction-out-of-range": (address: MemoryAddressLike) => `This instruction would be placed in address ${MemoryAddress.format(address)}, which is outside the memory range (max memory address: ${maxAddress}).`,
   "invalid-interrupt": (interrupt: number) => `Invalid interrupt number ${interrupt}.`,
@@ -93,6 +95,7 @@ export const english = {
     "unclosed-parenthesis": "Unclosed parenthesis.",
     // prettier-ignore
     "unexpected-identifier": "Unexpected identifier. You may have forgotten a colon (:) to make it a label.",
-    "parser.data-block-no-parameters": "La directiva .DATA no debe tener parámetros. Solo se permiten comentarios en la misma línea.",
+    "parser.data-block-no-parameters":
+      "La directiva .DATA no debe tener parámetros. Solo se permiten comentarios en la misma línea.",
   },
 } satisfies BaseLocale;

@@ -95,8 +95,6 @@ Con el Handshake no hay que preocuparse por el _strobe_, ya que este automatiza 
 1. verificar que el _buffer_ no esté lleno (flag _busy_),
 2. escribir el carácter en el registro de datos.
 
-
-
 ```vonsim
 ; Imprime el string "hola" en la impresora usando Handshake
 
@@ -142,6 +140,7 @@ Además de los caracteres ASCII comunes, hay otros dos que pueden resultar útil
 
 - el carácter de salto de línea (`LF`, 10 en decimal) imprime, en efecto, un salto de línea — útil para no imprimir todo en una sola línea;
 - el carácter de _form feed_ (`FF`, 12 en decimal) limpia la impresora (dicho de otra forma, arranca la hoja).
+
 ---
 
 <small>Esta obra está bajo la licencia <a target="_blank" rel="license noopener noreferrer" href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.</small>

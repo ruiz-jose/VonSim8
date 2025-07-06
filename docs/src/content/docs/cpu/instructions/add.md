@@ -3,7 +3,10 @@ title: ADD
 head:
   - tag: meta
     attrs:
-      { property: og:image, content: https://vonsim.github.io/VonSim8/docs/og/cpu/instructions/add.png }
+      {
+        property: og:image,
+        content: https://vonsim.github.io/VonSim8/docs/og/cpu/instructions/add.png,
+      }
 ---
 
 Esta instrucción suma dos operandos y guarda el resultado en el operando destino. El operando fuente no se modifica.
@@ -49,16 +52,14 @@ Las combinaciones válidas de _dest_, _fuente_ son:
 - Inmediato a memoria (indirecto)  
   `0110_10_01`, _dato_
 
-
 `rr` o `RR` codifica un registro según la siguiente tabla:
 
 | `rr` | `nombre` |
-| :---: | :---: | 
-| `00` | `AL`  | 
-| `01` | `BL`  | 
-| `10` | `BL`  | 
-| `11` | `DL`  | 
-
+| :--: | :------: |
+| `00` |   `AL`   |
+| `01` |   `BL`   |
+| `10` |   `BL`   |
+| `11` |   `DL`   |
 
 ---
 

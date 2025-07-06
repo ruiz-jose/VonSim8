@@ -21,7 +21,8 @@ export const english = {
   "io-memory-not-connected": (address: IOAddressLike) => `Didn't found a module connected to I/O memory address ${IOAddress.format(address)}.`,
   // prettier-ignore
   "io-printer-conflict": () => "Printer must be connected to either the PIO or the Handshake, but not both.",
-  "no-instruction": (address: MemoryAddressLike) => `Expected instruction at memory address ${MemoryAddress.format(address)} but none was found.`,
+  "no-instruction": (address: MemoryAddressLike) =>
+    `Expected instruction at memory address ${MemoryAddress.format(address)} but none was found.`,
   "no-program": "No program loaded. Assemble before running.",
   "stack-overflow": "Stack overflow",
   "stack-underflow": "Stack underflow",

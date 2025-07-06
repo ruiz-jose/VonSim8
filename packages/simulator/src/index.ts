@@ -79,8 +79,7 @@ export class Simulator {
       keyboard: {
         connected: () => "keyboard" in this.#computer.io,
         readChar: (char: Byte<8>) => {
-          if (this.#computer.io.keyboard) return this.#computer.io.keyboard.
-          setLastCharRead(char);
+          if (this.#computer.io.keyboard) return this.#computer.io.keyboard.setLastCharRead(char);
           else
             console.warn("Called keyboard.press() when no keyboard was connected to the computer");
         },

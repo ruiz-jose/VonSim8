@@ -9,8 +9,8 @@ Aquí se listan todas las instrucciones que soporta el simulador. Cada instrucci
 
 ### Instrucciones de transferencia de datos
 
-| Instrucción                                       | Comentario                                       | `CF` | `ZF` | `SF` | `IF` | `OF` |
-| :------------------------------------------------ | :----------------------------------------------- | :--: | :--: | :--: | :--: | :--: |
+| Instrucción                                               | Comentario                                       | `CF` | `ZF` | `SF` | `IF` | `OF` |
+| :-------------------------------------------------------- | :----------------------------------------------- | :--: | :--: | :--: | :--: | :--: |
 | [`MOV dest, fuente`](/VonSim8/docs/cpu/instructions/mov/) | Copia _fuente_ en _dest_                         |  --  |  --  |  --  |  --  |  --  |
 | [`PUSH fuente`](/VonSim8/docs/cpu/instructions/push/)     | Carga _fuente_ en el tope de la pila             |  --  |  --  |  --  |  --  |  --  |
 | [`POP dest`](/VonSim8/docs/cpu/instructions/pop/)         | Desapila el tope de la pila y lo carga en _dest_ |  --  |  --  |  --  |  --  |  --  |
@@ -21,8 +21,8 @@ Aquí se listan todas las instrucciones que soporta el simulador. Cada instrucci
 
 ### Instrucciones aritméticas
 
-| Instrucción                                       | Comentario                     | `CF` | `ZF` | `SF` | `IF` | `OF` |
-| :------------------------------------------------ | :----------------------------- | :--: | :--: | :--: | :--: | :--: |
+| Instrucción                                               | Comentario                     | `CF` | `ZF` | `SF` | `IF` | `OF` |
+| :-------------------------------------------------------- | :----------------------------- | :--: | :--: | :--: | :--: | :--: |
 | [`ADD dest, fuente`](/VonSim8/docs/cpu/instructions/add/) | Suma _fuente_ a _dest_         |  X   |  X   |  X   |  --  |  X   |
 | [`ADC dest, fuente`](/VonSim8/docs/cpu/instructions/adc/) | Suma _fuente_ y `CF` a _dest_  |  X   |  X   |  X   |  --  |  X   |
 | [`SUB dest, fuente`](/VonSim8/docs/cpu/instructions/sub/) | Resta _fuente_ a _dest_        |  X   |  X   |  X   |  --  |  X   |
@@ -34,8 +34,8 @@ Aquí se listan todas las instrucciones que soporta el simulador. Cada instrucci
 
 ### Instrucciones lógicas
 
-| Instrucción                                       | Comentario                              | `CF` | `ZF` | `SF` | `IF` | `OF` |
-| :------------------------------------------------ | :-------------------------------------- | :--: | :--: | :--: | :--: | :--: |
+| Instrucción                                               | Comentario                              | `CF` | `ZF` | `SF` | `IF` | `OF` |
+| :-------------------------------------------------------- | :-------------------------------------- | :--: | :--: | :--: | :--: | :--: |
 | [`AND dest, fuente`](/VonSim8/docs/cpu/instructions/and/) | Operación _dest_ AND _fuente_ bit a bit |  0   |  X   |  X   |  --  |  0   |
 | [`OR dest, fuente`](/VonSim8/docs/cpu/instructions/or/)   | Operación _dest_ OR _fuente_ bit a bit  |  0   |  X   |  X   |  --  |  0   |
 | [`XOR dest, fuente`](/VonSim8/docs/cpu/instructions/xor/) | Operación _dest_ XOR _fuente_ bit a bit |  0   |  X   |  X   |  --  |  0   |
@@ -43,8 +43,8 @@ Aquí se listan todas las instrucciones que soporta el simulador. Cada instrucci
 
 ### Instrucciones de transferencia de control
 
-| Instrucción                                     | Comentario                                  | `CF` | `ZF` | `SF` | `IF` | `OF` |
-| :---------------------------------------------- | :------------------------------------------ | :--: | :--: | :--: | :--: | :--: |
+| Instrucción                                             | Comentario                                  | `CF` | `ZF` | `SF` | `IF` | `OF` |
+| :------------------------------------------------------ | :------------------------------------------ | :--: | :--: | :--: | :--: | :--: |
 | [`CALL etiqueta`](/VonSim8/docs/cpu/instructions/call/) | Llama a subrutina cuyo inicio es _etiqueta_ |  --  |  --  |  --  |  --  |  --  |
 | [`RET`](/VonSim8/docs/cpu/instructions/ret/)            | Retorna de la subrutina                     |  --  |  --  |  --  |  --  |  --  |
 | [`JC etiqueta`](/VonSim8/docs/cpu/instructions/jc/)     | Salta a _etiqueta_ si `CF=1`                |  --  |  --  |  --  |  --  |  --  |
@@ -59,8 +59,8 @@ Aquí se listan todas las instrucciones que soporta el simulador. Cada instrucci
 
 ### Instrucciones de manejo de interrupciones
 
-| Instrucción                            | Comentario                               | `CF` | `ZF` | `SF` | `IF` | `OF` |
-| :------------------------------------- | :--------------------------------------- | :--: | :--: | :--: | :--: | :--: |
+| Instrucción                                    | Comentario                               | `CF` | `ZF` | `SF` | `IF` | `OF` |
+| :--------------------------------------------- | :--------------------------------------- | :--: | :--: | :--: | :--: | :--: |
 | [`INT N`](/VonSim8/docs/cpu/instructions/int/) | Ejecuta la interrupción por software _N_ |  --  |  --  |  --  |  0   |  --  |
 | [`IRET`](/VonSim8/docs/cpu/instructions/iret/) | Retorna de la rutina de interrupción     |  X   |  X   |  X   |  X   |  X   |
 | [`CLI`](/VonSim8/docs/cpu/instructions/cli/)   | Inhabilita interrupciones enmascarables  |  --  |  --  |  --  |  0   |  --  |
@@ -68,8 +68,8 @@ Aquí se listan todas las instrucciones que soporta el simulador. Cada instrucci
 
 ### Instrucciones de control
 
-| Instrucción                          | Comentario           | `CF` | `ZF` | `SF` | `IF` | `OF` |
-| :----------------------------------- | :------------------- | :--: | :--: | :--: | :--: | :--: |
+| Instrucción                                  | Comentario           | `CF` | `ZF` | `SF` | `IF` | `OF` |
+| :------------------------------------------- | :------------------- | :--: | :--: | :--: | :--: | :--: |
 | [`NOP`](/VonSim8/docs/cpu/instructions/nop/) | No hace nada         |  --  |  --  |  --  |  --  |  --  |
 | [`HLT`](/VonSim8/docs/cpu/instructions/hlt/) | Detiene la ejecución |  --  |  --  |  --  |  --  |  --  |
 

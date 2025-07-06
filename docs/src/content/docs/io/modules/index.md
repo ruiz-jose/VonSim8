@@ -13,8 +13,8 @@ El rango de direcciones de la memoria de entrada/salida es de `00h` hasta `FFh` 
 
 Estos son las registros de entrada/salida disponibles en el simulador, todos de 8 bits:
 
-| Dirección | Nombre  | Módulo                                   |
-| :-------: | :-----: | :--------------------------------------- |
+| Dirección | Nombre  | Módulo                                           |
+| :-------: | :-----: | :----------------------------------------------- |
 |   `10h`   | `CONT`  | [Timer](/VonSim8/docs/io/modules/timer/)         |
 |   `11h`   | `COMP`  | [Timer](/VonSim8/docs/io/modules/timer/)         |
 |   `20h`   |  `EOI`  | [PIC](/VonSim8/docs/io/modules/pic/)             |

@@ -32,7 +32,6 @@ export async function handleEvent(event: SimulatorEvent) {
 
   runningEvents.add(event.type);
 
-
   switch (ns) {
     case "bus": {
       await handleBusEvent(event as SimulatorEvent<"bus:">);
@@ -123,7 +122,6 @@ export function eventIsRunning(...events: EventType[]): boolean {
   return false;
 }
 
-
 const debugColors = {
   bus: "#2563eb",
   clock: "#65a30d",
@@ -190,4 +188,3 @@ function detailedLog(event: SimulatorEvent) {
   }
   console.groupEnd();
 }
-

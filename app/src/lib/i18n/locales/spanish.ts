@@ -153,7 +153,7 @@ export const spanish: Locale = {
       label: "Banderas",
       description: "Selecciona qué banderas mostrar en la ALU.",
     },
-    
+
     language: {
       label: "Idioma",
     },
@@ -197,9 +197,7 @@ export const spanish: Locale = {
 
     animations: {
       label: "Animaciones",
-      description: [
-        "Habilitación de animaciones.",
-      ].join(" "),
+      description: ["Habilitación de animaciones."].join(" "),
     },
 
     speeds: {

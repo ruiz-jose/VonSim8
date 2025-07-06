@@ -3,7 +3,10 @@ title: INC
 head:
   - tag: meta
     attrs:
-      { property: og:image, content: https://vonsim.github.io/VonSim8/docs/og/cpu/instructions/inc.png }
+      {
+        property: og:image,
+        content: https://vonsim.github.io/VonSim8/docs/og/cpu/instructions/inc.png,
+      }
 ---
 
 Esta instrucción suma uno al operando destino y almacena el resultado en el mismo operando.

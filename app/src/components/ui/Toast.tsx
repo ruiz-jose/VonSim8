@@ -19,7 +19,7 @@ const ToastViewport = forwardRef<
 ));
 ToastViewport.displayName = ToastPrimitives.Viewport.displayName;
 
-export type ToastVariant = "info" |"error" | "default";
+export type ToastVariant = "info" | "error" | "default";
 
 const Toast = forwardRef<
   React.ElementRef<typeof ToastPrimitives.Root>,

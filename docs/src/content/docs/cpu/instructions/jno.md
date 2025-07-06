@@ -3,7 +3,10 @@ title: JNO
 head:
   - tag: meta
     attrs:
-      { property: og:image, content: https://vonsim.github.io/VonSim8/docs/og/cpu/instructions/jno.png }
+      {
+        property: og:image,
+        content: https://vonsim.github.io/VonSim8/docs/og/cpu/instructions/jno.png,
+      }
 ---
 
 Esta instrucción salta solo sí `OF=0`. Los [_flags_](/VonSim8/docs/cpu/#flags) no se modifican.

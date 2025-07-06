@@ -16,7 +16,7 @@ import { store } from "@/lib/jotai";
 import { getSettings } from "@/lib/settings";
 import { toast } from "@/lib/toast";
 
-import {  programModifiedAtom } from "./state";
+import { programModifiedAtom } from "./state";
 
 // Sync program with CodeMirror
 const programAtom = atomWithStorage(

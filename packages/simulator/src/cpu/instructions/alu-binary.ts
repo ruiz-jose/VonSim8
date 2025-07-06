@@ -70,24 +70,27 @@ export class ALUBinaryInstruction extends Instruction<
         position: this.position,
         operands: this.#formatOperands(),
         //willUse: { ri: mode === "reg<-mem" || mode === "mem<-reg" || mode === "mem<-imd" },
-        willUse: {        
-          id: this.operation.mode === "mem<-imd" && this.operation.out.mode === "direct", // Solo marcar `id` como true si es "mem<-imd" y "direct"        
-          ri: this.operation.mode === "mem<-imd" && this.operation.out.mode === "direct" && this.name !== "CMP", // Solo marcar `id` como true si es "mem<-imd" y "direct"        
-        },       
+        willUse: {
+          id: this.operation.mode === "mem<-imd" && this.operation.out.mode === "direct", // Solo marcar `id` como true si es "mem<-imd" y "direct"
+          ri:
+            this.operation.mode === "mem<-imd" &&
+            this.operation.out.mode === "direct" &&
+            this.name !== "CMP", // Solo marcar `id` como true si es "mem<-imd" y "direct"
+        },
       },
     };
 
     // All intructions are, at least, 2 bytes long.
-   // yield* super.consumeInstruction(computer, "IR");
-   // yield { type: "cpu:decode" };
-   // Consumir la instrucción solo una vez
+    // yield* super.consumeInstruction(computer, "IR");
+    // yield { type: "cpu:decode" };
+    // Consumir la instrucción solo una vez
     yield* super.consumeInstruction(computer, "IR");
     yield { type: "cpu:decode" };
 
     yield { type: "cpu:cycle.update", phase: "decoded", next: "fetch-operands" };
 
     if (mode === "reg<-reg" || mode === "reg<-mem" || mode === "reg<-imd") {
-      if (mode !== "reg<-mem"){
+      if (mode !== "reg<-mem") {
         // Move out operand to left register
         if (size === 8) yield* computer.cpu.copyByteRegister(out, "left.l");
         else yield* computer.cpu.copyWordRegister(out, "left");
@@ -106,8 +109,8 @@ export class ALUBinaryInstruction extends Instruction<
       // Read value from memory
       yield* computer.cpu.setMAR("ri");
       if (!(yield* computer.cpu.useBus("mem-read"))) return false; // Error reading memory
-      if ( this.operation.mode === "mem<-imd")    yield* computer.cpu.getMBR("id.l");      
-      else  yield* computer.cpu.getMBR("left.l");
+      if (this.operation.mode === "mem<-imd") yield* computer.cpu.getMBR("id.l");
+      else yield* computer.cpu.getMBR("left.l");
       if (size === 16) {
         yield* computer.cpu.updateWordRegister("ri", ri => ri.add(1));
         yield* computer.cpu.setMAR("ri");
@@ -121,7 +124,6 @@ export class ALUBinaryInstruction extends Instruction<
       if (size === 8) yield* computer.cpu.copyByteRegister(src, "right.l");
       else yield* computer.cpu.copyWordRegister(src, "right");
     } else if (mode === "reg<-imd" || mode === "mem<-imd") {
-
       // Move immediate value to right register
       yield* this.consumeInstruction(computer, "right.l");
       if (size === 16) yield* this.consumeInstruction(computer, "right.h");
@@ -130,7 +132,7 @@ export class ALUBinaryInstruction extends Instruction<
       if (src.mode === "direct") {
         // Fetch memory address
         yield* this.consumeInstruction(computer, "ri.l");
-       // yield* this.consumeInstruction(computer, "ri.h");
+        // yield* this.consumeInstruction(computer, "ri.h");
       } else {
         // Move BX to ri
         yield* computer.cpu.copyByteRegister("BL", "ri.l");
@@ -147,14 +149,14 @@ export class ALUBinaryInstruction extends Instruction<
         if (!(yield* computer.cpu.useBus("mem-read"))) return false; // Error reading memory
         yield* computer.cpu.getMBR("right.h");
       }
-      if (mode === "reg<-mem"){
+      if (mode === "reg<-mem") {
         // Move out operand to left register
         if (size === 8) yield* computer.cpu.copyByteRegister(out, "left.l");
         else yield* computer.cpu.copyWordRegister(out, "left");
       }
     }
-    if ( mode === "mem<-imd"){
-         yield* computer.cpu.copyByteRegister("id.l", "left.l");         
+    if (mode === "mem<-imd") {
+      yield* computer.cpu.copyByteRegister("id.l", "left.l");
     }
 
     yield { type: "cpu:cycle.update", phase: "execute" };
@@ -253,8 +255,8 @@ export class ALUBinaryInstruction extends Instruction<
       }
 
       // Write low byte
-      
-      yield* computer.cpu.setMBR("result.l");      
+
+      yield* computer.cpu.setMBR("result.l");
       yield* computer.cpu.setMAR("ri");
       if (!(yield* computer.cpu.useBus("mem-write"))) return false; // Error writing memory
     }

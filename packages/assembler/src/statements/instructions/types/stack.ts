@@ -46,10 +46,10 @@ export class StackInstruction extends InstructionStatement {
   toBytes(): Uint8Array {
     const opcodes: { [key in StackInstructionName]: number } = {
       PUSH: 0b1101_00_00,
-      POP:  0b1101_01_00,
+      POP: 0b1101_01_00,
     };
 
-    let byte = opcodes[this.instruction];   
+    let byte = opcodes[this.instruction];
     byte |= registerToBits(this.register);
     return new Uint8Array([byte]);
   }

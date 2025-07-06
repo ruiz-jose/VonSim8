@@ -2,7 +2,11 @@
 title: IN
 head:
   - tag: meta
-    attrs: { property: og:image, content: https://vonsim.github.io/VonSim8/docs/og/cpu/instructions/in.png }
+    attrs:
+      {
+        property: og:image,
+        content: https://vonsim.github.io/VonSim8/docs/og/cpu/instructions/in.png,
+      }
 ---
 
 Esta instrucción obtiene un byte de la [memoria E/S](/VonSim8/docs/io/modules/) y lo almacena en el operando destino. Los [_flags_](/VonSim8/docs/cpu/#flags) no se modifican.

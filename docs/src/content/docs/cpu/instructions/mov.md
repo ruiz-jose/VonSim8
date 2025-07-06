@@ -3,7 +3,10 @@ title: MOV
 head:
   - tag: meta
     attrs:
-      { property: og:image, content: https://vonsim.github.io/VonSim8/docs/og/cpu/instructions/mov.png }
+      {
+        property: og:image,
+        content: https://vonsim.github.io/VonSim8/docs/og/cpu/instructions/mov.png,
+      }
 ---
 
 Esta instrucción copia el operando fuente en el operando destino. El operando fuente no se modifica. Los [_flags_](/VonSim8/docs/cpu/#flags) no se modifican.
@@ -46,13 +49,11 @@ Las combinaciones válidas de _dest_, _fuente_ son:
 `rr` o `RR` codifica un registro según la siguiente tabla:
 
 | `rr` | `nombre` |
-| :---: | :---: | 
-| `00` | `AL`  | 
-| `01` | `BL`  | 
-| `10` | `BL`  | 
-| `11` | `DL`  | 
-
-
+| :--: | :------: |
+| `00` |   `AL`   |
+| `01` |   `BL`   |
+| `10` |   `BL`   |
+| `11` |   `DL`   |
 
 ---
 

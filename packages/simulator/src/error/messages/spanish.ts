@@ -16,7 +16,8 @@ export const spanish: Messages = {
   "io-memory-not-connected": (address)=> `No se encontró ningún módulo conectado a la dirección de memoria E/S ${IOAddress.format(address)}.`,
   // prettier-ignore
   "io-printer-conflict": () => "La impresora debe estar conectada a la PIO o al Handshake, pero no a ambos.",
-  "no-instruction": address => `Se esperaba una instrucción en la dirección de memoria ${MemoryAddress.format(address)} pero no se encontró ninguna.`,
+  "no-instruction": address =>
+    `Se esperaba una instrucción en la dirección de memoria ${MemoryAddress.format(address)} pero no se encontró ninguna.`,
   "no-program": "No hay ningún programa cargado. Ensamblá antes de ejecutar.",
   "stack-overflow": "Stack overflow",
   "stack-underflow": "Stack underflow",

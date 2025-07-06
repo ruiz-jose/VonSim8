@@ -3,7 +3,10 @@ title: CLI
 head:
   - tag: meta
     attrs:
-      { property: og:image, content: https://vonsim.github.io/VonSim8/docs/og/cpu/instructions/cli.png }
+      {
+        property: og:image,
+        content: https://vonsim.github.io/VonSim8/docs/og/cpu/instructions/cli.png,
+      }
 ---
 
 Esta instrucción inhabilita las [interrupciones](/VonSim8/docs/cpu/#interrupciones) por hardware, cambiando la [_flag_](/VonSim8/docs/cpu/#flags) `IF=0`.

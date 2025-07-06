@@ -2,7 +2,8 @@
 title: Timer
 head:
   - tag: meta
-    attrs: { property: og:image, content: https://vonsim.github.io/VonSim8/docs/og/io/modules/timer.png }
+    attrs:
+      { property: og:image, content: https://vonsim.github.io/VonSim8/docs/og/io/modules/timer.png }
 ---
 
 El _timer_ es un módulo que cuenta con dos registos internos:

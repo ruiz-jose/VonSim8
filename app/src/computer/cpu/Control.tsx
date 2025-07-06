@@ -6,7 +6,7 @@ import { animated, getSpring } from "@/computer/shared/springs";
 import { useSimulation } from "@/computer/simulation";
 import { useTranslate } from "@/lib/i18n";
 
-import { cycleAtom, cycleCountAtom,messageAtom } from "./state";
+import { cycleAtom, cycleCountAtom, messageAtom } from "./state";
 
 /**
  * Control component, to be used inside <CPU />
@@ -14,7 +14,6 @@ import { cycleAtom, cycleCountAtom,messageAtom } from "./state";
 export function Control() {
   const translate = useTranslate();
   const cycleCount = useAtomValue(cycleCountAtom); // Obtener el valor de cycleCount
-
 
   const { status } = useSimulation();
   const cycle = useAtomValue(cycleAtom);
@@ -87,28 +86,32 @@ export function Control() {
                   : "bg-stone-900",
           )}
         >
-          {  statusKey === "int6" || statusKey === "int7"  ? (
+          {statusKey === "int6" || statusKey === "int7" ? (
             <>
               {translate(`computer.cpu.status.${statusKey}`)}
               <div>{message}</div>
-            </>            
-              ) :  statusKey === "stopped-error" || statusKey === "waiting-for-input" ? (
-              <>
-                {translate(`computer.cpu.status.${statusKey}`)}
-              </>            
-              ) : message ? (
-              <div>{message}</div> 
-              ) : (
-              translate(`computer.cpu.status.${statusKey}`)
-              //( statusKey === "stopped-error" || statusKey === "waiting-for-input"  || statusKey === "int7")
-            )
-          }
+            </>
+          ) : statusKey === "stopped-error" || statusKey === "waiting-for-input" ? (
+            <>{translate(`computer.cpu.status.${statusKey}`)}</>
+          ) : message ? (
+            <div>{message}</div>
+          ) : (
+            translate(`computer.cpu.status.${statusKey}`)
+            //( statusKey === "stopped-error" || statusKey === "waiting-for-input"  || statusKey === "int7")
+          )}
         </span>
 
         <div className="mt-4 w-64 overflow-hidden rounded-lg border border-stone-600 bg-stone-900 py-2">
           <p className="text-center font-mono">
-            {!("metadata" in cycle) || cycle.phase === "fetching" || status.type === "stopped" ? 
-             (cycle.phase ==="stopped" && statusKey !== "stopped-error" && statusKey === "stopped" && cycleCount !== 0 ? (<span className="text-mantis-400">HLT</span>): (<span className="italic text-stone-400">???</span>)
+            {!("metadata" in cycle) || cycle.phase === "fetching" || status.type === "stopped" ? (
+              cycle.phase === "stopped" &&
+              statusKey !== "stopped-error" &&
+              statusKey === "stopped" &&
+              cycleCount !== 0 ? (
+                <span className="text-mantis-400">HLT</span>
+              ) : (
+                <span className="italic text-stone-400">???</span>
+              )
             ) : (
               <>
                 <span className="text-mantis-400">{cycle.metadata.name}</span>

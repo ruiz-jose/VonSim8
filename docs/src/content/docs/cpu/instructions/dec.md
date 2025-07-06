@@ -3,7 +3,10 @@ title: DEC
 head:
   - tag: meta
     attrs:
-      { property: og:image, content: https://vonsim.github.io/VonSim8/docs/og/cpu/instructions/dec.png }
+      {
+        property: og:image,
+        content: https://vonsim.github.io/VonSim8/docs/og/cpu/instructions/dec.png,
+      }
 ---
 
 Esta instrucción resta uno al operando destino y almacena el resultado en el mismo operando.

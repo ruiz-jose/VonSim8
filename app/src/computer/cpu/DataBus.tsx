@@ -134,14 +134,12 @@ dataBus.addUndirectedEdge("id out join", "left");
 dataBus.addUndirectedEdge("outr mbr join", "mbr reg join");
 dataBus.addUndirectedEdge("MBR", "outr mbr join");
 
-
 dataBus.addUndirectedEdge("mbr reg join", "AX join");
 dataBus.addUndirectedEdge("mbr reg join", "BX join");
 dataBus.addUndirectedEdge("mbr reg join", "CX join");
 dataBus.addUndirectedEdge("mbr reg join", "DX join");
 dataBus.addUndirectedEdge("mbr reg join", "id join");
 dataBus.addUndirectedEdge("outr mbr join", "operands mbr join");
-
 
 // These are the lines
 dataBus.addUndirectedEdge("AX join", "AX");
@@ -187,7 +185,12 @@ export type DataRegister = PhysicalRegister | "MBR";
  * @returns The path as a SVG path.
  * @throws If there is no path between the two registers.
  */
-export function generateDataPath(from: DataRegister, to: DataRegister, instruction?: string, mode?: string): string {
+export function generateDataPath(
+  from: DataRegister,
+  to: DataRegister,
+  instruction?: string,
+  mode?: string,
+): string {
   console.log("from:", from);
   console.log("to:", to);
 
@@ -217,9 +220,9 @@ export function generateDataPath(from: DataRegister, to: DataRegister, instructi
       to,
     ];
   };
-  
+
   let path: string[] = [];
-  
+
   const registers = ["AX", "BX", "CX", "DX", "id"];
   if (from === "MBR" && to === "left") {
     // Definir el camino desde MBR hasta left pasando por outr mbr join
@@ -227,7 +230,7 @@ export function generateDataPath(from: DataRegister, to: DataRegister, instructi
   } else if (from === "MBR" && to === "ri") {
     path = ["MBR", "outr mbr join", "SP out join", "MAR join2", "MAR"];
   } else if (from === "MBR" && registers.includes(to)) {
-      path = ["MBR", "mbr reg join", `${to} join`, to];
+    path = ["MBR", "mbr reg join", `${to} join`, to];
   } else if (registers.includes(from) && registers.includes(to)) {
     path = intermediatePath(from, to);
   } else if (from === "IP" && to === "id") {
@@ -244,7 +247,6 @@ export function generateDataPath(from: DataRegister, to: DataRegister, instructi
     path = bidirectional(dataBus, from, to) || [];
   }
 
-
   /*if (from === "id" && to === "ri" && (instruction === "MOV" && mode === "mem<-imd")) {
     return "";
   }*/
@@ -258,8 +260,8 @@ export function generateDataPath(from: DataRegister, to: DataRegister, instructi
     path = ["MBR", "mbr reg join", "IP join", "IP"];
   }
 
-  if (from === "ri" && to === "IP" &&  instruction === "CALL") {
-    path = ["ri","ri out join", "outr mbr join", "mbr reg join", "IP join", "IP"];
+  if (from === "ri" && to === "IP" && instruction === "CALL") {
+    path = ["ri", "ri out join", "outr mbr join", "mbr reg join", "IP join", "IP"];
   }
 
   // No dibujar la animación si from es "MBR" y to es "ri" y la instrucción es JMP, JZ, JC o MOV con mode "mem<-imd"
@@ -273,22 +275,30 @@ export function generateDataPath(from: DataRegister, to: DataRegister, instructi
   }
 
   // No dibujar la animación si la instrucción es MOV con mode "mem<-imd"
-  if (from === "MBR" && to === "ri" && (instruction === "MOV" || instruction === "INT") && mode === "mem<-imd") {
+  if (
+    from === "MBR" &&
+    to === "ri" &&
+    (instruction === "MOV" || instruction === "INT") &&
+    mode === "mem<-imd"
+  ) {
     path = ["MBR", "mbr reg join", "ri join", "ri"];
   }
 
-    // No dibujar la animación si la instrucción es MOV con mode "mem<-imd"
+  // No dibujar la animación si la instrucción es MOV con mode "mem<-imd"
   if (from === "IP" && to === "MBR" && (instruction === "INT" || instruction === "CALL")) {
     return "M 510 349 H 550 V 250 H 620";
   }
 
   // No dibujar la animación si la instrucción es MOV con mode "mem<-imd"
- if (from === "MBR" && to === "ri" && mode === "mem<-imd" &&
-  (instruction === "ADD" || 
-   instruction === "SUB")) {
+  if (
+    from === "MBR" &&
+    to === "ri" &&
+    mode === "mem<-imd" &&
+    (instruction === "ADD" || instruction === "SUB")
+  ) {
     path = ["MBR", "mbr reg join", "ri join", "ri"];
- //  path = ["MBR", "outr mbr join", "SP out join", "MAR join2", "MAR"];
- }
+    //  path = ["MBR", "outr mbr join", "SP out join", "MAR join2", "MAR"];
+  }
 
   if (path.length === 0) throw new Error(`No path from ${from} to ${to}`);
 
@@ -304,11 +314,10 @@ export function generateDataPath(from: DataRegister, to: DataRegister, instructi
   return d;
 }
 
-
 type DataBusProps = {
   showSP: boolean;
-  showid: boolean; 
-  showri: boolean; 
+  showid: boolean;
+  showri: boolean;
 };
 
 /**
@@ -349,7 +358,7 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
           "M 455 85 H 425", // BX - ajustado
           "M 455 125 H 425", // CX - ajustado
           "M 455 165 H 425", // DX - ajustado
-          showid ? "M 455 205 H 425" : "",// id - ajustado para conectar con registro redimensionado
+          showid ? "M 455 205 H 425" : "", // id - ajustado para conectar con registro redimensionado
           // Output buses - ajustados para registros más pequeños
           "M 550 45 H 465", // AX out - ajustado
           "M 550 85 H 465", // BX out - ajustado
@@ -357,9 +366,9 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
           "M 550 165 H 465", // DX out - ajustado
           showid ? "M 550 205 H 460" : "", // id out - ajustado
           showri ? "M 550 388 H 480" : "", // ri out - ajustado para conectar con registro redimensionado
-         //"M 550 10 V 250", // Vertical join for output buses
+          //"M 550 10 V 250", // Vertical join for output buses
           "M 550 40 V 250", // Vertical join for output buses
-         // "M 550 45 H 492", // Connect to data mbr join
+          // "M 550 45 H 492", // Connect to data mbr join
           // Connect output buses to left of ALU
           "M 550 45 V 16 H 90 V 84 H 220", // out to left
           /*"M 550 12 V 60", // BX out to left

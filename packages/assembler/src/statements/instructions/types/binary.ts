@@ -21,7 +21,9 @@ type InitialOperation =
   | { mode: "mem<-reg"; size: ByteSize; out: InitialMemoryAccess; src: Register }
   | { mode: "mem<-imd"; size: ByteSize; out: InitialMemoryAccess; src: NumberExpression };
 
-type MemoryAccess = { mode: "direct"; address: MemoryAddress } | { mode: "indirect" ; register: "BX" | "BL"};
+type MemoryAccess =
+  | { mode: "direct"; address: MemoryAddress }
+  | { mode: "indirect"; register: "BX" | "BL" };
 
 type Operation =
   | { mode: "reg<-reg"; size: 8; out: ByteRegister; src: ByteRegister }
@@ -144,7 +146,7 @@ export class BinaryInstruction extends InstructionStatement {
         if (src.mode === "direct") {
           bytes[0] = 0b0001_00_00; // 0001RR00
           bytes.push(src.address.byte.low.unsigned);
-         // bytes.push(src.address.byte.high.unsigned);
+          // bytes.push(src.address.byte.high.unsigned);
         } else {
           bytes[0] = 0b0001_00_01; // 0001RR01 indirecto
         }
@@ -251,7 +253,7 @@ export class BinaryInstruction extends InstructionStatement {
         if (src.size !== "auto" && src.size !== out.size) {
           throw new AssemblerError("size-mismatch", src.size, out.size).at(this);
         }
-        
+
         this.#initialOperation = {
           mode: "reg<-mem",
           size: out.size,
@@ -347,15 +349,15 @@ export class BinaryInstruction extends InstructionStatement {
           throw new AssemblerError("double-memory-access").at(this);
         }
 
-                // Asumir automáticamente que el tamaño es de 8 bits si es "auto"
+        // Asumir automáticamente que el tamaño es de 8 bits si es "auto"
         if (size === "auto") {
           size = 8; // Asignar tamaño de 8 bits
         }
 
-       /* if (size === "auto") {
+        /* if (size === "auto") {
           throw new AssemblerError("unknown-size").at(out);
         }*/
-       
+
         this.#initialOperation = {
           mode: "mem<-imd",
           size,

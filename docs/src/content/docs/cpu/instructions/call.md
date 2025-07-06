@@ -3,7 +3,10 @@ title: CALL
 head:
   - tag: meta
     attrs:
-      { property: og:image, content: https://vonsim.github.io/VonSim8/docs/og/cpu/instructions/call.png }
+      {
+        property: og:image,
+        content: https://vonsim.github.io/VonSim8/docs/og/cpu/instructions/call.png,
+      }
 ---
 
 Esta instrucción inicializa una [subrutina](/VonSim8/docs/cpu/#subrutinas). Los [_flags_](/VonSim8/docs/cpu/#flags) no se modifican.

@@ -2,7 +2,8 @@
 title: Lenguaje ensamblador
 head:
   - tag: meta
-    attrs: { property: og:image, content: https://vonsim.github.io/VonSim8/docs/og/cpu/assembly.png }
+    attrs:
+      { property: og:image, content: https://vonsim.github.io/VonSim8/docs/og/cpu/assembly.png }
 ---
 
 El lenguaje ensamblador (o lenguaje _assembly_) utilizado por el simulador se escribe de la siguiente manera:
@@ -12,7 +13,7 @@ El lenguaje ensamblador (o lenguaje _assembly_) utilizado por el simulador se es
 ; Empieza con un punto y coma y termina al final de la línea
 
 ; Todas las directivas y mnemónicos se pueden escribir en mayúsculas
-; o minúsculas (MOV o mov). 
+; o minúsculas (MOV o mov).
 
 
 db 24     ; DB es la directiva para escribir un byte en memoria.
@@ -75,12 +76,11 @@ Las direcciones de memoria se pueden expresar de varias formas:
 ```vonsim
 [12h] ; Dirección de memoria directa
 [bl]    ; Dirección de memoria indirecta
-mov al, [12h] 
+mov al, [12h]
 mov al, [bl]
 ```
 
-En el primer caso, se accede directamente a la dirección de memoria `12h`. En el segundo caso, se accede a la dirección de memoria almacenada en `BL`. Para el modo de direccionamiento indirecto solo se puede utilizar el registro `BL`. 
-
+En el primer caso, se accede directamente a la dirección de memoria `12h`. En el segundo caso, se accede a la dirección de memoria almacenada en `BL`. Para el modo de direccionamiento indirecto solo se puede utilizar el registro `BL`.
 
 ### Valores inmediatos
 

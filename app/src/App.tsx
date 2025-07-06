@@ -81,7 +81,7 @@ function DesktopLayout() {
         minSize={20}
         tagName="section"
         className="computer-background rounded-lg border border-stone-600"
-      > 
+      >
         <ComputerContainer />
       </Panel>
       {settingsOpen && (

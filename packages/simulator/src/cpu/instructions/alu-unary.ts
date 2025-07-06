@@ -51,7 +51,7 @@ export class ALUUnaryInstruction extends Instruction<"NOT" | "NEG" | "INC" | "DE
         operands: this.#formatOperands(),
         willUse: {
           //ri: this.operation.mode === "mem-direct" || this.operation.mode === "mem-indirect",
-          ri: false,     
+          ri: false,
         },
       },
     };
@@ -59,7 +59,7 @@ export class ALUUnaryInstruction extends Instruction<"NOT" | "NEG" | "INC" | "DE
     // All intructions are, at least, 2 bytes long.
     yield* super.consumeInstruction(computer, "IR");
     yield { type: "cpu:decode" };
-   // yield* super.consumeInstruction(computer, "IR");
+    // yield* super.consumeInstruction(computer, "IR");
     //yield { type: "cpu:decode" };
 
     yield { type: "cpu:cycle.update", phase: "decoded", next: "fetch-operands" };
@@ -76,7 +76,7 @@ export class ALUUnaryInstruction extends Instruction<"NOT" | "NEG" | "INC" | "DE
       if (this.operation.mode === "mem-direct") {
         // Fetch memory address
         yield* this.consumeInstruction(computer, "ri.l");
-       // yield* this.consumeInstruction(computer, "ri.h");
+        // yield* this.consumeInstruction(computer, "ri.h");
       } else {
         // Move BX to ri
         yield* computer.cpu.copyByteRegister("BL", "ri.l");

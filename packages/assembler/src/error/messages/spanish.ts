@@ -31,8 +31,10 @@ export const spanish: Messages = {
   "expects-one-operand": "Esta instrucción espera un operando.",
   "expects-two-operands": "Esta instrucción espera dos operandos.",
   "expects-word-register": "Esta instrucción espera un registro de 16 bits como su operando.",
-  "parser.data-block-no-parameters": "La directiva .DATA no debe tener parámetros. Solo se permiten comentarios en la misma línea.",
-  "parser.code-block-no-parameters": "La directiva .CODE no debe tener parámetros. Solo se permiten comentarios en la misma línea.",
+  "parser.data-block-no-parameters":
+    "La directiva .DATA no debe tener parámetros. Solo se permiten comentarios en la misma línea.",
+  "parser.code-block-no-parameters":
+    "La directiva .CODE no debe tener parámetros. Solo se permiten comentarios en la misma línea.",
   // prettier-ignore
   "instruction-out-of-range": address => `Esta instrucción se colocaría en la dirección ${MemoryAddress.format(address)}, la cual se encuentra fuera del rango de memoria (dirección máxima de memoria: ${(maxAddress)}).`,
   "invalid-interrupt": interrupt => `${interrupt} no es un número de interrupción válido.`,
@@ -90,6 +92,7 @@ export const spanish: Messages = {
     "unclosed-parenthesis": "Paréntesis sin cerrar.",
     // prettier-ignore
     "unexpected-identifier": "Identificador inesperado. Tal vez te olvidaste agregar dos puntos (:) para hacerlo una etiqueta.",
-    "parser.data-block-no-parameters": "La directiva .DATA no debe tener parámetros. Solo se permiten comentarios en la misma línea.",
+    "parser.data-block-no-parameters":
+      "La directiva .DATA no debe tener parámetros. Solo se permiten comentarios en la misma línea.",
   },
 };

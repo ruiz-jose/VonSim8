@@ -15,10 +15,20 @@ import { programModifiedAtom } from "@/editor/state"; // Importar programModifie
 import { translate } from "@/lib/i18n";
 import { store } from "@/lib/jotai";
 import { posthog } from "@/lib/posthog";
-import { getSettings, settingsAtom, useDevices  } from "@/lib/settings";
+import { getSettings, settingsAtom, useDevices } from "@/lib/settings";
 import { toast } from "@/lib/toast";
 
-import { connectScreenAndKeyboardAtom, cycleAtom, cycleCountAtom, instructionCountAtom, messageAtom, messageHistoryAtom, resetCPUState, showriAtom,showSPAtom } from "./cpu/state";
+import {
+  connectScreenAndKeyboardAtom,
+  cycleAtom,
+  cycleCountAtom,
+  instructionCountAtom,
+  messageAtom,
+  messageHistoryAtom,
+  resetCPUState,
+  showriAtom,
+  showSPAtom,
+} from "./cpu/state";
 import { eventIsRunning, handleEvent } from "./handle-event";
 import { resetHandshakeState } from "./handshake/state";
 import { resetLedsState } from "./leds/state";
@@ -45,7 +55,6 @@ function notifyError(error: SimulatorError<any>) {
   const message = error.translate(getSettings().language);
   toast({ title: message, variant: "error" });
 }
-
 
 export function finishSimulation(error?: SimulatorError<any>) {
   if (error) {
@@ -99,7 +108,6 @@ function resetState(state: ComputerState, clearRegisters = false) {
   if (clearRegisters) {
     store.set(messageHistoryAtom, []); // Limpia el historial de mensajes
   }
-
 }
 
 let currentInstructionName: string | null = null;
@@ -115,17 +123,15 @@ let fuenteALU = "";
 let destinoALU = "";
 let MBRALU = "";
 let mbridirmar = false;
-let resultmbrimar = false;   
+let resultmbrimar = false;
 let displayMessageresultmbr = "";
 let displayMessagepop = "";
-
-
 
 /**
  * Starts an execution thread for the given generator. This is, run all the
  * events until the generator is done or the simulation is stopped.
  */
-async function startThread(generator: EventGenerator): Promise<void> { 
+async function startThread(generator: EventGenerator): Promise<void> {
   try {
     // eslint-disable-next-line no-constant-condition
     while (true) {
@@ -133,22 +139,21 @@ async function startThread(generator: EventGenerator): Promise<void> {
       const settings = getSettings();
       const programModified = store.get(programModifiedAtom); // Obtener el estado de programModifiedAtom
 
-        // Verificar si el programa ha sido modificado
-        if (programModified) {
-          console.log("El programa ha sido modificado. Deteniendo y recargando...");
-          store.set(programModifiedAtom, false); // Marcar como no modificado
-          finishSimulation(); // Detener la simulación actual
-          break; // Salir del bucle
-        }
-        if (status.type === "stopped") {
-
-          fetchStageCounter = 0;
-          executeStageCounter = 0;
-          messageReadWrite = "";
-          //store.set(messageAtom, "Ejecución: Detenido"); 
-          break; // stop the thread
-        }
-        if (status.type === "paused") {
+      // Verificar si el programa ha sido modificado
+      if (programModified) {
+        console.log("El programa ha sido modificado. Deteniendo y recargando...");
+        store.set(programModifiedAtom, false); // Marcar como no modificado
+        finishSimulation(); // Detener la simulación actual
+        break; // Salir del bucle
+      }
+      if (status.type === "stopped") {
+        fetchStageCounter = 0;
+        executeStageCounter = 0;
+        messageReadWrite = "";
+        //store.set(messageAtom, "Ejecución: Detenido");
+        break; // stop the thread
+      }
+      if (status.type === "paused") {
         // Wait until the simulation is resumed
         await new Promise<void>(resolve => {
           const unsubscribe = store.sub(simulationAtom, () => {
@@ -158,55 +163,58 @@ async function startThread(generator: EventGenerator): Promise<void> {
         });
         continue; // restart loop
       }
-      
+
       // Handle event
       const event = generator.next();
       if (event.done) break;
       await handleEvent(event.value);
       if (event.value.type === "cpu:cycle.start") {
         currentInstructionName = event.value.instruction.name;
-        currentInstructionModeid = event.value.instruction.willUse.id? true : false;
-        currentInstructionModeri = event.value.instruction.willUse.ri? true : false;
+        currentInstructionModeid = event.value.instruction.willUse.id ? true : false;
+        currentInstructionModeri = event.value.instruction.willUse.ri ? true : false;
         store.set(showriAtom, currentInstructionModeri);
         mbridirmar = false;
-        resultmbrimar = false; 
-        displayMessageresultmbr= "";
+        resultmbrimar = false;
+        displayMessageresultmbr = "";
       }
 
-      if (status.until === "cycle-change" || status.until === "end-of-instruction" || status.until === "infinity") {
+      if (
+        status.until === "cycle-change" ||
+        status.until === "end-of-instruction" ||
+        status.until === "infinity"
+      ) {
         if (event.value.type === "cpu:cycle.end" || event.value.type === "cpu:halt") {
           fetchStageCounter = 0;
           executeStageCounter = 0;
           shouldDisplayMessage = true;
-          messageReadWrite = "";  
+          messageReadWrite = "";
           instructionCount++;
           console.log(`Instrucciones: ${instructionCount}`);
-          store.set(instructionCountAtom, instructionCount );    
-          //store.set(messageAtom, "-"); 
-          if ( event.value.type === "cpu:halt") {
+          store.set(instructionCountAtom, instructionCount);
+          //store.set(messageAtom, "-");
+          if (event.value.type === "cpu:halt") {
             cycleCount++;
-            store.set(cycleCountAtom, cycleCount );
+            store.set(cycleCountAtom, cycleCount);
             store.set(messageAtom, "Ejecución: Detenido");
-          }else if (status.until === "cycle-change" || status.until === "end-of-instruction") {
+          } else if (status.until === "cycle-change" || status.until === "end-of-instruction") {
             pauseSimulation();
           }
           continue;
-        }  else if (event.value.type === "cpu:int.6") {            
+        } else if (event.value.type === "cpu:int.6") {
           //store.set(messageAtom, "PILA ← DL; DL ← ASCII; (BL) ← DL; IRET");
           store.set(messageAtom, "Interrupción: Rutina leer caracter del teclado");
-        //  if (status.until === "cycle-change") {
+          //  if (status.until === "cycle-change") {
           //  pauseSimulation();
-         // }
-        }  else if (event.value.type === "cpu:int.7") {            
+          // }
+        } else if (event.value.type === "cpu:int.7") {
           //store.set(messageAtom, "PILA ← DL; Bucle: DL ← (BL); video ← DL; SUB AL, 1; JNZ Bucle; (BL) ← DL; IRET");
           store.set(messageAtom, "Interrupción: Rutina mostrar por pantalla");
           if (status.until === "cycle-change") {
             pauseSimulation();
-          }       
-        }  
-        if (fetchStageCounter < 3 ) {
+          }
+        }
+        if (fetchStageCounter < 3) {
           if (event.value.type === "cpu:mar.set") {
-           
             const sourceRegister = event.value.register;
             if (sourceRegister === "SP") {
               fetchStageCounter = 3;
@@ -214,14 +222,13 @@ async function startThread(generator: EventGenerator): Promise<void> {
               store.set(messageAtom, "Ejecución: MAR ← SP");
             } else {
               store.set(messageAtom, "Captación: MAR ← IP");
-              executeStageCounter++; 
+              executeStageCounter++;
             }
             if (status.until === "cycle-change") {
               pauseSimulation();
             }
-            fetchStageCounter++;           
-            cycleCount++; 
-            
+            fetchStageCounter++;
+            cycleCount++;
           } else if (event.value.type === "cpu:register.update") {
             store.set(messageAtom, "Captación: MBR ← read(Memoria[MAR]); IP ← IP + 1");
             if (status.until === "cycle-change") {
@@ -234,21 +241,20 @@ async function startThread(generator: EventGenerator): Promise<void> {
             store.set(messageAtom, "Captación: IR ← MBR");
             if (status.until === "cycle-change") {
               pauseSimulation();
-            }          
+            }
             fetchStageCounter++;
             cycleCount++;
           }
-          
-        } else {        
+        } else {
           if (event.value.type === "cpu:rd.on" && executeStageCounter > 1) {
-            messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";           
+            messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";
           } else if (event.value.type === "cpu:wr.on") {
-            messageReadWrite = "Ejecución: write(Memoria[MAR]) ← MBR";                  
+            messageReadWrite = "Ejecución: write(Memoria[MAR]) ← MBR";
           } else if (event.value.type === "pio:write.ok") {
             store.set(messageAtom, "Ejecución: write(PIO[MAR]) ← MBR");
             executeStageCounter++;
-            cycleCount++;                 
-           } 
+            cycleCount++;
+          }
 
           if (event.value.type === "cpu:mar.set") {
             const sourceRegister = event.value.register;
@@ -257,26 +263,20 @@ async function startThread(generator: EventGenerator): Promise<void> {
             let showRI2 = false;
 
             if (
-              currentInstructionModeri && 
-              (executeStageCounter === 5 && 
-                (currentInstructionName === "ADD" || 
-                 currentInstructionName === "SUB" ))
+              currentInstructionModeri &&
+              executeStageCounter === 5 &&
+              (currentInstructionName === "ADD" || currentInstructionName === "SUB")
             ) {
               showRI = true;
             }
-            if (
-              currentInstructionModeri && 
-              (executeStageCounter === 9 && "INT" )
-            ) {
+            if (currentInstructionModeri && executeStageCounter === 9 && "INT") {
               showRI = true;
             }
 
-
             if (
-              currentInstructionModeri && 
-              (executeStageCounter === 2 && 
-                (currentInstructionName === "ADD" || 
-                 currentInstructionName === "SUB" ))
+              currentInstructionModeri &&
+              executeStageCounter === 2 &&
+              (currentInstructionName === "ADD" || currentInstructionName === "SUB")
             ) {
               showRI2 = true;
             }
@@ -288,27 +288,33 @@ async function startThread(generator: EventGenerator): Promise<void> {
 
             if (shouldDisplayMessage || sourceRegister === "SP") {
               if (resultmbrimar) {
-                store.set(messageAtom,  displayMessageresultmbr);     
-              } else if (showRI ) {
+                store.set(messageAtom, displayMessageresultmbr);
+              } else if (showRI) {
                 store.set(messageAtom, `Ejecución: MAR ← ${sourceRegister}`);
-              } else if( showRI2 ){
+              } else if (showRI2) {
                 store.set(messageAtom, `Ejecución: ri ← MBR; MAR ← MBR`);
-              } else if(executeStageCounter === 2 && 
-                  currentInstructionModeri && 
-                currentInstructionName === "MOV" ){
+              } else if (
+                executeStageCounter === 2 &&
+                currentInstructionModeri &&
+                currentInstructionName === "MOV"
+              ) {
                 store.set(messageAtom, `Ejecución: ri ← MBR; MAR ← IP`);
-              } else if(executeStageCounter === 4 && 
-                currentInstructionModeri && 
-                currentInstructionName === "MOV" ){
+              } else if (
+                executeStageCounter === 4 &&
+                currentInstructionModeri &&
+                currentInstructionName === "MOV"
+              ) {
                 store.set(messageAtom, `Ejecución: MAR ← ${sourceRegister}`);
               } else if (mbridirmar) {
-                store.set(messageAtom, `Ejecución: id ← MBR; MAR ← IP`);  
-              } else if(executeStageCounter === 2 && 
-                  currentInstructionModeri && 
-                currentInstructionName === "INT" ){
-                store.set(messageAtom, `Ejecución: ri ← MBR; MAR ← SP`);           
-              } else {  
-                store.set(messageAtom, `Ejecución: MAR ← ${displayRegister}`);                  
+                store.set(messageAtom, `Ejecución: id ← MBR; MAR ← IP`);
+              } else if (
+                executeStageCounter === 2 &&
+                currentInstructionModeri &&
+                currentInstructionName === "INT"
+              ) {
+                store.set(messageAtom, `Ejecución: ri ← MBR; MAR ← SP`);
+              } else {
+                store.set(messageAtom, `Ejecución: MAR ← ${displayRegister}`);
               }
             }
 
@@ -318,9 +324,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
 
             executeStageCounter++;
             //if (!(currentInstructionName === "INT" && sourceRegister === "ri")) {
-            cycleCount++; 
-            
-
+            cycleCount++;
           } else if (event.value.type === "cpu:register.update") {
             const sourceRegister = event.value.register;
             let displayMessage = "";
@@ -328,66 +332,74 @@ async function startThread(generator: EventGenerator): Promise<void> {
             let pause = true;
 
             if (sourceRegister === "SP") {
-              if (currentInstructionModeri && 
-              (executeStageCounter === 4 ) && 
-              currentInstructionName === "INT"){
-              pause = false;
-              shouldDisplayMessage = false;
+              if (
+                currentInstructionModeri &&
+                executeStageCounter === 4 &&
+                currentInstructionName === "INT"
+              ) {
+                pause = false;
+                shouldDisplayMessage = false;
               }
 
               /*  if (currentInstructionName === "CALL" || currentInstructionName === "INT" && jump_yes) {
                 displayMessage = "Ejecución: SP = SP - 1";                             
               } */
               if (currentInstructionName === "PUSH") {
-                displayMessage = "Ejecución: SP = SP - 1";                             
-              } 
-              if (currentInstructionName === "RET"  ||
-                 currentInstructionName === "IRET" ) {
-                displayMessage = "Ejecución: SP = SP + 1";                 
+                displayMessage = "Ejecución: SP = SP - 1";
               }
-              if(  executeStageCounter === 3 && currentInstructionName === "POP"){
-                 displayMessage = displayMessagepop + "; SP = SP + 1"; 
+              if (currentInstructionName === "RET" || currentInstructionName === "IRET") {
+                displayMessage = "Ejecución: SP = SP + 1";
               }
-
-
+              if (executeStageCounter === 3 && currentInstructionName === "POP") {
+                displayMessage = displayMessagepop + "; SP = SP + 1";
+              }
             } else if (sourceRegister === "FLAGS") {
-              displayMessage = "Ejecución: IF = 0"; 
-              if (currentInstructionModeri && 
-              executeStageCounter === 5 && 
-              currentInstructionName === "INT"){
-                displayMessage = "Ejecución: write(Memoria[MAR]) ← MBR; SP ← SP - 1; IF = 0";  
+              displayMessage = "Ejecución: IF = 0";
+              if (
+                currentInstructionModeri &&
+                executeStageCounter === 5 &&
+                currentInstructionName === "INT"
+              ) {
+                displayMessage = "Ejecución: write(Memoria[MAR]) ← MBR; SP ← SP - 1; IF = 0";
               }
             } else if (sourceRegister === "DL" && currentInstructionName === "INT") {
-              displayMessage = "Interrupción: AL ← ASCII";    
+              displayMessage = "Interrupción: AL ← ASCII";
             } else if (sourceRegister === "right.l" && currentInstructionName === "INT") {
-              displayMessage = "Interrupción: SUB AL, 1";     
+              displayMessage = "Interrupción: SUB AL, 1";
             } else if (sourceRegister === "right" && currentInstructionName === "INT") {
-              displayMessage = "Interrupción: ADD BL, 1";  
+              displayMessage = "Interrupción: ADD BL, 1";
             } else if (sourceRegister === "ri.l" && currentInstructionName === "INT") {
-              displayMessage = "Interrupción: MAR ← (video)"; 
-              shouldDisplayMessage = false;     
-            } else if (currentInstructionModeri && executeStageCounter === 3 && currentInstructionName === "MOV"){
-              displayMessage = "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1; MAR ← ri";  
+              displayMessage = "Interrupción: MAR ← (video)";
+              shouldDisplayMessage = false;
+            } else if (
+              currentInstructionModeri &&
+              executeStageCounter === 3 &&
+              currentInstructionName === "MOV"
+            ) {
+              displayMessage = "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1; MAR ← ri";
               pause = false;
               shouldDisplayMessage = false;
-            } else if (executeStageCounter === 4 && currentInstructionName === "CALL"){   
+            } else if (executeStageCounter === 4 && currentInstructionName === "CALL") {
               pause = false;
             } else {
-              displayMessage = sourceRegister === "IP" ? "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1" : `Ejecución: MBR ← ${sourceRegister}`;
+              displayMessage =
+                sourceRegister === "IP"
+                  ? "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1"
+                  : `Ejecución: MBR ← ${sourceRegister}`;
             }
-            
-            if (currentInstructionModeri && 
-              (executeStageCounter === 8 ) && 
-              currentInstructionName === "INT"){
-                displayMessage = "Ejecución: write(Memoria[MAR]) ← MBR; SP ← SP - 1";
+
+            if (
+              currentInstructionModeri &&
+              executeStageCounter === 8 &&
+              currentInstructionName === "INT"
+            ) {
+              displayMessage = "Ejecución: write(Memoria[MAR]) ← MBR; SP ← SP - 1";
             }
-            if (executeStageCounter === 2  && 
-              currentInstructionName === "CALL"){
-                displayMessage = "Ejecución: ri ← MBR; SP ← SP - 1";
+            if (executeStageCounter === 2 && currentInstructionName === "CALL") {
+              displayMessage = "Ejecución: ri ← MBR; SP ← SP - 1";
             }
-            if (executeStageCounter === 4  && 
-              currentInstructionName === "CALL"){
-                displayMessage = "Ejecución: write(Memoria[MAR]) ← MBR; SP ← SP - 1";
+            if (executeStageCounter === 4 && currentInstructionName === "CALL") {
+              displayMessage = "Ejecución: write(Memoria[MAR]) ← MBR; SP ← SP - 1";
             }
             console.log("displayMessage:", displayMessage);
             console.log("currentInstructionName:", currentInstructionName);
@@ -395,119 +407,137 @@ async function startThread(generator: EventGenerator): Promise<void> {
             console.log("executeStageCounter:", executeStageCounter);
             console.log("pause:", pause);
             executeStageCounter++;
-            if (  currentInstructionName !== "DEC"
-              && currentInstructionName !== "INC"
-              && currentInstructionName !== "NOT"
-              && currentInstructionName !== "NEG"
-              && !(currentInstructionName === "INT" && executeStageCounter === 5)) {   
-                store.set(messageAtom, displayMessage);
-                cycleCount++; 
-             }
-
-            if (displayMessage !== "Interrupción: MAR ← (video)"){
-              if (status.until === "cycle-change") {
-                if (currentInstructionName !== "DEC" 
-                   && currentInstructionName !== "INC"
-                   && currentInstructionName !== "NOT"
-                   && currentInstructionName !== "NEG") {
-                    if (pause) {
-                      pauseSimulation();                          
-                    }
-                } 
-              }           
+            if (
+              currentInstructionName !== "DEC" &&
+              currentInstructionName !== "INC" &&
+              currentInstructionName !== "NOT" &&
+              currentInstructionName !== "NEG" &&
+              !(currentInstructionName === "INT" && executeStageCounter === 5)
+            ) {
+              store.set(messageAtom, displayMessage);
+              cycleCount++;
             }
 
-          } else if (event.value.type === "cpu:alu.execute") { 
-            
-            if ( currentInstructionName === "CMP" ) {   
-                store.set(messageAtom, `Ejecución: ${destinoALU} ${currentInstructionName} ${fuenteALU} ; write(FLAGS)`);
-                cycleCount++; 
-                if (status.until === "cycle-change") {
-                  pauseSimulation(); 
+            if (displayMessage !== "Interrupción: MAR ← (video)") {
+              if (status.until === "cycle-change") {
+                if (
+                  currentInstructionName !== "DEC" &&
+                  currentInstructionName !== "INC" &&
+                  currentInstructionName !== "NOT" &&
+                  currentInstructionName !== "NEG"
+                ) {
+                  if (pause) {
+                    pauseSimulation();
+                  }
                 }
-             }
+              }
+            }
+          } else if (event.value.type === "cpu:alu.execute") {
+            if (currentInstructionName === "CMP") {
+              store.set(
+                messageAtom,
+                `Ejecución: ${destinoALU} ${currentInstructionName} ${fuenteALU} ; write(FLAGS)`,
+              );
+              cycleCount++;
+              if (status.until === "cycle-change") {
+                pauseSimulation();
+              }
+            }
           } else if (event.value.type === "cpu:mbr.get") {
-            const sourceRegister = event.value.register === "id.l" ? "id" : 
-            event.value.register === "IP.l" ? "IP" : 
-            event.value.register === "FLAGS.l" ? "FLAGS" : 
-            event.value.register;
+            const sourceRegister =
+              event.value.register === "id.l"
+                ? "id"
+                : event.value.register === "IP.l"
+                  ? "IP"
+                  : event.value.register === "FLAGS.l"
+                    ? "FLAGS"
+                    : event.value.register;
 
-            if (String(sourceRegister) === 'right.l' ||
-                String(sourceRegister) === 'left.l'){
-                fuenteALU = 'MBR';             
-            }  
-           
+            if (String(sourceRegister) === "right.l" || String(sourceRegister) === "left.l") {
+              fuenteALU = "MBR";
+            }
+
             if (
-              (currentInstructionModeri && 
-              (executeStageCounter === 3 && 
-                (currentInstructionName === "ADD" || 
-                 currentInstructionName === "SUB" || 
-                 currentInstructionName === "CMP" ))
-            ) || (executeStageCounter === 3 && currentInstructionName === "POP")) {
+              (currentInstructionModeri &&
+                executeStageCounter === 3 &&
+                (currentInstructionName === "ADD" ||
+                  currentInstructionName === "SUB" ||
+                  currentInstructionName === "CMP")) ||
+              (executeStageCounter === 3 && currentInstructionName === "POP")
+            ) {
               mbridirmar = true;
             }
-            
+
             if (currentInstructionName === "POP" && executeStageCounter === 3) {
-              displayMessagepop =  `Ejecución: ${sourceRegister} ← MBR`;
+              displayMessagepop = `Ejecución: ${sourceRegister} ← MBR`;
             }
 
             if (!mbridirmar) {
-              if (String(sourceRegister) !== 'ri.l'
-                  && String(sourceRegister) !== 'right.l'
-                  && String(sourceRegister) !== 'left.l'){
+              if (
+                String(sourceRegister) !== "ri.l" &&
+                String(sourceRegister) !== "right.l" &&
+                String(sourceRegister) !== "left.l"
+              ) {
                 store.set(messageAtom, `Ejecución: ${sourceRegister} ← MBR`);
                 cycleCount++;
                 if (status.until === "cycle-change") {
                   pauseSimulation();
-                }       
+                }
               }
-            }  
-
-  
-
+            }
           } else if (event.value.type === "cpu:register.copy") {
-            const sourceRegister = event.value.src.replace(/\.l$/, '');
-            const destRegister = event.value.dest.replace(/\.l$/, '');
+            const sourceRegister = event.value.src.replace(/\.l$/, "");
+            const destRegister = event.value.dest.replace(/\.l$/, "");
             let displaySource = "";
 
-            if ( currentInstructionName === "DEC"  
-              || currentInstructionName === "INC"
-              || currentInstructionName === "NOT"
-              || currentInstructionName === "NEG"){
-              displaySource = sourceRegister === "result" ? `${currentInstructionName} ${fuenteALU}` : sourceRegister;
-        
-            }else{
-              displaySource = sourceRegister === "result" ? `${destRegister} ${currentInstructionName} ${fuenteALU}` : sourceRegister;
-              MBRALU =  `${sourceRegister} ${currentInstructionName} ${fuenteALU}` + "; write(FLAGS)"; 
+            if (
+              currentInstructionName === "DEC" ||
+              currentInstructionName === "INC" ||
+              currentInstructionName === "NOT" ||
+              currentInstructionName === "NEG"
+            ) {
+              displaySource =
+                sourceRegister === "result"
+                  ? `${currentInstructionName} ${fuenteALU}`
+                  : sourceRegister;
+            } else {
+              displaySource =
+                sourceRegister === "result"
+                  ? `${destRegister} ${currentInstructionName} ${fuenteALU}`
+                  : sourceRegister;
+              MBRALU =
+                `${sourceRegister} ${currentInstructionName} ${fuenteALU}` + "; write(FLAGS)";
             }
-            if (currentInstructionName === "CMP" && String(destRegister) === 'right'){
-              fuenteALU = sourceRegister; 
-            }     
-            if (currentInstructionName === "CMP" && String(destRegister) === 'left'){
-              destinoALU = sourceRegister; 
-            }    
+            if (currentInstructionName === "CMP" && String(destRegister) === "right") {
+              fuenteALU = sourceRegister;
+            }
+            if (currentInstructionName === "CMP" && String(destRegister) === "left") {
+              destinoALU = sourceRegister;
+            }
 
             let displayMessage = `Ejecución: ${destRegister} ← ${displaySource}`;
             const displayMessageFLAGS = "; write(FLAGS)"; // Agregar el mensaje de FLAGS aquí
-   
-            if (  currentInstructionName === "ADD" || 
-              currentInstructionName === "SUB" || 
-              currentInstructionName === "CMP") {
-              displayMessage += displayMessageFLAGS; // Agregar salto de línea   
+
+            if (
+              currentInstructionName === "ADD" ||
+              currentInstructionName === "SUB" ||
+              currentInstructionName === "CMP"
+            ) {
+              displayMessage += displayMessageFLAGS; // Agregar salto de línea
             }
-    
+
             if (sourceRegister === "ri" && destRegister === "IP") {
               displayMessage = "Ejecución: IP ← MBR";
-              if (  currentInstructionName === "CALL") {
-                 displayMessage = "Ejecución: IP ← ri";
+              if (currentInstructionName === "CALL") {
+                displayMessage = "Ejecución: IP ← ri";
               }
               store.set(messageAtom, displayMessage);
               if (status.until === "cycle-change") {
                 pauseSimulation();
               }
             } else if (destRegister === "left" && currentInstructionName === "INT") {
-              displayMessage = "ADD BL, 1"; 
-            } else if (sourceRegister === "result"   && currentInstructionName === "INT") {
+              displayMessage = "ADD BL, 1";
+            } else if (sourceRegister === "result" && currentInstructionName === "INT") {
               if (status.until === "cycle-change") {
                 pauseSimulation();
               }
@@ -524,49 +554,55 @@ async function startThread(generator: EventGenerator): Promise<void> {
             } else if (sourceRegister === "MBR" && destRegister === "ri") {
               displayMessage = "Ejecución: MAR ← MBR";
               store.set(messageAtom, displayMessage);
-             // pauseSimulation();
-            }else if (sourceRegister === "id" && destRegister === "IP") {
+              // pauseSimulation();
+            } else if (sourceRegister === "id" && destRegister === "IP") {
               displayMessage = "Ejecución: IP ← MBR";
               store.set(messageAtom, displayMessage);
               if (status.until === "cycle-change") {
                 pauseSimulation();
               }
-            } else if ((sourceRegister === "BL" && destRegister === "ri") ||(sourceRegister === "BX" && destRegister === "ri")) {
+            } else if (
+              (sourceRegister === "BL" && destRegister === "ri") ||
+              (sourceRegister === "BX" && destRegister === "ri")
+            ) {
               displayMessage = "Ejecución: MAR ← BL";
               store.set(messageAtom, displayMessage);
               shouldDisplayMessage = false;
-              executeStageCounter++;             
+              executeStageCounter++;
             } else {
-              if (String(sourceRegister) === 'right.l'){
-                fuenteALU = sourceRegister; 
-              }    
+              if (String(sourceRegister) === "right.l") {
+                fuenteALU = sourceRegister;
+              }
 
               //store.set(messageAtom, displayMessage);
-             // pauseSimulation();
-            }   
+              // pauseSimulation();
+            }
             if (
-              (destRegister !== "result" && destRegister !== "left" && destRegister !== "right" &&
-               sourceRegister !== "result" && sourceRegister !== "left" && sourceRegister !== "right") ||
+              (destRegister !== "result" &&
+                destRegister !== "left" &&
+                destRegister !== "right" &&
+                sourceRegister !== "result" &&
+                sourceRegister !== "left" &&
+                sourceRegister !== "right") ||
               (sourceRegister === "result" && destRegister !== "MBR")
             ) {
-
               store.set(messageAtom, displayMessage);
               cycleCount++;
             }
           } else if (
             event.value.type === "bus:reset" &&
             executeStageCounter > 1 &&
-             ( currentInstructionName === "MOV" ||
-               currentInstructionName === "ADD" ||
-               currentInstructionName === "SUB" ||
-               currentInstructionName === "CMP" ||
-               currentInstructionName === "CALL"||
-               currentInstructionName === "INT"||
-               currentInstructionName === "PUSH"||
-               currentInstructionName === "POP"||
-               currentInstructionName === "IN" ||
-               currentInstructionName === "RET" ))
-           {
+            (currentInstructionName === "MOV" ||
+              currentInstructionName === "ADD" ||
+              currentInstructionName === "SUB" ||
+              currentInstructionName === "CMP" ||
+              currentInstructionName === "CALL" ||
+              currentInstructionName === "INT" ||
+              currentInstructionName === "PUSH" ||
+              currentInstructionName === "POP" ||
+              currentInstructionName === "IN" ||
+              currentInstructionName === "RET")
+          ) {
             /*(currentInstructionMode &&
               (currentInstructionName === "MOV" ||
                currentInstructionName === "ADD" ||
@@ -574,76 +610,84 @@ async function startThread(generator: EventGenerator): Promise<void> {
                currentInstructionName === "CMP" ||
                currentInstructionName === "CALL"))*/
 
-
             if (currentInstructionName === "RET") {
               messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";
             }
             if (currentInstructionName === "IN") {
               messageReadWrite = "Ejecución: MBR ← read(PIO[MAR])";
             }
-           let ContinuarSinGuardar = false;
-            if ((currentInstructionModeri && 
-              (executeStageCounter === 4 || executeStageCounter === 8) &&
-                 currentInstructionName === "INT") ||
-              (currentInstructionModeri && 
-              executeStageCounter === 3 &&
-                 currentInstructionName === "MOV") ||
-              ((currentInstructionModeid &&
-                executeStageCounter === 4 && 
-                (currentInstructionName === "CALL" || 
-                 currentInstructionName === "ADD" || 
-                 currentInstructionName === "SUB" || 
-                 currentInstructionName === "CMP"))
-            )) {
+            let ContinuarSinGuardar = false;
+            if (
+              (currentInstructionModeri &&
+                (executeStageCounter === 4 || executeStageCounter === 8) &&
+                currentInstructionName === "INT") ||
+              (currentInstructionModeri &&
+                executeStageCounter === 3 &&
+                currentInstructionName === "MOV") ||
+              (currentInstructionModeid &&
+                executeStageCounter === 4 &&
+                (currentInstructionName === "CALL" ||
+                  currentInstructionName === "ADD" ||
+                  currentInstructionName === "SUB" ||
+                  currentInstructionName === "CMP"))
+            ) {
               ContinuarSinGuardar = true;
             }
             console.log("executeStageCounter:", executeStageCounter);
             if (!ContinuarSinGuardar) {
-
-                store.set(messageAtom, messageReadWrite);
-                cycleCount++; 
-                if (status.until === "cycle-change") {
-                  pauseSimulation();
-                }  
+              store.set(messageAtom, messageReadWrite);
+              cycleCount++;
+              if (status.until === "cycle-change") {
+                pauseSimulation();
+              }
             }
           } else if (event.value.type === "cpu:mbr.set") {
-            const sourceRegister = event.value.register === "id.l" ? "id" : 
-            event.value.register === "FLAGS.l" ? "FLAGS" : 
-            event.value.register === "IP.l" ? "IP" : 
-            event.value.register === "result.l" ? MBRALU : 
-            event.value.register;
+            const sourceRegister =
+              event.value.register === "id.l"
+                ? "id"
+                : event.value.register === "FLAGS.l"
+                  ? "FLAGS"
+                  : event.value.register === "IP.l"
+                    ? "IP"
+                    : event.value.register === "result.l"
+                      ? MBRALU
+                      : event.value.register;
 
-            if (currentInstructionModeri && 
-               executeStageCounter === 5 &&
-              (currentInstructionName === "ADD" ||
-               currentInstructionName === "SUB")) {
-              resultmbrimar =true;    
-              displayMessageresultmbr =  `Ejecución: MBR ← ${sourceRegister} ; MAR ← ri`; 
-         
+            if (
+              currentInstructionModeri &&
+              executeStageCounter === 5 &&
+              (currentInstructionName === "ADD" || currentInstructionName === "SUB")
+            ) {
+              resultmbrimar = true;
+              displayMessageresultmbr = `Ejecución: MBR ← ${sourceRegister} ; MAR ← ri`;
             } else {
-              store.set(messageAtom,  `Ejecución: MBR ← ${sourceRegister}`);
+              store.set(messageAtom, `Ejecución: MBR ← ${sourceRegister}`);
               if (status.until === "cycle-change") {
                 pauseSimulation();
               }
               executeStageCounter++;
               cycleCount++;
             }
-          }  
+          }
         }
       } else {
         store.set(messageAtom, ""); // Set messageAtom to blank if not executing by cycle
       }
       console.log(`Ciclos ejecutados: ${cycleCount}`);
-      store.set(cycleCountAtom, cycleCount );
+      store.set(cycleCountAtom, cycleCount);
 
       const eventInstruction = new CustomEvent("instructionChange", {
-        detail: { instruction: currentInstructionName, modeid: currentInstructionModeid, moderi: currentInstructionModeri },
+        detail: {
+          instruction: currentInstructionName,
+          modeid: currentInstructionModeid,
+          moderi: currentInstructionModeri,
+        },
       });
       window.dispatchEvent(eventInstruction);
 
       if (event.value.type === "cpu:cycle.update" || event.value.type === "cpu:cycle.interrupt") {
         if (status.until === "cycle-change") {
-         // pauseSimulation();
+          // pauseSimulation();
         } else if (!settings.animations) {
           // If animations are disabled, wait for some time to not overwhelm the CPU
           await new Promise(resolve => setTimeout(resolve, settings.executionUnit));
@@ -678,13 +722,11 @@ async function dispatch(...args: Action) {
   const action = args[0];
   const status = store.get(simulationAtom);
 
-
   switch (action) {
     case "cpu.run": {
       if (status.type === "running") return invalidAction();
 
       const until = args[1];
-
 
       if (status.type === "stopped") {
         if (!window.codemirror) return;
@@ -701,18 +743,18 @@ async function dispatch(...args: Action) {
 
         //setReadOnly(true);
 
-       // Verificar si el programa contiene alguna instrucción que afecte al registro SP
-       const instructions = result.instructions.map(instruction => instruction.instruction);
-       const hasSPInstruction = instructions.some(instruction =>
-         ["CALL", "RET", "INT", "IRET", "POP", "PUSH"].includes(instruction)
-       );
-     
+        // Verificar si el programa contiene alguna instrucción que afecte al registro SP
+        const instructions = result.instructions.map(instruction => instruction.instruction);
+        const hasSPInstruction = instructions.some(instruction =>
+          ["CALL", "RET", "INT", "IRET", "POP", "PUSH"].includes(instruction),
+        );
+
         // Actualizar el estado showSP en consecuencia
         store.set(showSPAtom, hasSPInstruction);
 
         const hasINT = instructions.includes("INT");
         store.set(hasINTInstructionAtom, hasINT);
-        
+
         // Verificar si el programa contiene INT 6 o INT 7
         const connectScreenAndKeyboard = result.instructions.some(instruction => {
           if (instruction.instruction === "INT") {
@@ -747,14 +789,14 @@ async function dispatch(...args: Action) {
               if (operand.type === "number-expression") {
                 // Verificar valores directos
                 if (typeof operand.value.value === "number") {
-                  return operand.value.value >= 0x20 && operand.value.value <= 0x2B;
+                  return operand.value.value >= 0x20 && operand.value.value <= 0x2b;
                 }
                 // Verificar expresiones que se resuelven a direcciones PIC
                 try {
                   if (operand.value && typeof operand.value.resolve === "function") {
                     const resolvedValue = operand.value.resolve();
                     if (typeof resolvedValue === "number") {
-                      return resolvedValue >= 0x20 && resolvedValue <= 0x2B;
+                      return resolvedValue >= 0x20 && resolvedValue <= 0x2b;
                     }
                   }
                 } catch (error) {
@@ -828,177 +870,194 @@ async function dispatch(...args: Action) {
         const currentSettings = getSettings();
         store.set(settingsAtom, (prev: any) => ({
           ...prev,
-          devices: { 
-            ...prev.devices, 
+          devices: {
+            ...prev.devices,
             keyboardAndScreen: connectScreenAndKeyboard,
-            pio: usesSwitches ? "switches-and-leds" : (usesHandshake ? "printer" : prev.devices.pio),
+            pio: usesSwitches ? "switches-and-leds" : usesHandshake ? "printer" : prev.devices.pio,
             handshake: usesHandshake ? "printer" : prev.devices.handshake,
             pic: usesPIC || prev.devices.pic,
             "switches-and-leds": usesSwitches,
           },
         }));
-       
+
         // Actualizar el átomo con el valor de connectScreenAndKeyboard
         store.set(connectScreenAndKeyboardAtom, connectScreenAndKeyboard);
 
         // Determinar si se necesita mostrar el vector de interrupciones
         // Se muestra si hay INT, o si se usan dispositivos que pueden generar interrupciones
-        const hasINTOrInterruptDevices = hasINT || usesPIC || usesHandshake || usesTimer || connectScreenAndKeyboard;
+        const hasINTOrInterruptDevices =
+          hasINT || usesPIC || usesHandshake || usesTimer || connectScreenAndKeyboard;
         store.set(hasINTInstructionAtom, hasINTOrInterruptDevices);
-        
-        console.log("Detectado - PIC:", usesPIC, "Handshake:", usesHandshake, "Timer:", usesTimer, "INT:", hasINT);
+
+        console.log(
+          "Detectado - PIC:",
+          usesPIC,
+          "Handshake:",
+          usesHandshake,
+          "Timer:",
+          usesTimer,
+          "INT:",
+          hasINT,
+        );
         console.log("Habilitando vector de interrupciones:", hasINTOrInterruptDevices);
-        
+
         // Reset the simulator
         simulator.loadProgram({
           program: result,
           data: currentSettings.dataOnLoad,
-          devices: getSettings().devices, 
-          hasORG: result.hasORG, // Pass the hasORG flag 
+          devices: getSettings().devices,
+          hasORG: result.hasORG, // Pass the hasORG flag
         });
-        console.log("result:",  result);
-
+        console.log("result:", result);
 
         const programAddresses = result.instructions
-        .filter(instruction => instruction.type === "instruction") // Filtrar solo instrucciones
-        .flatMap(instruction => {
-          // Construir el nombre completo de la instrucción con sus operandos
-          const operands = instruction.operands
-            .map(operand => {
-              if (operand.type === "register") {
-                return operand.value; // Nombre del registro
-              } else if (operand.type === "number-expression" ) {
-                const value = operand.value;
-                if (value.isNumberLiteral()) {
-                  return value.value.toString(16) + "h"; // Valor inmediato en hexadecimal
-                } else if (value.isLabel()) {
-                  return value.value; // Nombre de la etiqueta
-                }
-              } else if (operand.type === "indirect-address") {
-                return '[BL]'; // Fallback for unsupported operand types
-              } else if (operand.type === "direct-address") {
-                const address = operand.value;
-                if (address.isNumberLiteral()) {
-                return address.value.toString(16) + "h"; // Valor en hexadecimal
-                }
-            }
-              return ""; // Otros casos
-            })
-            .join(", "); // Separar los operandos con comas
-      
-          const fullInstruction = `${instruction.instruction} ${operands}`.trim(); // Construir la instrucción completa
-         
-          // Crear la entrada para la instrucción principal
-          const entries = [
-            {
-              address: instruction.start.value, // Dirección de la instrucción
-              name: fullInstruction, // Instrucción completa con operandos
-              length: instruction.length.toString().trim(), // Tamaño de la instrucción en bytes como cadena sin espacios
-            },
-          ];
-      
-          // Si la instrucción tiene un segundo byte (como un valor inmediato o dirección), agregarlo
-          if (instruction.operands.some(operand => operand.type === "number-expression" || operand.type === "direct-address" )) {
-            const secondByteAddress = instruction.start.value + 1; // Dirección del segundo byte
-            const secondByteName = instruction.operands
-              .filter((operand, index) => {
-                // Si la instrucción tiene 3 bytes, solo procesar el primer operando
-                if (instruction.length === 3) {
-                  return index === 0 && operand.type === "number-expression";
-                }
-                // Si no, procesar todos los operandos de tipo "number-expression"
-                return operand.type === "number-expression";
-              })
+          .filter(instruction => instruction.type === "instruction") // Filtrar solo instrucciones
+          .flatMap(instruction => {
+            // Construir el nombre completo de la instrucción con sus operandos
+            const operands = instruction.operands
               .map(operand => {
-                if (operand.type === "number-expression" ) {
+                if (operand.type === "register") {
+                  return operand.value; // Nombre del registro
+                } else if (operand.type === "number-expression") {
                   const value = operand.value;
                   if (value.isNumberLiteral()) {
                     return value.value.toString(16) + "h"; // Valor inmediato en hexadecimal
                   } else if (value.isLabel()) {
                     return value.value; // Nombre de la etiqueta
                   }
+                } else if (operand.type === "indirect-address") {
+                  return "[BL]"; // Fallback for unsupported operand types
                 } else if (operand.type === "direct-address") {
                   const address = operand.value;
                   if (address.isNumberLiteral()) {
-                  return address.value.toString(16) + "h"; // Valor en hexadecimal
+                    return address.value.toString(16) + "h"; // Valor en hexadecimal
                   }
                 }
-                return "";
+                return ""; // Otros casos
               })
-              .join(", "); // Construir el nombre del segundo byte
-      
-            entries.push({
-              address: secondByteAddress,
-              name: secondByteName, // Nombre del segundo byte
-              length: "", // Tamaño del segundo byte (0 si no es aplicable)
-            });
-          }
+              .join(", "); // Separar los operandos con comas
 
-          // Si la instrucción es mem<-imd y tiene tres bytes, agregar el tercer byte
-          if (instruction.length === 3) {
-            const thirdByteAddress = instruction.start.value + 2; // Dirección del tercer byte
-            const thirdByteName = instruction.operands
-              .filter(operand => operand.type === "number-expression")
-              .map(operand => {
-                if (operand.type === "number-expression") {
-                  const value = operand.value;
-                  if (value.isNumberLiteral()) {
-                    return value.value.toString(16) + "h"; // Valor inmediato en hexadecimal
+            const fullInstruction = `${instruction.instruction} ${operands}`.trim(); // Construir la instrucción completa
+
+            // Crear la entrada para la instrucción principal
+            const entries = [
+              {
+                address: instruction.start.value, // Dirección de la instrucción
+                name: fullInstruction, // Instrucción completa con operandos
+                length: instruction.length.toString().trim(), // Tamaño de la instrucción en bytes como cadena sin espacios
+              },
+            ];
+
+            // Si la instrucción tiene un segundo byte (como un valor inmediato o dirección), agregarlo
+            if (
+              instruction.operands.some(
+                operand =>
+                  operand.type === "number-expression" || operand.type === "direct-address",
+              )
+            ) {
+              const secondByteAddress = instruction.start.value + 1; // Dirección del segundo byte
+              const secondByteName = instruction.operands
+                .filter((operand, index) => {
+                  // Si la instrucción tiene 3 bytes, solo procesar el primer operando
+                  if (instruction.length === 3) {
+                    return index === 0 && operand.type === "number-expression";
                   }
-                }
-                return "";
-              })
-              .join(" "); // Construir el nombre del tercer byte
+                  // Si no, procesar todos los operandos de tipo "number-expression"
+                  return operand.type === "number-expression";
+                })
+                .map(operand => {
+                  if (operand.type === "number-expression") {
+                    const value = operand.value;
+                    if (value.isNumberLiteral()) {
+                      return value.value.toString(16) + "h"; // Valor inmediato en hexadecimal
+                    } else if (value.isLabel()) {
+                      return value.value; // Nombre de la etiqueta
+                    }
+                  } else if (operand.type === "direct-address") {
+                    const address = operand.value;
+                    if (address.isNumberLiteral()) {
+                      return address.value.toString(16) + "h"; // Valor en hexadecimal
+                    }
+                  }
+                  return "";
+                })
+                .join(", "); // Construir el nombre del segundo byte
 
-            entries.push({
-              address: thirdByteAddress,
-              name: thirdByteName, // Nombre del tercer byte
-              length: "", // Tamaño del segundo byte (0 si no es aplicable)
-            });
-          }
+              entries.push({
+                address: secondByteAddress,
+                name: secondByteName, // Nombre del segundo byte
+                length: "", // Tamaño del segundo byte (0 si no es aplicable)
+              });
+            }
 
-          return entries; // Retornar ambas entradas (instrucción principal y segundo byte, si aplica)
-        });
+            // Si la instrucción es mem<-imd y tiene tres bytes, agregar el tercer byte
+            if (instruction.length === 3) {
+              const thirdByteAddress = instruction.start.value + 2; // Dirección del tercer byte
+              const thirdByteName = instruction.operands
+                .filter(operand => operand.type === "number-expression")
+                .map(operand => {
+                  if (operand.type === "number-expression") {
+                    const value = operand.value;
+                    if (value.isNumberLiteral()) {
+                      return value.value.toString(16) + "h"; // Valor inmediato en hexadecimal
+                    }
+                  }
+                  return "";
+                })
+                .join(" "); // Construir el nombre del tercer byte
+
+              entries.push({
+                address: thirdByteAddress,
+                name: thirdByteName, // Nombre del tercer byte
+                length: "", // Tamaño del segundo byte (0 si no es aplicable)
+              });
+            }
+
+            return entries; // Retornar ambas entradas (instrucción principal y segundo byte, si aplica)
+          });
 
         const dataAddresses = result.data
-        .filter(data => data.type === "data-directive") // Filtrar por el tipo correcto
-        .flatMap(data => {
-          // Obtener la dirección inicial y los valores definidos
-          const startAddress = data.start.value;
-          const values = data.getValues()
-            .map(value => {
+          .filter(data => data.type === "data-directive") // Filtrar por el tipo correcto
+          .flatMap(data => {
+            // Obtener la dirección inicial y los valores definidos
+            const startAddress = data.start.value;
+            const values = data.getValues().map(value => {
+              // Verificar si el valor es un objeto con el método toNumber
+              if (
+                typeof value === "object" &&
+                value !== null &&
+                "toNumber" in value &&
+                typeof value.toNumber === "function"
+              ) {
+                return value.toNumber(); // Usar el método toNumber si está disponible
+              }
 
-                // Verificar si el valor es un objeto con el método toNumber
-                if (typeof value === "object" && value !== null && "toNumber" in value && typeof value.toNumber === "function") {
-                  return value.toNumber(); // Usar el método toNumber si está disponible
-                }
-      
-                // Si el valor es un número, devolverlo directamente
-                if (typeof value === "number") {
-                  return value;
-                }
-                return 0;
-
+              // Si el valor es un número, devolverlo directamente
+              if (typeof value === "number") {
+                return value;
+              }
+              return 0;
             });
-      
-          // Generar una entrada para cada byte de datos
-          return values.map((value: number, index: number) => ({
-            address: startAddress + index, // Calcular la dirección de cada byte
-            label: index === 0 ? data.label || null : null, // Etiqueta solo para el primer byte
-            value, // Valor del byte
-          }));
-        });
-      
 
-      console.log("Direcciones de las instrucciones:", programAddresses);
-      console.log("Direcciones de los datos:", dataAddresses);
+            // Generar una entrada para cada byte de datos
+            return values.map((value: number, index: number) => ({
+              address: startAddress + index, // Calcular la dirección de cada byte
+              label: index === 0 ? data.label || null : null, // Etiqueta solo para el primer byte
+              value, // Valor del byte
+            }));
+          });
 
+        console.log("Direcciones de las instrucciones:", programAddresses);
+        console.log("Direcciones de los datos:", dataAddresses);
 
         store.set(programAddressesAtom, programAddresses);
-        store.set(dataAddressesAtom, dataAddresses.map(data => ({ ...data, length: "" })));
+        store.set(
+          dataAddressesAtom,
+          dataAddresses.map(data => ({ ...data, length: "" })),
+        );
         //console.log("Direcciones del programa cargadas en memoria:", programAddresses);
- 
-        resetState(simulator.getComputerState()); 
+
+        resetState(simulator.getComputerState());
 
         // Track event
         const event = [
@@ -1015,12 +1074,10 @@ async function dispatch(...args: Action) {
         posthog.capture(...event);
 
         store.set(simulationAtom, { type: "running", until, waitingForInput: false });
-        
+
         startThread(simulator.startCPU());
         startClock();
         startPrinter();
-        
-
       } else {
         store.set(simulationAtom, { type: "running", until, waitingForInput: false });
 
@@ -1034,7 +1091,7 @@ async function dispatch(...args: Action) {
       const shouldReset = args[1];
       if (shouldReset) {
         finishSimulation();
-        resetState(simulator.getComputerState(), shouldReset); // Pasar el parámetro clearRegisters       
+        resetState(simulator.getComputerState(), shouldReset); // Pasar el parámetro clearRegisters
       } else {
         pauseSimulation();
       }
@@ -1064,18 +1121,14 @@ async function dispatch(...args: Action) {
       // Prevent simultaneous presses
       if (eventIsRunning("switches:toggle")) return;
 
-
       const index = args[1];
-
 
       if (status.type === "running") {
         // Solo ejecuta el toggle en el simulador, el evento actualizará el átomo
         startThread(simulator.devices.switches.toggle(index)!);
       } else {
         // Si NO está corriendo, actualiza el átomo directamente
-        store.set(switchesAtom, switches =>
-          switches.withBit(index, !switches.bit(index)),
-        );
+        store.set(switchesAtom, switches => switches.withBit(index, !switches.bit(index)));
       }
 
       return;
@@ -1127,10 +1180,23 @@ async function startClock(): Promise<void> {
 
 async function startPrinter(): Promise<void> {
   if (!simulator.devices.printer.connected()) return;
-  
-  while (
-    store.get(simulationAtom).type !== "stopped"  
-  ) {
+
+  while (store.get(simulationAtom).type !== "stopped") {
+    const duration = getSettings().printerSpeed;
+    await anim(
+      [
+        { key: "printer.printing.opacity", from: 1 },
+        { key: "printer.printing.progress", from: 0, to: 1 },
+      ],
+      { duration, forceMs: true, easing: "easeInOutSine" },
+    );
+    await anim({ key: "printer.printing.opacity", to: 0 }, { duration: 1, easing: "easeInSine" });
+    await startThread(simulator.devices.printer.print()!);
+  }
+
+  // Sigue imprimiendo mientras la simulación esté corriendo o el buffer no esté vacío
+  if (store.get(simulationAtom).type === "stopped" && simulator.devices.printer.hasPending()) {
+    while (store.get(simulationAtom).type !== "stopped" || simulator.devices.printer.hasPending()) {
       const duration = getSettings().printerSpeed;
       await anim(
         [
@@ -1140,34 +1206,15 @@ async function startPrinter(): Promise<void> {
         { duration, forceMs: true, easing: "easeInOutSine" },
       );
       await anim({ key: "printer.printing.opacity", to: 0 }, { duration: 1, easing: "easeInSine" });
-      await startThread(simulator.devices.printer.print()!);
-  }
-
-  // Sigue imprimiendo mientras la simulación esté corriendo o el buffer no esté vacío
-    if (store.get(simulationAtom).type === "stopped" &&
-        simulator.devices.printer.hasPending()) {
-        while (
-            store.get(simulationAtom).type !== "stopped"  ||
-            simulator.devices.printer.hasPending()
-          ) {
-              const duration = getSettings().printerSpeed;
-              await anim(
-                [
-                  { key: "printer.printing.opacity", from: 1 },
-                  { key: "printer.printing.progress", from: 0, to: 1 },
-                ],
-                { duration, forceMs: true, easing: "easeInOutSine" },
-              );
-              await anim({ key: "printer.printing.opacity", to: 0 }, { duration: 1, easing: "easeInSine" });
-              // Procesar el generador manualmente si la simulación está detenida
-              const gen = simulator.devices.printer.print()!;
-              let result = gen.next();
-              while (!result.done) {
-                await handleEvent(result.value);
-                result = gen.next();
-              }
-            }
+      // Procesar el generador manualmente si la simulación está detenida
+      const gen = simulator.devices.printer.print()!;
+      let result = gen.next();
+      while (!result.done) {
+        await handleEvent(result.value);
+        result = gen.next();
+      }
     }
+  }
 }
 
 export function useSimulation() {

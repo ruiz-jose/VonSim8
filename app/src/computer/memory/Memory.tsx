@@ -54,7 +54,7 @@ export function Memory() {
                   key={index}
                   className={clsx(
                     "size-10 border border-gray-500 bg-mantis-500",
-                    index % 4 === 0 && index !== 0 ? "border-l-4 border-mantis-600" : ""
+                    index % 4 === 0 && index !== 0 ? "border-l-4 border-mantis-600" : "",
                   )}
                 >
                   {index.toString(16).toUpperCase()}
@@ -66,7 +66,9 @@ export function Memory() {
             {renderMemoryRows().map((row, rowIndex) => (
               <tr
                 key={rowIndex}
-                className={rowIndex % 4 === 0 && rowIndex !== 0 ? "border-t-4 border-mantis-600" : ""}
+                className={
+                  rowIndex % 4 === 0 && rowIndex !== 0 ? "border-t-4 border-mantis-600" : ""
+                }
               >
                 <th className="size-10 border border-gray-500 bg-mantis-500">
                   {rowIndex.toString(16).toUpperCase()}
@@ -85,15 +87,27 @@ export function Memory() {
                       isIP={cell.address.valueOf() === ip.valueOf()}
                       isSP={showSP && cell.address.valueOf() === sp.valueOf()}
                       isStackData={showSP && cell.address.valueOf() > sp.valueOf()}
-                      isProgramAddress={!!programAddresses.find(entry => entry.address === cell.address.value)}
-                      isDataAddress={!!dataAddresses.find(entry => entry.address === cell.address.value)}
-                      isInterruptVector={showInterruptVector && cell.address.valueOf() >= 0 && cell.address.valueOf() <= 7}
+                      isProgramAddress={
+                        !!programAddresses.find(entry => entry.address === cell.address.value)
+                      }
+                      isDataAddress={
+                        !!dataAddresses.find(entry => entry.address === cell.address.value)
+                      }
+                      isInterruptVector={
+                        showInterruptVector &&
+                        cell.address.valueOf() >= 0 &&
+                        cell.address.valueOf() <= 7
+                      }
                       label={
-                        programAddresses.find(entry => entry.address === cell.address.value)?.name ||
+                        programAddresses.find(entry => entry.address === cell.address.value)
+                          ?.name ||
                         dataAddresses.find(entry => entry.address === cell.address.value)?.label ||
                         null
                       }
-                      length={programAddresses.find(entry => entry.address === cell.address.value)?.length ?? null}
+                      length={
+                        programAddresses.find(entry => entry.address === cell.address.value)
+                          ?.length ?? null
+                      }
                     />
                   </td>
                 ))}
@@ -156,13 +170,17 @@ function MemoryCell({
             isIP
               ? "z-10 shadow-lg shadow-red-500/50 outline outline-2 outline-red-500 ring-2 ring-red-500 ring-offset-2"
               : isSP
-              ? "z-10 shadow-lg shadow-yellow-400/50 outline outline-2 outline-yellow-400 ring-2 ring-yellow-400 ring-offset-2"
-              : "",
+                ? "z-10 shadow-lg shadow-yellow-400/50 outline outline-2 outline-yellow-400 ring-2 ring-yellow-400 ring-offset-2"
+                : "",
             // Cambiar fondos de colores sólidos por fondo oscuro consistente
             "bg-stone-800",
             isInterruptVector && !isSP && !isStackData ? "border-l-4 border-purple-500" : "",
-            isProgramAddress && !isSP && !isStackData && !isInterruptVector ? "border-l-4 border-blue-500" : "",
-            isDataAddress && !isSP && !isStackData && !isProgramAddress && !isInterruptVector ? "border-l-4 border-green-500" : "",
+            isProgramAddress && !isSP && !isStackData && !isInterruptVector
+              ? "border-l-4 border-blue-500"
+              : "",
+            isDataAddress && !isSP && !isStackData && !isProgramAddress && !isInterruptVector
+              ? "border-l-4 border-green-500"
+              : "",
             // Agregar bordes laterales para stack data y SP
             isStackData && !isSP ? "border-l-4 border-yellow-500" : "",
             isSP ? "border-l-4 border-yellow-400" : "",
@@ -170,7 +188,7 @@ function MemoryCell({
             "text-stone-100",
             // Hover y animación de destello
             "hover:z-20 hover:scale-110 hover:shadow-xl",
-            flash && "animate-pulse"
+            flash && "animate-pulse",
           )}
           style={
             address.value === operatingAddress.value

@@ -13,11 +13,7 @@ import { Switch } from "@/components/ui/Switch";
 import { stopAllAnimations } from "@/computer/shared/animate";
 import { useSimulation } from "@/computer/simulation";
 import { useTranslate } from "@/lib/i18n";
-import {
-  HANDSHAKE_CONNECTIONS,
-  PIO_CONNECTIONS,
-  useSettings,
-} from "@/lib/settings";
+import { HANDSHAKE_CONNECTIONS, PIO_CONNECTIONS, useSettings } from "@/lib/settings";
 import { defaultSettings } from "@/lib/settings/schema";
 
 export const settingsOpenAtom = atom(false);
@@ -71,7 +67,7 @@ export function Settings({ className }: { className?: string }) {
           })}
         />
       </Setting>
-      
+
       <hr className="border-stone-600" />
 
       <Setting>
@@ -82,12 +78,9 @@ export function Settings({ className }: { className?: string }) {
         <Switch
           className="ml-8"
           checked={settings.showInstructionCycle}
-          onCheckedChange={value =>
-            setSettings(prev => ({ ...prev, showInstructionCycle: value }))
-          }
+          onCheckedChange={value => setSettings(prev => ({ ...prev, showInstructionCycle: value }))}
         />
       </Setting>
-
 
       <Setting>
         <SettingInfo>
@@ -97,14 +90,12 @@ export function Settings({ className }: { className?: string }) {
         <Switch
           className="ml-8"
           checked={settings.showStatsCPU}
-          onCheckedChange={value =>
-            setSettings(prev => ({ ...prev, showStatsCPU: value }))
-          }
+          onCheckedChange={value => setSettings(prev => ({ ...prev, showStatsCPU: value }))}
         />
       </Setting>
 
       <hr className="border-stone-600" />
-      
+
       <Setting>
         <SettingInfo>
           <SettingTitle>
@@ -269,9 +260,7 @@ export function Settings({ className }: { className?: string }) {
 
         <Select
           value={settings.flagsVisibility}
-          onValueChange={value =>
-            setSettings(prev => ({ ...prev, flagsVisibility: value as any }))
-          }
+          onValueChange={value => setSettings(prev => ({ ...prev, flagsVisibility: value as any }))}
         >
           <SelectTrigger className="w-32">
             <SelectValue />
@@ -346,7 +335,6 @@ export function Settings({ className }: { className?: string }) {
           </button>
         </div>
       </Setting>
-
 
       <hr className="border-stone-600" />
 

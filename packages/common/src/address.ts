@@ -102,7 +102,7 @@ export class MemoryAddress {
     let result = address.toString(16).padStart(4, "0").toUpperCase();
     if (trailingH) result += "h";
 
-    return result.slice(-3);// Obtener los últimos tres dígitos
+    return result.slice(-3); // Obtener los últimos tres dígitos
   }
 }
 

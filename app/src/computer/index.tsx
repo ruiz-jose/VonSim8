@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { ReactZoomPanPinchRef, TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 
 import { ZoomControls } from "@/components/ZoomControls";
-import { RegisterTransferMessages } from "@/computer/cpu/RegisterTransferMessages"; 
+import { RegisterTransferMessages } from "@/computer/cpu/RegisterTransferMessages";
 
 import { SystemBus } from "./bus/SystemBus";
 import { Clock } from "./clock/Clock";
@@ -42,7 +42,6 @@ export function ComputerContainer() {
           <div className="relative h-[1300px] w-[1900px]">
             <SystemBus />
 
- 
             <CPUStats />
             <CPU />
             <RegisterTransferMessages />

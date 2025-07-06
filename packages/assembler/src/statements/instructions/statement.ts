@@ -78,7 +78,7 @@ export abstract class InstructionStatement extends Statement {
   abstract toBytes(): Uint8Array;
   abstract validate(store: GlobalStore): void;
   abstract evaluateExpressions(store: GlobalStore): void;
-  
+
   // Agregar un método público para acceder a los operandos
   public getOperands(): Operand[] {
     return this.operands;

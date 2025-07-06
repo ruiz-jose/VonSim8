@@ -1,11 +1,11 @@
 import clsx from "clsx";
 import { useAtomValue } from "jotai";
-import { useEffect,useState } from "react";
+import { useEffect, useState } from "react";
 
 import { animated, getSpring } from "@/computer/shared/springs";
 import { useSettings } from "@/lib/settings";
 
-import { aluOperationAtom, connectScreenAndKeyboardAtom,registerAtoms } from "./state";
+import { aluOperationAtom, connectScreenAndKeyboardAtom, registerAtoms } from "./state";
 
 /**
  * ALU component, to be used inside <CPU />
@@ -19,10 +19,20 @@ export function ALU() {
 
   const [settings] = useSettings(); // Obtener settings desde el menú de configuración
 
-
   useEffect(() => {
     const handleInstruction = (instruction: string) => {
-      if (instruction === "ADD" || instruction === "SUB" || instruction === "CMP" || instruction === "AND" || instruction === "OR" || instruction === "XOR" || instruction === "NOT" || instruction === "NEG" || instruction === "DEC" || instruction === "INC") {
+      if (
+        instruction === "ADD" ||
+        instruction === "SUB" ||
+        instruction === "CMP" ||
+        instruction === "AND" ||
+        instruction === "OR" ||
+        instruction === "XOR" ||
+        instruction === "NOT" ||
+        instruction === "NEG" ||
+        instruction === "DEC" ||
+        instruction === "INC"
+      ) {
         setShowOperation(true);
       } else {
         setShowOperation(false);
@@ -68,7 +78,7 @@ export function ALU() {
           strokeDasharray={1}
           style={getSpring("cpu.alu.operands")}
         />
-        
+
         {/* ALU con gradiente mejorado */}
         <defs>
           <linearGradient id="aluGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -80,7 +90,7 @@ export function ALU() {
             <feDropShadow dx="2" dy="2" stdDeviation="3" floodColor="rgba(0,0,0,0.3)" />
           </filter>
         </defs>
-        
+
         {/* ALU más grande */}
         <path
           d="M 220 60 v 50 l 20 12 l -20 12 v 50 l 60 -36 v -52 Z"
@@ -90,7 +100,7 @@ export function ALU() {
           strokeLinejoin="round"
           filter="url(#aluShadow)"
         />
-        
+
         {/* Etiqueta ALU centrada */}
         <text x="250" y="105" fill="#E5E7EB" fontSize="12" fontWeight="bold" textAnchor="middle">
           ALU
@@ -117,52 +127,74 @@ export function ALU() {
       <animated.div
         className={clsx(
           "absolute flex w-min items-center gap-0.5 rounded-lg border-2 border-stone-400 bg-gradient-to-br from-stone-700 via-stone-600 to-stone-800 px-0.5 py-1 text-stone-200 font-bold min-w-[38px] min-h-[30px] shadow-lg ring-1 ring-stone-300",
-          settings.flagsVisibility === "SF_OF_CF_ZF" ? "top-[190px] left-[210px]" : "top-[190px] left-[230px]"
+          settings.flagsVisibility === "SF_OF_CF_ZF"
+            ? "top-[190px] left-[210px]"
+            : "top-[190px] left-[230px]",
         )}
         style={getSpring("cpu.FLAGS")}
       >
         <span className="absolute top-0.5 left-0.5 text-stone-300 text-[6px] bg-stone-900/80 px-0.5 rounded pointer-events-none font-bold">
           FLAGS
         </span>
-        
+
         {/* Espaciado adicional para evitar solapamiento con el título */}
         <div className="mt-2 flex items-center gap-0.5">
           {connectScreenAndKeyboard && (
-            <span className={clsx(
-              "px-0.5 py-0 text-[10px] font-bold rounded border transition-all duration-200",
-              IF ? "border-stone-300 bg-stone-300 text-stone-950 shadow-[0_0_4px_rgba(120,113,108,0.6)]" : "border-stone-600 bg-stone-800 text-stone-300"
-            )}>
+            <span
+              className={clsx(
+                "px-0.5 py-0 text-[10px] font-bold rounded border transition-all duration-200",
+                IF
+                  ? "border-stone-300 bg-stone-300 text-stone-950 shadow-[0_0_4px_rgba(120,113,108,0.6)]"
+                  : "border-stone-600 bg-stone-800 text-stone-300",
+              )}
+            >
               I
             </span>
           )}
-          
+
           {settings.flagsVisibility === "SF_OF_CF_ZF" && (
             <>
-              <span className={clsx(
-                "px-0.5 py-0 text-[10px] font-bold rounded border transition-all duration-200",
-                SF ? "border-stone-300 bg-stone-300 text-stone-950 shadow-[0_0_4px_rgba(120,113,108,0.6)]" : "border-stone-600 bg-stone-800 text-stone-300"
-              )}>
+              <span
+                className={clsx(
+                  "px-0.5 py-0 text-[10px] font-bold rounded border transition-all duration-200",
+                  SF
+                    ? "border-stone-300 bg-stone-300 text-stone-950 shadow-[0_0_4px_rgba(120,113,108,0.6)]"
+                    : "border-stone-600 bg-stone-800 text-stone-300",
+                )}
+              >
                 S
               </span>
-              <span className={clsx(
-                "px-0.5 py-0 text-[10px] font-bold rounded border transition-all duration-200",
-                OF ? "border-stone-300 bg-stone-300 text-stone-950 shadow-[0_0_4px_rgba(120,113,108,0.6)]" : "border-stone-600 bg-stone-800 text-stone-300"
-              )}>
+              <span
+                className={clsx(
+                  "px-0.5 py-0 text-[10px] font-bold rounded border transition-all duration-200",
+                  OF
+                    ? "border-stone-300 bg-stone-300 text-stone-950 shadow-[0_0_4px_rgba(120,113,108,0.6)]"
+                    : "border-stone-600 bg-stone-800 text-stone-300",
+                )}
+              >
                 O
               </span>
             </>
           )}
-          
-          <span className={clsx(
-            "px-0.5 py-0 text-[10px] font-bold rounded border transition-all duration-200",
-            CF ? "border-stone-300 bg-stone-300 text-stone-950 shadow-[0_0_4px_rgba(120,113,108,0.6)]" : "border-stone-600 bg-stone-800 text-stone-300"
-          )}>
+
+          <span
+            className={clsx(
+              "px-0.5 py-0 text-[10px] font-bold rounded border transition-all duration-200",
+              CF
+                ? "border-stone-300 bg-stone-300 text-stone-950 shadow-[0_0_4px_rgba(120,113,108,0.6)]"
+                : "border-stone-600 bg-stone-800 text-stone-300",
+            )}
+          >
             C
           </span>
-          <span className={clsx(
-            "px-0.5 py-0 text-[10px] font-bold rounded border transition-all duration-200",
-            ZF ? "border-stone-300 bg-stone-300 text-stone-950 shadow-[0_0_4px_rgba(120,113,108,0.6)]" : "border-stone-600 bg-stone-800 text-stone-300"
-          )}>
+          <span
+            className={clsx(
+              "px-0.5 py-0 text-[10px] font-bold rounded border transition-all duration-200",
+              ZF
+                ? "border-stone-300 bg-stone-300 text-stone-950 shadow-[0_0_4px_rgba(120,113,108,0.6)]"
+                : "border-stone-600 bg-stone-800 text-stone-300",
+            )}
+          >
             Z
           </span>
         </div>

@@ -64,7 +64,6 @@ export class Parser {
    * The tokens that the parser is currently parsing.
    */
   private tokens: Token[];
-  
 
   /**
    * Index of the current token.
@@ -89,7 +88,6 @@ export class Parser {
   }
 
   private statement(): Statement {
-
     const statement =
       this.originChangeStatement() ??
       this.endStatement() ??

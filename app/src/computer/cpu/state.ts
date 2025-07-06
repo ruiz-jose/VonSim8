@@ -27,7 +27,7 @@ export const cycleCountAtom = atom(0);
 export const showSPAtom = atom(false);
 export const showriAtom = atom(false);
 export const instructionCountAtom = atom(0); // Variable global para contar las instrucciones
-export const messageHistoryAtom = atom<{ cycle: number; stage: string; action: string; }[]>([]);
+export const messageHistoryAtom = atom<{ cycle: number; stage: string; action: string }[]>([]);
 // Crear un átomo para almacenar el valor de connectScreenAndKeyboard
 export const connectScreenAndKeyboardAtom = atom(false);
 export const showInstructionCycleAtom = atom(true); // Por defecto, visible
@@ -122,7 +122,7 @@ export function resetCPUState(computer: ComputerState, clearRegisters = false) {
     store.set(registerAtoms.BX, Byte.zero(16));
     store.set(registerAtoms.CX, Byte.zero(16));
     store.set(registerAtoms.DX, Byte.zero(16));
-    store.set(registerAtoms.SP, Byte.fromUnsigned(0xFF, 16));
+    store.set(registerAtoms.SP, Byte.fromUnsigned(0xff, 16));
     store.set(registerAtoms.IP, Byte.zero(16));
     store.set(registerAtoms.IR, Byte.zero(8));
     store.set(registerAtoms.ri, Byte.zero(16));
@@ -146,13 +146,13 @@ export function resetCPUState(computer: ComputerState, clearRegisters = false) {
     store.set(registerAtoms.left, Byte.fromUnsigned(computer.cpu.left, 16));
     store.set(registerAtoms.right, Byte.fromUnsigned(computer.cpu.right, 16));
     store.set(registerAtoms.result, Byte.fromUnsigned(computer.cpu.result, 16));
-    // Inicializar los flags ZF, CF, OF y SF a cero 
+    // Inicializar los flags ZF, CF, OF y SF a cero
     // Establecer el flag IF a 1
-    computer.cpu.FLAGS = 16;  
+    computer.cpu.FLAGS = 16;
 
     store.set(registerAtoms.FLAGS, Byte.fromUnsigned(computer.cpu.FLAGS, 16));
     store.set(registerAtoms.MAR, Byte.fromUnsigned(computer.cpu.MAR, 16));
     store.set(registerAtoms.MBR, Byte.fromUnsigned(computer.cpu.MBR, 8));
-  }  
+  }
   store.set(cycleAtom, { phase: "stopped" });
 }

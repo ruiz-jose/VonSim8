@@ -31,18 +31,18 @@ export function Switches() {
         {translate("computer.switches")}
       </span>
 
-        <div className="flex flex-row-reverse gap-3 p-4">
-          {state.map((on, i) => (
-            <div key={i} className="w-8 flex flex-col items-center">
-              <span className="text-xs text-white mb-1 text-center w-full">{i}</span>
-              <Switch
-                checked={on}
-                onCheckedChange={() => dispatch("switch.toggle", i)}
-                className="-translate-x-3 -rotate-90 data-[state=unchecked]:!bg-stone-800"
-              />
-            </div>
-          ))}
-        </div>
+      <div className="flex flex-row-reverse gap-3 p-4">
+        {state.map((on, i) => (
+          <div key={i} className="w-8 flex flex-col items-center">
+            <span className="text-xs text-white mb-1 text-center w-full">{i}</span>
+            <Switch
+              checked={on}
+              onCheckedChange={() => dispatch("switch.toggle", i)}
+              className="-translate-x-3 -rotate-90 data-[state=unchecked]:!bg-stone-800"
+            />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

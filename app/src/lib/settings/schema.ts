@@ -11,11 +11,11 @@ export const settingsSchema = z.object({
   showInstructionCycle: z.boolean().catch(false),
 
   /**
- * Show or hide the CPU statistics.
- * Controls whether the CPU statistics are visible in the UI.
- */
+   * Show or hide the CPU statistics.
+   * Controls whether the CPU statistics are visible in the UI.
+   */
   showStatsCPU: z.boolean().catch(false),
-  
+
   /**
    * Interface language.
    */
@@ -71,9 +71,9 @@ export const settingsSchema = z.object({
   printerSpeed: z.number().min(500).max(20000).catch(5000),
 
   /**
-  * Flags visibility setting.
-  * Controls which flags are visible in the ALU.
-  */
+   * Flags visibility setting.
+   * Controls which flags are visible in the ALU.
+   */
   flagsVisibility: z.enum(["CF_ZF", "SF_OF_CF_ZF"]).catch("CF_ZF"),
 
   /**

@@ -12,7 +12,7 @@ import { Control } from "./Control";
 import { DataBus } from "./DataBus";
 import { registerAtoms, showSPAtom } from "./state";
 
-export function CPU( ) {
+export function CPU() {
   const translate = useTranslate();
 
   const showSP = useAtomValue(showSPAtom); // Usar el átomo showSPAtom
@@ -23,17 +23,28 @@ export function CPU( ) {
 
   useEffect(() => {
     const handleInstruction = (instruction: string, modeid?: boolean, moderi?: boolean) => {
-      if (instruction === "ADD" || instruction === "SUB"  || instruction === "CMP" || instruction === "AND" || instruction === "OR" || instruction === "XOR" || instruction === "NOT" || instruction === "NEG" || instruction === "DEC" || instruction === "INC") {
+      if (
+        instruction === "ADD" ||
+        instruction === "SUB" ||
+        instruction === "CMP" ||
+        instruction === "AND" ||
+        instruction === "OR" ||
+        instruction === "XOR" ||
+        instruction === "NOT" ||
+        instruction === "NEG" ||
+        instruction === "DEC" ||
+        instruction === "INC"
+      ) {
         setShowRegisters(true);
       } else {
         setShowRegisters(false);
       }
-      if (instruction === "IRET" || modeid ) {
+      if (instruction === "IRET" || modeid) {
         setShowid(true);
       } else {
         setShowid(false);
       }
-      if (moderi ) {        
+      if (moderi) {
         setShowri(true);
       } else {
         setShowri(false);
@@ -45,7 +56,11 @@ export function CPU( ) {
     // Aquí se muestra un ejemplo con un evento personalizado
     const eventListener = (event: Event) => {
       const customEvent = event as CustomEvent;
-      handleInstruction(customEvent.detail.instruction, customEvent.detail.modeid, customEvent.detail.moderi);
+      handleInstruction(
+        customEvent.detail.instruction,
+        customEvent.detail.modeid,
+        customEvent.detail.moderi,
+      );
     };
 
     window.addEventListener("instructionChange", eventListener as EventListener);
@@ -66,8 +81,14 @@ export function CPU( ) {
 
       {showRegisters && (
         <>
-          <Reg name="left" className={clsx("left-[96px] top-[49px]", "border-transparent", "bg-transparent")}/>
-          <Reg name="right" className={clsx("left-[96px] top-[150px]", "border-transparent", "bg-transparent")}/>
+          <Reg
+            name="left"
+            className={clsx("left-[96px] top-[49px]", "border-transparent", "bg-transparent")}
+          />
+          <Reg
+            name="right"
+            className={clsx("left-[96px] top-[150px]", "border-transparent", "bg-transparent")}
+          />
         </>
       )}
 
@@ -84,13 +105,16 @@ export function CPU( ) {
       <Reg name="IR" className={clsx("left-[185px] top-[270px]", "border-indigo-400")} />
 
       <Control />
-      {showSP && <Reg name="SP" emphasis className={clsx("left-[450px] top-[292px]", "border-yellow-400")} />}
+      {showSP && (
+        <Reg name="SP" emphasis className={clsx("left-[450px] top-[292px]", "border-yellow-400")} />
+      )}
       <Reg name="IP" emphasis className={clsx("left-[450px] top-[332px]", "border-red-color")} />
-      
-      {showri && <Reg name="ri" emphasis className={clsx("left-[470px] top-[372px]", "border-cyan-400")} />}
+
+      {showri && (
+        <Reg name="ri" emphasis className={clsx("left-[470px] top-[372px]", "border-cyan-400")} />
+      )}
 
       <Reg name="MAR" className={clsx("right-[-11px] top-[333px]", "border-indigo-400")} />
-
     </div>
   );
 }
@@ -112,7 +136,7 @@ function Reg({
       valueAtom={registerAtoms[name]}
       springs={`cpu.${name}`}
       emphasis={emphasis}
-     // title={translate("computer.cpu.register", name)}
+      // title={translate("computer.cpu.register", name)}
       className={clsx("absolute", className)}
     />
   );

@@ -53,8 +53,7 @@ export function* handleSyscall(
         return false;
       }
 
-
-     /*org 20h
+      /*org 20h
       int 6
       hlt         ; Detiene la ejecución
 
@@ -88,8 +87,6 @@ export function* handleSyscall(
       if (!(yield* computer.cpu.useBus("mem-read"))) return false; // Error reading memory
       yield* computer.cpu.setMAR("ri");*/
 
-
-
       const keyboard = computer.io.keyboard;
       if (!keyboard) {
         yield { type: "cpu:error", error: new SimulatorError("device-not-connected", "keyboard") };
@@ -98,7 +95,7 @@ export function* handleSyscall(
       const char = yield* keyboard.readChar();
 
       //yield* computer.cpu.updateByteRegister("id.l",char);
-      yield* computer.cpu.updateByteRegister("AL",char);
+      yield* computer.cpu.updateByteRegister("AL", char);
 
       //yield* computer.cpu.copyWordRegister("BX", "ri");
       yield* computer.cpu.copyByteRegister("BL", "ri.l");
@@ -128,7 +125,7 @@ export function* handleSyscall(
       if (!(yield* computer.cpu.pushToStack("DL"))) return false; // Stack overflow
 
       // CMP AL, 0 -- Check if length is 0
-    /*  yield* computer.cpu.copyByteRegister("AL", "left.l");
+      /*  yield* computer.cpu.copyByteRegister("AL", "left.l");
       yield* computer.cpu.updateByteRegister("right.l", Byte.fromUnsigned(1, 8));
       const AL = computer.cpu.getRegister("AL");
       yield* computer.cpu.aluExecute("CMP", AL, {
@@ -137,7 +134,7 @@ export function* handleSyscall(
         SF: AL.signed < 0,
         ZF: AL.isZero(),
       });*/
-      let video = 0xD8;
+      let video = 0xd8;
       while (!computer.cpu.getRegister("AL").isZero()) {
         // Read character from [BX]
         yield* computer.cpu.copyWordRegister("BX", "ri");
@@ -145,8 +142,6 @@ export function* handleSyscall(
         if (!(yield* computer.cpu.useBus("mem-read"))) return false; // Error reading from memory
         //yield* computer.cpu.getMBR("id.l");
         yield* computer.cpu.getMBR("DL");
-
-       
 
         yield* computer.cpu.updateByteRegister("ri.l", Byte.fromUnsigned(video, 8));
         yield* computer.cpu.setMAR("ri");
@@ -162,7 +157,6 @@ export function* handleSyscall(
           return false;
         }
         video++;
-
 
         // INC BX
         yield* computer.cpu.copyWordRegister("BX", "left");
@@ -192,9 +186,8 @@ export function* handleSyscall(
       //if (!(yield* computer.cpu.popFromStack("id.l"))) return false; // Stack underflow
       //yield* computer.cpu.copyWordRegister("id", "BX");
       //if (!(yield* computer.cpu.popFromStack("id.l"))) return false; // Stack underflow
-     //yield* computer.cpu.copyWordRegister("id", "AX");
-     if (!(yield* computer.cpu.popFromStack("DL"))) return false; // Stack underflow
-
+      //yield* computer.cpu.copyWordRegister("id", "AX");
+      if (!(yield* computer.cpu.popFromStack("DL"))) return false; // Stack underflow
 
       // Doesn't return -- retrieves machine state
       break;

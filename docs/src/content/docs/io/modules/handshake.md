@@ -26,7 +26,6 @@ En el registro de estado, los dos bits menos significativos son el _strobe_ y _b
 
 Además, el bit más significativo del registro de estado habilita/inhabilita las interrupciones. Si este bit es `1`, mientras la impresora no esté ocupada (`B=0`), el Handshake disparará una interrupción por hardware. Está conectado al puerto `INT2` del [PIC](/VonSim8/docs/io/modules/pic/).
 
-
 ```vonsim
 ; Imprime el string "hola" en la impresora usando Handshake
 
@@ -69,7 +68,7 @@ Imprimir un string en la impresora a través del handshake en modo interrupcione
 ```vonsim
 ; ===============================================================================
 ; PROGRAMA: Impresión de string usando Handshake con interrupciones
-; DESCRIPCIÓN: Imprime el string "hola" en la impresora utilizando el módulo 
+; DESCRIPCIÓN: Imprime el string "hola" en la impresora utilizando el módulo
 ;              Handshake con interrupciones por hardware (INT2)
 ; AUTOR: VonSim
 ; ===============================================================================
@@ -148,7 +147,7 @@ sti                       ; Habilitar interrupciones globales
 bucle_espera:
     cmp restantes, 0      ; ¿Quedan caracteres por imprimir?
     jnz bucle_espera      ; Si quedan, seguir esperando
-    
+
 ; --- 8) FINALIZACIÓN ---
 fin:
 hlt                       ; Detener ejecución del programa
@@ -197,6 +196,7 @@ fin_interrupcion:
     ; --- RETORNO DE INTERRUPCIÓN ---
     iret                  ; Retorno de interrupción
 ```
+
 ---
 
 <small>Esta obra está bajo la licencia <a target="_blank" rel="license noopener noreferrer" href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.</small>

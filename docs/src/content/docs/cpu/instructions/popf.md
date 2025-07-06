@@ -3,7 +3,10 @@ title: POPF
 head:
   - tag: meta
     attrs:
-      { property: og:image, content: https://vonsim.github.io/VonSim8/docs/og/cpu/instructions/popf.png }
+      {
+        property: og:image,
+        content: https://vonsim.github.io/VonSim8/docs/og/cpu/instructions/popf.png,
+      }
 ---
 
 Esta instrucción desapila el elemento en el tope en la [pila](/VonSim8/docs/cpu/#pila) y lo almacena en el registro [`FLAGS`](/VonSim8/docs/cpu/#flags). Los [_flags_](/VonSim8/docs/cpu/#flags) se modificarán acordemente.

@@ -3,7 +3,10 @@ title: IRET
 head:
   - tag: meta
     attrs:
-      { property: og:image, content: https://vonsim.github.io/VonSim8/docs/og/cpu/instructions/iret.png }
+      {
+        property: og:image,
+        content: https://vonsim.github.io/VonSim8/docs/og/cpu/instructions/iret.png,
+      }
 ---
 
 Esta instrucción retorna de una [rutina de interrupción](/VonSim8/docs/cpu/#interrupciones).

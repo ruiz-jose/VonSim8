@@ -3,7 +3,10 @@ title: AND
 head:
   - tag: meta
     attrs:
-      { property: og:image, content: https://vonsim.github.io/VonSim8/docs/og/cpu/instructions/and.png }
+      {
+        property: og:image,
+        content: https://vonsim.github.io/VonSim8/docs/og/cpu/instructions/and.png,
+      }
 ---
 
 Esta instrucción reliza la operación lógica AND bit a bit entre el operando destino y el operando fuente (destino AND fuente). El resultado se guarda en el operando destino. El operando fuente no se modifica.
@@ -53,11 +56,11 @@ Las combinaciones válidas de _dest_, _fuente_ son:
 `rr` o `RR` codifica un registro según la siguiente tabla:
 
 | `rr` | `nombre` |
-| :---: | :---: | 
-| `00` | `AL`  | 
-| `01` | `BL`  | 
-| `10` | `BL`  | 
-| `11` | `DL`  | 
+| :--: | :------: |
+| `00` |   `AL`   |
+| `01` |   `BL`   |
+| `10` |   `BL`   |
+| `11` |   `DL`   |
 
 ---
 

@@ -33,7 +33,6 @@ Las combinaciones válidas de _dest_, _fuente_ son:
 
 ## Codificación
 
-
 - REGISTRO a registro  
   `0000_RRrr`
 - Memoria (directo) a registro  
@@ -54,11 +53,11 @@ Las combinaciones válidas de _dest_, _fuente_ son:
 `rr` o `RR` codifica un registro según la siguiente tabla:
 
 | `rr` | `nombre` |
-| :---: | :---: | 
-| `00` | `AL`  | 
-| `01` | `BL`  | 
-| `10` | `BL`  | 
-| `11` | `DL`  | 
+| :--: | :------: |
+| `00` |   `AL`   |
+| `01` |   `BL`   |
+| `10` |   `BL`   |
+| `11` |   `DL`   |
 
 ---
 

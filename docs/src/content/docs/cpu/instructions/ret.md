@@ -3,7 +3,10 @@ title: RET
 head:
   - tag: meta
     attrs:
-      { property: og:image, content: https://ruiz-jose.github.io/VonSim8/docs/og/cpu/instructions/ret.png }
+      {
+        property: og:image,
+        content: https://ruiz-jose.github.io/VonSim8/docs/og/cpu/instructions/ret.png,
+      }
 ---
 
 Esta instrucción retorna de una [subrutina](/VonSim8/docs/cpu/#subrutinas). Los [_flags_](/VonSim8/docs/cpu/#flags) no se modifican.

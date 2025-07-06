@@ -49,7 +49,6 @@ export class GlobalStore {
   private readonly codeMemory = new Set<number>();
   private readonly labels: LabelsMap = new Map();
   private hasORG = false; // Nueva propiedad para almacenar si tiene la directiva ORG
-  
 
   #statementsLoaded = false;
   #computedAddresses = false;
@@ -107,21 +106,23 @@ export class GlobalStore {
     const occupiedMemory = new Set<number>();
 
     // Verificar si el programa contiene la instrucción INT
-    const hasINT = statements.some(statement => statement.isInstruction() && statement.instruction === "INT");
+    const hasINT = statements.some(
+      statement => statement.isInstruction() && statement.instruction === "INT",
+    );
 
     // Verificar si el programa contiene la directiva ORG
     this.hasORG = statements.some(statement => statement.isOriginChange());
 
-     // Validar si `this.hasORG` es `true` pero la primera línea no es una directiva ORG
+    // Validar si `this.hasORG` es `true` pero la primera línea no es una directiva ORG
     if (this.hasORG && !statements[0].isOriginChange()) {
       throw new AssemblerError("missing-org").at(statements[0].position);
     }
-    
+
     // Determinar la dirección inicial del código
     // Si hay INT pero no ORG, comienza en 0x08 (después del vector de interrupciones)
     // Si hay ORG, se maneja por la directiva ORG (por defecto 0x20)
     // Si no hay INT ni ORG, comienza en 0x00
-    let codePointer = (hasINT && !this.hasORG) ? 0x08 : (this.hasORG ? 0x20 : 0x00);
+    let codePointer = hasINT && !this.hasORG ? 0x08 : this.hasORG ? 0x20 : 0x00;
     let dataPointer: number | null = null;
     let lastCodeAddress: number = codePointer;
 
@@ -141,160 +142,156 @@ export class GlobalStore {
     }
 
     if (this.hasORG) {
-    const errors: AssemblerError<any>[] = [];
-    // --- NUEVO: Guardar rangos de secciones para detectar solapamientos ---
-    type SectionRange = { start: number, end: number, statement: Statement };
-    const sectionRanges: SectionRange[] = [];
-    // --- FIN NUEVO ---
+      const errors: AssemblerError<any>[] = [];
+      // --- NUEVO: Guardar rangos de secciones para detectar solapamientos ---
+      type SectionRange = { start: number; end: number; statement: Statement };
+      const sectionRanges: SectionRange[] = [];
+      // --- FIN NUEVO ---
 
-    forEachWithErrors(
-      statements,
-      statement => {
-        if (statement.isEnd()) return;
-        if (statement.isDataDirective() && statement.directive === "EQU") return;
+      forEachWithErrors(
+        statements,
+        statement => {
+          if (statement.isEnd()) return;
+          if (statement.isDataDirective() && statement.directive === "EQU") return;
 
-        if (statement.isOriginChange()) {
-          const address = statement.newAddress;
-          codePointer = address;
-          return;
-        }  
-
-        const pointer = codePointer;
-        if (pointer === null) {
-          throw new AssemblerError("missing-org").at(statement);
-        }
-
-        const length = statement.length;
-        const start = pointer;
-        const end = pointer + length - 1;
-
-        // --- NUEVO: Validar solapamiento de secciones ---
-        for (const range of sectionRanges) {
-          if (Math.max(start, range.start) <= Math.min(end, range.end)) {
-            errors.push(
-              new AssemblerError(
-                "occupied-address",
-                MemoryAddress.from(start)
-              ).at(statement)
-            );
-            return; // No cargar esta sección
-          }
-        }
-        sectionRanges.push({ start, end, statement });
-        // --- FIN NUEVO ---
-
-        for (let i = 0; i < length; i++) {
-          if (!MemoryAddress.inRange(pointer + i)) {
-            throw new AssemblerError("instruction-out-of-range", pointer + i).at(statement);
-          }
-          const address = MemoryAddress.from(pointer + i);
-
-          if (occupiedMemory.has(address.value)) {
-            throw new AssemblerError("occupied-address", address).at(statement);
-          }
-
-          if (hasINT) {
-            if (reservedAddressesForSyscalls.has(address.value)) {
-              throw new AssemblerError("reserved-address", address).at(statement);
-            }
-          }
-
-          occupiedMemory.add(address.value);
-          if (statement.isInstruction()) this.codeMemory.add(address.value);
-        }
-
-        const startAddress = MemoryAddress.from(pointer);
-        statement.setStart(startAddress);
-        if (statement.label) {
-          this.labels.set(statement.label, {
-            type: statement.isInstruction() ? "instruction" : statement.directive,
-            address: startAddress,
-          });
-        }
-        if (statement.isDataDirective() || statement.isInstruction()) {
-          codePointer += length;
-          lastCodeAddress = Math.max(lastCodeAddress, codePointer); // Actualizar la última dirección usada por el código
-        }
-      },
-      AssemblerError.from,
-    );
-    return errors;
-    } else {
-    const errors = forEachWithErrors(
-      [...instructionStatements, ...directiveStatements, ...dataStatements], // Procesar primero las instrucciones y luego los datos
-      //statements,
-      statement => {
-       // if (statement.isEnd()) return;
-        if (statement.isDataDirective() && statement.directive === "EQU") return;
-
-        if (statement.isOriginChange()) {
-          const address = statement.newAddress;
-          if (address < 0x20) {
-            dataPointer = address;
-          } else {
+          if (statement.isOriginChange()) {
+            const address = statement.newAddress;
             codePointer = address;
-          }
-          return;
-        }
-       
-        let pointer: number;
-        if (statement.isDataDirective()) {
-          if (dataPointer === null) {
-            // Si no se ha definido ORG para datos, los colocamos después del código
-            dataPointer = lastCodeAddress;
-          }          
-          pointer = dataPointer;
-        } else if (statement.isInstruction()) {
-          pointer = codePointer;
-        } else {
-          throw new AssemblerError("missing-org").at(statement);
-        }
-
-        const length = statement.length;
-
-        for (let i = 0; i < length; i++) {
-          if (!MemoryAddress.inRange(pointer + i)) {
-            throw new AssemblerError("instruction-out-of-range", pointer + i).at(statement);
-          }
-          const address = MemoryAddress.from(pointer + i);
-
-          if (occupiedMemory.has(address.value)) {
-            throw new AssemblerError("occupied-address", address).at(statement);
+            return;
           }
 
-          if (hasINT) {
-            if (reservedAddressesForSyscalls.has(address.value)) {
-              throw new AssemblerError("reserved-address", address).at(statement);
+          const pointer = codePointer;
+          if (pointer === null) {
+            throw new AssemblerError("missing-org").at(statement);
+          }
+
+          const length = statement.length;
+          const start = pointer;
+          const end = pointer + length - 1;
+
+          // --- NUEVO: Validar solapamiento de secciones ---
+          for (const range of sectionRanges) {
+            if (Math.max(start, range.start) <= Math.min(end, range.end)) {
+              errors.push(
+                new AssemblerError("occupied-address", MemoryAddress.from(start)).at(statement),
+              );
+              return; // No cargar esta sección
             }
           }
+          sectionRanges.push({ start, end, statement });
+          // --- FIN NUEVO ---
 
-          occupiedMemory.add(address.value);
-          if (statement.isInstruction()) this.codeMemory.add(address.value);
-        }
+          for (let i = 0; i < length; i++) {
+            if (!MemoryAddress.inRange(pointer + i)) {
+              throw new AssemblerError("instruction-out-of-range", pointer + i).at(statement);
+            }
+            const address = MemoryAddress.from(pointer + i);
 
-        const startAddress = MemoryAddress.from(pointer);
-        statement.setStart(startAddress);
-        if (statement.label) {
-          this.labels.set(statement.label, {
-            type: statement.isInstruction() ? "instruction" : statement.directive,
-            address: startAddress,
-          });
-        }
-        if (statement.isDataDirective()) {
-          if (dataPointer === null) {
-            throw new Error("Data pointer is null");
+            if (occupiedMemory.has(address.value)) {
+              throw new AssemblerError("occupied-address", address).at(statement);
+            }
+
+            if (hasINT) {
+              if (reservedAddressesForSyscalls.has(address.value)) {
+                throw new AssemblerError("reserved-address", address).at(statement);
+              }
+            }
+
+            occupiedMemory.add(address.value);
+            if (statement.isInstruction()) this.codeMemory.add(address.value);
           }
-          dataPointer += length;
-        } else if (statement.isInstruction()) {
-          codePointer += length;
-          lastCodeAddress = Math.max(lastCodeAddress, codePointer); // Actualizar la última dirección usada por el código
-        }
-      },
-      AssemblerError.from,
-    );
-    return errors;
-    }
 
+          const startAddress = MemoryAddress.from(pointer);
+          statement.setStart(startAddress);
+          if (statement.label) {
+            this.labels.set(statement.label, {
+              type: statement.isInstruction() ? "instruction" : statement.directive,
+              address: startAddress,
+            });
+          }
+          if (statement.isDataDirective() || statement.isInstruction()) {
+            codePointer += length;
+            lastCodeAddress = Math.max(lastCodeAddress, codePointer); // Actualizar la última dirección usada por el código
+          }
+        },
+        AssemblerError.from,
+      );
+      return errors;
+    } else {
+      const errors = forEachWithErrors(
+        [...instructionStatements, ...directiveStatements, ...dataStatements], // Procesar primero las instrucciones y luego los datos
+        //statements,
+        statement => {
+          // if (statement.isEnd()) return;
+          if (statement.isDataDirective() && statement.directive === "EQU") return;
+
+          if (statement.isOriginChange()) {
+            const address = statement.newAddress;
+            if (address < 0x20) {
+              dataPointer = address;
+            } else {
+              codePointer = address;
+            }
+            return;
+          }
+
+          let pointer: number;
+          if (statement.isDataDirective()) {
+            if (dataPointer === null) {
+              // Si no se ha definido ORG para datos, los colocamos después del código
+              dataPointer = lastCodeAddress;
+            }
+            pointer = dataPointer;
+          } else if (statement.isInstruction()) {
+            pointer = codePointer;
+          } else {
+            throw new AssemblerError("missing-org").at(statement);
+          }
+
+          const length = statement.length;
+
+          for (let i = 0; i < length; i++) {
+            if (!MemoryAddress.inRange(pointer + i)) {
+              throw new AssemblerError("instruction-out-of-range", pointer + i).at(statement);
+            }
+            const address = MemoryAddress.from(pointer + i);
+
+            if (occupiedMemory.has(address.value)) {
+              throw new AssemblerError("occupied-address", address).at(statement);
+            }
+
+            if (hasINT) {
+              if (reservedAddressesForSyscalls.has(address.value)) {
+                throw new AssemblerError("reserved-address", address).at(statement);
+              }
+            }
+
+            occupiedMemory.add(address.value);
+            if (statement.isInstruction()) this.codeMemory.add(address.value);
+          }
+
+          const startAddress = MemoryAddress.from(pointer);
+          statement.setStart(startAddress);
+          if (statement.label) {
+            this.labels.set(statement.label, {
+              type: statement.isInstruction() ? "instruction" : statement.directive,
+              address: startAddress,
+            });
+          }
+          if (statement.isDataDirective()) {
+            if (dataPointer === null) {
+              throw new Error("Data pointer is null");
+            }
+            dataPointer += length;
+          } else if (statement.isInstruction()) {
+            codePointer += length;
+            lastCodeAddress = Math.max(lastCodeAddress, codePointer); // Actualizar la última dirección usada por el código
+          }
+        },
+        AssemblerError.from,
+      );
+      return errors;
+    }
   }
 
   /**

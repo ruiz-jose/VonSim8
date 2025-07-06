@@ -50,7 +50,11 @@ export abstract class Instruction<TInstruction extends InstructionName> {
    * @param computer The computer that will execute the instruction.
    * @param dest Which register to store the byte in.
    */
-  protected *consumeInstruction(computer: Computer, dest: ByteRegister, skipMBR?: boolean): EventGenerator {
+  protected *consumeInstruction(
+    computer: Computer,
+    dest: ByteRegister,
+    skipMBR?: boolean,
+  ): EventGenerator {
     yield* computer.cpu.setMAR("IP");
     const byte = yield* computer.cpu.useBus("mem-read");
     if (!byte) {

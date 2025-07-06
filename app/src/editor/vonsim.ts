@@ -76,7 +76,8 @@ const vonsimLanguage = StreamLanguage.define({
     if (stream.eat(/[a-z_.]/i)) {
       stream.eatWhile(/\w/);
       const word = stream.current().toUpperCase();
-      if (word === "ORG" || word === "END" || word === ".DATA" || word === ".CODE") return "special";
+      if (word === "ORG" || word === "END" || word === ".DATA" || word === ".CODE")
+        return "special";
       if (word === "OFFSET") return "offset";
       if (word === "BYTE" || word === "WORD" || word === "PTR") return "ptr-size";
       if (DATA_DIRECTIVES.includes(word)) return "data-directive";

@@ -5,10 +5,9 @@ import { animated, getSpring } from "@/computer/shared/springs";
 
 export type { MARRegister as AddressRegister };
 
-
 type AddressBusProps = {
   showSP: boolean;
-  showri: boolean; 
+  showri: boolean;
 };
 
 /**
@@ -17,14 +16,18 @@ type AddressBusProps = {
  * @returns The path as a SVG path.
  * @throws If there is the register isn't valid.
  */
-export function generateAddressPath(from: MARRegister, showpath1?: boolean, showpath2?: boolean): string {
+export function generateAddressPath(
+  from: MARRegister,
+  showpath1?: boolean,
+  showpath2?: boolean,
+): string {
   let path = "";
   if (showpath1) {
     path = "M 470 388 H 550 V 349 H 659"; // ri - ajustado para conectar con MAR desde registro redimensionado
   }
   if (showpath2) {
     path = "M 629 250 H 550 V 349 H 659"; // mbr - ajustado para conectar con MAR
-  }  
+  }
   switch (from) {
     case "SP":
       return "M 451 309 H 550 V 349 H 659";
@@ -76,4 +79,3 @@ export function AddressBus({ showSP, showri }: AddressBusProps) {
     </svg>
   );
 }
-

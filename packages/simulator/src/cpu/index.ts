@@ -48,7 +48,7 @@ export class CPU extends Component {
       this.#registers = options.previous.cpu.#registers;
       this.#MAR = options.previous.cpu.#MAR;
       this.#MBR = options.previous.cpu.#MBR;
-    /*} else if (options.data === "randomize") {
+      /*} else if (options.data === "randomize") {
       this.#registers = {
         AX: Byte.random(16),
         BX: Byte.random(16),
@@ -91,7 +91,7 @@ export class CPU extends Component {
 
     // Verificar si el programa contiene la instrucción INT
     const hasINT = options.program.instructions.some(
-      statement => statement.isInstruction() && statement.instruction === "INT"
+      statement => statement.isInstruction() && statement.instruction === "INT",
     );
 
     // Verificar si el programa contiene la directiva ORG
@@ -107,7 +107,7 @@ export class CPU extends Component {
       initialIP = 0x00;
     }
     this.#registers.IP = Byte.fromUnsigned(initialIP, 16);
-        
+
     // Instruction register always starts at 0
     this.#registers.ri = Byte.fromUnsigned(0x0000, 16);
     // Instruction register always starts at 0
@@ -203,7 +203,7 @@ export class CPU extends Component {
     //yield* this.getMBR("IP.l");
     yield* this.copyWordRegister("ri", "IP");
     //console.log("Interrupt vector address:", vector);
-   // yield* this.updateByteRegister("id.l", vector);
+    // yield* this.updateByteRegister("id.l", vector);
     //yield* this.copyByteRegister("id.l", "ri.l");
     yield* this.setMAR("ri");
     if (!(yield* this.useBus("mem-read"))) return false; // Error reading memory
@@ -566,10 +566,12 @@ export class CPU extends Component {
    * ---
    * Called by the instructions ({@link InstructionType.execute}).
    */
-  *pushToStack(sourceRegister: "AL" | "BL" | "CL" | "DL" | "id.l" | "IP.l" | "FLAGS.l"): EventGenerator<boolean> {
+  *pushToStack(
+    sourceRegister: "AL" | "BL" | "CL" | "DL" | "id.l" | "IP.l" | "FLAGS.l",
+  ): EventGenerator<boolean> {
     let SP = this.getRegister("SP");
 
-   if (!MemoryAddress.inRange(SP.unsigned - 1)) {
+    if (!MemoryAddress.inRange(SP.unsigned - 1)) {
       yield { type: "cpu:error", error: new SimulatorError("stack-overflow") };
       return false;
     }
@@ -583,7 +585,7 @@ export class CPU extends Component {
       yield { type: "cpu:error", error: new SimulatorError("stack-overflow") };
       return false;
     }
-   /* yield* this.setMAR("SP");
+    /* yield* this.setMAR("SP");
     yield* this.setMBR(sourceRegister);
     if (!(yield* this.useBus("mem-write"))) return false; // Error writing to memory
     SP = SP.add(-1);
@@ -600,14 +602,16 @@ export class CPU extends Component {
    * ---
    * Called by the instructions ({@link InstructionType.execute}).
    */
-  *popFromStack(sourceRegister: "AL" | "BL" | "CL" | "DL"| "id.l" | "IP.l" | "FLAGS.l"): EventGenerator<boolean> {
+  *popFromStack(
+    sourceRegister: "AL" | "BL" | "CL" | "DL" | "id.l" | "IP.l" | "FLAGS.l",
+  ): EventGenerator<boolean> {
     let SP = this.getRegister("SP");
 
     if (!MemoryAddress.inRange(SP)) {
       yield { type: "cpu:error", error: new SimulatorError("stack-underflow") };
       return false;
     }
-   /* SP = SP.add(1);
+    /* SP = SP.add(1);
     yield* this.updateWordRegister("SP", SP);
     yield* this.setMAR("SP");
     if (!(yield* this.useBus("mem-read"))) return false; // Error reading memory

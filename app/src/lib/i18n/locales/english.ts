@@ -195,7 +195,6 @@ export const english = {
       label: "Devices",
       description: "Which devices should be enabled.",
 
-
       "keyboard-and-screen": "Keyboard and screen",
       pic: {
         label: "PIC",
@@ -216,9 +215,7 @@ export const english = {
 
     animations: {
       label: "Animations",
-      description: [
-        "Enabling animations.",
-      ].join(" "),
+      description: ["Enabling animations."].join(" "),
     },
 
     speeds: {

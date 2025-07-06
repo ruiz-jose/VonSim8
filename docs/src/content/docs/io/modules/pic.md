@@ -2,7 +2,11 @@
 title: PIC
 head:
   - tag: meta
-    attrs: { property: og:image, content: https://ruiz-jose.github.io/VonSim8/VonSim8/docs/og/io/modules/pic.png }
+    attrs:
+      {
+        property: og:image,
+        content: https://ruiz-jose.github.io/VonSim8/VonSim8/docs/og/io/modules/pic.png,
+      }
 ---
 
 El _programmable interrupt controller_ (PIC) es un módulo que se encuentra entre los dispositvos que emiten [interrupciones](/VonSim8/docs/cpu/#interrupciones) y la CPU. Como la CPU tiene solo una línea de entrada, este dispositivo se encarga de recibir interrupciones de múltiples dispositivos y multiplexar sus pedidos en esta única línea.
@@ -17,16 +21,16 @@ Cuando uno de los módulos/dispositvos quiera interrumpir a la CPU, el número d
 
 Las líneas están conectadas a los siguientes dispositivos:
 
-| Línea  | Módulo/Disp.                             |
-| :----: | :--------------------------------------- |
+| Línea  | Módulo/Disp.                                     |
+| :----: | :----------------------------------------------- |
 | `INT0` | [Tecla F10](/VonSim8/docs/io/devices/f10/)       |
 | `INT1` | [Timer](/VonSim8/docs/io/modules/timer/)         |
 | `INT2` | [Handshake](/VonSim8/docs/io/modules/handshake/) |
-| `INT3` | --                                       |
-| `INT4` | --                                       |
-| `INT5` | --                                       |
-| `INT6` | --                                       |
-| `INT7` | --                                       |
+| `INT3` | --                                               |
+| `INT4` | --                                               |
+| `INT5` | --                                               |
+| `INT6` | --                                               |
+| `INT7` | --                                               |
 
 ## Control
 

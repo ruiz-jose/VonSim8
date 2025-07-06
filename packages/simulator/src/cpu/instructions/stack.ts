@@ -38,12 +38,14 @@ export class StackInstruction extends Instruction<"PUSH" | "POP" | "PUSHF" | "PO
     yield { type: "cpu:cycle.update", phase: "decoded", next: "execute" };
 
     if (this.name === "PUSH" || this.name === "PUSHF") {
-     // yield* computer.cpu.copyWordRegister(register, "id");
-      const lowByteRegister = register === "FLAGS" ? "FLAGS.l" : `${register[0]}L` as "AL" | "BL" | "CL" | "DL";
+      // yield* computer.cpu.copyWordRegister(register, "id");
+      const lowByteRegister =
+        register === "FLAGS" ? "FLAGS.l" : (`${register[0]}L` as "AL" | "BL" | "CL" | "DL");
       return yield* computer.cpu.pushToStack(lowByteRegister); // Will return false if stack overflow
     } else {
-      const lowByteRegister = register === "FLAGS" ? "FLAGS.l" : `${register[0]}L` as "AL" | "BL" | "CL" | "DL";
-        if (!(yield* computer.cpu.popFromStack(lowByteRegister))) return false; // Stack underflow
+      const lowByteRegister =
+        register === "FLAGS" ? "FLAGS.l" : (`${register[0]}L` as "AL" | "BL" | "CL" | "DL");
+      if (!(yield* computer.cpu.popFromStack(lowByteRegister))) return false; // Stack underflow
       //yield* computer.cpu.copyWordRegister("id", register);
       return true;
     }

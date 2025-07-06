@@ -17,7 +17,6 @@ import { colors } from "@/lib/tailwind";
 import { DataRegister, generateDataPath } from "./DataBus";
 import { aluOperationAtom, cycleAtom, MARAtom, MBRAtom, registerAtoms } from "./state";
 
-
 const drawDataPath = (from: DataRegister, to: DataRegister, instruction: string, mode: string) => {
   const path = generateDataPath(from, to, instruction, mode);
   return anim(
@@ -30,10 +29,8 @@ const drawDataPath = (from: DataRegister, to: DataRegister, instruction: string,
   );
 };
 
-
 const resetDataPath = () =>
   anim({ key: "cpu.internalBus.data.opacity", to: 0 }, { duration: 1, easing: "easeInSine" });
-
 
 let instructionName = "";
 let mode = "";
@@ -41,7 +38,6 @@ let showpath1 = false;
 let showpath2 = false;
 let countersetMAR = 0;
 export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<void> {
-
   switch (event.type) {
     case "cpu:alu.execute": {
       const pathsDrawConfig = { duration: 3, easing: "easeInOutSine" } as const;
@@ -102,29 +98,32 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
           //{ key: "cpu.id.opacity", to: 1 },
           //{ key: "cpu.ri.opacity", to: 1 },
           { key: "cpu.id.opacity", to: 0 },
-          { key: "cpu.ri.opacity", to: 0},
+          { key: "cpu.ri.opacity", to: 0 },
         ],
         { duration: 0.5, easing: "easeInOutQuad" },
       );
       return;
     }
 
-    case "cpu:cycle.start": {  
-      instructionName = event.instruction.name; // Obtén el nombre de la instrucción en curso    
+    case "cpu:cycle.start": {
+      instructionName = event.instruction.name; // Obtén el nombre de la instrucción en curso
       mode = event.instruction.willUse.ri ? "mem<-imd" : ""; // Verifica si willUse.ri es true y establece el modo
-      showpath1 = event.instruction.willUse.ri && (instructionName === "MOV"  ) ? true : false;
-      showpath2 = event.instruction.willUse.ri && 
-      (instructionName === "ADD" || instructionName === "SUB" || instructionName === "INT") ? true : false;
+      showpath1 = event.instruction.willUse.ri && instructionName === "MOV" ? true : false;
+      showpath2 =
+        event.instruction.willUse.ri &&
+        (instructionName === "ADD" || instructionName === "SUB" || instructionName === "INT")
+          ? true
+          : false;
       countersetMAR = 0;
 
       highlightLine(event.instruction.position.start);
       store.set(cycleAtom, { phase: "fetching", metadata: event.instruction });
       await anim(
         [
-         // { key: "cpu.id.opacity", to: event.instruction.willUse.id ? 1 : 0.4 },
-         // { key: "cpu.ri.opacity", to: event.instruction.willUse.ri ? 1 : 0.4 },
-         { key: "cpu.id.opacity", to: event.instruction.willUse.id ? 1 : 0 },
-         { key: "cpu.ri.opacity", to: event.instruction.willUse.ri ? 1 : 0 },
+          // { key: "cpu.id.opacity", to: event.instruction.willUse.id ? 1 : 0.4 },
+          // { key: "cpu.ri.opacity", to: event.instruction.willUse.ri ? 1 : 0.4 },
+          { key: "cpu.id.opacity", to: event.instruction.willUse.id ? 1 : 0 },
+          { key: "cpu.ri.opacity", to: event.instruction.willUse.ri ? 1 : 0 },
         ],
         { duration: 0.5, easing: "easeInOutQuad" },
       );
@@ -219,19 +218,19 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
     case "cpu:rd.on":
     case "cpu:wr.on": {
       const line = event.type.slice(4, 6) as "rd" | "wr";
-      
+
       // Animate address bus
       await anim(
         { key: "bus.address.stroke", to: colors.blue[500] },
         { duration: 5, easing: "easeInOutSine" },
       );
-      
-      // Animate control line 
+
+      // Animate control line
       await anim(
         { key: `bus.${line}.stroke`, to: line === "rd" ? colors.red[500] : colors.blue[500] },
         { duration: 5, easing: "easeOutSine" },
       );
-      
+
       // Animate data bus
       await anim(
         { key: "bus.data.stroke", to: colors.mantis[400] },
@@ -245,24 +244,27 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       return;
     }
 
-    case "cpu:mar.set": { 
-      countersetMAR++; 
+    case "cpu:mar.set": {
+      countersetMAR++;
       console.log("countersetMAR", countersetMAR); // Debugging line
-      if (countersetMAR ===4 && showpath2 ) {
-        showpath1= true;
+      if (countersetMAR === 4 && showpath2) {
+        showpath1 = true;
         showpath2 = false;
       }
 
       await anim(
         [
-          { key: "cpu.internalBus.address.path", from: generateAddressPath(event.register, showpath1, showpath2) },
+          {
+            key: "cpu.internalBus.address.path",
+            from: generateAddressPath(event.register, showpath1, showpath2),
+          },
           { key: "cpu.internalBus.address.opacity", from: 1 },
           { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
         ],
         { duration: 5, easing: "easeInOutSine" },
       );
       await activateRegister("cpu.MAR", colors.blue[500]);
-      store.set(MARAtom, store.get(registerAtoms[event.register]));     
+      store.set(MARAtom, store.get(registerAtoms[event.register]));
       await Promise.all([
         deactivateRegister("cpu.MAR"),
         anim(
@@ -293,7 +295,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       );*/
       await Promise.all([deactivateRegister("cpu.MBR"), resetDataPath()]);
       return;
-    }   
+    }
 
     case "cpu:register.copy": {
       const [src] = parseRegister(event.src);
@@ -321,5 +323,3 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
     }
   }
 }
-
-
