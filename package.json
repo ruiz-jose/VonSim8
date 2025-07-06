@@ -2,6 +2,7 @@
   "name": "vonsim8",
   "license": "AGPL-3.0-only",
   "type": "module",
+  "packageManager": "pnpm@8.0.0",
   "scripts": {
     "format": "prettier -w .",
     "test": "turbo run test",
