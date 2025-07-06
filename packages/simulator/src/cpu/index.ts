@@ -626,3 +626,15 @@ export class CPU extends Component {
     return true;
   }
 }
+
+export type {
+  ByteRegister,
+  Flag,
+  MARRegister,
+  PartialFlags,
+  PhysicalRegister,
+  Register,
+  RegistersMap,
+  WordRegister,
+} from "./types";
+export { parseRegister } from "./utils";

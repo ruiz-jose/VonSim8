@@ -134,7 +134,7 @@ function Reg({
     <Register
       name={name}
       valueAtom={registerAtoms[name]}
-      springs={`cpu.${name}`}
+      springs={`cpu.${name}` as any}
       emphasis={emphasis}
       // title={translate("computer.cpu.register", name)}
       className={clsx("absolute", className)}

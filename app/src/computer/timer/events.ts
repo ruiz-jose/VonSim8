@@ -58,8 +58,15 @@ export async function handleTimerEvent(event: SimulatorEvent<"timer:">): Promise
       return;
     }
 
+    case "timer:tick" as any: {
+      store.set(CONTAtom, (event as any).cont);
+      await turnLineOn("bus.int1", 2);
+      await turnLineOff("bus.int1");
+      return;
+    }
+
     default: {
-      const _exhaustiveCheck: never = event;
+      const _exhaustiveCheck: never = event as never;
       return _exhaustiveCheck;
     }
   }

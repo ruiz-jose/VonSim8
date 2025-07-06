@@ -1,15 +1,18 @@
 import { Byte } from "@vonsim/common/byte";
 import type { ComputerState, SimulatorError } from "@vonsim/simulator";
-import type { ByteRegister, InstructionMetadata, WordRegister } from "@vonsim/simulator/cpu";
 import { atom, PrimitiveAtom, SetStateAction, WritableAtom } from "jotai";
 
-import type { ByteAtom } from "@/computer/shared/types";
 import { store } from "@/lib/jotai";
 
-const AXAtom = atom(Byte.zero(16)); // Accumulator
-const BXAtom = atom(Byte.zero(16)); // Base
-const CXAtom = atom(Byte.zero(16)); // Counter
-const DXAtom = atom(Byte.zero(16)); // Data
+// Define a simple InstructionMetadata type
+type InstructionMetadata = {
+  name: string;
+  position: { start: number; end: number };
+  operands: string[];
+  willUse?: { ri?: boolean; id?: boolean };
+};
+
+// Internal register atoms - not exported directly
 const SPAtom = atom(Byte.zero(16)); // Stack Pointer
 const IPAtom = atom(Byte.zero(16)); // Instruction Pointer
 const IRAtom = atom(Byte.zero(8)); // Instruction Register
@@ -21,7 +24,7 @@ const resultAtom = atom(Byte.zero(16)); // Result of ALU
 const FLAGSAtom = atom(Byte.zero(16)); // Flags
 export const MARAtom = atom(Byte.zero(16)); // Memory Address Register
 export const MBRAtom = atom(Byte.zero(8)); // Memory Buffer Register
-export const messageAtom = atom<string | null>(null);
+export const messageAtom = atom<string>("");
 // Define el átomo para cycleCount
 export const cycleCountAtom = atom(0);
 export const showSPAtom = atom(false);
@@ -58,22 +61,43 @@ const highAtom = (
     },
   );
 
-type RegistersMap = Record<ByteRegister | "MBR", ByteAtom<8>> &
-  Record<WordRegister | "MAR", ByteAtom<16>>;
-
-export const registerAtoms: RegistersMap = {
-  AX: AXAtom,
-  AL: lowAtom(AXAtom),
-  AH: highAtom(AXAtom),
-  BX: BXAtom,
-  BL: lowAtom(BXAtom),
-  BH: highAtom(BXAtom),
-  CX: CXAtom,
-  CL: lowAtom(CXAtom),
-  CH: highAtom(CXAtom),
-  DX: DXAtom,
-  DL: lowAtom(DXAtom),
-  DH: highAtom(DXAtom),
+export const registerAtoms: Record<string, any> = {
+  AX: atom(Byte.zero(16)),
+  AL: atom((get) => (get(registerAtoms.AX) as Byte<16>).low, (get, set, update: any) => {
+    const current = get(registerAtoms.AX) as Byte<16>;
+    set(registerAtoms.AX, current.withLow(update) as any);
+  }),
+  AH: atom((get) => (get(registerAtoms.AX) as Byte<16>).high, (get, set, update: any) => {
+    const current = get(registerAtoms.AX) as Byte<16>;
+    set(registerAtoms.AX, current.withHigh(update) as any);
+  }),
+  BX: atom(Byte.zero(16)),
+  BL: atom((get) => (get(registerAtoms.BX) as Byte<16>).low, (get, set, update: any) => {
+    const current = get(registerAtoms.BX) as Byte<16>;
+    set(registerAtoms.BX, current.withLow(update) as any);
+  }),
+  BH: atom((get) => (get(registerAtoms.BX) as Byte<16>).high, (get, set, update: any) => {
+    const current = get(registerAtoms.BX) as Byte<16>;
+    set(registerAtoms.BX, current.withHigh(update) as any);
+  }),
+  CX: atom(Byte.zero(16)),
+  CL: atom((get) => (get(registerAtoms.CX) as Byte<16>).low, (get, set, update: any) => {
+    const current = get(registerAtoms.CX) as Byte<16>;
+    set(registerAtoms.CX, current.withLow(update) as any);
+  }),
+  CH: atom((get) => (get(registerAtoms.CX) as Byte<16>).high, (get, set, update: any) => {
+    const current = get(registerAtoms.CX) as Byte<16>;
+    set(registerAtoms.CX, current.withHigh(update) as any);
+  }),
+  DX: atom(Byte.zero(16)),
+  DL: atom((get) => (get(registerAtoms.DX) as Byte<16>).low, (get, set, update: any) => {
+    const current = get(registerAtoms.DX) as Byte<16>;
+    set(registerAtoms.DX, current.withLow(update) as any);
+  }),
+  DH: atom((get) => (get(registerAtoms.DX) as Byte<16>).high, (get, set, update: any) => {
+    const current = get(registerAtoms.DX) as Byte<16>;
+    set(registerAtoms.DX, current.withHigh(update) as any);
+  }),
   SP: SPAtom,
   "SP.l": lowAtom(SPAtom),
   "SP.h": highAtom(SPAtom),

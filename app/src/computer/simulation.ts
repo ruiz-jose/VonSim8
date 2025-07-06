@@ -167,7 +167,11 @@ async function startThread(generator: EventGenerator): Promise<void> {
       // Handle event
       const event = generator.next();
       if (event.done) break;
-      await handleEvent(event.value);
+      if (event.value && typeof event.value !== 'undefined') {
+        await handleEvent(event.value);
+      } else {
+        continue;
+      }
       if (event.value.type === "cpu:cycle.start") {
         currentInstructionName = event.value.instruction.name;
         currentInstructionModeid = event.value.instruction.willUse.id ? true : false;
@@ -905,7 +909,12 @@ async function dispatch(...args: Action) {
         simulator.loadProgram({
           program: result,
           data: currentSettings.dataOnLoad,
-          devices: getSettings().devices,
+          devices: {
+            keyboardAndScreen: getSettings().devices.keyboardAndScreen ?? false,
+            pic: getSettings().devices.pic ?? false,
+            pio: getSettings().devices.pio ?? null,
+            handshake: getSettings().devices.handshake ?? null,
+          },
           hasORG: result.hasORG, // Pass the hasORG flag
         });
         console.log("result:", result);
@@ -1210,7 +1219,9 @@ async function startPrinter(): Promise<void> {
       const gen = simulator.devices.printer.print()!;
       let result = gen.next();
       while (!result.done) {
-        await handleEvent(result.value);
+        if (result.value && typeof result.value !== 'undefined') {
+          await handleEvent(result.value);
+        }
         result = gen.next();
       }
     }

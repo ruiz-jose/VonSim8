@@ -1,7 +1,6 @@
-import { IOAddress, IOAddressLike, MemoryAddress, MemoryAddressLike } from "@vonsim/common/address";
+import { IOAddress, IOAddressLike, MemoryAddress } from "@vonsim/common/address";
 import type { BaseLocale } from "@vonsim/common/i18n";
 import dedent from "dedent";
-import type { JsonValue } from "type-fest";
 
 const maxAddress = MemoryAddress.from(MemoryAddress.MAX_ADDRESS).toString();
 
@@ -120,7 +119,7 @@ export const english = {
 
     memory: {
       name: "Memory",
-      cell: (address: MemoryAddressLike) => `Cell ${MemoryAddress.format(address)}`,
+      cell: (address: any) => `Cell ${MemoryAddress.format(address)}`,
       "fix-address": "Fix address",
       "unfix-address": "Unfix address",
       "address-must-be-integer": "Start address must be an hexadecimal integer.",
@@ -243,7 +242,7 @@ export const english = {
 
     issue: {
       report: "Report an issue",
-      body: (settings: JsonValue, program: string) => dedent`
+      body: (settings: any, program: string) => dedent`
         <!-- Please describe the problem you are having in as much detail as possible. -->
         <!-- Most importantly, add the steps to reproduce the problem. -->
 

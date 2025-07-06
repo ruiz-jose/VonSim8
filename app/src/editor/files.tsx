@@ -1,6 +1,6 @@
 import { EditorView, ViewPlugin, ViewUpdate } from "@codemirror/view";
 import clsx from "clsx";
-import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
+import { atom, useAtomValue, useSetAtom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import { useCallback } from "react";
 import { useEvent, useKey } from "react-use";
@@ -18,6 +18,22 @@ import { toast } from "@/lib/toast";
 
 import { programModifiedAtom } from "./state";
 
+// Type declaration for File System Access API
+declare global {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+  interface FileSystemFileHandle {
+    getFile(): Promise<File>;
+    requestPermission(descriptor?: FileSystemHandlePermissionDescriptor): Promise<PermissionState>;
+    name: string;
+    createWritable(options?: any): Promise<any>;
+  }
+  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+  interface Window {
+    showOpenFilePicker?(options?: any): Promise<FileSystemFileHandle[]>;
+    showSaveFilePicker?(options?: any): Promise<FileSystemFileHandle>;
+  }
+}
+
 // Sync program with CodeMirror
 const programAtom = atomWithStorage(
   "vonsim-program",
@@ -27,7 +43,10 @@ const programAtom = atomWithStorage(
 );
 
 export const useSavedProgram = () => useAtomValue(programAtom);
-export const getSavedProgram = () => store.get(programAtom);
+export const getSavedProgram = () => {
+  const result = store.get(programAtom);
+  return typeof result === 'string' ? result : "";
+};
 
 export const syncStatePlugin = ViewPlugin.fromClass(
   class {
@@ -44,13 +63,20 @@ export const syncStatePlugin = ViewPlugin.fromClass(
 // Save program to file
 const supportsNativeFileSystem = "showSaveFilePicker" in window;
 
-const fileHandleAtom = atom<FileSystemFileHandle | null>(null);
+const _fileHandleAtom = atom(null as any);
+const fileHandleAtom = atom(
+  (get) => get(_fileHandleAtom),
+  (get, set, newValue: any) => {
+    set(_fileHandleAtom, newValue);
+  }
+);
 const lastSavedProgramAtom = atom("");
 const dirtyAtom = atom(get => get(lastSavedProgramAtom) !== get(programAtom));
 
 export function FileHandler() {
   const translate = useTranslate();
-  const [fileHandle, setFileHanlde] = useAtom(fileHandleAtom);
+  const fileHandle = useAtomValue(fileHandleAtom);
+  const setFileHandle = useSetAtom(fileHandleAtom);
   const dirty = useAtomValue(dirtyAtom);
   const setLastSavedProgram = useSetAtom(lastSavedProgramAtom);
 
@@ -74,7 +100,7 @@ export function FileHandler() {
         types: [{ accept: { "text/plain": [".txt", ".asm", ".vonsim"] } }],
       });
       const status = await fileHandle.requestPermission({ mode: "readwrite" });
-      if (status === "granted") setFileHanlde(fileHandle);
+      if (status === "granted") setFileHandle(fileHandle);
       const file = await fileHandle.getFile();
       const source = await file.text();
       setLastSavedProgram(source);
@@ -85,7 +111,7 @@ export function FileHandler() {
       console.error(error);
       toast({ title: translate("editor.files.open-error"), variant: "error" });
     }
-  }, [translate, unsavedChanges, setFileHanlde, setLastSavedProgram]);
+  }, [translate, unsavedChanges, setFileHandle, setLastSavedProgram]);
 
   // Open file with Ctrl+O
   useKey(
@@ -120,7 +146,7 @@ export function FileHandler() {
         const fileHandle = (await item.getAsFileSystemHandle()) as FileSystemFileHandle | null;
         if (!fileHandle) throw new Error("File handle not found");
         const status = await fileHandle.requestPermission({ mode: "readwrite" });
-        if (status === "granted") setFileHanlde(fileHandle);
+        if (status === "granted") setFileHandle(fileHandle);
         const file = await fileHandle.getFile();
         const source = await file.text();
         setLastSavedProgram(source);
@@ -132,7 +158,7 @@ export function FileHandler() {
         toast({ title: translate("editor.files.open-error"), variant: "error" });
       }
     },
-    [setFileHanlde, setLastSavedProgram, translate, unsavedChanges],
+    [setFileHandle, setLastSavedProgram, translate, unsavedChanges],
   );
   useEvent("drop", dropFile as (ev: Event) => Promise<void>, window);
   // Prevent navigating away from the page when dropping a file
@@ -177,7 +203,7 @@ export function FileHandler() {
         });
         const status = await fileHandle.requestPermission({ mode: "readwrite" });
         if (status !== "granted") throw new Error(`Permission denied: ${status}`);
-        setFileHanlde(fileHandle);
+        setFileHandle(fileHandle);
         const writable = await fileHandle.createWritable({ keepExistingData: false });
         await writable.write(source);
         await writable.close();
@@ -200,7 +226,7 @@ export function FileHandler() {
       document.body.removeChild(a);
       URL.revokeObjectURL(href);
     }
-  }, [translate, fileHandle, setFileHanlde, setLastSavedProgram]);
+  }, [translate, fileHandle, setFileHandle, setLastSavedProgram]);
 
   // ONLY IF the browser supports native file system
   // If a file is open, save it with Ctrl+S

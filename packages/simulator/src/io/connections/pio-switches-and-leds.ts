@@ -17,8 +17,8 @@ import { PIO, PIOPort } from "../modules/pio";
  * This class is: MUTABLE
  */
 export class PIOSwitchesAndLeds extends PIO {
-  readonly leds: Leds;
-  readonly switches: Switches;
+  declare readonly leds: Leds;
+  declare readonly switches: Switches;
 
   constructor(options: ComponentInit) {
     super(options);

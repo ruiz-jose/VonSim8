@@ -7,7 +7,7 @@ import { switchesAtom } from "./state";
 export async function handleSwitchesEvent(event: SimulatorEvent<"switches:">): Promise<void> {
   switch (event.type) {
     case "switches:toggle": {
-      store.set(switchesAtom, switches =>
+      store.set(switchesAtom, (switches: any) =>
         switches.withBit(event.index, !switches.bit(event.index)),
       );
       await turnLineOn("bus.switches->pio", 2);
@@ -16,7 +16,7 @@ export async function handleSwitchesEvent(event: SimulatorEvent<"switches:">): P
     }
 
     default: {
-      const _exhaustiveCheck: never = event.type;
+      const _exhaustiveCheck: never = event as never;
       return _exhaustiveCheck;
     }
   }

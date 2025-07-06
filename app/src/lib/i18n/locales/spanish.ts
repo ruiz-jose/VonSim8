@@ -8,7 +8,7 @@ const maxAddress = MemoryAddress.from(MemoryAddress.MAX_ADDRESS).toString();
 export const spanish: Locale = {
   generics: {
     clean: "Limpiar",
-    "io-register": (name, address) => `Registro ${name} (${IOAddress.format(address)})`,
+    "io-register": (name: string, address: any) => `Registro ${name} (${IOAddress.format(address)})`,
     "byte-representation": {
       hex: "Hexadecimal",
       bin: "Binario",
@@ -29,7 +29,7 @@ export const spanish: Locale = {
   },
 
   editor: {
-    lintSummary: n =>
+    lintSummary: (n: number) =>
       n === 0 ? "Listo para compilar" : n === 1 ? "Hay un error" : `Hay ${n} errores`,
     files: {
       unsupported: "Tu navegador no soporta la “FileSystem API”",
@@ -81,7 +81,7 @@ export const spanish: Locale = {
   computer: {
     cpu: {
       name: "CPU",
-      register: register => `Registro ${register}`,
+      register: (register: string) => `Registro ${register}`,
       "control-unit": "Unidad de control",
       decoder: "Decodificador",
       stats: "Estadísticas CPU",
@@ -102,7 +102,7 @@ export const spanish: Locale = {
 
     memory: {
       name: "Memoria",
-      cell: address => `Celda ${MemoryAddress.format(address)}`,
+      cell: (address: any) => `Celda ${MemoryAddress.format(address)}`,
       "fix-address": "Fijar dirección",
       "unfix-address": "Desfijar dirección",
       "address-must-be-integer": "El valor de inicio debe ser un número entero hexadecimal.",
@@ -134,7 +134,7 @@ export const spanish: Locale = {
 
     handshake: { name: "Handshake", data: "Dato", state: "Estado" },
     pic: "PIC",
-    pio: { name: "PIO", port: port => `Puerto ${port}` },
+    pio: { name: "PIO", port: (port: string) => `Puerto ${port}` },
     timer: "Timer",
   },
 
@@ -225,7 +225,7 @@ export const spanish: Locale = {
 
     issue: {
       report: "Reportar un error",
-      body: (settings, program) => dedent`
+      body: (settings: any, program: string) => dedent`
         <!-- Por favor, describa el problema que está teniendo en la mayor cantidad de detalle posible. -->
         <!-- Por sobre todo, agregue los pasos para reproducir el problema. -->
 

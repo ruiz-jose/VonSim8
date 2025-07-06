@@ -49,7 +49,7 @@ export function Editor({ className }: { className?: string }) {
 
     window.codemirror = new EditorView({
       state: EditorState.create({
-        doc: getSavedProgram(),
+        doc: getSavedProgram() || "",
         extensions: [
           EditorState.tabSize.of(2),
           readOnly.of(EditorState.readOnly.of(false)),

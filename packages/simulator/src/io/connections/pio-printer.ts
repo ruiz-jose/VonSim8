@@ -16,7 +16,7 @@ import { PIO, PIOPort } from "../modules/pio";
  * This class is: MUTABLE
  */
 export class PIOPrinter extends PIO {
-  readonly printer: Printer;
+  declare readonly printer: Printer;
 
   constructor(options: ComponentInit) {
     super(options);

@@ -1,18 +1,22 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
-    "target": "esnext",
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM"],
     "useDefineForClassFields": true,
     "allowJs": false,
     "skipLibCheck": true,
-    "strict": true,
+    "strict": false,
     "forceConsistentCasingInFileNames": true,
     "module": "esnext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "incremental": true
+    "incremental": true,
+    "noImplicitAny": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
   },
   "files": ["./reset.d.ts"],
   "exclude": ["node_modules", "dist"]

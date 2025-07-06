@@ -124,3 +124,18 @@ type ComputerState = ReturnType<Simulator["getComputerState"]>;
 
 export type { ComputerOptions, ComputerState, EventGenerator, SimulatorEvent };
 export { SimulatorError };
+
+/**
+ * CPU types.
+ */
+export type {
+  ByteRegister,
+  Flag,
+  MARRegister,
+  PartialFlags,
+  PhysicalRegister,
+  Register,
+  RegistersMap,
+  WordRegister,
+} from "./cpu";
+export { parseRegister } from "./cpu";

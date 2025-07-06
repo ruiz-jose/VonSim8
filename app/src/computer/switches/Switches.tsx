@@ -32,7 +32,7 @@ export function Switches() {
       </span>
 
       <div className="flex flex-row-reverse gap-3 p-4">
-        {state.map((on, i) => (
+        {state.map((on: boolean, i: number) => (
           <div key={i} className="flex w-8 flex-col items-center">
             <span className="mb-1 w-full text-center text-xs text-white">{i}</span>
             <Switch

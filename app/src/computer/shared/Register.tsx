@@ -8,7 +8,6 @@ import { useTranslate } from "@/lib/i18n";
 
 export function Register({
   name,
-  title,
   valueAtom,
   springs,
   emphasis = false,

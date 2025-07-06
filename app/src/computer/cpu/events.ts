@@ -8,6 +8,7 @@ import {
   turnLineOff,
   turnLineOn,
 } from "@/computer/shared/animate";
+import type { RegisterKey } from "@/computer/shared/springs";
 import type { SimulatorEvent } from "@/computer/shared/types";
 import { finishSimulation, pauseSimulation } from "@/computer/simulation";
 import { highlightLine } from "@/editor/methods";
@@ -276,17 +277,17 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
     }
 
     case "cpu:mbr.get": {
-      const [reg] = parseRegister(event.register);
-      await drawDataPath("MBR", reg, instructionName, mode);
-      await activateRegister(`cpu.${reg}`);
+      await activateRegister(`cpu.${event.register}` as RegisterKey);
+      await drawDataPath("MBR", event.register as DataRegister, instructionName, mode);
+      await activateRegister(`cpu.${event.register}` as RegisterKey);
       store.set(registerAtoms[event.register], store.get(MBRAtom));
-      await Promise.all([deactivateRegister(`cpu.${reg}`), resetDataPath()]);
+      await Promise.all([deactivateRegister(`cpu.${event.register}` as RegisterKey), resetDataPath()]);
       return;
     }
 
     case "cpu:mbr.set": {
-      const [reg] = parseRegister(event.register);
-      await drawDataPath(reg, "MBR", instructionName, mode);
+      await activateRegister("cpu.MBR" as RegisterKey);
+      await drawDataPath(event.register as DataRegister, "MBR", instructionName, mode);
       await activateRegister("cpu.MBR");
       store.set(MBRAtom, store.get(registerAtoms[event.register]));
       /*await anim(
@@ -298,20 +299,15 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
     }
 
     case "cpu:register.copy": {
-      const [src] = parseRegister(event.src);
-      const [dest] = parseRegister(event.dest);
-      if (src !== dest) await drawDataPath(src, dest, instructionName, mode);
-      await activateRegister(`cpu.${dest}`);
-      // @ts-expect-error Registers types always match, see CPUMicroOperation
+      await activateRegister(`cpu.${event.dest}` as RegisterKey);
       store.set(registerAtoms[event.dest], store.get(registerAtoms[event.src]));
-      await Promise.all([deactivateRegister(`cpu.${dest}`), src !== dest && resetDataPath()]);
+      await deactivateRegister(`cpu.${event.dest}` as RegisterKey);
       return;
     }
 
     case "cpu:register.update": {
       const [reg] = parseRegister(event.register);
       await activateRegister(`cpu.${reg}`);
-      // @ts-expect-error The value type and the register type always match, see CPUMicroOperation
       store.set(registerAtoms[event.register], event.value);
       await deactivateRegister(`cpu.${reg}`);
       return;

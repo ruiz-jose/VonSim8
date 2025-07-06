@@ -6,7 +6,13 @@ import {
 } from "@codemirror/language";
 import { Diagnostic, linter } from "@codemirror/lint";
 import { Tag, tags } from "@lezer/highlight";
-import { assemble, DATA_DIRECTIVES, INSTRUCTIONS, REGISTERS } from "@vonsim/assembler";
+import {
+  assemble,
+  type AssembleResultError,
+  DATA_DIRECTIVES,
+  INSTRUCTIONS,
+  REGISTERS,
+} from "@vonsim/assembler";
 
 import { store } from "@/lib/jotai";
 import { getSettings } from "@/lib/settings";
@@ -80,9 +86,9 @@ const vonsimLanguage = StreamLanguage.define({
         return "special";
       if (word === "OFFSET") return "offset";
       if (word === "BYTE" || word === "WORD" || word === "PTR") return "ptr-size";
-      if (DATA_DIRECTIVES.includes(word)) return "data-directive";
-      if (INSTRUCTIONS.includes(word)) return "instruction";
-      if (REGISTERS.includes(word)) return "register";
+      if ((DATA_DIRECTIVES as readonly string[]).includes(word)) return "data-directive";
+      if ((INSTRUCTIONS as readonly string[]).includes(word)) return "instruction";
+      if ((REGISTERS as readonly string[]).includes(word)) return "register";
 
       if (stream.eat(":")) return "label";
       return "identifier";
@@ -128,8 +134,10 @@ const vonsimLinter = linter(
       return [];
     }
 
+    // Type assertion since we know result is AssembleResultError after the success check
+    const errorResult = result as AssembleResultError;
     const lang = getSettings().language;
-    const errors = result.errors.map<Diagnostic>(error => {
+    const errors = errorResult.errors.map<Diagnostic>((error: any) => {
       const from = error.position?.start ?? 0;
       const to = error.position?.end ?? source.length;
       return { message: error.translate(lang), severity: "error", from, to };

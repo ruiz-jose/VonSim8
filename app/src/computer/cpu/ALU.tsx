@@ -1,3 +1,4 @@
+import type { Byte } from "@vonsim/common/byte";
 import clsx from "clsx";
 import { useAtomValue } from "jotai";
 import { useEffect, useState } from "react";
@@ -52,11 +53,11 @@ export function ALU() {
   }, []);
 
   // https://vonsim.github.io/docs/cpu/#flags
-  const CF = FLAGS.bit(1);
-  const ZF = FLAGS.bit(0);
-  const SF = FLAGS.bit(3);
-  const IF = FLAGS.bit(4);
-  const OF = FLAGS.bit(2);
+  const CF = (FLAGS as Byte<16>).bit(1);
+  const ZF = (FLAGS as Byte<16>).bit(0);
+  const SF = (FLAGS as Byte<16>).bit(3);
+  const IF = (FLAGS as Byte<16>).bit(4);
+  const OF = (FLAGS as Byte<16>).bit(2);
 
   return (
     <>
