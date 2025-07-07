@@ -215,18 +215,18 @@ export async function updateRegisterWithGlow(key: RegisterKey) {
   try {
     const registerColor = getRegisterColor(key);
     
-    // Efecto de brillo que se desvanece gradualmente - secuencial, no simultáneo
+    // Efecto de activación y brillo que se desvanece gradualmente
     await anim({ key: `${key}.backgroundColor`, to: registerColor } as SpringAnimation, {
-      duration: 2, // Aumentar duración para mejor visibilidad
+      duration: 2, // Duración para que sea visible
       easing: "easeOutQuart",
     });
     
-    // Pausa más larga para que el usuario vea el cambio
-    await new Promise(resolve => setTimeout(resolve, 1200));
+    // Pausa para que el usuario vea el cambio
+    await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // Volver al estado normal más lentamente
+    // Volver al estado normal
     await anim({ key: `${key}.backgroundColor`, to: colors.stone[800] } as SpringAnimation, {
-      duration: 3, // Duración más larga para transición suave
+      duration: 2,
       easing: "easeInQuart",
     });
     

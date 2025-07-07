@@ -288,24 +288,25 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       // Normalizar el nombre del registro para evitar problemas con subniveles
       const normalizedRegister = event.register.replace(/\.(l|h)$/, '');
       
-      // Primero activar el registro de destino (antes del bus)
-      await activateRegister(`cpu.${normalizedRegister}` as RegisterKey);
+      // NO activar el registro de destino antes del bus - esto evita el coloreo prematuro
+      // await activateRegister(`cpu.${normalizedRegister}` as RegisterKey);
       
-      // Esperar a que termine COMPLETAMENTE la animación del bus de datos
+      // Primero: Solo dibujar la animación del bus de datos (sin colorear el registro destino)
       await drawDataPath("MBR", normalizedRegister as DataRegister, instructionName, mode);
       
-      // Solo DESPUÉS de que termine la animación del bus, actualizar el registro
+      // Segundo: Actualizar el valor del registro después de que termine la animación del bus
       store.set(registerAtoms[event.register], store.get(MBRAtom));
       
-      // Si es el registro IR, usar la nueva animación de actualización DESPUÉS del bus
+      // Tercero: Solo DESPUÉS de que termine la animación del bus, hacer la animación de actualización
       if (normalizedRegister === "IR") {
         await updateRegisterWithGlow(`cpu.${normalizedRegister}` as RegisterKey);
       } else {
+        // Para otros registros, usar la secuencia normal
         await activateRegister(`cpu.${normalizedRegister}` as RegisterKey);
         await deactivateRegister(`cpu.${normalizedRegister}` as RegisterKey);
       }
       
-      // Por último, resetear la animación del bus
+      // Cuarto: Resetear la animación del bus
       await resetDataPath();
       return;
     }
