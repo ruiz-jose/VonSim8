@@ -80,7 +80,11 @@ export async function anim(
   if (!settings.animations && !config.forceMs) return null;
 
   const springConfig = {
-    duration: config.forceMs ? config.duration : config.duration * settings.executionUnit,
+    duration: config.forceMs 
+      ? config.duration 
+      : settings.animations 
+        ? config.duration * settings.executionUnit
+        : 1, // Use minimal duration when animations are disabled
     easing: easings[config.easing],
   };
 
@@ -213,6 +217,7 @@ export async function deactivateRegister(key: RegisterKey) {
 // Nueva función para animación de actualización con efecto de brillo
 export async function updateRegisterWithGlow(key: RegisterKey) {
   try {
+    const settings = getSettings();
     const registerColor = getRegisterColor(key);
     
     // Efecto de activación y brillo que se desvanece gradualmente
@@ -221,8 +226,9 @@ export async function updateRegisterWithGlow(key: RegisterKey) {
       easing: "easeOutQuart",
     });
     
-    // Pausa para que el usuario vea el cambio
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // Pausa para que el usuario vea el cambio - reducir tiempo si animaciones están desactivadas
+    const pauseTime = settings.animations ? 1000 : 1;
+    await new Promise(resolve => setTimeout(resolve, pauseTime));
     
     // Volver al estado normal
     await anim({ key: `${key}.backgroundColor`, to: colors.stone[800] } as SpringAnimation, {
