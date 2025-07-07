@@ -90,17 +90,22 @@ export async function anim(
     animations.map(async ({ key, from, to }) => {
       if (to === undefined && from === undefined) return null;
 
-      const spring = getSpring(key);
+      try {
+        const spring = getSpring(key);
 
-      if (to === undefined) {
-        // @ts-expect-error ensured by `SpringAnimation`
-        return spring.set(from);
-      } else {
-        runningAnimations.add(key);
-        // @ts-expect-error ensured by `SpringAnimation`
-        const result = await getSpring(key).start({ from, to, config: springConfig });
-        runningAnimations.delete(key);
-        return result;
+        if (to === undefined) {
+          // @ts-expect-error ensured by `SpringAnimation`
+          return spring.set(from);
+        } else {
+          runningAnimations.add(key);
+          // @ts-expect-error ensured by `SpringAnimation`
+          const result = await getSpring(key).start({ from, to, config: springConfig });
+          runningAnimations.delete(key);
+          return result;
+        }
+      } catch (error) {
+        console.warn(`Error animando la clave ${key}:`, error);
+        return null;
       }
     }),
   );
@@ -134,21 +139,31 @@ export function stopAllAnimations() {
 // Utilities
 
 export async function activateRegister(key: RegisterKey, color = colors.mantis[400]) {
-  // There's some kind of limitation when discriminating union types
-  // See https://github.com/microsoft/TypeScript/issues/40803
-  return await anim({ key: `${key}.backgroundColor`, to: color } as SpringAnimation, {
-    duration: 1,
-    easing: "easeOutQuart",
-  });
+  try {
+    // There's some kind of limitation when discriminating union types
+    // See https://github.com/microsoft/TypeScript/issues/40803
+    return await anim({ key: `${key}.backgroundColor`, to: color } as SpringAnimation, {
+      duration: 1,
+      easing: "easeOutQuart",
+    });
+  } catch (error) {
+    console.warn(`No se pudo animar el registro ${key}:`, error);
+    return null;
+  }
 }
 
 export async function deactivateRegister(key: RegisterKey) {
-  // There's some kind of limitation when discriminating union types
-  // See https://github.com/microsoft/TypeScript/issues/40803
-  return await anim({ key: `${key}.backgroundColor`, to: colors.stone[800] } as SpringAnimation, {
-    duration: 1,
-    easing: "easeOutQuart",
-  });
+  try {
+    // There's some kind of limitation when discriminating union types
+    // See https://github.com/microsoft/TypeScript/issues/40803
+    return await anim({ key: `${key}.backgroundColor`, to: colors.stone[800] } as SpringAnimation, {
+      duration: 1,
+      easing: "easeOutQuart",
+    });
+  } catch (error) {
+    console.warn(`No se pudo desactivar el registro ${key}:`, error);
+    return null;
+  }
 }
 
 export async function populateDataBus(data: Byte<8>) {

@@ -19,15 +19,22 @@ import { DataRegister, generateDataPath } from "./DataBus";
 import { aluOperationAtom, cycleAtom, MARAtom, MBRAtom, registerAtoms } from "./state";
 
 const drawDataPath = (from: DataRegister, to: DataRegister, instruction: string, mode: string) => {
-  const path = generateDataPath(from, to, instruction, mode);
-  return anim(
-    [
-      { key: "cpu.internalBus.data.path", from: path },
-      { key: "cpu.internalBus.data.opacity", from: 1 },
-      { key: "cpu.internalBus.data.strokeDashoffset", from: 1, to: 0 },
-    ],
-    { duration: 5, easing: "easeInOutSine" },
-  );
+  try {
+    const path = generateDataPath(from, to, instruction, mode);
+    if (!path) return Promise.resolve(); // Si no hay ruta, no animar
+    
+    return anim(
+      [
+        { key: "cpu.internalBus.data.path", from: path },
+        { key: "cpu.internalBus.data.opacity", from: 1 },
+        { key: "cpu.internalBus.data.strokeDashoffset", from: 1, to: 0 },
+      ],
+      { duration: 5, easing: "easeInOutSine" },
+    );
+  } catch (error) {
+    console.warn("Error en drawDataPath:", error);
+    return Promise.resolve();
+  }
 };
 
 const resetDataPath = () =>
@@ -277,23 +284,25 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
     }
 
     case "cpu:mbr.get": {
-      await activateRegister(`cpu.${event.register}` as RegisterKey);
-      await drawDataPath("MBR", event.register as DataRegister, instructionName, mode);
-      await activateRegister(`cpu.${event.register}` as RegisterKey);
+      // Normalizar el nombre del registro para evitar problemas con subniveles
+      const normalizedRegister = event.register.replace(/\.(l|h)$/, '');
+      
+      await activateRegister(`cpu.${normalizedRegister}` as RegisterKey);
+      await drawDataPath("MBR", normalizedRegister as DataRegister, instructionName, mode);
+      await activateRegister(`cpu.${normalizedRegister}` as RegisterKey);
       store.set(registerAtoms[event.register], store.get(MBRAtom));
-      await Promise.all([deactivateRegister(`cpu.${event.register}` as RegisterKey), resetDataPath()]);
+      await Promise.all([deactivateRegister(`cpu.${normalizedRegister}` as RegisterKey), resetDataPath()]);
       return;
     }
 
     case "cpu:mbr.set": {
+      // Normalizar el nombre del registro para evitar problemas con subniveles
+      const normalizedRegister = event.register.replace(/\.(l|h)$/, '');
+      
       await activateRegister("cpu.MBR" as RegisterKey);
-      await drawDataPath(event.register as DataRegister, "MBR", instructionName, mode);
+      await drawDataPath(normalizedRegister as DataRegister, "MBR", instructionName, mode);
       await activateRegister("cpu.MBR");
       store.set(MBRAtom, store.get(registerAtoms[event.register]));
-      /*await anim(
-        { key: "bus.data.stroke", to: colors.mantis[400] },
-        { duration: 5, easing: "easeOutSine" },
-      );*/
       await Promise.all([deactivateRegister("cpu.MBR"), resetDataPath()]);
       return;
     }
@@ -307,9 +316,11 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
 
     case "cpu:register.update": {
       const [reg] = parseRegister(event.register);
-      await activateRegister(`cpu.${reg}`);
+      // Corregir el formato del nombre del registro para animación
+      const animationKey = reg === "ri" ? "cpu.ri" : `cpu.${reg}`;
+      await activateRegister(animationKey as RegisterKey);
       store.set(registerAtoms[event.register], event.value);
-      await deactivateRegister(`cpu.${reg}`);
+      await deactivateRegister(animationKey as RegisterKey);
       return;
     }
 

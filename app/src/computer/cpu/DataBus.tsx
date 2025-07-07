@@ -191,119 +191,133 @@ export function generateDataPath(
   instruction?: string,
   mode?: string,
 ): string {
-  console.log("from:", from);
-  console.log("to:", to);
+  // Normalizar nombres de registros para evitar subniveles
+  const normalizeRegister = (reg: string): string => {
+    // Eliminar sufijos como .l, .h para usar el registro base
+    return reg.replace(/\.(l|h)$/, '');
+  };
 
-  const intermediatePath = (from: DataRegister, to: DataRegister): string[] => {
-    if (to === "left") {
+  const normalizedFrom = normalizeRegister(from);
+  const normalizedTo = normalizeRegister(to);
+
+  console.log("from:", from, "normalized:", normalizedFrom);
+  console.log("to:", to, "normalized:", normalizedTo);
+
+  // Verificar que los nodos existen en el grafo antes de calcular la ruta
+  if (!dataBus.hasNode(normalizedFrom)) {
+    console.warn(`Nodo origen '${normalizedFrom}' no existe en el grafo`);
+    return "";
+  }
+  
+  if (!dataBus.hasNode(normalizedTo)) {
+    console.warn(`Nodo destino '${normalizedTo}' no existe en el grafo`);
+    return "";
+  }
+
+  const intermediatePath = (fromReg: string, toReg: string): string[] => {
+    if (toReg === "left") {
       return [
-        from,
-        "bleft1", // Añadir el nodo bleft1
-        "bleft2", // Añadir el nodo bleft2
-        "bleft3", // Añadir el nodo bleft3
-        "left", // Añadir el nodo left join
-        `${from} out`,
-        `${from} out join`,
+        fromReg,
+        "bleft1",
+        "bleft2", 
+        "bleft3",
+        "left",
+        `${fromReg} out`,
+        `${fromReg} out join`,
         "outr mbr join",
         "mbr reg join",
-        `${to} join`,
-        to,
+        `${toReg} join`,
+        toReg,
       ];
     }
     return [
-      from,
-      `${from} out`,
-      `${from} out join`,
+      fromReg,
+      `${fromReg} out`,
+      `${fromReg} out join`,
       "outr mbr join",
       "mbr reg join",
-      `${to} join`,
-      to,
+      `${toReg} join`,
+      toReg,
     ];
   };
 
   let path: string[] = [];
 
   const registers = ["AX", "BX", "CX", "DX", "id"];
-  if (from === "MBR" && to === "left") {
-    // Definir el camino desde MBR hasta left pasando por outr mbr join
+  
+  // Usar los nombres normalizados para las comparaciones
+  if (normalizedFrom === "MBR" && normalizedTo === "left") {
     path = ["MBR", "outr mbr join", "bleft1", "bleft2", "bleft3", "left"];
-  } else if (from === "MBR" && to === "ri") {
+  } else if (normalizedFrom === "MBR" && normalizedTo === "ri") {
     path = ["MBR", "outr mbr join", "SP out join", "MAR join2", "MAR"];
-  } else if (from === "MBR" && registers.includes(to)) {
-    path = ["MBR", "mbr reg join", `${to} join`, to];
-  } else if (registers.includes(from) && registers.includes(to)) {
-    path = intermediatePath(from, to);
-  } else if (from === "IP" && to === "id") {
+  } else if (normalizedFrom === "MBR" && registers.includes(normalizedTo)) {
+    path = ["MBR", "mbr reg join", `${normalizedTo} join`, normalizedTo];
+  } else if (registers.includes(normalizedFrom) && registers.includes(normalizedTo)) {
+    path = intermediatePath(normalizedFrom, normalizedTo);
+  } else if (normalizedFrom === "IP" && normalizedTo === "id") {
     path = ["IP out", "IP out join", "outr mbr join", "mbr reg join", "id join", "id"];
-  } else if (from === "id" && to === "ri") {
+  } else if (normalizedFrom === "id" && normalizedTo === "ri") {
     path = ["id out", "id out join", "outr mbr join", "MAR join2", "MAR"];
-  } else if (from === "BX" && to === "ri") {
+  } else if (normalizedFrom === "BX" && normalizedTo === "ri") {
     path = ["BX out", "BX out join", "outr mbr join", "MAR join2", "MAR"];
-  } else if (from === "id" && to === "MBR") {
+  } else if (normalizedFrom === "id" && normalizedTo === "MBR") {
     path = ["id out", "id out join", "outr mbr join", "MBR"];
-  } else if (from === "id" && to === "IP" && instruction === "RET") {
+  } else if (normalizedFrom === "id" && normalizedTo === "IP" && instruction === "RET") {
     path = ["MBR", "mbr reg join", "IP join", "IP"];
   } else {
-    path = bidirectional(dataBus, from, to) || [];
+    try {
+      path = bidirectional(dataBus, normalizedFrom, normalizedTo) || [];
+    } catch (error) {
+      console.warn(`Error calculando ruta de ${normalizedFrom} a ${normalizedTo}:`, error);
+      return "";
+    }
   }
 
-  /*if (from === "id" && to === "ri" && (instruction === "MOV" && mode === "mem<-imd")) {
-    return "";
-  }*/
-  // Reemplazar 'ri' por 'MAR' si el destino es 'ri'
-  /*if (to === "ri" && instruction === "MOV" && mode === "mem<-imd") {
-      path = ["MBR", "mbr reg join", "ir join", "IP"];
-  }*/
-
-  // Cambiar la animación si from es "ri" y to es "IP"
-  if (from === "ri" && to === "IP") {
+  // Resto de la lógica específica de instrucciones usando nombres normalizados
+  if (normalizedFrom === "ri" && normalizedTo === "IP") {
     path = ["MBR", "mbr reg join", "IP join", "IP"];
   }
 
-  if (from === "ri" && to === "IP" && instruction === "CALL") {
+  if (normalizedFrom === "ri" && normalizedTo === "IP" && instruction === "CALL") {
     path = ["ri", "ri out join", "outr mbr join", "mbr reg join", "IP join", "IP"];
   }
 
-  // No dibujar la animación si from es "MBR" y to es "ri" y la instrucción es JMP, JZ, JC o MOV con mode "mem<-imd"
-  if (from === "MBR" && to === "ri" && ["JMP", "JZ", "JC"].includes(instruction ?? "")) {
+  if (normalizedFrom === "MBR" && normalizedTo === "ri" && ["JMP", "JZ", "JC"].includes(instruction ?? "")) {
     return "";
   }
 
-  // No dibujar la animación si la instrucción es MOV con mode "mem<-imd"
-  if (from === "MBR" && to === "ri" && instruction === "CALL") {
+  if (normalizedFrom === "MBR" && normalizedTo === "ri" && instruction === "CALL") {
     path = ["MBR", "mbr reg join", "ri join", "ri"];
   }
 
-  // No dibujar la animación si la instrucción es MOV con mode "mem<-imd"
   if (
-    from === "MBR" &&
-    to === "ri" &&
+    normalizedFrom === "MBR" &&
+    normalizedTo === "ri" &&
     (instruction === "MOV" || instruction === "INT") &&
     mode === "mem<-imd"
   ) {
     path = ["MBR", "mbr reg join", "ri join", "ri"];
   }
 
-  // No dibujar la animación si la instrucción es MOV con mode "mem<-imd"
-  if (from === "IP" && to === "MBR" && (instruction === "INT" || instruction === "CALL")) {
+  if (normalizedFrom === "IP" && normalizedTo === "MBR" && (instruction === "INT" || instruction === "CALL")) {
     return "M 510 349 H 550 V 250 H 620";
   }
 
-  // No dibujar la animación si la instrucción es MOV con mode "mem<-imd"
   if (
-    from === "MBR" &&
-    to === "ri" &&
+    normalizedFrom === "MBR" &&
+    normalizedTo === "ri" &&
     mode === "mem<-imd" &&
     (instruction === "ADD" || instruction === "SUB")
   ) {
     path = ["MBR", "mbr reg join", "ri join", "ri"];
-    //  path = ["MBR", "outr mbr join", "SP out join", "MAR join2", "MAR"];
   }
 
-  if (path.length === 0) throw new Error(`No path from ${from} to ${to}`);
+  if (path.length === 0) {
+    console.warn(`No se encontró ruta de ${normalizedFrom} a ${normalizedTo}`);
+    return "";
+  }
 
   const start = dataBus.getNodeAttribute(path[0], "position");
-  console.log("start:", start);
   let d = `M ${start[0]} ${start[1]}`;
 
   for (let i = 1; i < path.length; i++) {
