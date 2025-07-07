@@ -1,23 +1,22 @@
-           ORG 1000H
-           N DW 255
-           M DW 2
-           R DW ?
+           ORG 10H
+           N DB 255
+           M DB 2
+           R DB ?
 
-           ORG 3000H
-           ; AX almacena el valor del dividendo
-           ; BX almacena el valor del divisor
-           ; AX almacena el resto
-    RESTO: CMP AX,BX
+           ORG 30H
+           ; AL almacena el valor del dividendo
+           ; BL almacena el valor del divisor
+           ; AL almacena el resto
+    RESTO: CMP AL,BL
            JS RETORNO
 
-           SUB AX,BX
+           SUB AL,BL
            JMP RESTO
 
   RETORNO: RET
 
-           ORG 2000H
-           MOV AX, N
-           MOV BX, M
+           ORG 20H
+           MOV AL, N
+           MOV BL, M
            CALL RESTO
            HLT
-           END
