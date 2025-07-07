@@ -47,7 +47,7 @@ export function Control() {
         <animated.path
           className="fill-none stroke-mantis-400 stroke-bus"
           strokeLinejoin="round"
-          d="M 205 300 V 320"
+          d="M 205 310 V 320"
           pathLength={1}
           strokeDasharray={1}
           style={getSpring("cpu.decoder.path")}
