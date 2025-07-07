@@ -5,6 +5,7 @@ import {
   activateRegister,
   anim,
   deactivateRegister,
+  updateRegisterWithGlow, // Nueva función
   turnLineOff,
   turnLineOn,
 } from "@/computer/shared/animate";
@@ -287,11 +288,25 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       // Normalizar el nombre del registro para evitar problemas con subniveles
       const normalizedRegister = event.register.replace(/\.(l|h)$/, '');
       
+      // Primero activar el registro de destino (antes del bus)
       await activateRegister(`cpu.${normalizedRegister}` as RegisterKey);
+      
+      // Esperar a que termine COMPLETAMENTE la animación del bus de datos
       await drawDataPath("MBR", normalizedRegister as DataRegister, instructionName, mode);
-      await activateRegister(`cpu.${normalizedRegister}` as RegisterKey);
+      
+      // Solo DESPUÉS de que termine la animación del bus, actualizar el registro
       store.set(registerAtoms[event.register], store.get(MBRAtom));
-      await Promise.all([deactivateRegister(`cpu.${normalizedRegister}` as RegisterKey), resetDataPath()]);
+      
+      // Si es el registro IR, usar la nueva animación de actualización DESPUÉS del bus
+      if (normalizedRegister === "IR") {
+        await updateRegisterWithGlow(`cpu.${normalizedRegister}` as RegisterKey);
+      } else {
+        await activateRegister(`cpu.${normalizedRegister}` as RegisterKey);
+        await deactivateRegister(`cpu.${normalizedRegister}` as RegisterKey);
+      }
+      
+      // Por último, resetear la animación del bus
+      await resetDataPath();
       return;
     }
 
@@ -316,11 +331,10 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
 
     case "cpu:register.update": {
       const [reg] = parseRegister(event.register);
-      // Corregir el formato del nombre del registro para animación
+      // Usar la nueva función de animación con brillo
       const animationKey = reg === "ri" ? "cpu.ri" : `cpu.${reg}`;
-      await activateRegister(animationKey as RegisterKey);
+      await updateRegisterWithGlow(animationKey as RegisterKey);
       store.set(registerAtoms[event.register], event.value);
-      await deactivateRegister(animationKey as RegisterKey);
       return;
     }
 

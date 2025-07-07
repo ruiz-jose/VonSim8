@@ -136,16 +136,61 @@ export function stopAllAnimations() {
   setTimeout(() => resetAllSprings(), 10);
 }
 
+// Definir colores específicos para cada tipo de registro usando solo colores disponibles
+const registerColors = {
+  // Registros de datos - usar variaciones de blue
+  AX: colors.blue[500],
+  BX: "#4F46E5", // índigo 600
+  CX: "#3B82F6", // blue 500
+  DX: "#1E40AF", // blue 700
+  
+  // Registros de dirección - usar variaciones de red/mantis
+  IP: colors.red[500],
+  SP: "#DC2626", // red 600
+  MAR: colors.blue[500], // cambiar a azul para consistencia
+  
+  // Registros especiales - usar el mismo color que MAR (azul)
+  MBR: colors.blue[500], // mismo que MAR (azul)
+  IR: colors.blue[500], // mismo que MAR (azul)
+  FLAGS: "#F59E0B", // amber 500
+  result: "#10B981", // emerald 500
+  
+  // Registros de instrucción - usar tonos naranjas/amarillos
+  id: "#F97316", // orange 500
+  ri: "#EA580C", // orange 600
+  
+  // Registros ALU - usar tonos verdes
+  left: "#22C55E", // green 500
+  right: "#16A34A", // green 600
+};
+
+// Función para obtener el color del registro
+function getRegisterColor(registerKey: string): string {
+  // Extraer el nombre del registro de la clave (ej: "cpu.AX" -> "AX")
+  const registerName = registerKey.replace("cpu.", "").split(".")[0];
+  return registerColors[registerName as keyof typeof registerColors] || colors.stone[600];
+}
+
 // Utilities
 
-export async function activateRegister(key: RegisterKey, color = colors.mantis[400]) {
+export async function activateRegister(key: RegisterKey, color?: string) {
   try {
-    // There's some kind of limitation when discriminating union types
-    // See https://github.com/microsoft/TypeScript/issues/40803
-    return await anim({ key: `${key}.backgroundColor`, to: color } as SpringAnimation, {
-      duration: 1,
-      easing: "easeOutQuart",
+    // Usar el color específico del registro si no se proporciona uno
+    const registerColor = color || getRegisterColor(key);
+
+    // Animación de pulso suave en lugar de cambio brusco
+    await anim({ key: `${key}.backgroundColor`, to: registerColor } as SpringAnimation, {
+      duration: 2,
+      easing: "easeOutCubic",
     });
+
+    // Opcional: agregar un segundo pulso más sutil
+    await anim({ key: `${key}.backgroundColor`, to: colors.stone[750] } as SpringAnimation, {
+      duration: 3,
+      easing: "easeInCubic",
+    });
+
+    return;
   } catch (error) {
     console.warn(`No se pudo animar el registro ${key}:`, error);
     return null;
@@ -154,14 +199,40 @@ export async function activateRegister(key: RegisterKey, color = colors.mantis[4
 
 export async function deactivateRegister(key: RegisterKey) {
   try {
-    // There's some kind of limitation when discriminating union types
-    // See https://github.com/microsoft/TypeScript/issues/40803
+    // Transición suave de vuelta al estado normal
     return await anim({ key: `${key}.backgroundColor`, to: colors.stone[800] } as SpringAnimation, {
-      duration: 1,
-      easing: "easeOutQuart",
+      duration: 2,
+      easing: "easeInOutQuart",
     });
   } catch (error) {
     console.warn(`No se pudo desactivar el registro ${key}:`, error);
+    return null;
+  }
+}
+
+// Nueva función para animación de actualización con efecto de brillo
+export async function updateRegisterWithGlow(key: RegisterKey) {
+  try {
+    const registerColor = getRegisterColor(key);
+    
+    // Efecto de brillo que se desvanece gradualmente - secuencial, no simultáneo
+    await anim({ key: `${key}.backgroundColor`, to: registerColor } as SpringAnimation, {
+      duration: 2, // Aumentar duración para mejor visibilidad
+      easing: "easeOutQuart",
+    });
+    
+    // Pausa más larga para que el usuario vea el cambio
+    await new Promise(resolve => setTimeout(resolve, 1200));
+    
+    // Volver al estado normal más lentamente
+    await anim({ key: `${key}.backgroundColor`, to: colors.stone[800] } as SpringAnimation, {
+      duration: 3, // Duración más larga para transición suave
+      easing: "easeInQuart",
+    });
+    
+    return;
+  } catch (error) {
+    console.warn(`No se pudo actualizar el registro ${key}:`, error);
     return null;
   }
 }
