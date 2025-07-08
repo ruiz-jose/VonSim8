@@ -45,7 +45,11 @@ export function ControlLines() {
         y="410"
         className="pointer-events-none fill-red-500 font-mono text-xs font-bold"
         textAnchor="middle"
-        style={getSpring("bus.rd")}
+        style={{
+          opacity: getSpring("bus.rd.stroke").to(stroke => 
+            stroke === "#ef4444" ? 1 : 0
+          )
+        }}
       >
         LEER MEMORIA
       </animated.text>
@@ -64,7 +68,11 @@ export function ControlLines() {
         y="455"
         className="pointer-events-none fill-blue-500 font-mono text-xs font-bold"
         textAnchor="middle"
-        style={getSpring("bus.wr")}
+        style={{
+          opacity: getSpring("bus.wr.stroke").to(stroke => 
+            stroke === "#3b82f6" ? 1 : 0
+          )
+        }}
       >
         ESCRIBIR MEMORIA
       </animated.text>
