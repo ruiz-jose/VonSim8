@@ -10,6 +10,52 @@ import { toast } from "@/lib/toast";
 
 import { memoryAtom, operatingAddressAtom } from "./state";
 
+/**
+ * Genera el path SVG para el bus de datos externo (memoria ↔ MBR)
+ * similar a como funciona el bus interno del CPU
+ */
+function generateExternalDataPath(direction: "memory-to-mbr" | "mbr-to-memory"): string {
+  // Coordenadas que coinciden exactamente con el dataPath estático en DataLines.tsx
+  const mbrX = 629; // Coordenada x del MBR (coincide con dataPath)
+  const mbrY = 249; // Coordenada y del MBR (coincide con dataPath)
+  
+  // Coordenadas de la memoria (coinciden con dataPath)
+  const memoryX = 800;
+  const memoryY = 249; // Misma altura que el MBR
+  
+  if (direction === "memory-to-mbr") {
+    // Animación desde la memoria hacia el MBR
+    return `M ${memoryX} ${memoryY} L ${mbrX} ${mbrY}`;
+  } else {
+    // Animación desde el MBR hacia la memoria
+    return `M ${mbrX} ${mbrY} L ${memoryX} ${memoryY}`;
+  }
+}
+
+// Función para animar el bus de datos externo (igual que el interno del CPU)
+const drawExternalDataPath = (direction: "memory-to-mbr" | "mbr-to-memory") => {
+  try {
+    const path = generateExternalDataPath(direction);
+    if (!path) return Promise.resolve();
+    
+    return anim(
+      [
+        { key: "bus.data.path", from: path },
+        { key: "bus.data.opacity", from: 1 },
+        { key: "bus.data.strokeDashoffset", from: 1, to: 0 },
+      ],
+      { duration: 5, easing: "easeInOutSine" },
+    );
+  } catch (error) {
+    console.warn("Error en drawExternalDataPath:", error);
+    return Promise.resolve();
+  }
+};
+
+// Función para resetear el bus de datos externo
+const resetExternalDataPath = () =>
+  anim({ key: "bus.data.opacity", to: 0 }, { duration: 1, easing: "easeInSine" });
+
 export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promise<void> {
   switch (event.type) {
     case "memory:read":
@@ -24,11 +70,8 @@ export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promi
         { duration: 1, easing: "easeOutQuart" },
       );
       
-      // Animar el bus de datos desde la memoria hacia el CPU
-      await anim(
-        { key: "bus.data.stroke", to: colors.mantis[400] },
-        { duration: 5, easing: "easeOutSine" },
-      );
+      // Animar el bus de datos desde la memoria hacia el MBR (igual que bus interno)
+      await drawExternalDataPath("memory-to-mbr");
       
       // Actualizar el valor primero
       store.set(MBRAtom, event.value);
@@ -42,10 +85,7 @@ export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promi
           { key: "memory.operating-cell.color", to: colors.white },
           { duration: 1, easing: "easeOutQuart" },
         ),
-        anim(
-          { key: "bus.data.stroke", to: colors.stone[700] },
-          { duration: 2, easing: "easeInQuart" },
-        ),
+        resetExternalDataPath(),
       ]);
       return;
     }
@@ -59,11 +99,8 @@ export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promi
       // Para escritura, usar el color específico del MBR
       await activateRegister("cpu.MBR");
       
-      // Animar el bus de datos desde el CPU hacia la memoria
-      await anim(
-        { key: "bus.data.stroke", to: colors.mantis[400] },
-        { duration: 5, easing: "easeOutSine" },
-      );
+      // Animar el bus de datos desde el MBR hacia la memoria (igual que bus interno)
+      await drawExternalDataPath("mbr-to-memory");
       
       // Animar la celda de memoria de destino
       await anim(
@@ -84,10 +121,7 @@ export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promi
           { key: "memory.operating-cell.color", to: colors.white },
           { duration: 1, easing: "easeOutQuart" },
         ),
-        anim(
-          { key: "bus.data.stroke", to: colors.stone[700] },
-          { duration: 2, easing: "easeInQuart" },
-        ),
+        resetExternalDataPath(),
       ]);
       return;
     }

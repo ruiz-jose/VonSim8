@@ -35,8 +35,22 @@ export type SimplePathSprings = Opaque<
 >;
 export type SimplePathKey = SpringPathWhere<SimplePathSprings>;
 
+// Used for data bus animations (same as CPU internal bus)
+export type DataBusSprings = Opaque<
+  { strokeDashoffset: SpringValue<number>; opacity: SpringValue<number>; path: SpringValue<string> },
+  "DataBusSprings"
+>;
+export type DataBusKey = SpringPathWhere<DataBusSprings>;
+
 const SimplePath = () =>
   ({ strokeDashoffset: new SpringValue(1), opacity: new SpringValue(1) }) as SimplePathSprings;
+
+const DataBusPath = () =>
+  ({
+    strokeDashoffset: new SpringValue(1),
+    opacity: new SpringValue(1),
+    path: new SpringValue(""),
+  }) as DataBusSprings;
 
 /**
  * Spring values
@@ -45,7 +59,7 @@ const SimplePath = () =>
 const springs = {
   bus: {
     address: { stroke: new SpringValue(colors.stone[700]) },
-    data: { stroke: new SpringValue(colors.stone[700]) },
+    data: DataBusPath(),
     rd: { stroke: new SpringValue(colors.stone[700]) },
     wr: { stroke: new SpringValue(colors.stone[700]) },
 

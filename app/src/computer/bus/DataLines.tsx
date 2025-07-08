@@ -24,6 +24,9 @@ export function DataLines() {
     .filter(Boolean)
     .join(" ");
 
+  // Obtener las propiedades de animación del bus de datos (similar al bus interno)
+  const { path, strokeDashoffset, opacity } = getSpring("bus.data");
+
   return (
     <svg className="pointer-events-none absolute inset-0 z-[5] size-full">
       {/* Data lines */}
@@ -32,11 +35,23 @@ export function DataLines() {
         strokeLinejoin="round"
         d={dataPath}
       />
-      <animated.path
-        className="fill-none stroke-[12px]"
+      {/* Línea base del bus de datos */}
+      <path
+        className="fill-none stroke-stone-700 stroke-[12px]"
         strokeLinejoin="round"
         d={dataPath}
-        style={getSpring("bus.data")}
+      />
+      {/* Línea animada del bus de datos - usando path dinámico del spring */}
+      <animated.path
+        d={path}
+        className="fill-none stroke-mantis-400 stroke-[12px]"
+        strokeLinejoin="round"
+        pathLength={1}
+        strokeDasharray={1}
+        style={{
+          strokeDashoffset,
+          opacity,
+        }}
       />
 
       {/* Address lines */}
