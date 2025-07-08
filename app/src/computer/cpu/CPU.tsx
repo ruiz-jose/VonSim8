@@ -12,6 +12,73 @@ import { Control } from "./Control";
 import { DataBus } from "./DataBus";
 import { registerAtoms, showSPAtom } from "./state";
 
+// Add IPPlusOneAnimation component
+function IPPlusOneAnimation() {
+  const [isVisible, setIsVisible] = useState(false);
+  const [animationKey, setAnimationKey] = useState(0);
+
+  useEffect(() => {
+    const handleIPUpdate = () => {
+      setIsVisible(true);
+      setAnimationKey(prev => prev + 1);
+      
+      // Hide the animation after the same duration as updateRegisterWithGlow (~3 seconds)
+      setTimeout(() => {
+        setIsVisible(false);
+      }, 3000);
+    };
+
+    // Listen for IP register updates
+    window.addEventListener('ip-register-update', handleIPUpdate);
+    
+    return () => {
+      window.removeEventListener('ip-register-update', handleIPUpdate);
+    };
+  }, []);
+
+  if (!isVisible) return null;
+
+  return (
+    <>
+      <style>{`
+        @keyframes slideUpAndFade {
+          0% {
+            opacity: 1;
+            transform: translateY(0px);
+          }
+          30% {
+            opacity: 1;
+            transform: translateY(-30px);
+          }
+          70% {
+            opacity: 1;
+            transform: translateY(-30px);
+          }
+          100% {
+            opacity: 0;
+            transform: translateY(-50px);
+          }
+        }
+      `}</style>
+      
+      {/* +1 Text */}
+      <div
+        key={animationKey}
+        className={clsx(
+          "absolute left-[425px] top-[342px] pointer-events-none",
+          "font-bold text-lg font-mono"
+        )}
+        style={{
+          color: "#ff6347",
+          animation: "slideUpAndFade 3s ease-out forwards"
+        }}
+      >
+        +1
+      </div>
+    </>
+  );
+}
+
 export function CPU() {
   const translate = useTranslate();
 
@@ -115,6 +182,8 @@ export function CPU() {
       )}
 
       <Reg name="MAR" className={clsx("right-[-11px] top-[333px]", "border-indigo-400")} />
+
+      <IPPlusOneAnimation />
     </div>
   );
 }

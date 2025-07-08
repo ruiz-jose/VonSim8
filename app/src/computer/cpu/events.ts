@@ -9,7 +9,7 @@ import {
   turnLineOff,
   turnLineOn,
 } from "@/computer/shared/animate";
-import type { RegisterKey } from "@/computer/shared/springs";
+import type { RegisterKey, SimplePathKey } from "@/computer/shared/springs";
 import type { SimulatorEvent } from "@/computer/shared/types";
 import { finishSimulation, pauseSimulation } from "@/computer/simulation";
 import { highlightLine } from "@/editor/methods";
@@ -231,11 +231,8 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       // Note: bus.address and bus.data now use path-based animations
       // so we don't animate stroke directly anymore
 
-      // Animate control line
-      await anim(
-        { key: `bus.${line}.stroke`, to: line === "rd" ? colors.red[500] : colors.blue[500] },
-        { duration: 5, easing: "easeOutSine" },
-      );
+      // Animate control line using the correct path-based animation
+      await turnLineOn(`bus.${line}` as SimplePathKey, 10);
 
       return;
     }
@@ -325,9 +322,25 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
 
     case "cpu:register.update": {
       const [reg] = parseRegister(event.register);
+      
       // Usar la nueva función de animación con brillo
-      const animationKey = reg === "ri" ? "cpu.ri" : `cpu.${reg}`;
-      await updateRegisterWithGlow(animationKey as RegisterKey);
+      const animationKey: RegisterKey = reg === "ri" ? "cpu.ri" : `cpu.${reg}` as RegisterKey;
+      
+      // Special handling for IP register - trigger +1 animation synchronized with register update
+      if (reg === "IP") {
+        // Execute both animations in parallel
+        await Promise.all([
+          updateRegisterWithGlow(animationKey),
+          // Trigger the custom event for IP update animation at the same time
+          new Promise<void>((resolve) => {
+            window.dispatchEvent(new CustomEvent('ip-register-update'));
+            resolve();
+          })
+        ]);
+      } else {
+        await updateRegisterWithGlow(animationKey);
+      }
+      
       store.set(registerAtoms[event.register], event.value);
       return;
     }
