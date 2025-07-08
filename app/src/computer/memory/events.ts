@@ -56,6 +56,40 @@ const drawExternalDataPath = (direction: "memory-to-mbr" | "mbr-to-memory") => {
 const resetExternalDataPath = () =>
   anim({ key: "bus.data.opacity", to: 0 }, { duration: 1, easing: "easeInSine" });
 
+/**
+ * Genera el path SVG para el bus de direcciones (MAR → memoria)
+ * usando las mismas coordenadas que el path estático
+ */
+function generateExternalAddressPath(): string {
+  // Siempre desde MAR hacia la memoria (como indica el usuario)
+  // Coordenadas que coinciden con el addressPath estático en DataLines.tsx
+  return "M 659 349 H 800";
+}
+
+// Función para animar el bus de direcciones externo (igual que el interno del CPU)
+export const drawExternalAddressPath = () => {
+  try {
+    const path = generateExternalAddressPath();
+    if (!path) return Promise.resolve();
+    
+    return anim(
+      [
+        { key: "bus.address.path", from: path },
+        { key: "bus.address.opacity", from: 1 },
+        { key: "bus.address.strokeDashoffset", from: 1, to: 0 },
+      ],
+      { duration: 5, easing: "easeInOutSine" },
+    );
+  } catch (error) {
+    console.warn("Error en drawExternalAddressPath:", error);
+    return Promise.resolve();
+  }
+};
+
+// Función para resetear el bus de direcciones externo
+export const resetExternalAddressPath = () =>
+  anim({ key: "bus.address.opacity", to: 0 }, { duration: 1, easing: "easeInSine" });
+
 export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promise<void> {
   switch (event.type) {
     case "memory:read":

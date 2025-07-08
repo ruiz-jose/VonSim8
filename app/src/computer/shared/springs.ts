@@ -58,7 +58,7 @@ const DataBusPath = () =>
  */
 const springs = {
   bus: {
-    address: { stroke: new SpringValue(colors.stone[700]) },
+    address: DataBusPath(),
     data: DataBusPath(),
     rd: { stroke: new SpringValue(colors.stone[700]) },
     wr: { stroke: new SpringValue(colors.stone[700]) },
