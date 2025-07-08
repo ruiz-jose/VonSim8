@@ -51,7 +51,7 @@ export function ControlLines() {
           )
         }}
       >
-        LEER MEMORIA
+        Read
       </animated.text>
 
       <path className="fill-none stroke-stone-900 stroke-[6px]" strokeLinejoin="round" d={wrPath} />
@@ -74,7 +74,7 @@ export function ControlLines() {
           )
         }}
       >
-        ESCRIBIR MEMORIA
+        Write
       </animated.text>
 
       {/* Chip select */}
