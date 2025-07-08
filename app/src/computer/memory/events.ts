@@ -92,8 +92,11 @@ export const resetExternalAddressPath = () =>
 
 export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promise<void> {
   switch (event.type) {
-    case "memory:read":
+    case "memory:read": {
+      // Animar el bus de direcciones desde MAR hacia la memoria al iniciar la lectura
+      await drawExternalAddressPath();
       return;
+    }
 
     case "memory:read.ok": {
       store.set(operatingAddressAtom, MemoryAddress.from(event.address));
@@ -120,12 +123,16 @@ export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promi
           { duration: 1, easing: "easeOutQuart" },
         ),
         resetExternalDataPath(),
+        resetExternalAddressPath(), // Resetear también el bus de direcciones
       ]);
       return;
     }
 
-    case "memory:write":
+    case "memory:write": {
+      // Animar el bus de direcciones desde MAR hacia la memoria al iniciar la escritura
+      await drawExternalAddressPath();
       return;
+    }
 
     case "memory:write.ok": {
       store.set(operatingAddressAtom, MemoryAddress.from(event.address));
@@ -156,6 +163,7 @@ export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promi
           { duration: 1, easing: "easeOutQuart" },
         ),
         resetExternalDataPath(),
+        resetExternalAddressPath(), // Resetear también el bus de direcciones
       ]);
       return;
     }

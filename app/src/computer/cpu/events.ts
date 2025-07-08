@@ -267,22 +267,12 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       await activateRegister("cpu.MAR", colors.blue[500]);
       store.set(MARAtom, store.get(registerAtoms[event.register]));
       
-      // Animar el bus de direcciones externo desde MAR hacia la memoria
-      // Importar la función desde memory events
-      const { drawExternalAddressPath } = await import("../memory/events");
-      await drawExternalAddressPath();
-      
       await Promise.all([
         deactivateRegister("cpu.MAR"),
         anim(
           { key: "cpu.internalBus.address.opacity", to: 0 },
           { duration: 1, easing: "easeInSine" },
         ),
-        // Resetear también el bus externo
-        (async () => {
-          const { resetExternalAddressPath } = await import("../memory/events");
-          return resetExternalAddressPath();
-        })(),
       ]);
       return;
     }
