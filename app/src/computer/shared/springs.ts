@@ -60,8 +60,8 @@ const springs = {
   bus: {
     address: DataBusPath(),
     data: DataBusPath(),
-    rd: { stroke: new SpringValue(colors.stone[700]) },
-    wr: { stroke: new SpringValue(colors.stone[700]) },
+    rd: DataBusPath(),
+    wr: DataBusPath(),
 
     iom: SimplePath(),
     mem: { stroke: new SpringValue(colors.red[500]) },

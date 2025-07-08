@@ -29,14 +29,25 @@ export function ControlLines() {
 
   const memPath = "M 750 545 H 800";
 
+  // Obtener las propiedades de animación de los buses de control
+  const { path: rdPath_anim, strokeDashoffset: rdDashoffset, opacity: rdOpacity } = getSpring("bus.rd");
+  const { path: wrPath_anim, strokeDashoffset: wrDashoffset, opacity: wrOpacity } = getSpring("bus.wr");
+
   return (
     <svg className="pointer-events-none absolute inset-0 z-[15] size-full">
       <path className="fill-none stroke-stone-900 stroke-[6px]" strokeLinejoin="round" d={rdPath} />
+      <path className="fill-none stroke-stone-700 stroke-[4px]" strokeLinejoin="round" d={rdPath} />
+      {/* Línea animada del bus RD - usando path dinámico del spring */}
       <animated.path
-        className="fill-none stroke-[4px]"
+        d={rdPath_anim}
+        className="fill-none stroke-red-500 stroke-[4px]"
         strokeLinejoin="round"
-        d={rdPath}
-        style={getSpring("bus.rd")}
+        pathLength={1}
+        strokeDasharray={1}
+        style={{
+          strokeDashoffset: rdDashoffset,
+          opacity: rdOpacity,
+        }}
       />
 
       {/* Animated command text for READ operations */}
@@ -46,20 +57,25 @@ export function ControlLines() {
         className="pointer-events-none fill-red-500 font-mono text-xs font-bold"
         textAnchor="middle"
         style={{
-          opacity: getSpring("bus.rd.stroke").to(stroke => 
-            stroke === "#ef4444" ? 1 : 0
-          )
+          opacity: rdOpacity
         }}
       >
         Read
       </animated.text>
 
       <path className="fill-none stroke-stone-900 stroke-[6px]" strokeLinejoin="round" d={wrPath} />
+      <path className="fill-none stroke-stone-700 stroke-[4px]" strokeLinejoin="round" d={wrPath} />
+      {/* Línea animada del bus WR - usando path dinámico del spring */}
       <animated.path
-        className="fill-none stroke-[4px]"
+        d={wrPath_anim}
+        className="fill-none stroke-blue-500 stroke-[4px]"
         strokeLinejoin="round"
-        d={wrPath}
-        style={getSpring("bus.wr")}
+        pathLength={1}
+        strokeDasharray={1}
+        style={{
+          strokeDashoffset: wrDashoffset,
+          opacity: wrOpacity,
+        }}
       />
 
       {/* Animated command text for WRITE operations */}
@@ -69,9 +85,7 @@ export function ControlLines() {
         className="pointer-events-none fill-blue-500 font-mono text-xs font-bold"
         textAnchor="middle"
         style={{
-          opacity: getSpring("bus.wr.stroke").to(stroke => 
-            stroke === "#3b82f6" ? 1 : 0
-          )
+          opacity: wrOpacity
         }}
       >
         Write

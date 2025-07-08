@@ -58,7 +58,7 @@ const resetExternalDataPath = () =>
 
 /**
  * Genera el path SVG para el bus de direcciones (MAR → memoria)
- * usando las mismas coordenadas que el path estático
+ * usando las mismas coordenadas que el path estático en DataLines.tsx
  */
 function generateExternalAddressPath(): string {
   // Siempre desde MAR hacia la memoria (como indica el usuario)
@@ -87,14 +87,66 @@ export const drawExternalAddressPath = () => {
 };
 
 // Función para resetear el bus de direcciones externo
-export const resetExternalAddressPath = () =>
+const resetExternalAddressPath = () =>
   anim({ key: "bus.address.opacity", to: 0 }, { duration: 1, easing: "easeInSine" });
+
+// Función para animar el bus de control RD (CPU -> dispositivos)
+const drawRDControlPath = () => {
+  try {
+    // Path desde CPU hacia memoria y otros dispositivos
+    const path = "M 380 420 H 800"; // Path básico CPU -> Memory
+    
+    return anim(
+      [
+        { key: "bus.rd.path", from: path },
+        { key: "bus.rd.opacity", from: 1 },
+        { key: "bus.rd.strokeDashoffset", from: 1, to: 0 },
+      ],
+      { duration: 5, easing: "easeInOutSine" },
+    );
+  } catch (error) {
+    console.warn("Error en drawRDControlPath:", error);
+    return Promise.resolve();
+  }
+};
+
+// Función para animar el bus de control WR (CPU -> dispositivos)
+const drawWRControlPath = () => {
+  try {
+    // Path desde CPU hacia memoria y otros dispositivos
+    const path = "M 380 440 H 800"; // Path básico CPU -> Memory
+    
+    return anim(
+      [
+        { key: "bus.wr.path", from: path },
+        { key: "bus.wr.opacity", from: 1 },
+        { key: "bus.wr.strokeDashoffset", from: 1, to: 0 },
+      ],
+      { duration: 5, easing: "easeInOutSine" },
+    );
+  } catch (error) {
+    console.warn("Error en drawWRControlPath:", error);
+    return Promise.resolve();
+  }
+};
+
+// Función para resetear el bus de control RD
+const resetRDControlPath = () =>
+  anim({ key: "bus.rd.opacity", to: 0 }, { duration: 1, easing: "easeInSine" });
+
+// Función para resetear el bus de control WR
+const resetWRControlPath = () =>
+  anim({ key: "bus.wr.opacity", to: 0 }, { duration: 1, easing: "easeInSine" });
 
 export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promise<void> {
   switch (event.type) {
     case "memory:read": {
       // Animar el bus de direcciones desde MAR hacia la memoria al iniciar la lectura
       await drawExternalAddressPath();
+      
+      // Animar el bus de control RD desde CPU hacia dispositivos
+      await drawRDControlPath();
+      
       return;
     }
 
@@ -124,6 +176,8 @@ export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promi
         ),
         resetExternalDataPath(),
         resetExternalAddressPath(), // Resetear también el bus de direcciones
+        resetRDControlPath(), // Resetear bus de control RD
+        resetWRControlPath(), // Resetear bus de control WR
       ]);
       return;
     }
@@ -131,6 +185,10 @@ export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promi
     case "memory:write": {
       // Animar el bus de direcciones desde MAR hacia la memoria al iniciar la escritura
       await drawExternalAddressPath();
+      
+      // Animar el bus de control WR desde CPU hacia dispositivos
+      await drawWRControlPath();
+      
       return;
     }
 
@@ -164,6 +222,8 @@ export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promi
         ),
         resetExternalDataPath(),
         resetExternalAddressPath(), // Resetear también el bus de direcciones
+        resetRDControlPath(), // Resetear bus de control RD
+        resetWRControlPath(), // Resetear bus de control WR
       ]);
       return;
     }
