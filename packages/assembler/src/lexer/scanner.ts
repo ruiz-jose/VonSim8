@@ -143,6 +143,13 @@ export class Scanner {
           this.advance();
         }
 
+        // Check for decimal point immediately after number - not allowed in assembly
+        if (this.peek() === ".") {
+          throw new AssemblerError("lexer.unexpected-character", ".").at(
+            new Position(this.position.end, this.position.end + 1)
+          );
+        }
+
         if (this.peek() === "H" || this.peek() === "h") {
           // By this point, we know that the number is a hexadecimal number.
           this.advance();
@@ -167,6 +174,14 @@ export class Scanner {
 
       // Identifiers
       if (this.isAlpha(c) || c === ".") {
+        // Special case: if we start with "." and the next character is a digit,
+        // this is an invalid decimal number (like ".1")
+        if (c === "." && this.isDigit(this.peek())) {
+          throw new AssemblerError("lexer.unexpected-character", ".").at(
+            new Position(this.position.start, this.position.start + 1)
+          );
+        }
+
         while (this.isAlphaNumeric(this.peek()) || this.peek() === ".") {
           this.advance();
         }

@@ -241,10 +241,14 @@ export class Parser {
       const start = this.previous();
 
       if (this.check(...REGISTERS)) {
-        this.consume("BL", new AssemblerError("parser.indirect-addressing-must-be-bx"));
+        // Only BX and BL are allowed for indirect addressing
+        if (!this.check("BX", "BL")) {
+          throw new AssemblerError("parser.indirect-addressing-must-be-bx");
+        }
+        const registerToken = this.advance(); // consume the BX or BL token
         const end = this.consume(
           "RIGHT_BRACKET",
-          new AssemblerError("parser.expected-literal-after-literal", "]", "BL"),
+          new AssemblerError("parser.expected-literal-after-literal", "]", registerToken.lexeme),
         );
 
         return new IndirectAddressOperand(

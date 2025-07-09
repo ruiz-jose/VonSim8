@@ -23,7 +23,7 @@ it("no operands", () => {
 });
 
 it("multiple operands", () => {
-  expect(parse("POP AX")).toMatchInlineSnapshot(`
+  expect(parse("POP AL")).toMatchInlineSnapshot(`
     [
       {
         "instruction": "POP",
@@ -35,7 +35,7 @@ it("multiple operands", () => {
               6,
             ],
             "type": "register",
-            "value": "AX",
+            "value": "AL",
           },
         ],
         "position": [
@@ -46,7 +46,7 @@ it("multiple operands", () => {
       },
     ]
   `);
-  expect(parse("MOV BX, 1 + OFFSET label")).toMatchInlineSnapshot(`
+  expect(parse("MOV BL, 1 + OFFSET label")).toMatchInlineSnapshot(`
     [
       {
         "instruction": "MOV",
@@ -58,7 +58,7 @@ it("multiple operands", () => {
               6,
             ],
             "type": "register",
-            "value": "BX",
+            "value": "BL",
           },
           {
             "position": [
@@ -135,7 +135,7 @@ it("registers", () => {
       },
     ]
   `);
-  expect(parse("POP BX")).toMatchInlineSnapshot(`
+  expect(parse("POP BL")).toMatchInlineSnapshot(`
     [
       {
         "instruction": "POP",
@@ -147,7 +147,7 @@ it("registers", () => {
               6,
             ],
             "type": "register",
-            "value": "BX",
+            "value": "BL",
           },
         ],
         "position": [
@@ -184,7 +184,7 @@ it("registers", () => {
   expect(() => parse("POP a l")).toThrowErrorMatchingInlineSnapshot(
     `[Error: Expected end of statement. (6:7)]`,
   );
-  expect(() => parse("POP BYTE PTR AX")).toThrowErrorMatchingInlineSnapshot(
+  expect(() => parse("POP BYTE PTR AL")).toThrowErrorMatchingInlineSnapshot(
     `[Error: Expected "[" after "PTR".]`,
   );
 });
@@ -371,7 +371,7 @@ describe("Direct address", () => {
 
 describe("Direct address", () => {
   it("auto", () => {
-    expect(parse("INC [BX]")).toMatchInlineSnapshot(`
+    expect(parse("INC [BL]")).toMatchInlineSnapshot(`
       [
         {
           "instruction": "INC",
@@ -397,10 +397,10 @@ describe("Direct address", () => {
   });
 
   it("byte", () => {
-    expect(() => parse("INC BYTE [BX]")).toThrowErrorMatchingInlineSnapshot(
+    expect(() => parse("INC BYTE [BL]")).toThrowErrorMatchingInlineSnapshot(
       `[Error: Expected "PTR" after "BYTE". (9:10)]`,
     );
-    expect(parse("INC BYTE PTR [BX]")).toMatchInlineSnapshot(`
+    expect(parse("INC BYTE PTR [BL]")).toMatchInlineSnapshot(`
       [
         {
           "instruction": "INC",
@@ -425,43 +425,14 @@ describe("Direct address", () => {
     `);
   });
 
-  it("word", () => {
-    expect(() => parse("INC WORD [BX]")).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Expected "PTR" after "WORD". (9:10)]`,
-    );
-    expect(parse("INC WORD PTR [BX]")).toMatchInlineSnapshot(`
-      [
-        {
-          "instruction": "INC",
-          "label": null,
-          "operands": [
-            {
-              "position": [
-                4,
-                17,
-              ],
-              "size": 16,
-              "type": "indirect-address",
-            },
-          ],
-          "position": [
-            0,
-            17,
-          ],
-          "type": "instruction",
-        },
-      ]
-    `);
-  });
-
-  it("no offset", () => {
-    expect(() => parse("INC [BX + 1]")).toThrowErrorMatchingInlineSnapshot(
-      `[Error: The only register supported for indirect addressing is BX. (5:7)]`,
+   it("no offset", () => {
+    expect(() => parse("INC [BL + 1]")).toThrowErrorMatchingInlineSnapshot(
+      `[Error: Expected "]" after "BL". (8:9)]`,
     );
   });
 
-  it("only BX", () => {
-    expect(parse("INC [   bx  ]")).toMatchInlineSnapshot(`
+  it("only BL", () => {
+    expect(parse("INC [   bL  ]")).toMatchInlineSnapshot(`
       [
         {
           "instruction": "INC",
@@ -484,8 +455,8 @@ describe("Direct address", () => {
         },
       ]
     `);
-    expect(() => parse("INC [AX]")).toThrowErrorMatchingInlineSnapshot(
-      '"The only register supported for indirect addressing is BX. (5:7)"',
+    expect(() => parse("INC [AL]")).toThrowErrorMatchingInlineSnapshot(
+      `[Error: The only register supported for indirect addressing is BX.]`,
     );
   });
 });
@@ -583,7 +554,7 @@ it("immediate", () => {
       },
     ]
   `);
-  expect(() => parse("ADD OFFSET label + (1, BX)")).toThrowErrorMatchingInlineSnapshot(
+  expect(() => parse("ADD OFFSET label + (1, BL)")).toThrowErrorMatchingInlineSnapshot(
     `[Error: Unclosed parenthesis. (21:22)]`,
   );
 });

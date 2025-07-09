@@ -237,10 +237,10 @@ describe("Numbers", () => {
 
   it("no decimal points", () => {
     expect(() => lex("1.2")).toThrowErrorMatchingInlineSnapshot(
-      '"Unexpected character \\".\\". (1:2)"',
+      `[Error: Unexpected character ".". (1:2)]`,
     );
     expect(() => lex(".1")).toThrowErrorMatchingInlineSnapshot(
-      '"Unexpected character \\".\\". (0:1)"',
+      `[Error: Unexpected character ".". (0:1)]`,
     );
   });
 

@@ -58,14 +58,14 @@ describe("END", () => {
     expect(() => parse("END END")).toThrowErrorMatchingInlineSnapshot(
       `[Error: END must be the last statement. (0:3)]`,
     );
-    expect(() => parse("ORG 1000h\nEND\nMOV AX, BX\nEND")).toThrowErrorMatchingInlineSnapshot(
-      `[Error: END must be the last statement. (10:13)]`,
+    expect(() => parse("ORG 10h\nEND\nMOV AL, BL\nEND")).toThrowErrorMatchingInlineSnapshot(
+      `[Error: END must be the last statement. (8:11)]`,
     );
   });
 
   it("END must be the last instruction", () => {
-    expect(() => parse("ORG 1000h\nEND\nMOV AX, BX")).toThrowErrorMatchingInlineSnapshot(
-      `[Error: END must be the last statement. (10:13)]`,
+    expect(() => parse("ORG 10h\nEND\nMOV AL, BL")).toThrowErrorMatchingInlineSnapshot(
+      `[Error: END must be the last statement. (8:11)]`,
     );
     expect(parse("END")).toMatchInlineSnapshot(`
       [
