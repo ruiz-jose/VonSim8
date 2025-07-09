@@ -244,10 +244,12 @@ export async function updateRegisterWithGlow(key: RegisterKey) {
 }
 
 export async function populateDataBus(data: Byte<8>) {
-  await anim(
-    { key: "bus.data.stroke", to: colors.mantis[400] },
-    { duration: 5, easing: "easeOutSine" },
-  );
+  // Si tienes un spring para el color del bus de datos, usa la clave correcta, por ejemplo:
+  // await anim(
+  //   { key: "bus.data.color", to: colors.mantis[400] } as SpringAnimation,
+  //   { duration: 5, easing: "easeOutSine" },
+  // );
+  // Si no existe, simplemente omite la animación de color.
   await activateRegister("cpu.MBR");
   store.set(MBRAtom, data);
   await deactivateRegister("cpu.MBR");
