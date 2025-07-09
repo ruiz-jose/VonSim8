@@ -56,7 +56,7 @@ test.describe('VonSim8 Application', () => {
     // Escribir código con error
     const editor = page.locator('.cm-editor');
     await editor.click();
-    await editor.fill('INVALID_INSTRUCTION');
+    await page.keyboard.type('INVALID_INSTRUCTION');
 
     // Intentar ensamblar
     await page.click('[data-testid="assemble-button"]');
@@ -69,7 +69,7 @@ test.describe('VonSim8 Application', () => {
     // Escribir código
     const editor = page.locator('.cm-editor');
     await editor.click();
-    await editor.fill('MOV AL, 10h\nEND');
+    await page.keyboard.type('MOV AL, 10h\nEND');
 
     // Guardar archivo
     await page.click('[data-testid="save-button"]');

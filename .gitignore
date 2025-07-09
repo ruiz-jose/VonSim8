@@ -4,6 +4,10 @@ logs
 pnpm-debug.log*
 pnpm-lock.yaml
 
+# Playwright test results and reports
+playwright-report/
+test-results/
+
 node_modules
 .turbo/
 .astro/
