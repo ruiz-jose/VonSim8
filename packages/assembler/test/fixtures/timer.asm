@@ -1,127 +1,53 @@
-; Escribir un programa que implemente un conteo regresivo a partir de un valor
-; ingresado desde el teclado. El conteo debe comenzar al presionarse la tecla
-; F10. El tiempo transcurrido debe mostrarse en pantalla, actualizándose el
-; valor cada segundo.
+; Programa: Imprime "Hola" a los 3 segundos de iniciado y luego termina.
+; Utiliza la interrupción del TIMER (ID = 5).
 
+org 10h
+mensaje db "hola"        ; Mensaje a imprimir
+imprimio db 0            ; Flag para saber si ya imprimió
 
-EOI   equ 20h
-IMR   equ 21h
-IRR   equ 22h
-INT0  equ 24h
-INT1  equ 25h
+; Definición de direcciones de registros de dispositivos
+CONT equ 10h             ; Registro de conteo del timer
+COMP equ 11h             ; Registro de comparación del timer
 
-CONT  equ 10h
-COMP  equ 11h
+EOI  equ 20h             ; End Of Interrupt (para PIC)
+IMR  equ 21h             ; Interrupt Mask Register (PIC)
+INT1 equ 25h             ; Registro de vector de interrupción 1
 
-n_f10 equ 10
-      org 40 ; 10 * 4
-      dw handle_f10
+org 20h                  ; Comienzo del código principal
 
-n_clk equ 11
-      org 44 ; 11 * 4
-      dw handle_clk
+; --- Habilitar interrupciones del timer ---
+; IMR = 1111 1101b (solo habilita interrupciones del timer y teclado)
+mov al, 11111101b        ; Habilita interrupciones del timer (bit 1 en 0)
+out IMR, al
 
+; --- Configurar vector de interrupción del timer ---
+mov al, 5                ; ID de interrupción del timer
+out INT1, al             ; Asigna rutina de atención a la posición 5
 
-          org 1000h
-input_msj db 12, "Ingrese un tiempo (máx 99 seg): "
-err_msj   db 10, "Número inválido"
+; --- Instalar rutina de interrupción en el vector ---
+mov bl, 5                ; Vector de interrupción 5
+mov [bl], imp_msj        ; Apunta a la rutina imp_msj
 
-disp      db 8, 8 ; 2 backspaces
-seg_h     db '0'
-seg_l     db '0'
-count     db 00h ; booleano. 00h = false
+; --- Configurar timer para 3 segundos ---
+mov al, 3                ; Valor de comparación (3 segundos)
+out COMP, al
 
-input_len equ offset err_msj - offset input_msj
-err_len   equ offset disp - offset err_msj
-disp_len  equ offset count - offset disp
+mov al, 0                ; Reinicia el contador del timer
+out CONT, al
 
+; --- Esperar a que se imprima el mensaje ---
+loopinf: cmp imprimio, 0 ; ¿Ya imprimió?
+         jz loopinf      ; Si no, sigue esperando
 
-                org 3000h
-                ; Recibe el caracter por referencia en BX
-                ; Retorna FFh si el caracter es un número
-                ;         y 00h si no lo es en AL.
-es_num:         mov al, [bx]
-                cmp al, '0'
-                js es_num_F
-                cmp al, '9'+1
-                jns es_num_F
-                mov al, 0FFh
-                jmp es_num_ret
-es_num_F:       mov al, 00h
-es_num_ret:     ret
+hlt                      ; Termina el programa
 
-                ; Manejador de interrupción de F10
-                ; Activa la cuenta regresiva
-handle_f10:     push ax
-                mov count, 0FFh
-                in al, IMR
-                xor al, 00000001b
-                out IMR, al
-                mov al, EOI
-                out EOI, al
-                pop ax
-                iret
-
-                ; Manejador de interrupción del reloj
-                ; Se ejecuta cada segundo y actualiza el disp
-handle_clk:     push ax
-                push bx
-                cmp count, 0
-                jz handle_clk_end ; Si count = 00h, no contar
-                dec seg_l
-                cmp seg_l, '0'
-                jns handle_clk_end
-                mov seg_l, '9'
-                dec seg_h
-handle_clk_end: mov bx, offset disp
-                mov al, disp_len
-                int 7
-                in al, COMP ; reset timer
-                inc al
-                out COMP, al
-                mov al, EOI
-                out EOI, al
-                pop bx
-                pop ax
-                iret
-
-
-        org 2000h
-        mov bx, offset input_msj
-        mov al, input_len
-        int 7
-        mov bx, offset seg_h
-        int 6
-        call es_num
-        cmp al, 00h
-        jz error
-        mov bx, offset seg_l
-        int 6
-        call es_num
-        cmp al, 00h
-        jz error
-
-        cli
-        mov al, 1
-        out COMP, al
-        mov al, 0
-        out CONT, al
-        mov al, 11111100b
-        out IMR, al
-        mov al, n_f10
-        out INT0, al
-        mov al, n_clk
-        out INT1, al
-        sti
-
-loop:   cmp seg_h, '0'
-        jnz loop
-        cmp seg_l, '0'
-        jnz loop
-        jmp fin
-
-error:  mov bx, offset err_msj
-        mov al, err_len
-        int 7
-fin:    int 0
-        end
+; --- Rutina de interrupción del timer ---
+org 50h
+imp_msj:
+         mov bl, offset mensaje ; Dirección del mensaje
+         mov al, 4             ; Servicio de impresión
+         int 7                 ; Llama a la interrupción de impresión
+         mov imprimio, 1       ; Marca que ya imprimió
+         mov al, 20h           ; Señal de fin de interrupción
+         out EOI, al           ; Notifica al PIC
+         iret                  ; Retorna de la interrupción

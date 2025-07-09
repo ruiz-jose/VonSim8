@@ -6,49 +6,49 @@
 ; =============================================================================
 
                ORG 20h
-               MOV BL, OFFSET texto        ; BL = puntero al texto
+               MOV BL, OFFSET Texto        ; BL = puntero al texto
                MOV CL, 9                   ; CL = longitud del texto
                MOV DL, 0                   ; DL = contador de vocales
-               CALL CONTAR_VOCALES
+               CALL Contar_vocales
                HLT
 
                ORG 40h
-vocales        DB "AEIOUaeiou"            ; Tabla de vocales
-texto          DB "Piruleta."             ; Texto a analizar
+Vocales        DB "AEIOUaeiou"            ; Tabla de vocales
+Texto          DB "Piruleta."             ; Texto a analizar
 
                ORG 80h
 ; Entrada: AL = carácter, Salida: ZF=1 si vocal
-ES_VOCAL:      PUSH BL
-               MOV BL, OFFSET vocales      ; BL = inicio tabla vocales
+Es_vocal:      PUSH BL
+               MOV BL, OFFSET Vocales      ; BL = inicio tabla vocales
                MOV CH, 10                  ; CH = 10 vocales
-ES_VOCAL_LOOP: CMP AL, [BL]                ; ¿Es esta vocal?
-               JZ ES_VOCAL_ENCONTRADA      ; Sí -> vocal encontrada
+Es_vocal_loop: CMP AL, [BL]                ; ¿Es esta vocal?
+               JZ Es_vocal_encontrada      ; Sí -> vocal encontrada
                INC BL                      ; Siguiente vocal
                DEC CH                      ; Contador--
-               JNZ ES_VOCAL_LOOP           ; Continuar si quedan vocales
+               JNZ Es_vocal_loop           ; Continuar si quedan vocales
                
                ; No es vocal
                POP BL                      ; Restaurar BL
                OR AL, 1                    ; Limpiar ZF (ZF=0)
                RET
                
-ES_VOCAL_ENCONTRADA:
+Es_vocal_encontrada:
                POP BL                      ; Restaurar BL
                CMP AL, AL                  ; Establecer ZF=1 (vocal encontrada)
                RET
 
 ; Entrada: BL=texto, CL=longitud, DL=contador
-CONTAR_VOCALES:
+Contar_vocales:
                CMP CL, 0                   ; ¿Quedan caracteres?
-               JZ CONTAR_FIN               ; No -> terminar
+               JZ Contar_fin               ; No -> terminar
                
                MOV AL, [BL]                ; AL = carácter actual
-               CALL ES_VOCAL               ; ¿Es vocal?
-               JNZ NO_VOCAL                ; No -> saltar incremento
+               CALL Es_vocal               ; ¿Es vocal?
+               JNZ No_vocal                ; No -> saltar incremento
                INC DL                      ; Sí -> contar vocal
                
-NO_VOCAL:      INC BL                      ; Siguiente carácter
+No_vocal:      INC BL                      ; Siguiente carácter
                DEC CL                      ; Longitud--
-               JMP CONTAR_VOCALES          ; Continuar
+               JMP Contar_vocales          ; Continuar
                
-CONTAR_FIN:    RET
+Contar_fin:    RET

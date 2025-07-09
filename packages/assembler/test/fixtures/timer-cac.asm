@@ -1,54 +1,53 @@
-; Conceptos de Arquitectura de Computadoras, 2020
-; Práctica 2, Ejercicio 12
-;
-; Interrupción por hardware: TIMER.
-; Implementar a través de un programa un reloj segundero
-; que muestre en pantalla los segundos transcurridos
-; (00-59 seg) desde el inicio de la ejecución.
+; Programa: Imprime "Hola" a los 3 segundos de iniciado y luego termina.
+; Utiliza la interrupción del TIMER (ID = 5).
 
-TIMER     EQU 10H
-PIC       EQU 20H
-EOI       EQU 20H
-N_CLK     EQU 10
+org 10h
+mensaje db "hola"        ; Mensaje a imprimir
+imprimio db 0            ; Flag para saber si ya imprimió
 
-          ORG 40
-IP_CLK    DW RUT_CLK
+; Definición de direcciones de registros de dispositivos
+CONT equ 10h             ; Registro de conteo del timer
+COMP equ 11h             ; Registro de comparación del timer
 
-          ORG 1000H
-SEG       DB 30H
-          DB 30H
-FIN       DB ?
+EOI  equ 20h             ; End Of Interrupt (para PIC)
+IMR  equ 21h             ; Interrupt Mask Register (PIC)
+INT1 equ 25h             ; Registro de vector de interrupción 1
 
-          ORG 3000H
-RUT_CLK:  PUSH AX
-          INC SEG+1
-          CMP SEG+1, 3AH
-          JNZ RESET
-          MOV SEG+1, 30H
-          INC SEG
-          CMP SEG, 36H
-          JNZ RESET
-          MOV SEG, 30H
-RESET:    INT 7
-          MOV AL, 0
-          OUT TIMER, AL
-          MOV AL, EOI
-          OUT PIC, AL
-          POP AX
-          IRET
+org 20h                  ; Comienzo del código principal
 
-          ORG 2000H
-          CLI
-          MOV AL, 0FDH
-          OUT PIC+1, AL ; PIC: registro IMR
-          MOV AL, N_CLK
-          OUT PIC+5, AL ; PIC: registro INT1
-          MOV AL, 1
-          OUT TIMER+1, AL ; TIMER: registro COMP
-          MOV AL, 0
-          OUT TIMER, AL ; TIMER: registro CONT
-          MOV BX, OFFSET SEG
-          MOV AL, OFFSET FIN-OFFSET SEG
-          STI
-LAZO:     JMP LAZO
-          END
+; --- Habilitar interrupciones del timer ---
+; IMR = 1111 1101b (solo habilita interrupciones del timer y teclado)
+mov al, 11111101b        ; Habilita interrupciones del timer (bit 1 en 0)
+out IMR, al
+
+; --- Configurar vector de interrupción del timer ---
+mov al, 5                ; ID de interrupción del timer
+out INT1, al             ; Asigna rutina de atención a la posición 5
+
+; --- Instalar rutina de interrupción en el vector ---
+mov bl, 5                ; Vector de interrupción 5
+mov [bl], imp_msj        ; Apunta a la rutina imp_msj
+
+; --- Configurar timer para 3 segundos ---
+mov al, 3                ; Valor de comparación (3 segundos)
+out COMP, al
+
+mov al, 0                ; Reinicia el contador del timer
+out CONT, al
+
+; --- Esperar a que se imprima el mensaje ---
+loopinf: cmp imprimio, 0 ; ¿Ya imprimió?
+         jz loopinf      ; Si no, sigue esperando
+
+hlt                      ; Termina el programa
+
+; --- Rutina de interrupción del timer ---
+org 50h
+imp_msj:
+         mov bl, offset mensaje ; Dirección del mensaje
+         mov al, 4             ; Servicio de impresión
+         int 7                 ; Llama a la interrupción de impresión
+         mov imprimio, 1       ; Marca que ya imprimió
+         mov al, 20h           ; Señal de fin de interrupción
+         out EOI, al           ; Notifica al PIC
+         iret                  ; Retorna de la interrupción
