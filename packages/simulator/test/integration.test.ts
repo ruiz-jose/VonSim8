@@ -1,6 +1,7 @@
-import { describe, expect, it, beforeEach } from "vitest";
-import { Simulator } from "../src";
 import { assemble } from "@vonsim/assembler";
+import { beforeEach,describe, expect, it } from "vitest";
+
+import { Simulator } from "../src";
 
 describe("Simulator Integration", () => {
   let simulator: Simulator;
