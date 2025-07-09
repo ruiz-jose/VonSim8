@@ -6,7 +6,11 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "tsc --noEmit && eslint --ignore-path .gitignore ."
+    "lint": "tsc --noEmit && eslint --ignore-path .gitignore .",
+    "test": "vitest --run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest --coverage",
+    "test:ui": "vitest --ui"
   },
   "dependencies": {
     "@codemirror/autocomplete": "^6.18.3",
@@ -50,11 +54,16 @@
     "@iconify/json": "^2.2.276",
     "@iconify/tailwind": "^0.1.4",
     "@svgr/core": "^8.1.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@testing-library/user-event": "^14.5.2",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@types/umami": "^0.1.5",
     "@types/wicg-file-system-access": "^2023.10.5",
     "@vitejs/plugin-react-swc": "^3.7.2",
+    "@vitest/coverage-v8": "^1.6.1",
+    "@vitest/ui": "^1.6.1",
     "@vonsim/tsconfig": "workspace:^",
     "autoprefixer": "^10.4.20",
     "eslint": "^8.57.1",
@@ -62,6 +71,7 @@
     "eslint-plugin-react": "^7.37.2",
     "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-tailwindcss": "^3.17.5",
+    "jsdom": "^25.0.1",
     "postcss": "^8.4.49",
     "postcss-nesting": "^13.0.2",
     "tailwindcss": "^3.4.15",
@@ -71,6 +81,7 @@
     "typescript": "~5.3.3",
     "vite": "^5.4.11",
     "vite-plugin-pwa": "^0.17.5",
+    "vitest": "^1.6.1",
     "workbox-window": "^7.3.0"
   }
 }
