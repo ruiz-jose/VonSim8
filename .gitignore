@@ -23,3 +23,6 @@ dist/
 *.njsproj
 *.sln
 *.sw?
+
+# Ignore best-practicas instructions file
+.github/instructions/best-practicas.instructions.md
