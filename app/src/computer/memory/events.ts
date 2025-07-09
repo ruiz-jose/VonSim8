@@ -1,7 +1,7 @@
 import { MemoryAddress } from "@vonsim/common/address";
 
 import { MBRAtom } from "@/computer/cpu/state";
-import { anim, activateRegister, deactivateRegister, updateRegisterWithGlow } from "@/computer/shared/animate";
+import { anim, activateRegister, deactivateRegister, updateRegisterWithGlow, showReadControlText, hideReadControlText, showWriteControlText, hideWriteControlText } from "@/computer/shared/animate";
 import type { SimulatorEvent } from "@/computer/shared/types";
 import { finishSimulation } from "@/computer/simulation";
 import { store } from "@/lib/jotai";
@@ -143,10 +143,12 @@ export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promi
     case "memory:read": {
       // Animar el bus de direcciones desde MAR hacia la memoria al iniciar la lectura
       await drawExternalAddressPath();
-      
+      // Mostrar texto "Read" al animar el bus de control RD
+      showReadControlText();
       // Animar el bus de control RD desde CPU hacia dispositivos
       await drawRDControlPath();
-      
+      // Ocultar texto "Read" al terminar la animación
+      hideReadControlText();
       return;
     }
 
@@ -185,10 +187,12 @@ export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promi
     case "memory:write": {
       // Animar el bus de direcciones desde MAR hacia la memoria al iniciar la escritura
       await drawExternalAddressPath();
-      
+      // Mostrar texto "Write" al animar el bus de control WR
+      showWriteControlText();
       // Animar el bus de control WR desde CPU hacia dispositivos
       await drawWRControlPath();
-      
+      // Ocultar texto "Write" al terminar la animación
+      hideWriteControlText();
       return;
     }
 

@@ -244,15 +244,45 @@ export async function updateRegisterWithGlow(key: RegisterKey) {
 }
 
 export async function populateDataBus(data: Byte<8>) {
-  // Si tienes un spring para el color del bus de datos, usa la clave correcta, por ejemplo:
-  // await anim(
-  //   { key: "bus.data.color", to: colors.mantis[400] } as SpringAnimation,
-  //   { duration: 5, easing: "easeOutSine" },
-  // );
-  // Si no existe, simplemente omite la animación de color.
+// Si tienes un spring para el color del bus de datos, usa la clave correcta, por ejemplo:
+// await anim(
+//   { key: "bus.data.color", to: colors.mantis[400] } as SpringAnimation,
+//   { duration: 5, easing: "easeOutSine" },
+// );
+// Si no existe, simplemente omite la animación de color.
   await activateRegister("cpu.MBR");
   store.set(MBRAtom, data);
   await deactivateRegister("cpu.MBR");
+}
+
+// --- CONTROL BUS TEXT VISIBILITY MANAGEMENT ---
+// Oculta los textos "Read" y "Write" del bus de control al iniciar la app
+export function hideControlBusTextsOnInit() {
+  // Siempre ocultar ambos textos al inicio, forzando opacidad 0 de forma asíncrona para evitar que react-spring la sobrescriba
+  setTimeout(() => {
+    try { getSpring("bus.rd.opacity").set(0); } catch {}
+    try { getSpring("bus.wr.opacity").set(0); } catch {}
+  }, 0);
+}
+
+// Llama esto cuando se quiera mostrar el texto "Read" (por ejemplo, al animar el bus de control RD)
+export function showReadControlText() {
+  try { getSpring("bus.rd.opacity").start({ to: 1 }); } catch {}
+}
+
+// Llama esto cuando se quiera ocultar el texto "Read" (al terminar la animación)
+export function hideReadControlText() {
+  try { getSpring("bus.rd.opacity").start({ to: 0 }); } catch {}
+}
+
+// Llama esto cuando se quiera mostrar el texto "Write" (por ejemplo, al animar el bus de control WR)
+export function showWriteControlText() {
+  try { getSpring("bus.wr.opacity").start({ to: 1 }); } catch {}
+}
+
+// Llama esto cuando se quiera ocultar el texto "Write" (al terminar la animación)
+export function hideWriteControlText() {
+  try { getSpring("bus.wr.opacity").start({ to: 0 }); } catch {}
 }
 
 export async function turnLineOn(line: SimplePathKey, duration: number) {
