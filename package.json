@@ -6,7 +6,7 @@
     "format": "prettier -w .",
     "test": "turbo run test",
     "test:coverage": "turbo run test:coverage",
-    "test:watch": "turbo run test:watch", 
+    "test:watch": "turbo run test:watch",
     "test:e2e": "playwright test",
     "lint": "turbo run lint",
     "dev": "pnpm --dir app run dev",
@@ -24,6 +24,7 @@
     "gh-pages": "^6.2.0",
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11",
-    "turbo": "^2.4.4"
+    "turbo": "^2.4.4",
+    "vitest": "^3.2.4"
   }
 }
