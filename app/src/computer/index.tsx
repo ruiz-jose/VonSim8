@@ -1,4 +1,5 @@
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
+import { hideControlBusTextsOnInit } from "@/computer/shared/animate";
 import { ReactZoomPanPinchRef, TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 
 import { ZoomControls } from "@/components/ZoomControls";
@@ -28,6 +29,11 @@ import { Timer } from "./timer/Timer";
 
 export function ComputerContainer() {
   const wrapperRef = useRef<ReactZoomPanPinchRef>(null);
+
+  // Ocultar textos de bus de control al iniciar
+  useEffect(() => {
+    hideControlBusTextsOnInit();
+  }, []);
 
   return (
     <div className="relative size-full">
