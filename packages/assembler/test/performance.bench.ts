@@ -1,34 +1,35 @@
 import { bench, describe } from 'vitest'
+
 import { assemble } from '../src'
 
 const complexProgram = `
-ORG 1000h
+ORG 20h
 
 ; Programa de ejemplo complejo para benchmarking
 inicio:
-    MOV AX, 0
-    MOV BX, 1
-    MOV CX, 10
+    MOV AL, 0
+    MOV BL, 1
+    MOV CL, 10
 
 fibonacci:
-    CMP CX, 0
+    CMP CL, 0
     JZ fin
-    MOV DX, AX
-    ADD AX, BX
-    MOV BX, DX
-    DEC CX
+    MOV DL, AL
+    ADD AL, BL
+    MOV BL, DL
+    DEC CL
     JMP fibonacci
 
 fin:
     HLT
-    END
+
 `
 
 const simpleProgram = `
-MOV AX, 10h
-MOV BX, 20h
-ADD AX, BX
-END
+MOV AL, 10h
+MOV BL, 20h
+ADD AL, BL
+HLT
 `
 
 describe('Assembler Performance', () => {
