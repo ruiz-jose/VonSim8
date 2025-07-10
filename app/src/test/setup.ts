@@ -2,9 +2,9 @@
 // Mock para PostHog si es necesario
 Object.defineProperty(window, 'posthog', {
   value: {
-    init: () => {},
-    capture: () => {},
-    identify: () => {},
+    init() { /* noop */ },
+    capture() { /* noop */ },
+    identify() { /* noop */ },
   },
   writable: true,
 })

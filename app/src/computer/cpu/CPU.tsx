@@ -65,8 +65,8 @@ function IPPlusOneAnimation() {
       <div
         key={animationKey}
         className={clsx(
-          "absolute left-[425px] top-[342px] pointer-events-none",
-          "font-bold text-lg font-mono"
+          "pointer-events-none absolute left-[425px] top-[342px]",
+          "font-mono text-lg font-bold"
         )}
         style={{
           color: "#ff6347",

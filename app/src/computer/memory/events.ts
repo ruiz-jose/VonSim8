@@ -1,7 +1,7 @@
 import { MemoryAddress } from "@vonsim/common/address";
 
 import { MBRAtom } from "@/computer/cpu/state";
-import { anim, activateRegister, deactivateRegister, updateRegisterWithGlow, showReadControlText, hideReadControlText, showWriteControlText, hideWriteControlText } from "@/computer/shared/animate";
+import { activateRegister, anim, deactivateRegister, hideReadControlText, hideWriteControlText,showReadControlText, showWriteControlText, updateRegisterWithGlow } from "@/computer/shared/animate";
 import type { SimulatorEvent } from "@/computer/shared/types";
 import { finishSimulation } from "@/computer/simulation";
 import { store } from "@/lib/jotai";

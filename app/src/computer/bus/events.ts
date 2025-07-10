@@ -25,10 +25,10 @@ export async function handleBusEvent(event: SimulatorEvent<"bus:">): Promise<voi
       await Promise.all([
         anim(
           [
-            { key: "bus.address.stroke", to: colors.stone[700] },
-            { key: "bus.data.stroke", to: colors.stone[700] },
-            { key: "bus.rd.stroke", to: colors.stone[700] },
-            { key: "bus.wr.stroke", to: colors.stone[700] },
+            { key: "bus.address.strokeDashoffset", to: 1 },
+            { key: "bus.data.strokeDashoffset", to: 1 },
+            { key: "bus.rd.strokeDashoffset", to: 1 },
+            { key: "bus.wr.strokeDashoffset", to: 1 },
           ],
           { duration: 1, easing: "easeInSine" },
         ),

@@ -5,9 +5,9 @@ import {
   activateRegister,
   anim,
   deactivateRegister,
-  updateRegisterWithGlow, // Nueva función
   turnLineOff,
   turnLineOn,
+  updateRegisterWithGlow, // Nueva función
 } from "@/computer/shared/animate";
 import type { RegisterKey, SimplePathKey } from "@/computer/shared/springs";
 import type { SimulatorEvent } from "@/computer/shared/types";

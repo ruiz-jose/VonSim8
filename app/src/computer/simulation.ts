@@ -136,7 +136,6 @@ async function startThread(generator: EventGenerator): Promise<void> {
     // eslint-disable-next-line no-constant-condition
     while (true) {
       const status = store.get(simulationAtom);
-      const settings = getSettings();
       const programModified = store.get(programModifiedAtom); // Obtener el estado de programModifiedAtom
 
       // Verificar si el programa ha sido modificado
