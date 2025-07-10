@@ -1,7 +1,11 @@
 
-import { hideControlBusTextsOnInit } from "@/computer/shared/animate";
+// Mantener los imports de React y librerías externas al principio
+import { useEffect, useRef } from "react";
+import { ReactZoomPanPinchRef, TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
+
 import { ZoomControls } from "@/components/ZoomControls";
 import { RegisterTransferMessages } from "@/computer/cpu/RegisterTransferMessages";
+import { hideControlBusTextsOnInit } from "@/computer/shared/animate";
 
 import { SystemBus } from "./bus/SystemBus";
 import { Clock } from "./clock/Clock";
@@ -19,16 +23,11 @@ import { Screen } from "./screen/Screen";
 import { Switches } from "./switches/Switches";
 import { Timer } from "./timer/Timer";
 
-
 // Notes about Z index:
 // - The SystemBus should have a z-index of 5.
 // - Components (CPU, Memory, etc) should have a z-index of 10.
 // - Control lines that exit a component should have a z-index of 15.
 // - Registers/subcomponents should have a z-index of 20.
-
-// Mantener los imports de React y librerías externas al principio
-import { useEffect, useRef } from "react";
-import { ReactZoomPanPinchRef, TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 export function ComputerContainer() {
   const wrapperRef = useRef<ReactZoomPanPinchRef>(null);
 
