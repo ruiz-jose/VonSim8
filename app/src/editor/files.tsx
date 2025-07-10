@@ -275,29 +275,35 @@ export function FileHandler() {
             "flex items-center transition-colors hover:text-white",
             fileHandle && "text-white",
           )}
+          data-testid="new-button"
         >
           {fileHandle ? fileHandle.name : translate("editor.files.no-file")}
           {unsavedChanges && <span className="ml-1 size-2 rounded-full bg-current" />}
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-64" align="start">
-        <DropdownMenuItem onClick={openFile}>
+        <DropdownMenuItem onClick={openFile} data-testid="open-button">
           <span className="icon-[lucide--file-search-2] mr-2 size-4" />
           {translate("editor.files.open")}
           <div className="grow" />
           <kbd className="text-stone-600">Ctrl+O</kbd>
         </DropdownMenuItem>
-        <DropdownMenuItem disabled={!unsavedChanges} onClick={saveFile}>
+        <DropdownMenuItem disabled={!unsavedChanges} onClick={saveFile} data-testid="save-button">
           <span className="icon-[lucide--save] mr-2 size-4" />
           {translate("editor.files.save")}
           <div className="grow" />
           <kbd className="text-stone-600">Ctrl+S</kbd>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={saveFileAs}>
+        <DropdownMenuItem onClick={saveFileAs} data-testid="save-as-button">
           <span className="icon-[lucide--save-all] mr-2 size-4" />
           {translate("editor.files.save-as")}
           <div className="grow" />
           <kbd className="text-stone-600">Ctrl+Shift+S</kbd>
+        </DropdownMenuItem>
+        {/* Botón de ensamblar (assemble) al final del menú */}
+        <DropdownMenuItem data-testid="assemble-button">
+          <span className="icon-[lucide--hammer] mr-2 size-4" />
+          Ensamblar
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
