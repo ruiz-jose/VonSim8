@@ -3,7 +3,12 @@ import { useAtom, useAtomValue } from "jotai";
 import { useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useMedia } from "react-use";
-import { useRegisterSW } from "virtual:pwa-register/react";
+
+let useRegisterSW: any = () => ({ updateServiceWorker: () => {} });
+if (import.meta.env.MODE !== "test") {
+  // @ts-ignore
+  useRegisterSW = require("virtual:pwa-register/react").useRegisterSW;
+}
 
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
