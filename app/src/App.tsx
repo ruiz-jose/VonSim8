@@ -40,16 +40,16 @@ export default function App() {
   });
 
   return (
-    <div
+    <div data-testid="app-container"
       className="flex h-screen w-screen flex-col bg-stone-900 text-white"
       lang={lang}
       style={{ filter }}
     >
-      <Header />
+      <Header data-testid="header" />
 
       {isMobile ? <MobileLayout /> : <DesktopLayout />}
 
-      <Footer />
+      <Footer data-testid="footer" />
     </div>
   );
 }
@@ -140,7 +140,7 @@ function MobileLayout() {
           </section>
         </TabsContent>
         <TabsContent value="settings" asChild>
-          <section className="mx-2 grow overflow-hidden rounded-lg border border-stone-600 bg-stone-800 data-[state=inactive]:hidden">
+          <section className="mx-2 grow overflow-hidden rounded-lg border border-stone-600 bg-stone-800 data-[state=inactive]:hidden" data-testid="main-section">
             <Settings className="size-full" />
           </section>
         </TabsContent>

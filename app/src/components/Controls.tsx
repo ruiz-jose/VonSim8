@@ -121,7 +121,7 @@ export function Controls({ className }: { className?: string }) {
   }, []);
 
   return (
-    <div
+    <div data-testid="controls-container"
       className={clsx(
         // Reduce py-4 a py-1 y px-8 a px-4 para menor altura
         "flex items-center justify-center gap-6 rounded-xl border border-stone-700 bg-stone-900/80 px-4 py-1 shadow-lg",
@@ -150,7 +150,7 @@ export function Controls({ className }: { className?: string }) {
           <span className="mt-1 text-xs">{translate("control.action.run.cycle-change")}</span>
         )}
       </button>
-      <button
+      <button data-testid="new-button"
         disabled={status.type === "running"}
         onClick={runInstruction}
         title={translate("control.action.run.end-of-instruction")}
@@ -172,7 +172,7 @@ export function Controls({ className }: { className?: string }) {
           <span className="mt-1 text-xs">{translate("control.action.run.end-of-instruction")}</span>
         )}
       </button>
-      <button
+      <button data-testid="open-button"
         disabled={status.type === "running"}
         onClick={runInfinity}
         title={translate("control.action.run.infinity")}
@@ -195,7 +195,7 @@ export function Controls({ className }: { className?: string }) {
         )}
       </button>
       {status.type === "running" ? (
-        <button
+      <button data-testid="save-button"
           onClick={handlePause}
           title={translate("control.action.pause")}
           className="group relative flex flex-col items-center rounded-lg px-2 py-1 transition hover:bg-red-600/20 focus-visible:ring-2 focus-visible:ring-red-400"
@@ -215,7 +215,7 @@ export function Controls({ className }: { className?: string }) {
           {!isMobile && <span className="mt-1 text-xs">{translate("control.action.pause")}</span>}
         </button>
       ) : (
-        <button
+      <button data-testid="assemble-button"
           onClick={handleReset}
           disabled={status.type === "stopped"}
           title={translate("control.action.reset")}

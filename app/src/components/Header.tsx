@@ -10,7 +10,7 @@ export function Header() {
   const [settingsOpen, setSettingsOpen] = useAtom(settingsOpenAtom);
 
   return (
-    <header className="relative p-2 text-sm text-white">
+    <header className="relative p-2 text-sm text-white" data-testid="header">
       <div className="flex items-center justify-between">
         {/* Logo y título */}
         <div className="flex select-none items-center justify-center">

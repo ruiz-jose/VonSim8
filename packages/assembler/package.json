@@ -8,7 +8,8 @@
   "scripts": {
     "lint": "tsc --noEmit && eslint --ignore-path .gitignore .",
     "bench": "vitest bench --run",
-    "test": "vitest --run --reporter verbose"
+    "test": "vitest --run --reporter verbose",
+    "test:update": "vitest --run --reporter verbose --update"
   },
   "dependencies": {
     "@vonsim/common": "workspace:^"

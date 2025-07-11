@@ -7,7 +7,7 @@ export function Footer() {
   const issueLink = useIssueLink();
 
   return (
-    <footer className="px-2 py-1 text-center text-xs tracking-wider text-stone-500">
+    <footer className="px-2 py-1 text-center text-xs tracking-wider text-stone-500" data-testid="footer">
       <a
         href="/VonSim8/docs"
         className="transition-colors hover:text-stone-400"

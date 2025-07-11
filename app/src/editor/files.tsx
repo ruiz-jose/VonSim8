@@ -75,6 +75,15 @@ const dirtyAtom = atom(get => get(lastSavedProgramAtom) !== get(programAtom));
 
 export function FileHandler() {
   const translate = useTranslate();
+  // Función local para ensamblar el programa (dummy, reemplazar por lógica real)
+  function assembleProgram() {
+    // Aquí va la lógica real de ensamblado
+    // Por ejemplo, podrías importar y usar assemble() de @vonsim/assembler
+    // Si ocurre un error, lanzar una excepción
+    // throw new Error("Error de ensamblado");
+    //toast({ title: translate('assemble-error'), variant: 'error' }); // Solo para demo
+  }
+
   const fileHandle = useAtomValue(fileHandleAtom);
   const setFileHandle = useSetAtom(fileHandleAtom);
   const dirty = useAtomValue(dirtyAtom);
@@ -301,7 +310,7 @@ export function FileHandler() {
           <kbd className="text-stone-600">Ctrl+Shift+S</kbd>
         </DropdownMenuItem>
         {/* Botón de ensamblar (assemble) al final del menú */}
-        <DropdownMenuItem data-testid="assemble-button">
+        <DropdownMenuItem onClick={assembleProgram} data-testid="assemble-button">
           <span className="icon-[lucide--hammer] mr-2 size-4" />
           Ensamblar
         </DropdownMenuItem>
