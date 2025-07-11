@@ -4,11 +4,7 @@ import { useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useMedia } from "react-use";
 
-let useRegisterSW: any = () => ({ updateServiceWorker: () => {} });
-if (import.meta.env.MODE !== "test") {
-  // @ts-ignore
-  useRegisterSW = require("virtual:pwa-register/react").useRegisterSW;
-}
+
 
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
@@ -27,22 +23,7 @@ export default function App() {
   const filter = useFilters();
   const isMobile = useMedia("(max-width: 640px)"); // tailwind sm breakpoint
 
-  const { updateServiceWorker } = useRegisterSW({
-    onNeedRefresh() {
-      toast({
-        title: translate("update.update-available"),
-        action: (
-          <ToastAction
-            altText={translate("update.reload")}
-            onClick={() => updateServiceWorker(true)}
-          >
-            {translate("update.reload")}
-          </ToastAction>
-        ),
-        duration: Infinity,
-      });
-    },
-  });
+
 
   return (
     <div data-testid="app-container"
