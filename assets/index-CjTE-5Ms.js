@@ -127,7 +127,7 @@ Error generating stack: `+s.message+`
         <details>
           <summary>Debug info (PLEASE, DO NOT DELETE)</summary>
 
-          **Version**: [${"32741de"}](https://github.com/vonsim/vonsim/commit/${"32741de"})
+          **Version**: [${"beef131"}](https://github.com/vonsim/vonsim/commit/${"beef131"})
 
           #### Program
 
@@ -161,7 +161,7 @@ Error generating stack: `+s.message+`
         <details>
           <summary>Información extra (POR FAVOR, NO BORRAR)</summary>
 
-          **Versión**: [${"32741de"}](https://github.com/ruiz-jose/VonSim8/commit/${"32741de"})
+          **Versión**: [${"beef131"}](https://github.com/ruiz-jose/VonSim8/commit/${"beef131"})
 
           #### Programa
 
