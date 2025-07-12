@@ -178,7 +178,7 @@ export function Control() {
             <div className={clsx("text-sm", getPhaseColor())}>
               {getPhaseIcon()}
             </div>
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 text-center">
               <div className={clsx("text-xs font-semibold", getPhaseColor())}>
                 {getPhaseDescription()}
               </div>
