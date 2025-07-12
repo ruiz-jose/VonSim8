@@ -174,12 +174,10 @@ export function Control() {
           </div>
 
           {/* Estado actual del ciclo - Compacto */}
-          <div className="flex items-center gap-1 p-0.5 bg-stone-900/80 rounded border border-stone-600 mb-0.5">
-            <div className={clsx("text-sm", getPhaseColor())}>
-              {getPhaseIcon()}
-            </div>
+          <div className="p-0.5 bg-stone-900/80 rounded border border-stone-600 mb-0.5">
             <div className="flex-1 min-w-0 text-center">
-              <div className={clsx("text-xs font-semibold", getPhaseColor())}>
+              <div className={clsx("text-xs font-semibold flex items-center justify-center gap-1", getPhaseColor())}>
+                <span className="text-sm">{getPhaseIcon()}</span>
                 {getPhaseDescription()}
               </div>
               {cycle && "metadata" in cycle && cycle.metadata && (

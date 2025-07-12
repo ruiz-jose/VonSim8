@@ -120,20 +120,36 @@ const springs = {
     CL: Register(),
     DL: Register(),
     SP: Register(),
+    "SP.l": Register(),
+    "SP.h": Register(),
     IP: Register(),
+    "IP.l": Register(),
+    "IP.h": Register(),
     IR: Register(),
     ri: {
       ...Register(),
       opacity: new SpringValue(0),
     },
+    "ri.l": Register(),
+    "ri.h": Register(),
     id: {
       ...Register(),
       opacity: new SpringValue(0),
     },
+    "id.l": Register(),
+    "id.h": Register(),
     left: Register(),
+    "left.l": Register(),
+    "left.h": Register(),
     right: Register(),
+    "right.l": Register(),
+    "right.h": Register(),
     result: Register(),
+    "result.l": Register(),
+    "result.h": Register(),
     FLAGS: Register(),
+    "FLAGS.l": Register(),
+    "FLAGS.h": Register(),
     MAR: Register(),
     MBR: Register(),
   },
@@ -198,9 +214,18 @@ export function getSpring<const Key extends SpringPath>(key: Key) {
       else {
         console.warn(`Path not found: ${key}`);
         // Retornar un spring por defecto para evitar errores
+        // Crear un SpringValue dummy que tenga todos los métodos necesarios
+        const dummySpring = new SpringValue(colors.stone[800]);
         return {
-          backgroundColor: new SpringValue(colors.stone[800]),
+          backgroundColor: dummySpring,
           opacity: new SpringValue(1),
+          stop: () => {},
+          pause: () => {},
+          resume: () => {},
+          start: () => Promise.resolve(),
+          set: () => {},
+          get: () => colors.stone[800],
+          isPaused: false,
         };
       }
     }

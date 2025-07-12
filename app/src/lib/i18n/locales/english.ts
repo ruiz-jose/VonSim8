@@ -249,7 +249,7 @@ export const english = {
         <details>
           <summary>Debug info (PLEASE, DO NOT DELETE)</summary>
 
-          **Version**: [${__COMMIT_HASH__}](https://github.com/vonsim/vonsim/commit/${__COMMIT_HASH__})
+          **Version**: [${__COMMIT_HASH__}](https://github.com/ruiz-jose/VonSim8/commit/${__COMMIT_HASH__})
 
           #### Program
 

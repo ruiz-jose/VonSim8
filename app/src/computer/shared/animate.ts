@@ -118,12 +118,30 @@ export async function anim(
 /**
  * Pause all running animations.
  */
-export const pauseAllAnimations = () => runningAnimations.forEach(key => getSpring(key).pause());
+export const pauseAllAnimations = () => runningAnimations.forEach(key => {
+  try {
+    const spring = getSpring(key);
+    if (spring && typeof spring.pause === 'function') {
+      spring.pause();
+    }
+  } catch (error) {
+    console.warn(`Error pausing animation for key ${key}:`, error);
+  }
+});
 
 /**
  * Resume all running animations.
  */
-export const resumeAllAnimations = () => runningAnimations.forEach(key => getSpring(key).resume());
+export const resumeAllAnimations = () => runningAnimations.forEach(key => {
+  try {
+    const spring = getSpring(key);
+    if (spring && typeof spring.resume === 'function') {
+      spring.resume();
+    }
+  } catch (error) {
+    console.warn(`Error resuming animation for key ${key}:`, error);
+  }
+});
 
 /**
  * Stop all running animations.
@@ -132,9 +150,18 @@ export function stopAllAnimations() {
   // Stop running animations. After stopped, `getSpring(key).start()`
   // from `anim()` will resolve and the key will be removed from the set.
   runningAnimations.forEach(key => {
-    const spring = getSpring(key);
-    spring.stop(true);
-    if (spring.isPaused) spring.resume();
+    try {
+      const spring = getSpring(key);
+      // Verificar que el spring sea válido y tenga el método stop
+      if (spring && typeof spring.stop === 'function') {
+        spring.stop(true);
+        if (spring.isPaused && typeof spring.resume === 'function') {
+          spring.resume();
+        }
+      }
+    } catch (error) {
+      console.warn(`Error stopping animation for key ${key}:`, error);
+    }
   });
   // Subtle delay to enusre all springs are being reset correctly
   setTimeout(() => resetAllSprings(), 10);

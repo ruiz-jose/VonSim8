@@ -27,7 +27,7 @@ Se agregó la entrada/salida al simulador.
 
 ### 2017
 
-Primera versión de VonSim. Actualmente guarda en la rama [`legacy`](https://github.com/vonsim/vonsim/tree/legacy). Comparado con el MSX88, esta versión:
+Primera versión de VonSim. Actualmente guarda en la rama [`legacy`](https://github.com/ruiz-jose/VonSim8/tree/legacy). Comparado con el MSX88, esta versión:
 
 - es web, por lo que no requiere instalación y es multiplataforma;
 - tiene una interfaz gráfica más moderna;

@@ -9,8 +9,8 @@ import { Tooltip } from "@/components/ui/Tooltip";
 // Enlaces útiles
 const USEFUL_LINKS = [
   { name: "Documentación", url: "https://vonsim.github.io/docs", icon: "icon-[lucide--book-open]" },
-  { name: "GitHub", url: "https://github.com/vonsim/vonsim8", icon: faGithub },
-  { name: "Reportar Bug", url: "https://github.com/vonsim/vonsim8/issues", icon: "icon-[lucide--bug]" }
+  { name: "GitHub", url: "https://github.com/ruiz-jose/VonSim8", icon: faGithub },
+  { name: "Reportar Bug", url: "https://github.com/ruiz-jose/VonSim8/issues", icon: "icon-[lucide--bug]" }
 ];
 
 // Componente de enlace social
