@@ -10,7 +10,7 @@ import { useMemo } from "react";
 
 import { hasINTInstructionAtom } from "@/computer/cpu/state";
 import { dataAddressesAtom, programAddressesAtom } from "@/computer/memory/state";
-import { highlightLine, setReadOnly } from "@/editor/methods";
+import { highlightLine, highlightCurrentInstruction, setReadOnly } from "@/editor/methods";
 import { programModifiedAtom } from "@/editor/state"; // Importar programModifiedAtom
 import { translate } from "@/lib/i18n";
 import { store } from "@/lib/jotai";
@@ -66,6 +66,7 @@ export function finishSimulation(error?: SimulatorError<any>) {
   }
 
   highlightLine(null);
+  highlightCurrentInstruction(null);
   setReadOnly(false);
   store.set(simulationAtom, { type: "stopped", error });
   store.set(cycleAtom, { phase: "stopped", error });

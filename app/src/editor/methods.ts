@@ -11,6 +11,7 @@ export function setReadOnly(value: boolean) {
 }
 
 const addLineHighlight = StateEffect.define<number | null>();
+const addCurrentInstructionHighlight = StateEffect.define<number | null>();
 
 export const lineHighlightField = StateField.define({
   create() {
@@ -25,6 +26,12 @@ export const lineHighlightField = StateField.define({
           lines = lines.update({ add: [lineHighlightMark.range(e.value)] });
         }
       }
+      if (e.is(addCurrentInstructionHighlight)) {
+        lines = Decoration.none;
+        if (e.value !== null) {
+          lines = lines.update({ add: [currentInstructionMark.range(e.value)] });
+        }
+      }
     }
     return lines;
   },
@@ -32,7 +39,11 @@ export const lineHighlightField = StateField.define({
 });
 
 const lineHighlightMark = Decoration.line({
-  class: "!bg-mantis-400/10",
+  class: "!bg-gradient-to-r !from-mantis-500/8 !via-mantis-500/5 !to-transparent !border-l-2 !border-mantis-400/40 !shadow-sm",
+});
+
+const currentInstructionMark = Decoration.line({
+  class: "cm-current-instruction",
 });
 
 export function highlightLine(pos: number | null) {
@@ -43,5 +54,16 @@ export function highlightLine(pos: number | null) {
   } else {
     const docPosition = window.codemirror.state.doc.lineAt(pos).from;
     window.codemirror.dispatch({ effects: addLineHighlight.of(docPosition) });
+  }
+}
+
+export function highlightCurrentInstruction(pos: number | null) {
+  if (!window.codemirror) return;
+
+  if (pos === null) {
+    window.codemirror.dispatch({ effects: addCurrentInstructionHighlight.of(null) });
+  } else {
+    const docPosition = window.codemirror.state.doc.lineAt(pos).from;
+    window.codemirror.dispatch({ effects: addCurrentInstructionHighlight.of(docPosition) });
   }
 }

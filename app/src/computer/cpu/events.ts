@@ -12,7 +12,7 @@ import {
 import type { RegisterKey, SimplePathKey } from "@/computer/shared/springs";
 import type { SimulatorEvent } from "@/computer/shared/types";
 import { finishSimulation, pauseSimulation } from "@/computer/simulation";
-import { highlightLine } from "@/editor/methods";
+import { highlightLine, highlightCurrentInstruction } from "@/editor/methods";
 import { store } from "@/lib/jotai";
 import { colors } from "@/lib/tailwind";
 
@@ -125,7 +125,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
           : false;
       countersetMAR = 0;
 
-      highlightLine(event.instruction.position.start);
+      highlightCurrentInstruction(event.instruction.position.start);
       store.set(cycleAtom, { phase: "fetching", metadata: event.instruction });
       await anim(
         [

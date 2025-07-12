@@ -1,61 +1,169 @@
 .cm-editor {
-  @apply h-full w-full bg-stone-800 text-white;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(to bottom right, #1c1917, #292524, #1c1917);
+  color: white;
 
   .cm-scroller {
-    @apply overflow-auto font-mono scrollbar-stone-700;
+    overflow: auto;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
   }
 
   .cm-activeLine {
-    @apply bg-stone-700/50;
+    background: linear-gradient(to right, rgba(132, 204, 22, 0.08), rgba(132, 204, 22, 0.05), transparent);
+    border-left: 2px solid rgba(132, 204, 22, 0.4);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    position: relative;
+  }
+
+  .cm-activeLine::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, transparent, #84cc16, transparent);
+    opacity: 0.6;
+  }
+
+  /* Estilo para la instrucción en curso */
+  .cm-current-instruction {
+    background: linear-gradient(to right, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.1), transparent);
+    border-left: 2px solid rgba(96, 165, 250, 0.5);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    position: relative;
+  }
+
+  .cm-current-instruction::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, transparent, #60a5fa, transparent);
+    opacity: 0.6;
+  }
+
+  .cm-current-instruction::after {
+    content: '▶';
+    position: absolute;
+    left: -24px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #60a5fa;
+    font-size: 14px;
+    font-weight: bold;
+    text-shadow: 0 0 6px rgba(96, 165, 250, 0.7);
+    z-index: 10;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+      transform: translateY(-50%) scale(1);
+    }
+    50% {
+      opacity: 0.7;
+      transform: translateY(-50%) scale(1.1);
+    }
   }
 
   &:not(.cm-focused) .cm-activeLine {
-    @apply bg-transparent;
+    background: linear-gradient(to right, rgba(120, 113, 108, 0.15), rgba(120, 113, 108, 0.08), transparent);
+    border-left: 2px solid rgba(120, 113, 108, 0.4);
+  }
+
+  &:not(.cm-focused) .cm-activeLine::before {
+    background: linear-gradient(to bottom, transparent, #78716c, transparent);
+    opacity: 0.4;
   }
 
   .cm-content {
-    @apply caret-white;
+    caret-color: #84cc16;
   }
 
   &.cm-focused {
-    @apply !outline-none;
+    outline: none !important;
+    box-shadow: 0 0 0 1px rgba(132, 204, 22, 0.2);
   }
 
   &.cm-focused .cm-cursor {
-    @apply border-l-stone-50;
+    border-left: 2px solid #84cc16;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   }
 
   &.cm-focused .cm-selectionBackground,
   ::selection {
-    @apply !bg-stone-700;
+    background-color: rgba(132, 204, 22, 0.2) !important;
   }
 
   &:not(.cm-focused) .cm-selectionBackground {
-    @apply bg-stone-700/50;
+    background-color: rgba(120, 113, 108, 0.3);
   }
 
   .cm-gutters {
-    @apply border-none bg-stone-800;
+    border-right: 1px solid rgba(120, 113, 108, 0.5);
+    background: linear-gradient(to bottom, #292524, #1c1917);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   }
 
   .cm-gutterElement {
-    @apply text-stone-400 !px-2 font-thin;
+    color: #a8a29e;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
   }
 
   .cm-activeLineGutter {
-    @apply border-none bg-stone-500/50 text-stone-200 font-normal;
+    background: linear-gradient(to right, rgba(132, 204, 22, 0.15), rgba(132, 204, 22, 0.08), transparent);
+    color: #d9f99d;
+    font-weight: 600;
+    position: relative;
+  }
+
+  .cm-activeLineGutter::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, #84cc16, transparent);
+    opacity: 0.5;
   }
 
   &:not(.cm-focused) .cm-activeLineGutter {
-    @apply bg-stone-800 text-stone-400;
+    background: linear-gradient(to right, rgba(120, 113, 108, 0.2), rgba(120, 113, 108, 0.1), transparent);
+    color: #e7e5e4;
+  }
+
+  &:not(.cm-focused) .cm-activeLineGutter::before {
+    background: linear-gradient(to bottom, transparent, #78716c, transparent);
+    opacity: 0.3;
   }
 
   .cm-tooltip {
-    @apply border border-stone-600 bg-stone-900 max-w-sm leading-tight text-white rounded-lg font-sans font-light overflow-y-auto scrollbar-stone-700 shadow;
+    border: 1px solid #78716c;
+    background: linear-gradient(to bottom right, #1c1917, #292524);
+    max-width: 24rem;
+    line-height: 1.25;
+    color: white;
+    border-radius: 0.5rem;
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    font-weight: 300;
+    overflow-y: auto;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    backdrop-filter: blur(4px);
   }
 
   .cm-diagnostic-error {
-    @apply border-l-4 border-red-500;
+    border-left: 4px solid #ef4444;
+    background-color: rgba(239, 68, 68, 0.05);
   }
 
   .cm-lintRange-error {
@@ -63,10 +171,95 @@
   }
 
   .cm-lintPoint-error:after {
-    @apply border-b-red-500;
+    border-bottom-color: #ef4444;
   }
 
   .cm-panels {
-    @apply border-none;
+    border: none;
+  }
+
+  /* Indicador de línea actual */
+  .cm-lineNumbers .cm-gutterElement {
+    transition: all 300ms ease-out;
+  }
+
+  .cm-lineNumbers .cm-gutterElement.cm-activeLineGutter {
+    background: linear-gradient(to right, rgba(132, 204, 22, 0.2), rgba(132, 204, 22, 0.1), transparent);
+    color: #d9f99d;
+    font-weight: 600;
+  }
+
+  /* Transiciones suaves para el resaltado de línea */
+  .cm-line {
+    transition: all 200ms ease-out;
+  }
+
+  .cm-activeLine {
+    transition: all 200ms ease-out;
+  }
+
+  .cm-activeLine::before {
+    transition: opacity 200ms ease-out;
+  }
+
+  /* Mejoras para el scrollbar */
+  .cm-scroller::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .cm-scroller::-webkit-scrollbar-track {
+    background-color: rgba(120, 113, 108, 0.5);
+  }
+
+  .cm-scroller::-webkit-scrollbar-thumb {
+    background-color: #78716c;
+    border-radius: 9999px;
+    transition: background-color 0.2s;
+  }
+
+  .cm-scroller::-webkit-scrollbar-thumb:hover {
+    background-color: #a8a29e;
+  }
+
+  .cm-scroller::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(132, 204, 22, 0.5);
+  }
+
+  /* Mejoras para el cursor y selección */
+  .cm-cursor {
+    border-left: 2px solid #84cc16;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  }
+
+  .cm-selectionBackground {
+    background-color: rgba(132, 204, 22, 0.2);
+  }
+
+  /* Mejoras para tooltips y autocompletado */
+  .cm-tooltip {
+    backdrop-filter: blur(4px);
+    border-color: rgba(120, 113, 108, 0.5);
+  }
+
+  .cm-tooltip.cm-tooltip-autocomplete {
+    background: linear-gradient(to bottom right, rgba(28, 25, 23, 0.95), rgba(41, 37, 36, 0.95));
+  }
+
+  .cm-tooltip.cm-tooltip-autocomplete > ul {
+    max-height: 15rem;
+  }
+
+  .cm-tooltip.cm-tooltip-autocomplete > ul > li {
+    padding: 8px 12px;
+    transition: background-color 0.2s;
+  }
+
+  .cm-tooltip.cm-tooltip-autocomplete > ul > li:hover {
+    background-color: rgba(132, 204, 22, 0.2);
+  }
+
+  .cm-tooltip.cm-tooltip-autocomplete > ul > li[aria-selected] {
+    background-color: rgba(132, 204, 22, 0.3);
+    color: #d9f99d;
   }
 }

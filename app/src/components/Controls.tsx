@@ -177,7 +177,10 @@ export function Controls({ className }: { className?: string }) {
         disabled={status.type === "running"}
         onClick={runInfinity}
         title={translate("control.action.run.infinity")}
-        className="group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-orange-600/20 focus-visible:ring-2 focus-visible:ring-orange-400 disabled:opacity-50"
+        className={clsx(
+          "group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-orange-600/20 focus-visible:ring-2 focus-visible:ring-orange-400 disabled:opacity-50",
+          status.type === "running" && "animate-pulse-glow"
+        )}
       >
         <span className="flex items-center justify-center">
           <FontAwesomeIcon

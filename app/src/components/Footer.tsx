@@ -1,16 +1,18 @@
 import { faGithub, faTwitter } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
-import { memo } from "react";
+import { memo, useMemo } from "react";
+import { useAtomValue } from "jotai";
 
 import { Button } from "@/components/ui/Button";
 import { Tooltip } from "@/components/ui/Tooltip";
+import { getSettings } from "@/lib/settings";
+import { useTranslate } from "@/lib/i18n";
 
 // Enlaces útiles
 const USEFUL_LINKS = [
-  { name: "Documentación", url: "https://vonsim.github.io/docs", icon: "icon-[lucide--book-open]" },
+  { name: "Documentación", url: "https://ruiz-jose.github.io/VonSim8/docs/", icon: "icon-[lucide--book-open]" },
   { name: "GitHub", url: "https://github.com/ruiz-jose/VonSim8", icon: faGithub },
-  { name: "Reportar Bug", url: "https://github.com/ruiz-jose/VonSim8/issues", icon: "icon-[lucide--bug]" }
 ];
 
 // Componente de enlace social
@@ -44,6 +46,16 @@ SocialLink.displayName = 'SocialLink';
 
 // Componente principal del Footer
 export const Footer = memo(() => {
+  const translate = useTranslate();
+  const settings = getSettings();
+
+  // Generar enlace para reportar issue
+  const issueLink = useMemo(() => {
+    const program = window.codemirror?.state.doc.toString() || "";
+    const body = translate("footer.issue.body", settings, program);
+    return `https://github.com/ruiz-jose/VonSim8/issues/new?body=${encodeURIComponent(body)}`;
+  }, [translate, settings]);
+
   return (
     <footer className="px-3 py-1.5 text-xs text-white bg-black" data-testid="footer">
       <div className="flex items-center justify-between">
@@ -61,6 +73,19 @@ export const Footer = memo(() => {
               icon={link.icon}
             />
           ))}
+          
+          {/* Enlace para reportar issue */}
+          <Tooltip content={translate("footer.issue.report")} position="top">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => window.open(issueLink, '_blank')}
+              className="hover-lift"
+              aria-label={translate("footer.issue.report")}
+            >
+              <span className="icon-[lucide--bug] size-4" />
+            </Button>
+          </Tooltip>
         </div>
       </div>
     </footer>

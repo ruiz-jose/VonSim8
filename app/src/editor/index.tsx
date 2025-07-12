@@ -36,6 +36,7 @@ import { VonSim } from "./vonsim";
 
 export function Editor({ className }: { className?: string }) {
   const [element, setElement] = useState<HTMLElement>();
+  const [currentLine, setCurrentLine] = useState(1);
   const fontSize = useEditorFontSize();
 
   const ref = useCallback((node: HTMLElement | null) => {
@@ -68,6 +69,12 @@ export function Editor({ className }: { className?: string }) {
           }),
           EditorState.allowMultipleSelections.of(true),
           highlightActiveLine(),
+          EditorView.updateListener.of((update) => {
+            if (update.selectionSet) {
+              const line = update.state.doc.lineAt(update.state.selection.main.head).number;
+              setCurrentLine(line);
+            }
+          }),
           keymap.of([
             {
               key: "Escape",
@@ -103,10 +110,10 @@ export function Editor({ className }: { className?: string }) {
   }, [element]);
 
   return (
-    <div className={clsx("flex flex-col", className)}>
+    <div className={clsx("flex flex-col bg-gradient-to-br from-stone-900 to-stone-800 rounded-lg border border-stone-700 shadow-xl", className)}>
       <div
         ref={ref}
-        className="grow overflow-auto font-mono"
+        className="grow overflow-auto font-mono rounded-t-lg"
         style={{
           fontSize: `${fontSize}px`,
           lineHeight: 1.25,
