@@ -1,8 +1,18 @@
 
-import { vi, describe, it, expect } from "vitest";
+import "@testing-library/jest-dom";
+
+import { render, screen } from "@testing-library/react";
+import { useMedia } from "react-use";
+import { describe, expect,it, vi } from "vitest";
+
+import App from "./App";
+
 (globalThis as any).ResizeObserver = class {
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   observe() {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   unobserve() {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   disconnect() {}
 };
 (globalThis as any).__COMMIT_HASH__ = "test-hash";
@@ -15,10 +25,6 @@ vi.mock("react-use", async (importOriginal) => {
     useMedia: vi.fn(),
   });
 });
-import "@testing-library/jest-dom";
-import { render, screen } from "@testing-library/react";
-import App from "./App";
-import { useMedia } from "react-use";
 
 describe("App layout", () => {
 

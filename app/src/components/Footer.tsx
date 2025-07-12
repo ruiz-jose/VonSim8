@@ -1,60 +1,69 @@
-import { useSavedProgram } from "@/editor/files";
-import { useTranslate } from "@/lib/i18n";
-import { useSettings } from "@/lib/settings";
+import { faGithub, faTwitter } from "@fortawesome/free-brands-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import clsx from "clsx";
+import { memo } from "react";
 
-export function Footer() {
-  const translate = useTranslate();
-  const issueLink = useIssueLink();
+import { Button } from "@/components/ui/Button";
+import { Tooltip } from "@/components/ui/Tooltip";
 
+// Enlaces útiles
+const USEFUL_LINKS = [
+  { name: "Documentación", url: "https://vonsim.github.io/docs", icon: "icon-[lucide--book-open]" },
+  { name: "GitHub", url: "https://github.com/vonsim/vonsim8", icon: faGithub },
+  { name: "Reportar Bug", url: "https://github.com/vonsim/vonsim8/issues", icon: "icon-[lucide--bug]" }
+];
+
+// Componente de enlace social
+const SocialLink = memo(({ 
+  name, 
+  url, 
+  icon 
+}: {
+  name: string;
+  url: string;
+  icon: any;
+}) => (
+  <Tooltip content={name} position="top">
+    <Button
+      variant="ghost"
+      size="sm"
+      onClick={() => window.open(url, '_blank')}
+      className="hover-lift"
+      aria-label={name}
+    >
+      {typeof icon === "string" ? (
+        <span className={clsx(icon, "size-4")} />
+      ) : (
+        <FontAwesomeIcon icon={icon} className="size-4" />
+      )}
+    </Button>
+  </Tooltip>
+));
+
+SocialLink.displayName = 'SocialLink';
+
+// Componente principal del Footer
+export const Footer = memo(() => {
   return (
-    <footer className="px-2 py-1 text-center text-xs tracking-wider text-stone-500" data-testid="footer">
-      <a
-        href="/VonSim8/docs"
-        className="transition-colors hover:text-stone-400"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        {translate("footer.documentation")}
-      </a>
-      <span className="px-2">&middot;</span>
-      <a
-        href="https://github.com/ruiz-jose/VonSim8"
-        className="transition-colors hover:text-stone-400"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        GitHub
-      </a>
-      <span className="px-2">&middot;</span>
-      <a
-        href={issueLink}
-        className="transition-colors hover:text-stone-400"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        {translate("footer.issue.report")}
-      </a>
-      <span className="px-2 max-sm:hidden">&middot;</span>
-      <br className="sm:hidden" />
-      <a
-        href="/docs#licencia"
-        className="transition-colors hover:text-stone-400"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        &copy; Copyright 2017-{new Date().getFullYear()} &mdash; {translate("footer.copyright")}
-      </a>
+    <footer className="px-4 py-2 text-xs text-white bg-black" data-testid="footer">
+      <div className="flex items-center justify-between">
+        <span className="text-stone-400">
+          © Copyright 2017-2025 — III-LIDI, FI, UNLP, UNER
+        </span>
+        
+        <div className="flex items-center gap-1" data-testid="footer-links">
+          {USEFUL_LINKS.map((link) => (
+            <SocialLink
+              key={link.name}
+              name={link.name}
+              url={link.url}
+              icon={link.icon}
+            />
+          ))}
+        </div>
+      </div>
     </footer>
   );
-}
+});
 
-function useIssueLink(): string {
-  const translate = useTranslate();
-  const [settings] = useSettings();
-  const program = useSavedProgram();
-
-  return (
-    "https://github.com/ruiz-jose/VonSim8/issues/new?body=" +
-    encodeURIComponent(translate("footer.issue.body", settings, program))
-  );
-}
+Footer.displayName = 'Footer';

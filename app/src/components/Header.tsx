@@ -1,45 +1,167 @@
+import { faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
 import { useAtom } from "jotai";
+import { memo, useCallback, useMemo } from "react";
 
 import { Controls } from "@/components/Controls";
+import { NotificationCenter } from "@/components/NotificationCenter";
 import { settingsOpenAtom } from "@/components/Settings";
+import { IconButton } from "@/components/ui/Button";
+import { Tooltip } from "@/components/ui/Tooltip";
+import { useSimulation } from "@/computer/simulation";
 import { useTranslate } from "@/lib/i18n";
 
-export function Header() {
-  const translate = useTranslate();
-  const [settingsOpen, setSettingsOpen] = useAtom(settingsOpenAtom);
+// Hook personalizado para manejar el tour
+const useTourControl = () => {
+  const handleShowTour = useCallback(() => {
+    // Usar la función global startWelcomeTour si está disponible
+    if ((window as any).startWelcomeTour) {
+      (window as any).startWelcomeTour();
+    } else {
+      // Fallback: recargar la página si la función no está disponible
+      localStorage.removeItem("vonsim8-tour-completed");
+      window.location.reload();
+    }
+  }, []);
+
+  return { handleShowTour };
+};
+
+// Componente de estado de simulación optimizado
+const SimulationStatus = memo(({ status }: { status: any }) => {
+  const statusText = useMemo(() => 
+    status.type === "running" ? "Ejecutando" : "Detenido", 
+    [status.type]
+  );
+
+  const statusColor = useMemo(() => 
+    status.type === "running" ? "bg-green-600" : "bg-stone-600", 
+    [status.type]
+  );
 
   return (
-    <header className="relative p-2 text-sm text-white" data-testid="header">
-      <div className="flex items-center justify-between">
-        {/* Logo y título */}
-        <div className="flex select-none items-center justify-center">
-          <img
-            src={`${import.meta.env.BASE_URL}favicon.svg`}
-            className="mr-2 size-10"
-            style={{ filter: "none", opacity: 1 }}
-            draggable={false}
-          />
-          <h1 className="text-xl font-bold max-sm:hidden">
-            Von<span className="text-mantis-400">Sim</span>8
-          </h1>
-        </div>
-        {/* Controles */}
-        <Controls />
-        {/* Botón de configuración */}
-        <button
+    <div className="flex items-center gap-2 text-xs">
+      <div className={clsx(
+        "flex items-center gap-2 rounded-full px-3 py-1.5 text-white font-medium",
+        statusColor,
+        status.type === "running" && "animate-pulse-glow"
+      )}>
+        <div className={clsx(
+          "size-2 rounded-full",
+          status.type === "running" ? "bg-green-300" : "bg-stone-300"
+        )} />
+        {statusText}
+      </div>
+    </div>
+  );
+});
+
+SimulationStatus.displayName = 'SimulationStatus';
+
+// Componente de botones de acción optimizado
+const ActionButtons = memo(({ 
+  onShowTour, 
+  onToggleSettings, 
+  settingsOpen 
+}: {
+  onShowTour: () => void;
+  onToggleSettings: () => void;
+  settingsOpen: boolean;
+}) => {
+  const translate = useTranslate();
+
+  return (
+    <div className="flex items-center gap-1">
+      <NotificationCenter />
+      
+      <Tooltip content="Mostrar tour de bienvenida" position="bottom">
+        <IconButton
+          icon={<FontAwesomeIcon icon={faQuestionCircle} className="size-4" />}
+          onClick={onShowTour}
+          variant="ghost"
+          size="md"
+          aria-label="Mostrar tour de bienvenida"
+          className="hover-lift"
+        />
+      </Tooltip>
+      
+      <Tooltip content={translate("settings.title")} position="bottom">
+        <IconButton
+          icon={<span className="icon-[lucide--settings] block size-5" />}
+          onClick={onToggleSettings}
+          variant={settingsOpen ? "secondary" : "ghost"}
+          size="md"
+          aria-label={translate("settings.title")}
           className={clsx(
-            "ml-4 size-min rounded-full p-2 transition-colors focus:outline-stone-400",
-            settingsOpen
-              ? "bg-stone-700 hover:bg-stone-600 focus:bg-stone-600"
-              : "hover:bg-stone-800 focus:bg-stone-800",
+            "hover-lift",
+            settingsOpen && "animate-pulse-glow"
           )}
-          title={translate("settings.title")}
-          onClick={() => setSettingsOpen(!settingsOpen)}
-        >
-          <span className="icon-[lucide--settings] block size-6" />
-        </button>
+          data-testid="settings-button"
+        />
+      </Tooltip>
+    </div>
+  );
+});
+
+ActionButtons.displayName = 'ActionButtons';
+
+// Componente principal optimizado
+export const Header = memo(() => {
+  const [settingsOpen, setSettingsOpen] = useAtom(settingsOpenAtom);
+  const { status } = useSimulation();
+  
+  const { handleShowTour } = useTourControl();
+
+  // Callbacks optimizados
+  const handleToggleSettings = useCallback(() => {
+    setSettingsOpen(prev => !prev);
+  }, [setSettingsOpen]);
+
+  // Memoizar el logo y título
+  const logoSection = useMemo(() => (
+    <div className="flex select-none items-center justify-center hover-scale">
+      <img
+        src={`${import.meta.env.BASE_URL}favicon.svg`}
+        className="mr-3 size-10"
+        style={{ filter: "none", opacity: 1 }}
+        draggable={false}
+        alt="VonSim8 Logo"
+      />
+      <div className="flex flex-col">
+        <h1 className="text-xl font-bold max-sm:hidden">
+          Von<span className="text-mantis-400">Sim</span>8
+        </h1>
+        <span className="text-xs text-stone-400 max-sm:hidden">Simulador de 8 bits</span>
+      </div>
+    </div>
+  ), []);
+
+  return (
+    <header className="relative p-3 text-sm text-white bg-black" data-testid="header">
+      <div className="grid grid-cols-3 items-center">
+        {/* Columna izquierda: Logo y estado */}
+        <div className="flex items-center gap-4">
+          {logoSection}
+          <SimulationStatus status={status} />
+        </div>
+        
+        {/* Columna central: Controles */}
+        <div className="flex justify-center">
+          <Controls />
+        </div>
+        
+        {/* Columna derecha: Botones de acción */}
+        <div className="flex justify-end">
+          <ActionButtons
+            onShowTour={handleShowTour}
+            onToggleSettings={handleToggleSettings}
+            settingsOpen={settingsOpen}
+          />
+        </div>
       </div>
     </header>
   );
-}
+});
+
+Header.displayName = 'Header';

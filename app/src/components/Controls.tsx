@@ -129,6 +129,7 @@ export function Controls({ className }: { className?: string }) {
       )}
     >
       <button
+        data-testid="cycle-button"
         disabled={status.type === "running"}
         onClick={runCycle}
         title={translate("control.action.run.cycle-change")}

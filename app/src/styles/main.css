@@ -1,25 +1,326 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
-@layer base {
-  * {
-    /* Remove tap highlight in Chrome for Android https://stackoverflow.com/a/30319808 */
-    -webkit-tap-highlight-color: transparent;
+/* Animaciones personalizadas */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.98) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
   }
 }
 
-.border-red-color {
-  border-color: #ff6347;
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
+@keyframes slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes bounce-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(34, 197, 94, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.8), 0 0 30px rgba(34, 197, 94, 0.6);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+/* Clases de utilidad para animaciones */
+.animate-fade-in {
+  animation: fade-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-slide-in-left {
+  animation: slide-in-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-bounce-in {
+  animation: bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Mejoras de scrollbar */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(68 64 60) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: rgb(68 64 60);
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(87 83 78);
+}
+
+/* Efectos de hover mejorados */
+.hover-lift {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+}
+
+.hover-scale {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+/* Gradientes personalizados */
+.gradient-mantis {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+}
+
+.gradient-stone {
+  background: linear-gradient(135deg, #78716c 0%, #57534e 100%);
+}
+
+/* Efectos de glassmorphism */
+.glass {
+  background: rgba(41, 37, 36, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Mejoras para componentes específicos */
 .computer-background {
-  background-color: theme(colors.stone.800);
-  background-image: radial-gradient(
-      circle at 12.5px 12.5px,
-      theme(colors.stone.600) 2%,
-      transparent 0%
-    ),
-    radial-gradient(circle at 37.5px 37.5px, theme(colors.stone.600) 2%, transparent 0%);
-  background-size: 50px 50px;
+  background: radial-gradient(circle at 50% 50%, rgba(34, 197, 94, 0.1) 0%, transparent 70%);
+}
+
+/* Estados de carga */
+.loading-skeleton {
+  background: linear-gradient(90deg, #404040 25%, #525252 50%, #404040 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Mejoras para botones */
+.btn-primary {
+  @apply bg-mantis-600 hover:bg-mantis-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-2 focus:ring-mantis-500 focus:ring-offset-2 focus:ring-offset-stone-900;
+}
+
+.btn-secondary {
+  @apply bg-stone-700 hover:bg-stone-600 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-stone-500 focus:ring-offset-2 focus:ring-offset-stone-900;
+}
+
+.btn-ghost {
+  @apply bg-transparent hover:bg-stone-800 text-stone-300 hover:text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-stone-500 focus:ring-offset-2 focus:ring-offset-stone-900;
+}
+
+/* Mejoras para inputs */
+.input-enhanced {
+  @apply bg-stone-800 border border-stone-600 text-white placeholder-stone-400 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-mantis-500 focus:border-transparent transition-all duration-200;
+}
+
+/* Mejoras para cards */
+.card {
+  @apply bg-stone-800 border border-stone-600 rounded-lg p-4 shadow-lg hover:shadow-xl transition-all duration-200 hover:border-stone-500;
+}
+
+.card-interactive {
+  @apply card cursor-pointer hover:bg-stone-700 hover-lift;
+}
+
+/* Mejoras para tooltips */
+.tooltip {
+  @apply absolute z-50 px-3 py-2 text-sm text-white bg-stone-900 rounded-lg shadow-lg border border-stone-600;
+  animation: fade-in 0.2s ease-out;
+}
+
+/* Mejoras para modales */
+.modal-overlay {
+  @apply fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm;
+  animation: fade-in 0.2s ease-out;
+}
+
+.modal-content {
+  @apply bg-stone-900 border border-stone-600 rounded-lg shadow-2xl max-w-md w-full mx-4;
+  animation: bounce-in 0.3s ease-out;
+}
+
+/* Mejoras para notificaciones */
+.notification {
+  @apply bg-stone-800 border border-stone-600 rounded-lg p-4 shadow-lg;
+  animation: slide-in-right 0.3s ease-out;
+}
+
+.notification-success {
+  @apply notification border-green-500 bg-green-500/10;
+}
+
+.notification-warning {
+  @apply notification border-yellow-500 bg-yellow-500/10;
+}
+
+.notification-error {
+  @apply notification border-red-500 bg-red-500/10;
+}
+
+.notification-info {
+  @apply notification border-blue-500 bg-blue-500/10;
+}
+
+/* Mejoras para el editor */
+.editor-enhanced {
+  @apply bg-stone-900 border border-stone-600 rounded-lg overflow-hidden;
+}
+
+.editor-enhanced .cm-editor {
+  @apply font-mono text-sm;
+}
+
+.editor-enhanced .cm-editor .cm-line {
+  @apply px-4 py-1;
+}
+
+.editor-enhanced .cm-editor .cm-activeLine {
+  @apply bg-stone-800;
+}
+
+/* Mejoras para la simulación */
+.simulation-running {
+  @apply animate-pulse-glow;
+}
+
+.simulation-paused {
+  @apply opacity-75;
+}
+
+/* Mejoras para responsive */
+@media (max-width: 640px) {
+  .mobile-optimized {
+    @apply text-sm;
+  }
+  
+  .mobile-card {
+    @apply p-3;
+  }
+  
+  .mobile-button {
+    @apply py-1.5 px-3 text-sm;
+  }
+}
+
+/* Mejoras para accesibilidad */
+.focus-visible {
+  @apply focus:outline-none focus:ring-2 focus:ring-mantis-500 focus:ring-offset-2 focus:ring-offset-stone-900;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Mejoras para performance */
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-opacity {
+  will-change: opacity;
+}
+
+/* Mejoras para dark mode (si se implementa en el futuro) */
+@media (prefers-color-scheme: dark) {
+  .dark-mode-auto {
+    @apply bg-stone-900 text-white;
+  }
+}
+
+/* Mejoras para high contrast mode */
+@media (prefers-contrast: high) {
+  .high-contrast {
+    @apply border-2;
+  }
+}
+
+/* Mejoras para reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
