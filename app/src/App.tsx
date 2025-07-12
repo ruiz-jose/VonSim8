@@ -3,13 +3,14 @@ import { useAtom, useAtomValue } from "jotai";
 import { memo, useCallback, useMemo, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useMedia } from "react-use";
+import { useRegisterSW } from "virtual:pwa-register/react";
 
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { KeyboardShortcuts } from "@/components/KeyboardShortcuts";
 import { Settings, settingsOpenAtom } from "@/components/Settings";
 import { WelcomeTour } from "@/components/WelcomeTour";
-
+import { toast } from "@/lib/toast";
 
 import { ComputerContainer } from "@/computer";
 import { cycleAtom } from "@/computer/cpu/state";
@@ -22,9 +23,28 @@ const App = memo(() => {
   const lang = useLanguage();
   const filter = useFilters();
   const isMobile = useMedia("(max-width: 640px)");
+  const translate = useTranslate();
 
   // Memoizar el estilo para evitar re-renders innecesarios
   const containerStyle = useMemo(() => ({ filter }), [filter]);
+
+  // Configurar notificaciones de actualización PWA
+  const { updateServiceWorker } = useRegisterSW({
+    onNeedRefresh() {
+      toast({
+        title: translate("update.update-available"),
+        action: (
+          <button
+            onClick={() => updateServiceWorker(true)}
+            className="text-xs bg-mantis-500 hover:bg-mantis-600 text-white px-2 py-1 rounded transition-colors"
+          >
+            {translate("update.reload")}
+          </button>
+        ),
+        duration: Infinity,
+      });
+    },
+  });
 
   return (
     <div 

@@ -11,7 +11,7 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: "prompt",
+      registerType: "autoUpdate",
       includeAssets: ["fonts/**/*", "favicon.svg", "icon-192.png", "icon-512.png"],
       manifest: {
         name: "VonSim8 - Simulador de Computadora de 8 bits",
