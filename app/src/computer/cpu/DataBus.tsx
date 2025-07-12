@@ -13,7 +13,7 @@
  * @see {@link https://graphology.github.io/}
  */
 
-import type { PhysicalRegister } from "@vonsim/simulator/cpu";
+import type { PhysicalRegister } from "./state";
 import { UndirectedGraph } from "graphology";
 import { bidirectional } from "graphology-shortest-path/unweighted";
 
@@ -25,10 +25,10 @@ const dataBus = new UndirectedGraph<Node>({ allowSelfLoops: false });
 
 // These are the endpoints of the bus
 dataBus.addNode("MBR", { position: [620, 250] });
-dataBus.addNode("AX", { position: [455, 45] }); // Ajustado para el centro del registro más pequeño
-dataBus.addNode("BX", { position: [455, 85] }); // Ajustado para el centro del registro más pequeño
-dataBus.addNode("CX", { position: [455, 125] }); // Ajustado para el centro del registro más pequeño
-dataBus.addNode("DX", { position: [455, 165] }); // Ajustado para el centro del registro más pequeño
+dataBus.addNode("AL", { position: [455, 45] }); // Ajustado para el centro del registro de 8 bits
+dataBus.addNode("BL", { position: [455, 85] }); // Ajustado para el centro del registro de 8 bits
+dataBus.addNode("CL", { position: [455, 125] }); // Ajustado para el centro del registro de 8 bits
+dataBus.addNode("DL", { position: [455, 165] }); // Ajustado para el centro del registro de 8 bits
 dataBus.addNode("id", { position: [451, 205] });
 dataBus.addNode("SP", { position: [451, 309] });
 dataBus.addNode("IP", { position: [451, 349] });
@@ -46,10 +46,10 @@ dataBus.addNode("bleft2", { position: [90, 16] });
 dataBus.addNode("bleft3", { position: [90, 85] });
 
 // These are the intermediate nodes
-dataBus.addNode("AX join", { position: [425, 45] }); // Ajustado para conectar con el registro más pequeño
-dataBus.addNode("BX join", { position: [425, 85] }); // Ajustado para conectar con el registro más pequeño
-dataBus.addNode("CX join", { position: [425, 125] }); // Ajustado para conectar con el registro más pequeño
-dataBus.addNode("DX join", { position: [425, 165] }); // Ajustado para conectar con el registro más pequeño
+dataBus.addNode("AL join", { position: [425, 45] }); // Ajustado para conectar con el registro de 8 bits
+dataBus.addNode("BL join", { position: [425, 85] }); // Ajustado para conectar con el registro de 8 bits
+dataBus.addNode("CL join", { position: [425, 125] }); // Ajustado para conectar con el registro de 8 bits
+dataBus.addNode("DL join", { position: [425, 165] }); // Ajustado para conectar con el registro de 8 bits
 dataBus.addNode("id join", { position: [421, 205] });
 dataBus.addNode("data mbr join", { position: [421, 250] });
 dataBus.addNode("SP join", { position: [421, 309] });
@@ -67,53 +67,53 @@ dataBus.addNode("operands mbr join", { position: [90, 250] });
 dataBus.addNode("outr mbr join", { position: [550, 250] });
 dataBus.addNode("mbr reg join", { position: [421, 250] });
 
-// Añadir nodos de unión para los registros AX, BX, CX, DX e id
-dataBus.addNode("AX out", { position: [465, 45] }); // Ajustado para la salida del registro más pequeño
-dataBus.addNode("BX out", { position: [465, 85] }); // Ajustado para la salida del registro más pequeño
-dataBus.addNode("CX out", { position: [465, 125] }); // Ajustado para la salida del registro más pequeño
-dataBus.addNode("DX out", { position: [465, 165] }); // Ajustado para la salida del registro más pequeño
+    // Añadir nodos de unión para los registros AL, BL, CL, DL e id
+  dataBus.addNode("AL out", { position: [465, 45] }); // Ajustado para la salida del registro de 8 bits
+  dataBus.addNode("BL out", { position: [465, 85] }); // Ajustado para la salida del registro de 8 bits
+  dataBus.addNode("CL out", { position: [465, 125] }); // Ajustado para la salida del registro de 8 bits
+  dataBus.addNode("DL out", { position: [465, 165] }); // Ajustado para la salida del registro de 8 bits
 dataBus.addNode("id out", { position: [460, 205] }); // Ajustado para conectar con el registro id redimensionado
 
 dataBus.addNode("SP out", { position: [510, 309] });
 dataBus.addNode("IP out", { position: [510, 349] });
 
 // Añadir nodos de unión para los buses de salida en la parte posterior de los registros
-dataBus.addNode("AX out join", { position: [550, 45] });
-dataBus.addNode("BX out join", { position: [550, 85] });
-dataBus.addNode("CX out join", { position: [550, 125] });
-dataBus.addNode("DX out join", { position: [550, 165] });
+  dataBus.addNode("AL out join", { position: [550, 45] });
+  dataBus.addNode("BL out join", { position: [550, 85] });
+  dataBus.addNode("CL out join", { position: [550, 125] });
+  dataBus.addNode("DL out join", { position: [550, 165] });
 dataBus.addNode("id out join", { position: [550, 205] });
 
 dataBus.addNode("SP out join", { position: [550, 309] });
 dataBus.addNode("IP out join", { position: [550, 349] });
 dataBus.addNode("ri out join", { position: [550, 388] });
 
-dataBus.addUndirectedEdge("AX", "AX out");
-dataBus.addUndirectedEdge("BX", "BX out");
-dataBus.addUndirectedEdge("CX", "CX out");
-dataBus.addUndirectedEdge("DX", "DX out");
+  dataBus.addUndirectedEdge("AL", "AL out");
+  dataBus.addUndirectedEdge("BL", "BL out");
+  dataBus.addUndirectedEdge("CL", "CL out");
+  dataBus.addUndirectedEdge("DL", "DL out");
 dataBus.addUndirectedEdge("id", "id out");
 
 dataBus.addUndirectedEdge("IP", "IP out");
 dataBus.addUndirectedEdge("SP", "SP out");
 
 // Crear las aristas necesarias para conectar estos nodos de unión con los buses de salida
-dataBus.addUndirectedEdge("AX out", "AX out join");
-dataBus.addUndirectedEdge("BX out", "BX out join");
-dataBus.addUndirectedEdge("CX out", "CX out join");
-dataBus.addUndirectedEdge("DX out", "DX out join");
+  dataBus.addUndirectedEdge("AL out", "AL out join");
+  dataBus.addUndirectedEdge("BL out", "BL out join");
+  dataBus.addUndirectedEdge("CL out", "CL out join");
+  dataBus.addUndirectedEdge("DL out", "DL out join");
 dataBus.addUndirectedEdge("id out", "id out join");
 
-dataBus.addUndirectedEdge("AX out join", "outr mbr join");
-dataBus.addUndirectedEdge("BX out join", "outr mbr join");
-dataBus.addUndirectedEdge("CX out join", "outr mbr join");
-dataBus.addUndirectedEdge("DX out join", "outr mbr join");
+  dataBus.addUndirectedEdge("AL out join", "outr mbr join");
+  dataBus.addUndirectedEdge("BL out join", "outr mbr join");
+  dataBus.addUndirectedEdge("CL out join", "outr mbr join");
+  dataBus.addUndirectedEdge("DL out join", "outr mbr join");
 dataBus.addUndirectedEdge("id out join", "outr mbr join");
 
-dataBus.addUndirectedEdge("AX out join", "bleft1");
-dataBus.addUndirectedEdge("BX out join", "bleft1");
-dataBus.addUndirectedEdge("CX out join", "bleft1");
-dataBus.addUndirectedEdge("DX out join", "bleft1");
+  dataBus.addUndirectedEdge("AL out join", "bleft1");
+  dataBus.addUndirectedEdge("BL out join", "bleft1");
+  dataBus.addUndirectedEdge("CL out join", "bleft1");
+  dataBus.addUndirectedEdge("DL out join", "bleft1");
 dataBus.addUndirectedEdge("id out join", "bleft1");
 dataBus.addUndirectedEdge("bleft1", "bleft2");
 dataBus.addUndirectedEdge("bleft2", "bleft3");
@@ -125,27 +125,27 @@ dataBus.addUndirectedEdge("SP out join", "outr mbr join");
 dataBus.addUndirectedEdge("SP out join", "MAR join2");
 
 /*
-dataBus.addUndirectedEdge("AX out join", "left");
-dataBus.addUndirectedEdge("BX out join", "left");
-dataBus.addUndirectedEdge("CX out join", "left");
-dataBus.addUndirectedEdge("DX out join", "left");
+  dataBus.addUndirectedEdge("AL out join", "left");
+  dataBus.addUndirectedEdge("BL out join", "left");
+  dataBus.addUndirectedEdge("CL out join", "left");
+  dataBus.addUndirectedEdge("DL out join", "left");
 dataBus.addUndirectedEdge("id out join", "left");
 */
 dataBus.addUndirectedEdge("outr mbr join", "mbr reg join");
 dataBus.addUndirectedEdge("MBR", "outr mbr join");
 
-dataBus.addUndirectedEdge("mbr reg join", "AX join");
-dataBus.addUndirectedEdge("mbr reg join", "BX join");
-dataBus.addUndirectedEdge("mbr reg join", "CX join");
-dataBus.addUndirectedEdge("mbr reg join", "DX join");
+dataBus.addUndirectedEdge("mbr reg join", "AL join");
+dataBus.addUndirectedEdge("mbr reg join", "BL join");
+dataBus.addUndirectedEdge("mbr reg join", "CL join");
+dataBus.addUndirectedEdge("mbr reg join", "DL join");
 dataBus.addUndirectedEdge("mbr reg join", "id join");
 dataBus.addUndirectedEdge("outr mbr join", "operands mbr join");
 
 // These are the lines
-dataBus.addUndirectedEdge("AX join", "AX");
-dataBus.addUndirectedEdge("BX join", "BX");
-dataBus.addUndirectedEdge("CX join", "CX");
-dataBus.addUndirectedEdge("DX join", "DX");
+dataBus.addUndirectedEdge("AL join", "AL");
+dataBus.addUndirectedEdge("BL join", "BL");
+dataBus.addUndirectedEdge("CL join", "CL");
+dataBus.addUndirectedEdge("DL join", "DL");
 dataBus.addUndirectedEdge("id join", "data mbr join");
 dataBus.addUndirectedEdge("MBR", "data mbr join");
 //dataBus.addUndirectedEdge("data mbr join", "MBR");
@@ -243,7 +243,7 @@ export function generateDataPath(
 
   let path: string[] = [];
 
-  const registers = ["AX", "BX", "CX", "DX", "id"];
+  const registers = ["AL", "BL", "CL", "DL", "id"];
   
   // Usar los nombres normalizados para las comparaciones
   if (normalizedFrom === "MBR" && normalizedTo === "left") {
@@ -258,8 +258,8 @@ export function generateDataPath(
     path = ["IP out", "IP out join", "outr mbr join", "mbr reg join", "id join", "id"];
   } else if (normalizedFrom === "id" && normalizedTo === "ri") {
     path = ["id out", "id out join", "outr mbr join", "MAR join2", "MAR"];
-  } else if (normalizedFrom === "BX" && normalizedTo === "ri") {
-    path = ["BX out", "BX out join", "outr mbr join", "MAR join2", "MAR"];
+  } else if (normalizedFrom === "BL" && normalizedTo === "ri") {
+    path = ["BL out", "BL out join", "outr mbr join", "MAR join2", "MAR"];
   } else if (normalizedFrom === "id" && normalizedTo === "MBR") {
     path = ["id out", "id out join", "outr mbr join", "MBR"];
   } else if (normalizedFrom === "id" && normalizedTo === "IP" && instruction === "RET") {
@@ -367,17 +367,17 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
           showSP ? "M 451 309 H 421" : "M 451 309", // SP
           showri ? "M 470 388 H 421 V 300" : "", // ri - ajustado para conectar con registro redimensionado
           // Data registers - ajustados para conectar con registros más pequeños
-          "M 455 45 H 425", // AX - ajustado
+          "M 455 45 H 425", // AL - ajustado
           "V 250", // Long path to MBR, here to get nice joins
-          "M 455 85 H 425", // BX - ajustado
-          "M 455 125 H 425", // CX - ajustado
-          "M 455 165 H 425", // DX - ajustado
+          "M 455 85 H 425", // BL - ajustado
+          "M 455 125 H 425", // CL - ajustado
+          "M 455 165 H 425", // DL - ajustado
           showid ? "M 455 205 H 425" : "", // id - ajustado para conectar con registro redimensionado
           // Output buses - ajustados para registros más pequeños
-          "M 550 45 H 465", // AX out - ajustado
-          "M 550 85 H 465", // BX out - ajustado
-          "M 550 125 H 465", // CX out - ajustado
-          "M 550 165 H 465", // DX out - ajustado
+          "M 550 45 H 465", // AL out - ajustado
+          "M 550 85 H 465", // BL out - ajustado
+          "M 550 125 H 465", // CL out - ajustado
+          "M 550 165 H 465", // DL out - ajustado
           showid ? "M 550 205 H 460" : "", // id out - ajustado
           showri ? "M 550 388 H 480" : "", // ri out - ajustado para conectar con registro redimensionado
           //"M 550 10 V 250", // Vertical join for output buses

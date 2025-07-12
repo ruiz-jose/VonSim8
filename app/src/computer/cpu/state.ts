@@ -1,5 +1,6 @@
 import { Byte } from "@vonsim/common/byte";
 import type { ComputerState, SimulatorError } from "@vonsim/simulator";
+import type { PhysicalRegister as SimulatorPhysicalRegister } from "@vonsim/simulator/cpu";
 import { atom, PrimitiveAtom, SetStateAction, WritableAtom } from "jotai";
 
 import { store } from "@/lib/jotai";
@@ -62,42 +63,10 @@ const highAtom = (
   );
 
 export const registerAtoms: Record<string, any> = {
-  AX: atom(Byte.zero(16)),
-  AL: atom((get) => (get(registerAtoms.AX) as Byte<16>).low, (get, set, update: any) => {
-    const current = get(registerAtoms.AX) as Byte<16>;
-    set(registerAtoms.AX, current.withLow(update) as any);
-  }),
-  AH: atom((get) => (get(registerAtoms.AX) as Byte<16>).high, (get, set, update: any) => {
-    const current = get(registerAtoms.AX) as Byte<16>;
-    set(registerAtoms.AX, current.withHigh(update) as any);
-  }),
-  BX: atom(Byte.zero(16)),
-  BL: atom((get) => (get(registerAtoms.BX) as Byte<16>).low, (get, set, update: any) => {
-    const current = get(registerAtoms.BX) as Byte<16>;
-    set(registerAtoms.BX, current.withLow(update) as any);
-  }),
-  BH: atom((get) => (get(registerAtoms.BX) as Byte<16>).high, (get, set, update: any) => {
-    const current = get(registerAtoms.BX) as Byte<16>;
-    set(registerAtoms.BX, current.withHigh(update) as any);
-  }),
-  CX: atom(Byte.zero(16)),
-  CL: atom((get) => (get(registerAtoms.CX) as Byte<16>).low, (get, set, update: any) => {
-    const current = get(registerAtoms.CX) as Byte<16>;
-    set(registerAtoms.CX, current.withLow(update) as any);
-  }),
-  CH: atom((get) => (get(registerAtoms.CX) as Byte<16>).high, (get, set, update: any) => {
-    const current = get(registerAtoms.CX) as Byte<16>;
-    set(registerAtoms.CX, current.withHigh(update) as any);
-  }),
-  DX: atom(Byte.zero(16)),
-  DL: atom((get) => (get(registerAtoms.DX) as Byte<16>).low, (get, set, update: any) => {
-    const current = get(registerAtoms.DX) as Byte<16>;
-    set(registerAtoms.DX, current.withLow(update) as any);
-  }),
-  DH: atom((get) => (get(registerAtoms.DX) as Byte<16>).high, (get, set, update: any) => {
-    const current = get(registerAtoms.DX) as Byte<16>;
-    set(registerAtoms.DX, current.withHigh(update) as any);
-  }),
+  AL: atom(Byte.zero(8)),
+  BL: atom(Byte.zero(8)),
+  CL: atom(Byte.zero(8)),
+  DL: atom(Byte.zero(8)),
   SP: SPAtom,
   "SP.l": lowAtom(SPAtom),
   "SP.h": highAtom(SPAtom),
@@ -127,6 +96,9 @@ export const registerAtoms: Record<string, any> = {
   MBR: MBRAtom,
 };
 
+// Tipo extendido para incluir registros de 8 bits
+export type PhysicalRegister = SimulatorPhysicalRegister | "AL" | "BL" | "CL" | "DL";
+
 export type Cycle =
   | { phase: "fetching"; metadata: InstructionMetadata }
   | { phase: "fetching-operands"; metadata: InstructionMetadata }
@@ -142,10 +114,10 @@ export const aluOperationAtom = atom("ADD");
 
 export function resetCPUState(computer: ComputerState, clearRegisters = false) {
   if (clearRegisters) {
-    store.set(registerAtoms.AX, Byte.zero(16));
-    store.set(registerAtoms.BX, Byte.zero(16));
-    store.set(registerAtoms.CX, Byte.zero(16));
-    store.set(registerAtoms.DX, Byte.zero(16));
+    store.set(registerAtoms.AL, Byte.zero(8));
+    store.set(registerAtoms.BL, Byte.zero(8));
+    store.set(registerAtoms.CL, Byte.zero(8));
+    store.set(registerAtoms.DL, Byte.zero(8));
     store.set(registerAtoms.SP, Byte.fromUnsigned(0xff, 16));
     store.set(registerAtoms.IP, Byte.zero(16));
     store.set(registerAtoms.IR, Byte.zero(8));
@@ -158,10 +130,10 @@ export function resetCPUState(computer: ComputerState, clearRegisters = false) {
     store.set(registerAtoms.MAR, Byte.zero(16));
     store.set(registerAtoms.MBR, Byte.zero(8));
   } else {
-    store.set(registerAtoms.AX, Byte.fromUnsigned(computer.cpu.AX, 16));
-    store.set(registerAtoms.BX, Byte.fromUnsigned(computer.cpu.BX, 16));
-    store.set(registerAtoms.CX, Byte.fromUnsigned(computer.cpu.CX, 16));
-    store.set(registerAtoms.DX, Byte.fromUnsigned(computer.cpu.DX, 16));
+    store.set(registerAtoms.AL, Byte.fromUnsigned(computer.cpu.AX & 0xFF, 8));
+    store.set(registerAtoms.BL, Byte.fromUnsigned(computer.cpu.BX & 0xFF, 8));
+    store.set(registerAtoms.CL, Byte.fromUnsigned(computer.cpu.CX & 0xFF, 8));
+    store.set(registerAtoms.DL, Byte.fromUnsigned(computer.cpu.DX & 0xFF, 8));
     store.set(registerAtoms.SP, Byte.fromUnsigned(computer.cpu.SP, 16));
     store.set(registerAtoms.IP, Byte.fromUnsigned(computer.cpu.IP, 16));
     store.set(registerAtoms.IR, Byte.fromUnsigned(computer.cpu.IR, 8));

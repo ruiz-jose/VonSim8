@@ -5,6 +5,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover
 import { animated, getSpring, RegisterKey } from "@/computer/shared/springs";
 import type { AnyByteAtom } from "@/computer/shared/types";
 import { useTranslate } from "@/lib/i18n";
+import { EducationalTooltip } from "@/components/EducationalTooltip";
 
 export function Register({
   name,
@@ -34,7 +35,7 @@ export function Register({
   const displayName = nameMapping[name] || name;
 
   // Estilo alternativo profesional para AL, BL, CL, DL, IP, SP, MBR, MAR, IR, id y ri
-  const isGeneralPurpose = ["AX", "BX", "CX", "DX"].includes(name);
+  const isGeneralPurpose = ["AL", "BL", "CL", "DL"].includes(name);
   const isIP = name === "IP";
   const isSP = name === "SP";
   const isMBR = name === "MBR";
@@ -165,11 +166,20 @@ export function Register({
       </PopoverTrigger>
 
       <PopoverContent className="w-60">
-        <p className="px-4 py-2 font-medium text-white">
-          {displayName !== "left" && displayName !== "right"
-            ? `Registro ${displayName}`
-            : displayName}
-        </p>
+        <div className="px-4 py-2">
+          <div className="flex items-center justify-between">
+            <p className="font-medium text-white">
+              {displayName !== "left" && displayName !== "right"
+                ? `Registro ${displayName}`
+                : displayName}
+            </p>
+            {displayName !== "left" && displayName !== "right" && (
+              <EducationalTooltip concept="register" level="beginner">
+                <span className="text-xs text-mantis-400">💡</span>
+              </EducationalTooltip>
+            )}
+          </div>
+        </div>
         <hr className="border-stone-600" />
         <ul className="px-4 py-2 text-sm">
           {(["hex", "bin", "uint", "int", "safe-ascii"] as const).map(rep => (

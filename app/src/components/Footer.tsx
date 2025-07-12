@@ -45,12 +45,13 @@ SocialLink.displayName = 'SocialLink';
 // Componente principal del Footer
 export const Footer = memo(() => {
   return (
-    <footer className="px-4 py-2 text-xs text-white bg-black" data-testid="footer">
+    <footer className="px-3 py-1.5 text-xs text-white bg-black" data-testid="footer">
       <div className="flex items-center justify-between">
         <span className="text-stone-400">
           © Copyright 2017-2025 — III-LIDI, FI, UNLP, UNER
         </span>
         
+        {/* Enlaces útiles */}
         <div className="flex items-center gap-1" data-testid="footer-links">
           {USEFUL_LINKS.map((link) => (
             <SocialLink

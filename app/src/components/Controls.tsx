@@ -124,7 +124,7 @@ export function Controls({ className }: { className?: string }) {
     <div data-testid="controls-container"
       className={clsx(
         // Reduce py-4 a py-1 y px-8 a px-4 para menor altura
-        "flex items-center justify-center gap-6 rounded-xl border border-stone-700 bg-stone-900/80 px-4 py-1 shadow-lg",
+        "flex items-center justify-center gap-4 rounded-xl border border-stone-700 bg-stone-900/80 px-3 py-1 shadow-lg",
         className,
       )}
     >
@@ -133,7 +133,7 @@ export function Controls({ className }: { className?: string }) {
         disabled={status.type === "running"}
         onClick={runCycle}
         title={translate("control.action.run.cycle-change")}
-        className="group relative flex flex-col items-center rounded-lg px-2 py-1 transition hover:bg-mantis-600/20 focus-visible:ring-2 focus-visible:ring-mantis-400 disabled:opacity-50"
+        className="group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-mantis-600/20 focus-visible:ring-2 focus-visible:ring-mantis-400 disabled:opacity-50"
       >
         <span className="flex items-center justify-center">
           <FontAwesomeIcon
@@ -148,14 +148,14 @@ export function Controls({ className }: { className?: string }) {
           )}
         </span>
         {!isMobile && (
-          <span className="mt-1 text-xs">{translate("control.action.run.cycle-change")}</span>
+          <span className="mt-0.5 text-xs">{translate("control.action.run.cycle-change")}</span>
         )}
       </button>
       <button data-testid="new-button"
         disabled={status.type === "running"}
         onClick={runInstruction}
         title={translate("control.action.run.end-of-instruction")}
-        className="group relative flex flex-col items-center rounded-lg px-2 py-1 transition hover:bg-blue-600/20 focus-visible:ring-2 focus-visible:ring-blue-400 disabled:opacity-50"
+        className="group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-blue-600/20 focus-visible:ring-2 focus-visible:ring-blue-400 disabled:opacity-50"
       >
         <span className="flex items-center justify-center">
           <FontAwesomeIcon
@@ -170,14 +170,14 @@ export function Controls({ className }: { className?: string }) {
           )}
         </span>
         {!isMobile && (
-          <span className="mt-1 text-xs">{translate("control.action.run.end-of-instruction")}</span>
+          <span className="mt-0.5 text-xs">{translate("control.action.run.end-of-instruction")}</span>
         )}
       </button>
       <button data-testid="open-button"
         disabled={status.type === "running"}
         onClick={runInfinity}
         title={translate("control.action.run.infinity")}
-        className="group relative flex flex-col items-center rounded-lg px-2 py-1 transition hover:bg-orange-600/20 focus-visible:ring-2 focus-visible:ring-orange-400 disabled:opacity-50"
+        className="group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-orange-600/20 focus-visible:ring-2 focus-visible:ring-orange-400 disabled:opacity-50"
       >
         <span className="flex items-center justify-center">
           <FontAwesomeIcon
@@ -192,14 +192,14 @@ export function Controls({ className }: { className?: string }) {
           )}
         </span>
         {!isMobile && (
-          <span className="mt-1 text-xs">{translate("control.action.run.infinity")}</span>
+          <span className="mt-0.5 text-xs">{translate("control.action.run.infinity")}</span>
         )}
       </button>
       {status.type === "running" ? (
       <button data-testid="save-button"
           onClick={handlePause}
           title={translate("control.action.pause")}
-          className="group relative flex flex-col items-center rounded-lg px-2 py-1 transition hover:bg-red-600/20 focus-visible:ring-2 focus-visible:ring-red-400"
+          className="group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-red-600/20 focus-visible:ring-2 focus-visible:ring-red-400"
         >
           <span className="flex items-center justify-center">
             <FontAwesomeIcon
@@ -213,14 +213,14 @@ export function Controls({ className }: { className?: string }) {
               </span>
             )}
           </span>
-          {!isMobile && <span className="mt-1 text-xs">{translate("control.action.pause")}</span>}
+          {!isMobile && <span className="mt-0.5 text-xs">{translate("control.action.pause")}</span>}
         </button>
       ) : (
       <button data-testid="assemble-button"
           onClick={handleReset}
           disabled={status.type === "stopped"}
           title={translate("control.action.reset")}
-          className="group relative flex flex-col items-center rounded-lg px-2 py-1 transition hover:bg-red-600/20 focus-visible:ring-2 focus-visible:ring-red-400 disabled:opacity-50"
+          className="group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-red-600/20 focus-visible:ring-2 focus-visible:ring-red-400 disabled:opacity-50"
         >
           <span className="flex items-center justify-center">
             <FontAwesomeIcon
@@ -234,7 +234,7 @@ export function Controls({ className }: { className?: string }) {
               </span>
             )}
           </span>
-          {!isMobile && <span className="mt-1 text-xs">{translate("control.action.reset")}</span>}
+          {!isMobile && <span className="mt-0.5 text-xs">{translate("control.action.reset")}</span>}
         </button>
       )}
     </div>

@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { useAtomValue } from "jotai";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 import { animated, getSpring } from "@/computer/shared/springs";
 import { useSimulation } from "@/computer/simulation";
@@ -14,6 +14,7 @@ import { cycleAtom, cycleCountAtom, messageAtom } from "./state";
 export function Control() {
   const translate = useTranslate();
   const cycleCount = useAtomValue(cycleCountAtom); // Obtener el valor de cycleCount
+  const [showCycleInfo, setShowCycleInfo] = useState(false);
 
   const { status } = useSimulation();
   const cycle = useAtomValue(cycleAtom);
@@ -34,12 +35,91 @@ export function Control() {
     }
   }, [cycle]);
 
-  const statusKey = useMemo(() => {
-    if (status.type === "running" && status.waitingForInput) return "waiting-for-input";
-    if (status.type === "stopped") return status.error ? "stopped-error" : "stopped";
-    if (cycle.phase === "stopped" && cycle.error) return "stopped-error";
-    return cycle.phase;
-  }, [status, cycle]);
+
+
+  // Funciones para la información del ciclo
+  const getPhaseDescription = () => {
+    if (!cycle) return "CPU detenida";
+    
+    switch (cycle.phase) {
+      case 'fetching':
+        return "Leyendo instrucción";
+      case 'fetching-operands':
+        return "Obteniendo operandos";
+      case 'executing':
+        return "Ejecutando operación";
+      case 'writeback':
+        return "Escribiendo resultado";
+      case 'interrupt':
+        return "Procesando interrupción";
+      case 'int6':
+      case 'int7':
+        return "Rutina de interrupción";
+      case 'stopped':
+        return cycle.error ? `Error: ${cycle.error.message}` : "CPU detenida";
+      default:
+        return "Estado desconocido";
+    }
+  };
+
+  const getPhaseIcon = () => {
+    if (!cycle) return "⏹️";
+    
+    switch (cycle.phase) {
+      case 'fetching':
+        return "📥";
+      case 'fetching-operands':
+        return "🔍";
+      case 'executing':
+        return "⚡";
+      case 'writeback':
+        return "💾";
+      case 'interrupt':
+        return "🚨";
+      case 'int6':
+      case 'int7':
+        return "🔄";
+      case 'stopped':
+        return cycle.error ? "❌" : "⏹️";
+      default:
+        return "❓";
+    }
+  };
+
+  const getPhaseColor = () => {
+    if (!cycle) return "text-stone-400";
+    
+    switch (cycle.phase) {
+      case 'fetching':
+        return "text-blue-400";
+      case 'fetching-operands':
+        return "text-yellow-400";
+      case 'executing':
+        return "text-green-400";
+      case 'writeback':
+        return "text-purple-400";
+      case 'interrupt':
+        return "text-red-400";
+      case 'int6':
+      case 'int7':
+        return "text-orange-400";
+      case 'stopped':
+        return cycle.error ? "text-red-400" : "text-stone-400";
+      default:
+        return "text-stone-400";
+    }
+  };
+
+  const getCurrentPhase = () => {
+    if (!cycle) return 'idle';
+    
+    if (cycle.phase === 'fetching') return 'fetch';
+    if (cycle.phase === 'fetching-operands') return 'execute';
+    if (cycle.phase === 'executing') return 'execute';
+    if (cycle.phase === 'writeback') return 'execute';
+    
+    return 'idle';
+  };
 
   return (
     <>
@@ -60,8 +140,8 @@ export function Control() {
         </span>
       </div>
 
-      <div className="absolute bottom-[30px] left-[30px] flex h-[150px] w-[350px] flex-col items-center rounded-lg border border-stone-600 bg-stone-800">
-        <div className="overflow-hidden rounded-b-lg border border-t-0 border-stone-600 bg-stone-900 px-4">
+      <div className="absolute bottom-[17px] left-[30px] flex w-[350px] h-[160px] flex-col items-center rounded-lg border border-stone-600 bg-stone-800">
+        <div className="overflow-hidden rounded-b-lg border border-t-0 border-stone-600 bg-stone-900 px-3 py-0.5">
           <span className="text-sm leading-none">{translate("computer.cpu.decoder")}</span>
           <div className="my-1 h-1 w-full overflow-hidden rounded-full bg-stone-600">
             <animated.div
@@ -74,51 +154,63 @@ export function Control() {
           </div>
         </div>
 
-        <span
-          className={clsx(
-            "mt-4 w-full rounded-lg border border-stone-600 py-2 text-center text-sm leading-none transition-colors",
-            statusKey === "stopped-error"
-              ? "bg-red-500"
-              : statusKey === "waiting-for-input"
-                ? "bg-amber-600"
-                : statusKey === "int6" || statusKey === "int7"
-                  ? "bg-blue-600"
-                  : "bg-stone-900",
-          )}
-        >
-          {statusKey === "int6" || statusKey === "int7" ? (
-            <>
-              {translate(`computer.cpu.status.${statusKey}`)}
-              <div>{message}</div>
-            </>
-          ) : statusKey === "stopped-error" || statusKey === "waiting-for-input" ? (
-            <>{translate(`computer.cpu.status.${statusKey}`)}</>
-          ) : message ? (
-            <div>{message}</div>
-          ) : (
-            translate(`computer.cpu.status.${statusKey}`)
-            //( statusKey === "stopped-error" || statusKey === "waiting-for-input"  || statusKey === "int7")
-          )}
-        </span>
+        {/* Información del ciclo de instrucción - Compacta */}
+        <div className="w-full flex-1 p-0.5">
+          <div className="flex items-center justify-between mb-0.5">
+            <span className="text-xs font-bold text-mantis-400 uppercase tracking-wide w-16 whitespace-nowrap">
+              Ciclo CPU
+            </span>
+            <button
+              onClick={() => setShowCycleInfo(!showCycleInfo)}
+              className={clsx(
+                "text-xs px-1 py-0.5 rounded transition-colors",
+                showCycleInfo 
+                  ? "bg-mantis-400/20 text-mantis-400" 
+                  : "text-stone-400 hover:text-mantis-400 hover:bg-mantis-400/10"
+              )}
+            >
+              {showCycleInfo ? '−' : '+'}
+            </button>
+          </div>
 
-        <div className="mt-4 w-64 overflow-hidden rounded-lg border border-stone-600 bg-stone-900 py-2">
-          <p className="text-center font-mono">
-            {!("metadata" in cycle) || cycle.phase === "fetching" || status.type === "stopped" ? (
-              cycle.phase === "stopped" &&
-              statusKey !== "stopped-error" &&
-              statusKey === "stopped" &&
-              cycleCount !== 0 ? (
-                <span className="text-mantis-400">HLT</span>
-              ) : (
-                <span className="italic text-stone-400">???</span>
-              )
-            ) : (
-              <>
-                <span className="text-mantis-400">{cycle.metadata.name}</span>
-                <span className="text-white">{operandsText}</span>
-              </>
-            )}
-          </p>
+          {/* Estado actual del ciclo - Compacto */}
+          <div className="flex items-center gap-1 p-0.5 bg-stone-900/80 rounded border border-stone-600 mb-0.5">
+            <div className={clsx("text-sm", getPhaseColor())}>
+              {getPhaseIcon()}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className={clsx("text-xs font-semibold", getPhaseColor())}>
+                {getPhaseDescription()}
+              </div>
+              {cycle && "metadata" in cycle && cycle.metadata && (
+                <div className="text-xs text-stone-400 truncate">
+                  <span className="font-mono text-mantis-300">{cycle.metadata.name}</span>
+                  {cycle.metadata.operands.length > 0 && (
+                    <span className="text-white"> {cycle.metadata.operands.join(", ")}</span>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Información detallada del ciclo - Solo cuando está expandida */}
+          {showCycleInfo && (
+            <div className="space-y-0.5">
+              {/* Fases del ciclo - Solo Busqueda y Ejecución */}
+              <div className="p-0.5 bg-stone-900/80 rounded border border-stone-600">
+                <div className="text-xs font-bold text-mantis-400 mb-1">Fases:</div>
+                <div className="flex items-center justify-center gap-1 text-xs text-stone-300">
+                  <div className={clsx("px-1 py-0.5 rounded", getCurrentPhase() === 'fetch' ? "bg-blue-500/20 text-blue-400" : "text-stone-500")}>
+                    📥 Busqueda
+                  </div>
+                  <span className="text-stone-500">→</span>
+                  <div className={clsx("px-1 py-0.5 rounded", getCurrentPhase() === 'execute' ? "bg-green-500/20 text-green-400" : "text-stone-500")}>
+                    ⚡ Ejecución
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </>

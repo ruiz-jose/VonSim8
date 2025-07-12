@@ -1,4 +1,4 @@
-import type { PhysicalRegister } from "@vonsim/simulator/cpu";
+import type { PhysicalRegister } from "./state";
 import clsx from "clsx";
 import { useAtomValue } from "jotai";
 import { useEffect, useState } from "react";
@@ -10,7 +10,8 @@ import { AddressBus } from "./AddressBus";
 import { ALU } from "./ALU";
 import { Control } from "./Control";
 import { DataBus } from "./DataBus";
-import { registerAtoms, showSPAtom } from "./state";
+
+import { registerAtoms, showSPAtom, cycleAtom } from "./state";
 
 // Add IPPlusOneAnimation component
 function IPPlusOneAnimation() {
@@ -83,10 +84,13 @@ export function CPU() {
   const translate = useTranslate();
 
   const showSP = useAtomValue(showSPAtom); // Usar el átomo showSPAtom
+  const cycle = useAtomValue(cycleAtom);
   const [showid, setShowid] = useState(false);
   const [showri, setShowri] = useState(false);
 
   const [showRegisters, setShowRegisters] = useState(false);
+
+
 
   useEffect(() => {
     const handleInstruction = (instruction: string, modeid?: boolean, moderi?: boolean) => {
@@ -146,6 +150,8 @@ export function CPU() {
         {translate("computer.cpu.name")}
       </span>
 
+
+
       <AddressBus showSP={showSP} showri={showri} />
       <DataBus showSP={showSP} showid={showid} showri={showri} />
 
@@ -164,10 +170,10 @@ export function CPU() {
 
       <ALU />
 
-      <Reg name="AX" emphasis className="left-[450px] top-[30px]" />
-      <Reg name="BX" emphasis className="left-[450px] top-[70px]" />
-      <Reg name="CX" emphasis className="left-[450px] top-[110px]" />
-      <Reg name="DX" emphasis className="left-[450px] top-[150px]" />
+      <Reg name="AL" emphasis className="left-[450px] top-[30px]" />
+      <Reg name="BL" emphasis className="left-[450px] top-[70px]" />
+      <Reg name="CL" emphasis className="left-[450px] top-[110px]" />
+      <Reg name="DL" emphasis className="left-[450px] top-[150px]" />
       {showid && <Reg name="id" className={clsx("left-[450px] top-[190px]", "border-cyan-400")} />}
 
       <Reg name="MBR" className={clsx("right-[-11px] top-[233px]", "border-indigo-400")} />
@@ -202,11 +208,16 @@ function Reg({
 }) {
   //const translate = useTranslate();
 
+  // Mapeo explícito de nombres de registros a sus paths correspondientes
+  const getSpringPath = (regName: string): string => {
+    return `cpu.${regName}`;
+  };
+
   return (
     <Register
       name={name}
       valueAtom={registerAtoms[name]}
-      springs={`cpu.${name}` as any}
+      springs={getSpringPath(name) as any}
       emphasis={emphasis}
       // title={translate("computer.cpu.register", name)}
       className={clsx("absolute", className)}

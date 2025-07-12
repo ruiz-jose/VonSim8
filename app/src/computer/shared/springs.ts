@@ -115,6 +115,10 @@ const springs = {
     BX: Register(),
     CX: Register(),
     DX: Register(),
+    AL: Register(),
+    BL: Register(),
+    CL: Register(),
+    DL: Register(),
     SP: Register(),
     IP: Register(),
     IR: Register(),
@@ -183,7 +187,25 @@ export type SpringPathWhere<T> = {
  * getSpring("bus.address") // { stroke: SpringValue<string> }
  */
 export function getSpring<const Key extends SpringPath>(key: Key) {
-  return getFromPath<Springs, Key, SpringValue<any>>(springs, key);
+  try {
+    return getFromPath<Springs, Key, SpringValue<any>>(springs, key);
+  } catch (error) {
+    // Fallback para paths que no están en el tipo pero existen en runtime
+    const keys = (key as string).split(".");
+    let result: any = springs;
+    for (const k of keys) {
+      if (k in result) result = result[k];
+      else {
+        console.warn(`Path not found: ${key}`);
+        // Retornar un spring por defecto para evitar errores
+        return {
+          backgroundColor: new SpringValue(colors.stone[800]),
+          opacity: new SpringValue(1),
+        };
+      }
+    }
+    return result;
+  }
 }
 
 // This final section programatically saves the intial
