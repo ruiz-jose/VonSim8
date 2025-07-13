@@ -22,7 +22,7 @@ const useUsageStats = () => {
     totalInstructionsExecuted: 0,
     totalFilesCreated: 0,
     lastSession: null,
-    averageSessionTime: 0
+    averageSessionTime: 0,
   });
 
   // Cargar estadísticas al inicializar
@@ -31,14 +31,14 @@ const useUsageStats = () => {
     if (savedStats) {
       try {
         const parsed = JSON.parse(savedStats) as any;
-        if (parsed && typeof parsed === 'object') {
+        if (parsed && typeof parsed === "object") {
           setStats({
             totalSessions: Number(parsed.totalSessions) || 0,
             totalSimulationTime: Number(parsed.totalSimulationTime) || 0,
             totalInstructionsExecuted: Number(parsed.totalInstructionsExecuted) || 0,
             totalFilesCreated: Number(parsed.totalFilesCreated) || 0,
             lastSession: parsed.lastSession ? new Date(parsed.lastSession) : null,
-            averageSessionTime: Number(parsed.averageSessionTime) || 0
+            averageSessionTime: Number(parsed.averageSessionTime) || 0,
           });
         }
       } catch {
@@ -52,34 +52,39 @@ const useUsageStats = () => {
     localStorage.setItem("vonsim8-usage-stats", JSON.stringify(stats));
   }, [stats]);
 
-  const updateStats = useCallback((type: 'session' | 'simulation' | 'instruction' | 'file', value = 1) => {
-    setStats(prev => {
-      const newStats = { ...prev };
-      
-      switch (type) {
-        case 'session':
-          newStats.totalSessions += value;
-          newStats.lastSession = new Date();
-          break;
-        case 'simulation':
-          newStats.totalSimulationTime += value;
-          break;
-        case 'instruction':
-          newStats.totalInstructionsExecuted += value;
-          break;
-        case 'file':
-          newStats.totalFilesCreated += value;
-          break;
-      }
+  const updateStats = useCallback(
+    (type: "session" | "simulation" | "instruction" | "file", value = 1) => {
+      setStats(prev => {
+        const newStats = { ...prev };
 
-      // Calcular tiempo promedio por sesión
-      if (newStats.totalSessions > 0) {
-        newStats.averageSessionTime = Math.floor(newStats.totalSimulationTime / newStats.totalSessions);
-      }
+        switch (type) {
+          case "session":
+            newStats.totalSessions += value;
+            newStats.lastSession = new Date();
+            break;
+          case "simulation":
+            newStats.totalSimulationTime += value;
+            break;
+          case "instruction":
+            newStats.totalInstructionsExecuted += value;
+            break;
+          case "file":
+            newStats.totalFilesCreated += value;
+            break;
+        }
 
-      return newStats;
-    });
-  }, []);
+        // Calcular tiempo promedio por sesión
+        if (newStats.totalSessions > 0) {
+          newStats.averageSessionTime = Math.floor(
+            newStats.totalSimulationTime / newStats.totalSessions,
+          );
+        }
+
+        return newStats;
+      });
+    },
+    [],
+  );
 
   return { stats, updateStats };
 };
@@ -90,7 +95,7 @@ const useFormatters = () => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const secs = seconds % 60;
-    
+
     if (hours > 0) {
       return `${hours}h ${minutes}m ${secs}s`;
     } else if (minutes > 0) {
@@ -102,12 +107,12 @@ const useFormatters = () => {
 
   const formatDate = useCallback((date: Date | null): string => {
     if (!date) return "Nunca";
-    return date.toLocaleDateString('es-ES', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return date.toLocaleDateString("es-ES", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   }, []);
 
@@ -124,27 +129,31 @@ const useFormatters = () => {
 };
 
 // Componente de estadística individual optimizado
-const StatItem = memo(({ 
-  label, 
-  value, 
-  icon, 
-  className = "" 
-}: {
-  label: string;
-  value: string | number;
-  icon?: string;
-  className?: string;
-}) => (
-  <div className={clsx("flex items-center justify-between rounded-lg bg-stone-800 p-3", className)}>
-    <div className="flex items-center gap-2">
-      {icon && <span className={clsx("size-4", icon)} />}
-      <span className="text-sm text-stone-300">{label}</span>
+const StatItem = memo(
+  ({
+    label,
+    value,
+    icon,
+    className = "",
+  }: {
+    label: string;
+    value: string | number;
+    icon?: string;
+    className?: string;
+  }) => (
+    <div
+      className={clsx("flex items-center justify-between rounded-lg bg-stone-800 p-3", className)}
+    >
+      <div className="flex items-center gap-2">
+        {icon && <span className={clsx("size-4", icon)} />}
+        <span className="text-sm text-stone-300">{label}</span>
+      </div>
+      <span className="font-mono text-sm font-semibold text-white">{value}</span>
     </div>
-    <span className="font-mono text-sm font-semibold text-white">{value}</span>
-  </div>
-));
+  ),
+);
 
-StatItem.displayName = 'StatItem';
+StatItem.displayName = "StatItem";
 
 // Componente principal optimizado
 export const UsageStats = memo(() => {
@@ -157,23 +166,24 @@ export const UsageStats = memo(() => {
   }, []);
 
   // Memoizar las estadísticas calculadas
-  const calculatedStats = useMemo(() => ({
-    totalTimeFormatted: formatTime(stats.totalSimulationTime),
-    averageTimeFormatted: formatTime(stats.averageSessionTime),
-    lastSessionFormatted: formatDate(stats.lastSession),
-    instructionsFormatted: formatNumber(stats.totalInstructionsExecuted),
-    filesFormatted: formatNumber(stats.totalFilesCreated),
-    sessionsFormatted: formatNumber(stats.totalSessions)
-  }), [stats, formatTime, formatDate, formatNumber]);
+  const calculatedStats = useMemo(
+    () => ({
+      totalTimeFormatted: formatTime(stats.totalSimulationTime),
+      averageTimeFormatted: formatTime(stats.averageSessionTime),
+      lastSessionFormatted: formatDate(stats.lastSession),
+      instructionsFormatted: formatNumber(stats.totalInstructionsExecuted),
+      filesFormatted: formatNumber(stats.totalFilesCreated),
+      sessionsFormatted: formatNumber(stats.totalSessions),
+    }),
+    [stats, formatTime, formatDate, formatNumber],
+  );
 
   if (!isOpen) return null;
 
   return (
     <div className="absolute right-0 top-full z-50 mt-2 w-80 rounded-lg border border-stone-600 bg-stone-900 p-4 shadow-xl">
       <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-white">
-          Estadísticas de Uso
-        </h3>
+        <h3 className="text-lg font-semibold text-white">Estadísticas de Uso</h3>
         <button
           onClick={toggleOpen}
           className="rounded p-1 text-stone-400 transition-colors hover:text-white"
@@ -188,31 +198,31 @@ export const UsageStats = memo(() => {
           value={calculatedStats.sessionsFormatted}
           icon="icon-[lucide--users]"
         />
-        
+
         <StatItem
           label="Tiempo total de simulación"
           value={calculatedStats.totalTimeFormatted}
           icon="icon-[lucide--clock]"
         />
-        
+
         <StatItem
           label="Tiempo promedio por sesión"
           value={calculatedStats.averageTimeFormatted}
           icon="icon-[lucide--timer]"
         />
-        
+
         <StatItem
           label="Instrucciones ejecutadas"
           value={calculatedStats.instructionsFormatted}
           icon="icon-[lucide--cpu]"
         />
-        
+
         <StatItem
           label="Archivos creados"
           value={calculatedStats.filesFormatted}
           icon="icon-[lucide--file-text]"
         />
-        
+
         <StatItem
           label="Última sesión"
           value={calculatedStats.lastSessionFormatted}
@@ -232,7 +242,7 @@ export const UsageStats = memo(() => {
         >
           Resetear estadísticas
         </Button>
-        
+
         <Button
           variant="ghost"
           size="sm"
@@ -246,10 +256,13 @@ export const UsageStats = memo(() => {
   );
 });
 
-UsageStats.displayName = 'UsageStats';
+UsageStats.displayName = "UsageStats";
 
 // Función para actualizar estadísticas desde otros componentes
-export const updateUsageStats = (type: 'session' | 'simulation' | 'instruction' | 'file', value = 1) => {
+export const updateUsageStats = (
+  type: "session" | "simulation" | "instruction" | "file",
+  value = 1,
+) => {
   const savedStats = localStorage.getItem("vonsim8-usage-stats");
   let stats: UsageStats = {
     totalSessions: 0,
@@ -257,20 +270,20 @@ export const updateUsageStats = (type: 'session' | 'simulation' | 'instruction' 
     totalInstructionsExecuted: 0,
     totalFilesCreated: 0,
     lastSession: null,
-    averageSessionTime: 0
+    averageSessionTime: 0,
   };
 
   if (savedStats) {
     try {
       const parsed = JSON.parse(savedStats) as any;
-      if (parsed && typeof parsed === 'object') {
+      if (parsed && typeof parsed === "object") {
         stats = {
           totalSessions: Number(parsed.totalSessions) || 0,
           totalSimulationTime: Number(parsed.totalSimulationTime) || 0,
           totalInstructionsExecuted: Number(parsed.totalInstructionsExecuted) || 0,
           totalFilesCreated: Number(parsed.totalFilesCreated) || 0,
           lastSession: parsed.lastSession ? new Date(parsed.lastSession) : null,
-          averageSessionTime: Number(parsed.averageSessionTime) || 0
+          averageSessionTime: Number(parsed.averageSessionTime) || 0,
         };
       }
     } catch {
@@ -279,17 +292,17 @@ export const updateUsageStats = (type: 'session' | 'simulation' | 'instruction' 
   }
 
   switch (type) {
-    case 'session':
+    case "session":
       stats.totalSessions += value;
       stats.lastSession = new Date();
       break;
-    case 'simulation':
+    case "simulation":
       stats.totalSimulationTime += value;
       break;
-    case 'instruction':
+    case "instruction":
       stats.totalInstructionsExecuted += value;
       break;
-    case 'file':
+    case "file":
       stats.totalFilesCreated += value;
       break;
   }
@@ -300,4 +313,4 @@ export const updateUsageStats = (type: 'session' | 'simulation' | 'instruction' 
   }
 
   localStorage.setItem("vonsim8-usage-stats", JSON.stringify(stats));
-}; 
+};

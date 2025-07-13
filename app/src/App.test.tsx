@@ -1,9 +1,8 @@
-
 import "@testing-library/jest-dom";
 
 import { render, screen } from "@testing-library/react";
 import { useMedia } from "react-use";
-import { describe, expect,it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import App from "./App";
 
@@ -19,7 +18,7 @@ import App from "./App";
 vi.mock("virtual:pwa-register/react", () => ({
   useRegisterSW: () => ({}),
 }));
-vi.mock("react-use", async (importOriginal) => {
+vi.mock("react-use", async importOriginal => {
   const actual = await importOriginal();
   return Object.assign({}, actual, {
     useMedia: vi.fn(),
@@ -27,7 +26,6 @@ vi.mock("react-use", async (importOriginal) => {
 });
 
 describe("App layout", () => {
-
   it("renders DesktopLayout on large screens", () => {
     const useMediaMock = vi.mocked(useMedia);
     useMediaMock.mockReturnValue(false); // no es móvil

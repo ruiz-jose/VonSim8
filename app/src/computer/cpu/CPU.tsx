@@ -21,7 +21,7 @@ function IPPlusOneAnimation() {
     const handleIPUpdate = () => {
       setIsVisible(true);
       setAnimationKey(prev => prev + 1);
-      
+
       // Hide the animation after the same duration as updateRegisterWithGlow (~3 seconds)
       setTimeout(() => {
         setIsVisible(false);
@@ -29,10 +29,10 @@ function IPPlusOneAnimation() {
     };
 
     // Listen for IP register updates
-    window.addEventListener('ip-register-update', handleIPUpdate);
-    
+    window.addEventListener("ip-register-update", handleIPUpdate);
+
     return () => {
-      window.removeEventListener('ip-register-update', handleIPUpdate);
+      window.removeEventListener("ip-register-update", handleIPUpdate);
     };
   }, []);
 
@@ -60,17 +60,17 @@ function IPPlusOneAnimation() {
           }
         }
       `}</style>
-      
+
       {/* +1 Text */}
       <div
         key={animationKey}
         className={clsx(
           "pointer-events-none absolute left-[425px] top-[342px]",
-          "font-mono text-lg font-bold"
+          "font-mono text-lg font-bold",
         )}
         style={{
           color: "#ff6347",
-          animation: "slideUpAndFade 3s ease-out forwards"
+          animation: "slideUpAndFade 3s ease-out forwards",
         }}
       >
         +1
@@ -87,8 +87,6 @@ export function CPU() {
   const [showri, setShowri] = useState(false);
 
   const [showRegisters, setShowRegisters] = useState(false);
-
-
 
   useEffect(() => {
     const handleInstruction = (instruction: string, modeid?: boolean, moderi?: boolean) => {
@@ -140,15 +138,13 @@ export function CPU() {
   }, []);
 
   return (
-    <div 
+    <div
       data-testid="cpu-component"
       className="absolute left-0 top-0 z-10 h-[500px] w-[650px] rounded-lg border border-stone-600 bg-stone-900 [&_*]:z-20"
     >
       <span className="block w-min rounded-br-lg rounded-tl-lg border-b border-r border-stone-600 bg-mantis-500 px-2 py-1 text-3xl text-white">
         {translate("computer.cpu.name")}
       </span>
-
-
 
       <AddressBus showSP={showSP} showri={showri} />
       <DataBus showSP={showSP} showid={showid} showri={showri} />

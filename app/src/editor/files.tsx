@@ -45,7 +45,7 @@ const programAtom = atomWithStorage(
 export const useSavedProgram = () => useAtomValue(programAtom);
 export const getSavedProgram = () => {
   const result = store.get(programAtom);
-  return typeof result === 'string' ? result : "";
+  return typeof result === "string" ? result : "";
 };
 
 export const syncStatePlugin = ViewPlugin.fromClass(
@@ -65,10 +65,10 @@ const supportsNativeFileSystem = "showSaveFilePicker" in window;
 
 const _fileHandleAtom = atom(null as any);
 const fileHandleAtom = atom(
-  (get) => get(_fileHandleAtom),
+  get => get(_fileHandleAtom),
   (get, set, newValue: any) => {
     set(_fileHandleAtom, newValue);
-  }
+  },
 );
 const lastSavedProgramAtom = atom("");
 const dirtyAtom = atom(get => get(lastSavedProgramAtom) !== get(programAtom));

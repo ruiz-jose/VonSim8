@@ -1,5 +1,5 @@
 import { assemble } from "@vonsim/assembler";
-import { beforeEach,describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 
 import { Simulator } from "../src";
 
@@ -13,7 +13,7 @@ describe("Simulator Integration", () => {
   describe("Basic Operations", () => {
     it("should initialize correctly", () => {
       expect(simulator).toBeDefined();
-      expect(typeof simulator.getComputerState).toBe('function');
+      expect(typeof simulator.getComputerState).toBe("function");
     });
 
     it("should load program correctly", () => {
@@ -22,7 +22,7 @@ describe("Simulator Integration", () => {
         END
       `;
       const assembled = assemble(source);
-      
+
       if (assembled.success) {
         simulator.loadProgram({
           program: assembled,
@@ -30,9 +30,9 @@ describe("Simulator Integration", () => {
             keyboardAndScreen: false,
             pic: false,
             pio: null,
-            handshake: null
+            handshake: null,
           },
-          data: "clean"
+          data: "clean",
         });
         const state = simulator.getComputerState();
         expect(state).toBeDefined();
@@ -48,7 +48,7 @@ describe("Simulator Integration", () => {
         END
       `;
       const assembled = assemble(source);
-      
+
       if (assembled.success) {
         simulator.loadProgram({
           program: assembled,
@@ -56,11 +56,11 @@ describe("Simulator Integration", () => {
             keyboardAndScreen: false,
             pic: false,
             pio: null,
-            handshake: null
+            handshake: null,
           },
-          data: "clean"
+          data: "clean",
         });
-        expect(typeof simulator.startCPU).toBe('function');
+        expect(typeof simulator.startCPU).toBe("function");
       }
     });
   });
@@ -69,7 +69,7 @@ describe("Simulator Integration", () => {
     it("should have devices interface", () => {
       const source = `END`;
       const assembled = assemble(source);
-      
+
       if (assembled.success) {
         simulator.loadProgram({
           program: assembled,
@@ -77,9 +77,9 @@ describe("Simulator Integration", () => {
             keyboardAndScreen: false,
             pic: false,
             pio: null,
-            handshake: null
+            handshake: null,
           },
-          data: "clean"
+          data: "clean",
         });
         const devices = simulator.devices;
         expect(devices).toBeDefined();

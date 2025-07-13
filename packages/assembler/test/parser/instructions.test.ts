@@ -425,7 +425,7 @@ describe("Direct address", () => {
     `);
   });
 
-   it("no offset", () => {
+  it("no offset", () => {
     expect(() => parse("INC [BL + 1]")).toThrowErrorMatchingInlineSnapshot(
       `[Error: Expected "]" after "BL". (8:9)]`,
     );

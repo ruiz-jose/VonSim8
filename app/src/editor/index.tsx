@@ -68,7 +68,7 @@ export function Editor({ className }: { className?: string }) {
           }),
           EditorState.allowMultipleSelections.of(true),
           highlightActiveLine(),
-          EditorView.updateListener.of((update) => {
+          EditorView.updateListener.of(update => {
             if (update.selectionSet) {
               // Bloque intencionalmente vacío
             }
@@ -108,7 +108,12 @@ export function Editor({ className }: { className?: string }) {
   }, [element]);
 
   return (
-    <div className={clsx("flex flex-col rounded-lg border border-stone-700 bg-gradient-to-br from-stone-900 to-stone-800 shadow-xl", className)}>
+    <div
+      className={clsx(
+        "flex flex-col rounded-lg border border-stone-700 bg-gradient-to-br from-stone-900 to-stone-800 shadow-xl",
+        className,
+      )}
+    >
       <div
         ref={ref}
         className="grow overflow-auto rounded-t-lg font-mono"

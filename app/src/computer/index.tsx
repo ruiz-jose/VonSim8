@@ -1,4 +1,3 @@
-
 // Mantener los imports de React y librerías externas al principio
 import { useEffect, useRef } from "react";
 import { ReactZoomPanPinchRef, TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";

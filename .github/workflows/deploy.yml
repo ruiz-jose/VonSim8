@@ -24,7 +24,7 @@ jobs:
         run: npm install -g pnpm@10.5.2
 
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile 
+        run: pnpm install --no-frozen-lockfile
 
       - name: Build project
         run: pnpm --dir app run build

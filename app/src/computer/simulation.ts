@@ -167,7 +167,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
       // Handle event
       const event = generator.next();
       if (event.done) break;
-      if (event.value && typeof event.value !== 'undefined') {
+      if (event.value && typeof event.value !== "undefined") {
         await handleEvent(event.value);
       } else {
         continue;
@@ -1215,7 +1215,7 @@ async function startPrinter(): Promise<void> {
       const gen = simulator.devices.printer.print()!;
       let result = gen.next();
       while (!result.done) {
-        if (result.value && typeof result.value !== 'undefined') {
+        if (result.value && typeof result.value !== "undefined") {
           await handleEvent(result.value);
         }
         result = gen.next();

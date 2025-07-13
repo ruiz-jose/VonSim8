@@ -23,7 +23,7 @@ const drawDataPath = (from: DataRegister, to: DataRegister, instruction: string,
   try {
     const path = generateDataPath(from, to, instruction, mode);
     if (!path) return Promise.resolve(); // Si no hay ruta, no animar
-    
+
     return anim(
       [
         { key: "cpu.internalBus.data.path", from: path },
@@ -263,7 +263,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       );
       await activateRegister("cpu.MAR", colors.blue[500]);
       store.set(MARAtom, store.get(registerAtoms[event.register]));
-      
+
       await Promise.all([
         deactivateRegister("cpu.MAR"),
         anim(
@@ -276,17 +276,17 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
 
     case "cpu:mbr.get": {
       // Normalizar el nombre del registro para evitar problemas con subniveles
-      const normalizedRegister = event.register.replace(/\.(l|h)$/, '');
-      
+      const normalizedRegister = event.register.replace(/\.(l|h)$/, "");
+
       // NO activar el registro de destino antes del bus - esto evita el coloreo prematuro
       // await activateRegister(`cpu.${normalizedRegister}` as RegisterKey);
-      
+
       // Primero: Solo dibujar la animación del bus de datos (sin colorear el registro destino)
       await drawDataPath("MBR", normalizedRegister as DataRegister, instructionName, mode);
-      
+
       // Segundo: Actualizar el valor del registro después de que termine la animación del bus
       store.set(registerAtoms[event.register], store.get(MBRAtom));
-      
+
       // Tercero: Solo DESPUÉS de que termine la animación del bus, hacer la animación de actualización
       if (normalizedRegister === "IR") {
         await updateRegisterWithGlow(`cpu.${normalizedRegister}` as RegisterKey);
@@ -295,7 +295,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         await activateRegister(`cpu.${normalizedRegister}` as RegisterKey);
         await deactivateRegister(`cpu.${normalizedRegister}` as RegisterKey);
       }
-      
+
       // Cuarto: Resetear la animación del bus
       await resetDataPath();
       return;
@@ -303,8 +303,8 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
 
     case "cpu:mbr.set": {
       // Normalizar el nombre del registro para evitar problemas con subniveles
-      const normalizedRegister = event.register.replace(/\.(l|h)$/, '');
-      
+      const normalizedRegister = event.register.replace(/\.(l|h)$/, "");
+
       await activateRegister("cpu.MBR" as RegisterKey);
       await drawDataPath(normalizedRegister as DataRegister, "MBR", instructionName, mode);
       await activateRegister("cpu.MBR");
@@ -322,25 +322,25 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
 
     case "cpu:register.update": {
       const [reg] = parseRegister(event.register);
-      
+
       // Usar la nueva función de animación con brillo
-      const animationKey: RegisterKey = reg === "ri" ? "cpu.ri" : `cpu.${reg}` as RegisterKey;
-      
+      const animationKey: RegisterKey = reg === "ri" ? "cpu.ri" : (`cpu.${reg}` as RegisterKey);
+
       // Special handling for IP register - trigger +1 animation synchronized with register update
       if (reg === "IP") {
         // Execute both animations in parallel
         await Promise.all([
           updateRegisterWithGlow(animationKey),
           // Trigger the custom event for IP update animation at the same time
-          new Promise<void>((resolve) => {
-            window.dispatchEvent(new CustomEvent('ip-register-update'));
+          new Promise<void>(resolve => {
+            window.dispatchEvent(new CustomEvent("ip-register-update"));
             resolve();
-          })
+          }),
         ]);
       } else {
         await updateRegisterWithGlow(animationKey);
       }
-      
+
       store.set(registerAtoms[event.register], event.value);
       return;
     }

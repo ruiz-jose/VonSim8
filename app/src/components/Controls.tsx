@@ -121,7 +121,8 @@ export function Controls({ className }: { className?: string }) {
   }, []);
 
   return (
-    <div data-testid="controls"
+    <div
+      data-testid="controls"
       className={clsx(
         // Reduce py-4 a py-1 y px-8 a px-4 para menor altura
         "flex items-center justify-center gap-4 rounded-xl border border-stone-700 bg-stone-900/80 px-3 py-1 shadow-lg",
@@ -151,7 +152,8 @@ export function Controls({ className }: { className?: string }) {
           <span className="mt-0.5 text-xs">{translate("control.action.run.cycle-change")}</span>
         )}
       </button>
-      <button data-testid="new-button"
+      <button
+        data-testid="new-button"
         disabled={status.type === "running"}
         onClick={runInstruction}
         title={translate("control.action.run.end-of-instruction")}
@@ -170,16 +172,19 @@ export function Controls({ className }: { className?: string }) {
           )}
         </span>
         {!isMobile && (
-          <span className="mt-0.5 text-xs">{translate("control.action.run.end-of-instruction")}</span>
+          <span className="mt-0.5 text-xs">
+            {translate("control.action.run.end-of-instruction")}
+          </span>
         )}
       </button>
-      <button data-testid="open-button"
+      <button
+        data-testid="open-button"
         disabled={status.type === "running"}
         onClick={runInfinity}
         title={translate("control.action.run.infinity")}
         className={clsx(
           "group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-orange-600/20 focus-visible:ring-2 focus-visible:ring-orange-400 disabled:opacity-50",
-          status.type === "running" && "animate-pulse-glow"
+          status.type === "running" && "animate-pulse-glow",
         )}
       >
         <span className="flex items-center justify-center">
@@ -199,7 +204,8 @@ export function Controls({ className }: { className?: string }) {
         )}
       </button>
       {status.type === "running" ? (
-      <button data-testid="save-button"
+        <button
+          data-testid="save-button"
           onClick={handlePause}
           title={translate("control.action.pause")}
           className="group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-red-600/20 focus-visible:ring-2 focus-visible:ring-red-400"
@@ -219,7 +225,8 @@ export function Controls({ className }: { className?: string }) {
           {!isMobile && <span className="mt-0.5 text-xs">{translate("control.action.pause")}</span>}
         </button>
       ) : (
-      <button data-testid="assemble-button"
+        <button
+          data-testid="assemble-button"
           onClick={handleReset}
           disabled={status.type === "stopped"}
           title={translate("control.action.reset")}

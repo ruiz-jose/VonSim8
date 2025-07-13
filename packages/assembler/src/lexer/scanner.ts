@@ -146,7 +146,7 @@ export class Scanner {
         // Check for decimal point immediately after number - not allowed in assembly
         if (this.peek() === ".") {
           throw new AssemblerError("lexer.unexpected-character", ".").at(
-            new Position(this.position.end, this.position.end + 1)
+            new Position(this.position.end, this.position.end + 1),
           );
         }
 
@@ -178,7 +178,7 @@ export class Scanner {
         // this is an invalid decimal number (like ".1")
         if (c === "." && this.isDigit(this.peek())) {
           throw new AssemblerError("lexer.unexpected-character", ".").at(
-            new Position(this.position.start, this.position.start + 1)
+            new Position(this.position.start, this.position.start + 1),
           );
         }
 

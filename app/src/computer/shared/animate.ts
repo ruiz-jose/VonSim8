@@ -80,9 +80,9 @@ export async function anim(
   if (!settings.animations && !config.forceMs) return null;
 
   const springConfig = {
-    duration: config.forceMs 
-      ? config.duration 
-      : settings.animations 
+    duration: config.forceMs
+      ? config.duration
+      : settings.animations
         ? config.duration * settings.executionUnit
         : 1, // Use minimal duration when animations are disabled
     easing: easings[config.easing],
@@ -116,30 +116,32 @@ export async function anim(
 /**
  * Pause all running animations.
  */
-export const pauseAllAnimations = () => runningAnimations.forEach(key => {
-  try {
-    const spring = getSpring(key);
-    if (spring && typeof spring.pause === 'function') {
-      spring.pause();
+export const pauseAllAnimations = () =>
+  runningAnimations.forEach(key => {
+    try {
+      const spring = getSpring(key);
+      if (spring && typeof spring.pause === "function") {
+        spring.pause();
+      }
+    } catch (error) {
+      console.warn(`Error pausing animation for key ${key}:`, error);
     }
-  } catch (error) {
-    console.warn(`Error pausing animation for key ${key}:`, error);
-  }
-});
+  });
 
 /**
  * Resume all running animations.
  */
-export const resumeAllAnimations = () => runningAnimations.forEach(key => {
-  try {
-    const spring = getSpring(key);
-    if (spring && typeof spring.resume === 'function') {
-      spring.resume();
+export const resumeAllAnimations = () =>
+  runningAnimations.forEach(key => {
+    try {
+      const spring = getSpring(key);
+      if (spring && typeof spring.resume === "function") {
+        spring.resume();
+      }
+    } catch (error) {
+      console.warn(`Error resuming animation for key ${key}:`, error);
     }
-  } catch (error) {
-    console.warn(`Error resuming animation for key ${key}:`, error);
-  }
-});
+  });
 
 /**
  * Stop all running animations.
@@ -151,9 +153,9 @@ export function stopAllAnimations() {
     try {
       const spring = getSpring(key);
       // Verificar que el spring sea válido y tenga el método stop
-      if (spring && typeof spring.stop === 'function') {
+      if (spring && typeof spring.stop === "function") {
         spring.stop(true);
-        if (spring.isPaused && typeof spring.resume === 'function') {
+        if (spring.isPaused && typeof spring.resume === "function") {
           spring.resume();
         }
       }
@@ -172,22 +174,22 @@ const registerColors = {
   BX: "#4F46E5", // índigo 600
   CX: "#3B82F6", // blue 500
   DX: "#1E40AF", // blue 700
-  
+
   // Registros de dirección - usar variaciones de red/mantis
   IP: colors.red[500],
   SP: "#DC2626", // red 600
   MAR: colors.blue[500], // cambiar a azul para consistencia
-  
+
   // Registros especiales - usar el mismo color que MAR (azul)
   MBR: colors.blue[500], // mismo que MAR (azul)
   IR: colors.blue[500], // mismo que MAR (azul)
   FLAGS: "#F59E0B", // amber 500
   result: "#10B981", // emerald 500
-  
+
   // Registros de instrucción - usar tonos naranjas/amarillos
   id: "#F97316", // orange 500
   ri: "#EA580C", // orange 600
-  
+
   // Registros ALU - usar tonos verdes
   left: "#22C55E", // green 500
   right: "#16A34A", // green 600
@@ -244,23 +246,23 @@ export async function updateRegisterWithGlow(key: RegisterKey) {
   try {
     const settings = getSettings();
     const registerColor = getRegisterColor(key);
-    
+
     // Efecto de activación y brillo que se desvanece gradualmente
     await anim({ key: `${key}.backgroundColor`, to: registerColor } as SpringAnimation, {
       duration: 2, // Duración para que sea visible
       easing: "easeOutQuart",
     });
-    
+
     // Pausa para que el usuario vea el cambio - reducir tiempo si animaciones están desactivadas
     const pauseTime = settings.animations ? 1000 : 1;
     await new Promise(resolve => setTimeout(resolve, pauseTime));
-    
+
     // Volver al estado normal
     await anim({ key: `${key}.backgroundColor`, to: colors.stone[800] } as SpringAnimation, {
       duration: 2,
       easing: "easeInQuart",
     });
-    
+
     return;
   } catch (error) {
     console.warn(`No se pudo actualizar el registro ${key}:`, error);
@@ -269,12 +271,12 @@ export async function updateRegisterWithGlow(key: RegisterKey) {
 }
 
 export async function populateDataBus(data: Byte<8>) {
-// Si tienes un spring para el color del bus de datos, usa la clave correcta, por ejemplo:
-// await anim(
-//   { key: "bus.data.color", to: colors.mantis[400] } as SpringAnimation,
-//   { duration: 5, easing: "easeOutSine" },
-// );
-// Si no existe, simplemente omite la animación de color.
+  // Si tienes un spring para el color del bus de datos, usa la clave correcta, por ejemplo:
+  // await anim(
+  //   { key: "bus.data.color", to: colors.mantis[400] } as SpringAnimation,
+  //   { duration: 5, easing: "easeOutSine" },
+  // );
+  // Si no existe, simplemente omite la animación de color.
   await activateRegister("cpu.MBR");
   store.set(MBRAtom, data);
   await deactivateRegister("cpu.MBR");
@@ -285,29 +287,53 @@ export async function populateDataBus(data: Byte<8>) {
 export function hideControlBusTextsOnInit() {
   // Siempre ocultar ambos textos al inicio, forzando opacidad 0 de forma asíncrona para evitar que react-spring la sobrescriba
   setTimeout(() => {
-    try { getSpring("bus.rd.opacity").set(0); } catch (e) { /* noop */ }
-    try { getSpring("bus.wr.opacity").set(0); } catch (e) { /* noop */ }
+    try {
+      getSpring("bus.rd.opacity").set(0);
+    } catch (e) {
+      /* noop */
+    }
+    try {
+      getSpring("bus.wr.opacity").set(0);
+    } catch (e) {
+      /* noop */
+    }
   }, 0);
 }
 
 // Llama esto cuando se quiera mostrar el texto "Read" (por ejemplo, al animar el bus de control RD)
 export function showReadControlText() {
-  try { getSpring("bus.rd.opacity").start({ to: 1 }); } catch (e) { /* noop */ }
+  try {
+    getSpring("bus.rd.opacity").start({ to: 1 });
+  } catch (e) {
+    /* noop */
+  }
 }
 
 // Llama esto cuando se quiera ocultar el texto "Read" (al terminar la animación)
 export function hideReadControlText() {
-  try { getSpring("bus.rd.opacity").start({ to: 0 }); } catch (e) { /* noop */ }
+  try {
+    getSpring("bus.rd.opacity").start({ to: 0 });
+  } catch (e) {
+    /* noop */
+  }
 }
 
 // Llama esto cuando se quiera mostrar el texto "Write" (por ejemplo, al animar el bus de control WR)
 export function showWriteControlText() {
-  try { getSpring("bus.wr.opacity").start({ to: 1 }); } catch (e) { /* noop */ }
+  try {
+    getSpring("bus.wr.opacity").start({ to: 1 });
+  } catch (e) {
+    /* noop */
+  }
 }
 
 // Llama esto cuando se quiera ocultar el texto "Write" (al terminar la animación)
 export function hideWriteControlText() {
-  try { getSpring("bus.wr.opacity").start({ to: 0 }); } catch (e) { /* noop */ }
+  try {
+    getSpring("bus.wr.opacity").start({ to: 0 });
+  } catch (e) {
+    /* noop */
+  }
 }
 
 export async function turnLineOn(line: SimplePathKey, duration: number) {
@@ -321,7 +347,10 @@ export async function turnLineOn(line: SimplePathKey, duration: number) {
 }
 
 export async function turnLineOff(line: SimplePathKey) {
-  return await anim({ key: `${line}.opacity`, to: 0 } as SpringAnimation, { duration: 1, easing: "easeInSine" });
+  return await anim({ key: `${line}.opacity`, to: 0 } as SpringAnimation, {
+    duration: 1,
+    easing: "easeInSine",
+  });
 }
 
 // (No-op blocks eliminados; si tienes bloques vacíos en funciones reales, usa simplemente: // noop)

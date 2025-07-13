@@ -26,9 +26,13 @@ export function DataLines() {
 
   // Obtener las propiedades de animación del bus de datos (similar al bus interno)
   const { path, strokeDashoffset, opacity } = getSpring("bus.data");
-  
+
   // Obtener las propiedades de animación del bus de direcciones (igual que el bus interno)
-  const { path: addressAnimPath, strokeDashoffset: addressStrokeDashoffset, opacity: addressOpacity } = getSpring("bus.address");
+  const {
+    path: addressAnimPath,
+    strokeDashoffset: addressStrokeDashoffset,
+    opacity: addressOpacity,
+  } = getSpring("bus.address");
 
   return (
     <svg className="pointer-events-none absolute inset-0 z-[5] size-full">

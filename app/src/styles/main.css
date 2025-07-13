@@ -55,11 +55,14 @@
 }
 
 @keyframes pulse-glow {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 5px rgba(34, 197, 94, 0.5);
   }
   50% {
-    box-shadow: 0 0 20px rgba(34, 197, 94, 0.8), 0 0 30px rgba(34, 197, 94, 0.6);
+    box-shadow:
+      0 0 20px rgba(34, 197, 94, 0.8),
+      0 0 30px rgba(34, 197, 94, 0.6);
   }
 }
 
@@ -264,11 +267,11 @@
   .mobile-optimized {
     @apply text-sm;
   }
-  
+
   .mobile-card {
     @apply p-3;
   }
-  
+
   .mobile-button {
     @apply py-1.5 px-3 text-sm;
   }

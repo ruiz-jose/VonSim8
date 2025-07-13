@@ -22,7 +22,7 @@ updates:
       # Ignorar dependencias que requieren actualización manual
       - dependency-name: "@vonsim/*"
         update-types: ["version-update:semver-major"]
-      
+
   # Mantener actualizadas las dependencias de npm en la app
   - package-ecosystem: "npm"
     directory: "/app"
@@ -45,7 +45,7 @@ updates:
     ignore:
       - dependency-name: "@vonsim/*"
         update-types: ["version-update:semver-major"]
-        
+
   # Mantener actualizadas las dependencias de npm en packages
   - package-ecosystem: "npm"
     directory: "/packages/assembler"
@@ -65,7 +65,7 @@ updates:
       - "dependencies"
       - "automated"
       - "assembler"
-      
+
   - package-ecosystem: "npm"
     directory: "/packages/simulator"
     schedule:
@@ -84,7 +84,7 @@ updates:
       - "dependencies"
       - "automated"
       - "simulator"
-      
+
   - package-ecosystem: "npm"
     directory: "/packages/common"
     schedule:
@@ -103,7 +103,7 @@ updates:
       - "dependencies"
       - "automated"
       - "common"
-      
+
   # Mantener actualizadas las GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -122,4 +122,4 @@ updates:
     labels:
       - "dependencies"
       - "automated"
-      - "github-actions" 
+      - "github-actions"

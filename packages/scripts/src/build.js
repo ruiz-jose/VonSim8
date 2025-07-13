@@ -10,7 +10,9 @@ const currentNodeVersion = process.version;
 const nodeVersionMatch = currentNodeVersion.match(/v(\d+\.\d+\.\d+)/);
 
 if (!nodeVersionMatch || nodeVersionMatch[1] < requiredNodeVersion) {
-  console.error(`❌ Error: Se requiere Node.js >= ${requiredNodeVersion}, pero tienes ${currentNodeVersion}`);
+  console.error(
+    `❌ Error: Se requiere Node.js >= ${requiredNodeVersion}, pero tienes ${currentNodeVersion}`,
+  );
   console.error("Por favor, actualiza Node.js para continuar.");
   process.exit(1);
 }
@@ -24,7 +26,7 @@ const distDir = new URL("./dist/", rootDir);
 const requiredDirs = [
   new URL("./app/", rootDir),
   new URL("./docs/", rootDir),
-  new URL("./packages/", rootDir)
+  new URL("./packages/", rootDir),
 ];
 
 for (const dir of requiredDirs) {
@@ -61,7 +63,7 @@ try {
 // Normaliza el path para evitar doble barra
 function normalizePathForGlob(url) {
   let p = url.pathname;
-  if (p.endsWith('/')) p = p.slice(0, -1);
+  if (p.endsWith("/")) p = p.slice(0, -1);
   return p;
 }
 
@@ -72,26 +74,26 @@ const distPath = normalizePathForGlob(distDir);
 
 if (await fs.stat(appDistDir).catch(() => false)) {
   console.info(`🔍 Verificando contenido de: ${appDistPath}`);
-  
+
   // Listar contenido del directorio para debug
   try {
     const dirContents = await fs.readdir(appDistDir, { withFileTypes: true });
     console.info(`📁 Contenido del directorio:`);
     dirContents.forEach(item => {
-      const type = item.isDirectory() ? '📁' : '📄';
+      const type = item.isDirectory() ? "📁" : "📄";
       console.info(`  ${type} ${item.name}`);
     });
   } catch (error) {
     console.warn(`⚠️  No se pudo leer el directorio: ${error.message}`);
   }
-  
+
   // Verificar que existan archivos para copiar usando glob
   const filesToCopy = await glob(appDistPath + "/*", { windowsPathsNoEscape: true });
-  
+
   if (filesToCopy.length > 0) {
     console.info(`✅ Encontrados ${filesToCopy.length} archivos para copiar:`);
     filesToCopy.forEach(file => console.info(`  📄 ${path.basename(file)}`));
-    
+
     try {
       await $`cp -r ${appDistPath}/* ${distPath}/`;
       console.info(`✅ Archivos copiados exitosamente a ${distPath}`);
@@ -127,29 +129,29 @@ const docsDistPath = normalizePathForGlob(docsDistDir);
 
 if (await fs.stat(docsDistDir).catch(() => false)) {
   console.info(`🔍 Verificando contenido de: ${docsDistPath}`);
-  
+
   const docsOutputDir = new URL("./docs/", distDir);
   await fs.mkdir(docsOutputDir, { recursive: true });
-  
+
   // Listar contenido del directorio para debug
   try {
     const dirContents = await fs.readdir(docsDistDir, { withFileTypes: true });
     console.info(`📁 Contenido del directorio docs:`);
     dirContents.forEach(item => {
-      const type = item.isDirectory() ? '📁' : '📄';
+      const type = item.isDirectory() ? "📁" : "📄";
       console.info(`  ${type} ${item.name}`);
     });
   } catch (error) {
     console.warn(`⚠️  No se pudo leer el directorio docs: ${error.message}`);
   }
-  
+
   // Verificar que existan archivos para copiar usando glob
   const filesToCopy = await glob(docsDistPath + "/*", { windowsPathsNoEscape: true });
-  
+
   if (filesToCopy.length > 0) {
     console.info(`✅ Encontrados ${filesToCopy.length} archivos para copiar desde docs:`);
     filesToCopy.forEach(file => console.info(`  📄 ${path.basename(file)}`));
-    
+
     try {
       await $`cp -r ${docsDistPath}/* ${docsOutputDir.pathname}`;
       console.info(`✅ Archivos de docs copiados exitosamente`);
@@ -161,7 +163,7 @@ if (await fs.stat(docsDistDir).catch(() => false)) {
     console.warn(`⚠️  No se encontraron archivos para copiar en ${docsDistPath}`);
     console.warn(`⚠️  Continuando sin copiar archivos de docs...`);
   }
-  
+
   // Mover 404.html a la raíz de dist
   const docs404Path = new URL("./404.html", docsOutputDir);
   const root404Path = new URL("./404.html", distDir);
@@ -173,7 +175,7 @@ if (await fs.stat(docsDistDir).catch(() => false)) {
       console.warn(`⚠️  Error moviendo 404.html: ${error.message}`);
     }
   }
-  
+
   // Limpiar docs/dist después de copiar
   try {
     await fs.rm(docsDistDir, { recursive: true });

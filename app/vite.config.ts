@@ -16,7 +16,8 @@ export default defineConfig({
       manifest: {
         name: "VonSim8 - Simulador de Computadora de 8 bits",
         short_name: "VonSim8",
-        description: "Simulador educativo de computadora de 8 bits con editor de código assembly integrado",
+        description:
+          "Simulador educativo de computadora de 8 bits con editor de código assembly integrado",
         theme_color: "#1c1917",
         display: "standalone",
         background_color: "#1c1917",
@@ -34,15 +35,15 @@ export default defineConfig({
             src: "screenshot-wide.png",
             sizes: "1280x720",
             type: "image/png",
-            form_factor: "wide"
+            form_factor: "wide",
           },
           {
-            src: "screenshot-narrow.png", 
+            src: "screenshot-narrow.png",
             sizes: "750x1334",
             type: "image/png",
-            form_factor: "narrow"
-          }
-        ]
+            form_factor: "narrow",
+          },
+        ],
       },
       workbox: {
         navigateFallback: null,
@@ -58,11 +59,11 @@ export default defineConfig({
               cacheName: "google-fonts-cache",
               expiration: {
                 maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 año
-              }
-            }
-          }
-        ]
+                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 año
+              },
+            },
+          },
+        ],
       },
     }),
   ],

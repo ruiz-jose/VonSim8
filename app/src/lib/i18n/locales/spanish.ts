@@ -8,7 +8,8 @@ const maxAddress = MemoryAddress.from(MemoryAddress.MAX_ADDRESS).toString();
 export const spanish: Locale = {
   generics: {
     clean: "Limpiar",
-    "io-register": (name: string, address: any) => `Registro ${name} (${IOAddress.format(address)})`,
+    "io-register": (name: string, address: any) =>
+      `Registro ${name} (${IOAddress.format(address)})`,
     "byte-representation": {
       hex: "Hexadecimal",
       bin: "Binario",

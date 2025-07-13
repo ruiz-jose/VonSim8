@@ -1,11 +1,11 @@
-import { faGraduationCap,faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
+import { faGraduationCap, faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
 import { useAtom } from "jotai";
 import { memo, useCallback, useMemo, useState } from "react";
 
 import { Controls } from "@/components/Controls";
-import { EducationalMenu,EducationalProgress } from "@/components/educational";
+import { EducationalMenu, EducationalProgress } from "@/components/educational";
 import { NotificationCenter } from "@/components/NotificationCenter";
 import { settingsOpenAtom } from "@/components/Settings";
 import { IconButton } from "@/components/ui/Button";
@@ -31,100 +31,100 @@ const useTourControl = () => {
 
 // Componente de estado de simulación optimizado
 const SimulationStatus = memo(({ status }: { status: any }) => {
-  const statusText = useMemo(() => 
-    status.type === "running" ? "Ejecutando" : "Detenido", 
-    [status.type]
+  const statusText = useMemo(
+    () => (status.type === "running" ? "Ejecutando" : "Detenido"),
+    [status.type],
   );
 
-  const statusColor = useMemo(() => 
-    status.type === "running" ? "bg-green-600" : "bg-stone-600", 
-    [status.type]
+  const statusColor = useMemo(
+    () => (status.type === "running" ? "bg-green-600" : "bg-stone-600"),
+    [status.type],
   );
 
   return (
     <div className="flex items-center gap-2 text-xs">
-      <div className={clsx(
-        "flex items-center gap-1.5 rounded-full px-2 py-1 font-medium text-white",
-        statusColor,
-        status.type === "running" && "animate-pulse-glow"
-      )}>
-        <div className={clsx(
-          "size-2 rounded-full",
-          status.type === "running" ? "bg-green-300" : "bg-stone-300"
-        )} />
+      <div
+        className={clsx(
+          "flex items-center gap-1.5 rounded-full px-2 py-1 font-medium text-white",
+          statusColor,
+          status.type === "running" && "animate-pulse-glow",
+        )}
+      >
+        <div
+          className={clsx(
+            "size-2 rounded-full",
+            status.type === "running" ? "bg-green-300" : "bg-stone-300",
+          )}
+        />
         {statusText}
       </div>
     </div>
   );
 });
 
-SimulationStatus.displayName = 'SimulationStatus';
+SimulationStatus.displayName = "SimulationStatus";
 
 // Componente de botones de acción optimizado
-const ActionButtons = memo(({ 
-  onShowTour, 
-  onToggleSettings, 
-  settingsOpen,
-  onToggleEducational,
-  educationalOpen
-}: {
-  onShowTour: () => void;
-  onToggleSettings: () => void;
-  settingsOpen: boolean;
-  onToggleEducational: () => void;
-  educationalOpen: boolean;
-}) => {
-  const translate = useTranslate();
+const ActionButtons = memo(
+  ({
+    onShowTour,
+    onToggleSettings,
+    settingsOpen,
+    onToggleEducational,
+    educationalOpen,
+  }: {
+    onShowTour: () => void;
+    onToggleSettings: () => void;
+    settingsOpen: boolean;
+    onToggleEducational: () => void;
+    educationalOpen: boolean;
+  }) => {
+    const translate = useTranslate();
 
-  return (
-    <div className="flex items-center gap-1">
-      <NotificationCenter />
-      
-      <Tooltip content="Centro de aprendizaje" position="bottom">
-        <IconButton
-          icon={<FontAwesomeIcon icon={faGraduationCap} className="size-4" />}
-          onClick={onToggleEducational}
-          variant={educationalOpen ? "secondary" : "ghost"}
-          size="md"
-          aria-label="Centro de aprendizaje"
-          className={clsx(
-            "hover-lift",
-            educationalOpen && "animate-pulse-glow"
-          )}
-          data-testid="educational-button"
-        />
-      </Tooltip>
-      
-      <Tooltip content="Mostrar tour de bienvenida" position="bottom">
-        <IconButton
-          icon={<FontAwesomeIcon icon={faQuestionCircle} className="size-4" />}
-          onClick={onShowTour}
-          variant="ghost"
-          size="md"
-          aria-label="Mostrar tour de bienvenida"
-          className="hover-lift"
-        />
-      </Tooltip>
-      
-      <Tooltip content={translate("settings.title")} position="bottom">
-        <IconButton
-          icon={<span className="icon-[lucide--settings] block size-5" />}
-          onClick={onToggleSettings}
-          variant={settingsOpen ? "secondary" : "ghost"}
-          size="md"
-          aria-label={translate("settings.title")}
-          className={clsx(
-            "hover-lift",
-            settingsOpen && "animate-pulse-glow"
-          )}
-          data-testid="settings-button"
-        />
-      </Tooltip>
-    </div>
-  );
-});
+    return (
+      <div className="flex items-center gap-1">
+        <NotificationCenter />
 
-ActionButtons.displayName = 'ActionButtons';
+        <Tooltip content="Centro de aprendizaje" position="bottom">
+          <IconButton
+            icon={<FontAwesomeIcon icon={faGraduationCap} className="size-4" />}
+            onClick={onToggleEducational}
+            variant={educationalOpen ? "secondary" : "ghost"}
+            size="md"
+            aria-label="Centro de aprendizaje"
+            className={clsx("hover-lift", educationalOpen && "animate-pulse-glow")}
+            data-testid="educational-button"
+          />
+        </Tooltip>
+
+        <Tooltip content="Mostrar tour de bienvenida" position="bottom">
+          <IconButton
+            icon={<FontAwesomeIcon icon={faQuestionCircle} className="size-4" />}
+            onClick={onShowTour}
+            variant="ghost"
+            size="md"
+            aria-label="Mostrar tour de bienvenida"
+            className="hover-lift"
+          />
+        </Tooltip>
+
+        <Tooltip content={translate("settings.title")} position="bottom">
+          <IconButton
+            icon={<span className="icon-[lucide--settings] block size-5" />}
+            onClick={onToggleSettings}
+            variant={settingsOpen ? "secondary" : "ghost"}
+            size="md"
+            aria-label={translate("settings.title")}
+            className={clsx("hover-lift", settingsOpen && "animate-pulse-glow")}
+            data-testid="settings-button"
+          />
+        </Tooltip>
+      </div>
+    );
+  },
+);
+
+ActionButtons.displayName = "ActionButtons";
 
 // Componente principal optimizado
 export const Header = memo(() => {
@@ -132,7 +132,7 @@ export const Header = memo(() => {
   const [educationalOpen, setEducationalOpen] = useState(false);
   const [progressOpen, setProgressOpen] = useState(false);
   const { status } = useSimulation();
-  
+
   const { handleShowTour } = useTourControl();
 
   // Callbacks optimizados
@@ -149,23 +149,26 @@ export const Header = memo(() => {
   }, []);
 
   // Memoizar el logo y título
-  const logoSection = useMemo(() => (
-    <div className="hover-scale flex select-none items-center justify-center">
-      <img
-        src={`${import.meta.env.BASE_URL}favicon.svg`}
-        className="mr-2 size-8"
-        style={{ filter: "none", opacity: 1 }}
-        draggable={false}
-        alt="VonSim8 Logo"
-      />
-      <div className="flex flex-col">
-        <h1 className="text-lg font-bold max-sm:hidden">
-          Von<span className="text-mantis-400">Sim</span>8
-        </h1>
-        <span className="text-xs text-stone-400 max-sm:hidden">Simulador de 8 bits</span>
+  const logoSection = useMemo(
+    () => (
+      <div className="hover-scale flex select-none items-center justify-center">
+        <img
+          src={`${import.meta.env.BASE_URL}favicon.svg`}
+          className="mr-2 size-8"
+          style={{ filter: "none", opacity: 1 }}
+          draggable={false}
+          alt="VonSim8 Logo"
+        />
+        <div className="flex flex-col">
+          <h1 className="text-lg font-bold max-sm:hidden">
+            Von<span className="text-mantis-400">Sim</span>8
+          </h1>
+          <span className="text-xs text-stone-400 max-sm:hidden">Simulador de 8 bits</span>
+        </div>
       </div>
-    </div>
-  ), []);
+    ),
+    [],
+  );
 
   return (
     <>
@@ -176,32 +179,38 @@ export const Header = memo(() => {
             {logoSection}
             <SimulationStatus status={status} />
           </div>
-          
+
           {/* Columna central: Controles */}
           <div className="flex justify-center">
             <Controls />
           </div>
-          
+
           {/* Columna derecha: Botones de acción */}
           <div className="flex justify-end">
-                      <ActionButtons
-            onShowTour={handleShowTour}
-            onToggleSettings={handleToggleSettings}
-            settingsOpen={settingsOpen}
-            onToggleEducational={handleToggleEducational}
-            educationalOpen={educationalOpen}
-          />
+            <ActionButtons
+              onShowTour={handleShowTour}
+              onToggleSettings={handleToggleSettings}
+              settingsOpen={settingsOpen}
+              onToggleEducational={handleToggleEducational}
+              educationalOpen={educationalOpen}
+            />
           </div>
         </div>
       </header>
 
-
-
       {/* Componentes educativos */}
-      {educationalOpen && <EducationalMenu isOpen={educationalOpen} onClose={() => setEducationalOpen(false)} onShowProgress={handleToggleProgress} />}
-      {progressOpen && <EducationalProgress isVisible={progressOpen} onClose={() => setProgressOpen(false)} />}
+      {educationalOpen && (
+        <EducationalMenu
+          isOpen={educationalOpen}
+          onClose={() => setEducationalOpen(false)}
+          onShowProgress={handleToggleProgress}
+        />
+      )}
+      {progressOpen && (
+        <EducationalProgress isVisible={progressOpen} onClose={() => setProgressOpen(false)} />
+      )}
     </>
   );
 });
 
-Header.displayName = 'Header';
+Header.displayName = "Header";

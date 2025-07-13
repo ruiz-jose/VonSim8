@@ -28,7 +28,7 @@ const App = memo(() => {
   // Configurar notificaciones de actualización PWA
 
   return (
-    <div 
+    <div
       data-testid="app-container"
       className="flex h-screen w-screen flex-col bg-black text-white"
       lang={lang}
@@ -39,14 +39,14 @@ const App = memo(() => {
       {isMobile ? <MobileLayout /> : <DesktopLayout />}
 
       <Footer data-testid="footer" />
-      
+
       <WelcomeTour />
       <KeyboardShortcuts />
     </div>
   );
 });
 
-App.displayName = 'App';
+App.displayName = "App";
 
 // Layout de escritorio optimizado
 const DesktopLayout = memo(() => {
@@ -99,7 +99,7 @@ const DesktopLayout = memo(() => {
   );
 });
 
-DesktopLayout.displayName = 'DesktopLayout';
+DesktopLayout.displayName = "DesktopLayout";
 
 // Layout móvil optimizado
 const MobileLayout = memo(() => {
@@ -117,21 +117,28 @@ const MobileLayout = memo(() => {
   }, [cycle]);
 
   // Memoizar el tab actual
-  const tab = useMemo(() => settingsOpen ? "settings" : selectedTab, [settingsOpen, selectedTab]);
+  const tab = useMemo(() => (settingsOpen ? "settings" : selectedTab), [settingsOpen, selectedTab]);
 
   // Callback optimizado para cambiar tab
-  const setTab = useCallback((newTab: string) => {
-    if (settingsOpen) setSettingsOpen(false);
-    setSelectedTab(newTab as typeof selectedTab);
-  }, [settingsOpen, setSettingsOpen]);
+  const setTab = useCallback(
+    (newTab: string) => {
+      if (settingsOpen) setSettingsOpen(false);
+      setSelectedTab(newTab as typeof selectedTab);
+    },
+    [settingsOpen, setSettingsOpen],
+  );
 
   // Memoizar el texto del tab actual
   const tabText = useMemo(() => {
     switch (tab) {
-      case "editor": return "Editor";
-      case "computer": return "Computadora";
-      case "settings": return "Configuración";
-      default: return "";
+      case "editor":
+        return "Editor";
+      case "computer":
+        return "Computadora";
+      case "settings":
+        return "Configuración";
+      default:
+        return "";
     }
   }, [tab]);
 
@@ -143,15 +150,15 @@ const MobileLayout = memo(() => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="text-xs text-stone-500">Pestaña:</span>
-              <span className="text-sm font-medium text-white">
-                {tabText}
-              </span>
+              <span className="text-sm font-medium text-white">{tabText}</span>
             </div>
             {tab === "computer" && (
               <div className="text-center">
                 <div className="text-xs text-stone-500">Instrucción actual:</div>
                 <div className="font-mono text-sm text-mantis-400">
-                  {currentInstruction || <span className="italic text-stone-400">Sin instrucción</span>}
+                  {currentInstruction || (
+                    <span className="italic text-stone-400">Sin instrucción</span>
+                  )}
                 </div>
               </div>
             )}
@@ -159,17 +166,26 @@ const MobileLayout = memo(() => {
         </div>
 
         <TabsContent value="editor" asChild>
-          <section className="mx-2 grow overflow-hidden rounded-lg border border-stone-600 bg-black data-[state=inactive]:hidden" data-testid="panel-editor">
+          <section
+            className="mx-2 grow overflow-hidden rounded-lg border border-stone-600 bg-black data-[state=inactive]:hidden"
+            data-testid="panel-editor"
+          >
             <Editor className="size-full" />
           </section>
         </TabsContent>
         <TabsContent value="computer" asChild>
-          <section className="computer-background mx-2 grow overflow-hidden rounded-lg border border-stone-600 bg-stone-800 data-[state=inactive]:hidden" data-testid="panel-computer">
+          <section
+            className="computer-background mx-2 grow overflow-hidden rounded-lg border border-stone-600 bg-stone-800 data-[state=inactive]:hidden"
+            data-testid="panel-computer"
+          >
             <ComputerContainer />
           </section>
         </TabsContent>
         <TabsContent value="settings" asChild>
-          <section className="mx-2 grow overflow-hidden rounded-lg border border-stone-600 bg-stone-800 data-[state=inactive]:hidden" data-testid="panel-settings">
+          <section
+            className="mx-2 grow overflow-hidden rounded-lg border border-stone-600 bg-stone-800 data-[state=inactive]:hidden"
+            data-testid="panel-settings"
+          >
             <Settings className="size-full" />
           </section>
         </TabsContent>
@@ -205,6 +221,6 @@ const MobileLayout = memo(() => {
   );
 });
 
-MobileLayout.displayName = 'MobileLayout';
+MobileLayout.displayName = "MobileLayout";
 
 export default App;

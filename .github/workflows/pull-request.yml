@@ -2,267 +2,267 @@ name: 🔍 Pull Request Checks
 
 on:
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request_target:
-    branches: [ main, develop ]
+    branches: [main, develop]
 
 env:
-  NODE_VERSION: '22'
-  PNPM_VERSION: '10'
+  NODE_VERSION: "22"
+  PNPM_VERSION: "10"
 
 jobs:
   # Job de análisis de código
   code-analysis:
     name: 🔍 Code Analysis
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: 📥 Checkout code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0 # Necesario para análisis de cambios
-        
-    - name: 🟢 Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        
-    - name: 📦 Setup pnpm
-      uses: pnpm/action-setup@v2
-      with:
-        version: ${{ env.PNPM_VERSION }}
-        
-    - name: 📋 Install dependencies
-      run: pnpm install --frozen-lockfile
-      
-    - name: 🧹 Run linting
-      run: pnpm lint
-      
-    - name: 🎨 Check formatting
-      run: pnpm format:check
-      
-    - name: 🔒 Security audit
-      run: pnpm audit --audit-level moderate
-      
-    - name: 📊 Bundle size analysis
-      run: pnpm build && npx bundlewatch --config .bundlewatch.json
-      
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Necesario para análisis de cambios
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: 📋 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🧹 Run linting
+        run: pnpm lint
+
+      - name: 🎨 Check formatting
+        run: pnpm format:check
+
+      - name: 🔒 Security audit
+        run: pnpm audit --audit-level moderate
+
+      - name: 📊 Bundle size analysis
+        run: pnpm build && npx bundlewatch --config .bundlewatch.json
+
   # Job de tests rápidos
   quick-tests:
     name: ⚡ Quick Tests
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: 📥 Checkout code
-      uses: actions/checkout@v4
-      
-    - name: 🟢 Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        
-    - name: 📦 Setup pnpm
-      uses: pnpm/action-setup@v2
-      with:
-        version: ${{ env.PNPM_VERSION }}
-        
-    - name: 📋 Install dependencies
-      run: pnpm install --frozen-lockfile
-      
-    - name: 🧪 Run unit tests
-      run: pnpm test
-      
-    - name: 📊 Run tests with coverage
-      run: pnpm test:coverage
-      
-    - name: 📈 Upload coverage to Codecov
-      uses: codecov/codecov-action@v4
-      with:
-        directory: ./coverage/
-        fail_ci_if_error: false
-        verbose: true
-        
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: 📋 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🧪 Run unit tests
+        run: pnpm test
+
+      - name: 📊 Run tests with coverage
+        run: pnpm test:coverage
+
+      - name: 📈 Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          directory: ./coverage/
+          fail_ci_if_error: false
+          verbose: true
+
   # Job de build validation
   build-check:
     name: 🏗️ Build Check
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: 📥 Checkout code
-      uses: actions/checkout@v4
-      
-    - name: 🟢 Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        
-    - name: 📦 Setup pnpm
-      uses: pnpm/action-setup@v2
-      with:
-        version: ${{ env.PNPM_VERSION }}
-        
-    - name: 📋 Install dependencies
-      run: pnpm install --frozen-lockfile
-      
-    - name: 🏗️ Build project
-      run: pnpm build
-      
-    - name: 📋 Upload build artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: pr-build-${{ github.event.number }}
-        path: dist/
-        retention-days: 7
-        
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: 📋 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🏗️ Build project
+        run: pnpm build
+
+      - name: 📋 Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-build-${{ github.event.number }}
+          path: dist/
+          retention-days: 7
+
   # Job de revisión automática
   auto-review:
     name: 🤖 Auto Review
     runs-on: ubuntu-latest
     needs: [code-analysis, quick-tests, build-check]
     if: always()
-    
+
     steps:
-    - name: 📥 Checkout code
-      uses: actions/checkout@v4
-      
-    - name: 📊 Generate PR Summary
-      uses: actions/github-script@v7
-      with:
-        script: |
-          const { data: checks } = await github.rest.checks.listForRef({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            ref: context.sha,
-          });
-          
-          const jobs = ['code-analysis', 'quick-tests', 'build-check'];
-          const results = {};
-          
-          for (const check of checks.check_runs) {
-            if (jobs.includes(check.name)) {
-              results[check.name] = check.conclusion;
-            }
-          }
-          
-          const allPassed = Object.values(results).every(result => result === 'success');
-          const hasFailures = Object.values(results).some(result => result === 'failure');
-          
-          let comment = `## 🤖 Auto Review Summary\n\n`;
-          comment += `**Status:** ${allPassed ? '✅ All checks passed' : hasFailures ? '❌ Some checks failed' : '⚠️ Some checks are pending'}\n\n`;
-          
-          comment += `### Check Results:\n`;
-          Object.entries(results).forEach(([job, result]) => {
-            const emoji = result === 'success' ? '✅' : result === 'failure' ? '❌' : '⏳';
-            comment += `- ${emoji} **${job}**: ${result || 'pending'}\n`;
-          });
-          
-          comment += `\n### 📋 Next Steps:\n`;
-          if (allPassed) {
-            comment += `- ✅ Ready for manual review\n`;
-            comment += `- 🚀 Can be merged if approved\n`;
-          } else if (hasFailures) {
-            comment += `- ❌ Please fix the failing checks\n`;
-            comment += `- 🔍 Review the error logs\n`;
-          } else {
-            comment += `- ⏳ Waiting for all checks to complete\n`;
-          }
-          
-          comment += `\n---\n*This is an automated review. Please review the code manually before merging.*`;
-          
-          // Buscar comentarios existentes del bot
-          const { data: comments } = await github.rest.issues.listComments({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            issue_number: context.issue.number,
-          });
-          
-          const botComment = comments.find(comment => 
-            comment.user.type === 'Bot' && 
-            comment.body.includes('🤖 Auto Review Summary')
-          );
-          
-          if (botComment) {
-            // Actualizar comentario existente
-            await github.rest.issues.updateComment({
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📊 Generate PR Summary
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: checks } = await github.rest.checks.listForRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              comment_id: botComment.id,
-              body: comment,
+              ref: context.sha,
             });
-          } else {
-            // Crear nuevo comentario
-            await github.rest.issues.createComment({
+
+            const jobs = ['code-analysis', 'quick-tests', 'build-check'];
+            const results = {};
+
+            for (const check of checks.check_runs) {
+              if (jobs.includes(check.name)) {
+                results[check.name] = check.conclusion;
+              }
+            }
+
+            const allPassed = Object.values(results).every(result => result === 'success');
+            const hasFailures = Object.values(results).some(result => result === 'failure');
+
+            let comment = `## 🤖 Auto Review Summary\n\n`;
+            comment += `**Status:** ${allPassed ? '✅ All checks passed' : hasFailures ? '❌ Some checks failed' : '⚠️ Some checks are pending'}\n\n`;
+
+            comment += `### Check Results:\n`;
+            Object.entries(results).forEach(([job, result]) => {
+              const emoji = result === 'success' ? '✅' : result === 'failure' ? '❌' : '⏳';
+              comment += `- ${emoji} **${job}**: ${result || 'pending'}\n`;
+            });
+
+            comment += `\n### 📋 Next Steps:\n`;
+            if (allPassed) {
+              comment += `- ✅ Ready for manual review\n`;
+              comment += `- 🚀 Can be merged if approved\n`;
+            } else if (hasFailures) {
+              comment += `- ❌ Please fix the failing checks\n`;
+              comment += `- 🔍 Review the error logs\n`;
+            } else {
+              comment += `- ⏳ Waiting for all checks to complete\n`;
+            }
+
+            comment += `\n---\n*This is an automated review. Please review the code manually before merging.*`;
+
+            // Buscar comentarios existentes del bot
+            const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              body: comment,
             });
-          }
-          
-    - name: 🏷️ Add labels
-      uses: actions/github-script@v7
-      with:
-        script: |
-          const { data: checks } = await github.rest.checks.listForRef({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            ref: context.sha,
-          });
-          
-          const jobs = ['code-analysis', 'quick-tests', 'build-check'];
-          const results = {};
-          
-          for (const check of checks.check_runs) {
-            if (jobs.includes(check.name)) {
-              results[check.name] = check.conclusion;
-            }
-          }
-          
-          const allPassed = Object.values(results).every(result => result === 'success');
-          const hasFailures = Object.values(results).some(result => result === 'failure');
-          
-          // Obtener labels actuales
-          const { data: issue } = await github.rest.issues.get({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            issue_number: context.issue.number,
-          });
-          
-          const currentLabels = issue.labels.map(label => label.name);
-          const labelsToAdd = [];
-          const labelsToRemove = [];
-          
-          if (allPassed) {
-            labelsToAdd.push('✅ checks-passed');
-            labelsToRemove.push('❌ checks-failed', '⚠️ checks-pending');
-          } else if (hasFailures) {
-            labelsToAdd.push('❌ checks-failed');
-            labelsToRemove.push('✅ checks-passed', '⚠️ checks-pending');
-          } else {
-            labelsToAdd.push('⚠️ checks-pending');
-            labelsToRemove.push('✅ checks-passed', '❌ checks-failed');
-          }
-          
-          // Agregar labels
-          if (labelsToAdd.length > 0) {
-            await github.rest.issues.addLabels({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              labels: labelsToAdd,
-            });
-          }
-          
-          // Remover labels
-          for (const label of labelsToRemove) {
-            try {
-              await github.rest.issues.removeLabel({
+
+            const botComment = comments.find(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes('🤖 Auto Review Summary')
+            );
+
+            if (botComment) {
+              // Actualizar comentario existente
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: comment,
+              });
+            } else {
+              // Crear nuevo comentario
+              await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: context.issue.number,
-                name: label,
+                body: comment,
               });
-            } catch (error) {
-              // Label no existe, ignorar error
             }
-          } 
+
+      - name: 🏷️ Add labels
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: checks } = await github.rest.checks.listForRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: context.sha,
+            });
+
+            const jobs = ['code-analysis', 'quick-tests', 'build-check'];
+            const results = {};
+
+            for (const check of checks.check_runs) {
+              if (jobs.includes(check.name)) {
+                results[check.name] = check.conclusion;
+              }
+            }
+
+            const allPassed = Object.values(results).every(result => result === 'success');
+            const hasFailures = Object.values(results).some(result => result === 'failure');
+
+            // Obtener labels actuales
+            const { data: issue } = await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const currentLabels = issue.labels.map(label => label.name);
+            const labelsToAdd = [];
+            const labelsToRemove = [];
+
+            if (allPassed) {
+              labelsToAdd.push('✅ checks-passed');
+              labelsToRemove.push('❌ checks-failed', '⚠️ checks-pending');
+            } else if (hasFailures) {
+              labelsToAdd.push('❌ checks-failed');
+              labelsToRemove.push('✅ checks-passed', '⚠️ checks-pending');
+            } else {
+              labelsToAdd.push('⚠️ checks-pending');
+              labelsToRemove.push('✅ checks-passed', '❌ checks-failed');
+            }
+
+            // Agregar labels
+            if (labelsToAdd.length > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: labelsToAdd,
+              });
+            }
+
+            // Remover labels
+            for (const label of labelsToRemove) {
+              try {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.issue.number,
+                  name: label,
+                });
+              } catch (error) {
+                // Label no existe, ignorar error
+              }
+            }

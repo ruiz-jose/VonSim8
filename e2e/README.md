@@ -36,6 +36,7 @@ e2e/
 ## 🚀 Comandos Disponibles
 
 ### Desarrollo Local
+
 ```bash
 # Ejecutar todos los tests
 pnpm test:e2e
@@ -54,6 +55,7 @@ pnpm test:e2e:codegen
 ```
 
 ### Tests Específicos
+
 ```bash
 # Solo tests core (carga, navegación)
 pnpm test:e2e:core
@@ -66,6 +68,7 @@ pnpm test:e2e:integration
 ```
 
 ### CI/CD
+
 ```bash
 # Tests para CI (solo Chromium)
 pnpm test:e2e:ci
@@ -77,6 +80,7 @@ pnpm test:e2e:report
 ## 🎯 Funcionalidades Testeadas
 
 ### Core (Funcionalidad Básica)
+
 - ✅ Carga de la aplicación
 - ✅ Navegación principal
 - ✅ Responsividad móvil
@@ -85,12 +89,14 @@ pnpm test:e2e:report
 ### Features (Funcionalidades Específicas)
 
 #### Ensamblador
+
 - ✅ Ensamblado de programas válidos
 - ✅ Manejo de errores de sintaxis
 - ✅ Limpieza del editor
 - ✅ Validación de instrucciones
 
 #### Simulación
+
 - ✅ Ejecución de ciclos
 - ✅ Ejecución de instrucciones completas
 - ✅ Pausa y reanudación
@@ -98,6 +104,7 @@ pnpm test:e2e:report
 - ✅ Estados de simulación
 
 #### Componentes Educativos
+
 - ✅ Centro de aprendizaje
 - ✅ Tooltips educativos
 - ✅ Tutoriales interactivos
@@ -106,6 +113,7 @@ pnpm test:e2e:report
 - ✅ Visualizaciones de conceptos
 
 ### Integration (Flujos Completos)
+
 - ✅ Flujo completo: escribir → ensamblar → ejecutar
 - ✅ Manejo de errores y corrección
 - ✅ Simulación con periféricos
@@ -115,16 +123,19 @@ pnpm test:e2e:report
 ## 🔧 Configuración
 
 ### Variables de Entorno
+
 - `BASE_URL`: URL base de la aplicación (default: http://localhost:5173)
 - `CI`: Configuración para entornos de CI/CD
 
 ### Navegadores
+
 - **CI**: Solo Chromium para velocidad
 - **Local**: Chromium, Firefox, WebKit, Mobile Chrome
 
 ## 📊 Reportes
 
 Los reportes se generan automáticamente en:
+
 - `playwright-report/`: Reporte HTML interactivo
 - `test-results/`: Resultados en formato JSON
 - Screenshots y videos en caso de fallos
@@ -132,43 +143,47 @@ Los reportes se generan automáticamente en:
 ## 🐛 Debugging
 
 ### Modo Debug
+
 ```bash
 pnpm test:e2e:debug
 ```
 
 ### Screenshots Automáticos
+
 Los screenshots se toman automáticamente en caso de fallo.
 
 ### Logs Específicos de VonSim8
+
 ```typescript
-import { DebugHelper } from '../../utils/test-helpers';
+import { DebugHelper } from "../../utils/test-helpers";
 
 // Log del estado de simulación
 await DebugHelper.logSimulationState(page);
 
 // Log del estado de la página
-await DebugHelper.logPageState(page, 'Contexto');
+await DebugHelper.logPageState(page, "Contexto");
 ```
 
 ## 📝 Escribiendo Tests para VonSim8
 
 ### Ejemplo Básico
-```typescript
-import { test, expect } from '@playwright/test';
-import { VonSim8Helper, NavigationHelper } from '../../utils/test-helpers';
 
-test.describe('Mi Funcionalidad', () => {
-  test('debería hacer algo específico', async ({ page }) => {
+```typescript
+import { test, expect } from "@playwright/test";
+import { VonSim8Helper, NavigationHelper } from "../../utils/test-helpers";
+
+test.describe("Mi Funcionalidad", () => {
+  test("debería hacer algo específico", async ({ page }) => {
     await NavigationHelper.goToHome(page);
-    
+
     // Ensamblar programa
-    await VonSim8Helper.assembleProgram(page, 'hlt');
-    
+    await VonSim8Helper.assembleProgram(page, "hlt");
+
     // Ejecutar ciclo
     await VonSim8Helper.runCycle(page);
-    
+
     // Verificar resultado
-    await VonSim8Helper.expectRegisterValue(page, 'al', '00');
+    await VonSim8Helper.expectRegisterValue(page, "al", "00");
   });
 });
 ```
@@ -176,6 +191,7 @@ test.describe('Mi Funcionalidad', () => {
 ### Helpers Específicos de VonSim8
 
 #### Simulación
+
 ```typescript
 // Ensamblar programa
 await VonSim8Helper.assembleProgram(page, program);
@@ -191,20 +207,22 @@ await VonSim8Helper.resetSimulation(page);
 ```
 
 #### Registros y Memoria
+
 ```typescript
 // Obtener valores
-const alValue = await VonSim8Helper.getRegisterValue(page, 'al');
-const memValue = await VonSim8Helper.getMemoryValue(page, '1000');
+const alValue = await VonSim8Helper.getRegisterValue(page, "al");
+const memValue = await VonSim8Helper.getMemoryValue(page, "1000");
 
 // Verificar valores
-await VonSim8Helper.expectRegisterValue(page, 'al', '0A');
-await VonSim8Helper.expectMemoryValue(page, '1000', 'FF');
+await VonSim8Helper.expectRegisterValue(page, "al", "0A");
+await VonSim8Helper.expectMemoryValue(page, "1000", "FF");
 ```
 
 #### Periféricos
+
 ```typescript
 // Teclado
-await VonSim8Helper.clickKeyboardKey(page, '5');
+await VonSim8Helper.clickKeyboardKey(page, "5");
 
 // LEDs
 await VonSim8Helper.expectLEDState(page, 0, true);
@@ -214,38 +232,42 @@ await VonSim8Helper.setSwitch(page, 1, true);
 ```
 
 #### Componentes Educativos
+
 ```typescript
 // Centro de aprendizaje
 await VonSim8Helper.openEducationalCenter(page);
 
 // Tutoriales
-await VonSim8Helper.startTutorial(page, 'cpu-basics');
+await VonSim8Helper.startTutorial(page, "cpu-basics");
 await VonSim8Helper.completeTutorial(page);
 ```
 
 #### Configuración
+
 ```typescript
 // Configuración
 await VonSim8Helper.openSettings(page);
-await VonSim8Helper.changeSimulationSpeed(page, 'fast');
-await VonSim8Helper.changeTheme(page, 'dark');
+await VonSim8Helper.changeSimulationSpeed(page, "fast");
+await VonSim8Helper.changeTheme(page, "dark");
 ```
 
 ## 🎮 Programas de Ejemplo
 
 ### Programas Disponibles en Fixtures
+
 - `valid-program.asm`: Programa simple de suma
 - `invalid-program.asm`: Programa con errores de sintaxis
 - `fibonacci.asm`: Programa complejo de Fibonacci
 
 ### Uso en Tests
+
 ```typescript
-import { readFileSync } from 'fs';
-import path from 'path';
+import { readFileSync } from "fs";
+import path from "path";
 
 const program = readFileSync(
-  path.join(__dirname, '../../fixtures/programs/fibonacci.asm'), 
-  'utf-8'
+  path.join(__dirname, "../../fixtures/programs/fibonacci.asm"),
+  "utf-8",
 );
 
 await VonSim8Helper.assembleProgram(page, program);
@@ -262,6 +284,7 @@ await VonSim8Helper.assembleProgram(page, program);
 ## 🔄 CI/CD
 
 Los tests se ejecutan automáticamente en:
+
 - Pull Requests
 - Merge a main
 - Releases
@@ -271,6 +294,7 @@ Configuración optimizada para velocidad en CI con retry automático en fallos.
 ## 🎓 Casos de Uso Educativos
 
 Los tests incluyen escenarios específicos para:
+
 - **Estudiantes principiantes**: Tests básicos de carga y navegación
 - **Estudiantes intermedios**: Tests de ensamblador y simulación
 - **Estudiantes avanzados**: Tests de periféricos y flujos complejos
@@ -281,6 +305,7 @@ Los tests incluyen escenarios específicos para:
 ### Problemas Comunes
 
 1. **CodeMirror no disponible**
+
    ```typescript
    // Usar waitForFunction para esperar a que CodeMirror esté listo
    await page.waitForFunction(() => {
@@ -290,6 +315,7 @@ Los tests incluyen escenarios específicos para:
    ```
 
 2. **Elementos no encontrados**
+
    ```typescript
    // Usar timeouts más largos para elementos dinámicos
    await page.waitForSelector('[data-testid="element"]', { timeout: 10000 });
@@ -298,12 +324,13 @@ Los tests incluyen escenarios específicos para:
 3. **Simulación lenta**
    ```typescript
    // Ajustar velocidad de simulación para tests
-   await VonSim8Helper.changeSimulationSpeed(page, 'fast');
+   await VonSim8Helper.changeSimulationSpeed(page, "fast");
    ```
 
 ## 📈 Métricas de Calidad
 
 Los tests monitorean:
+
 - **Cobertura funcional**: Todas las características principales
 - **Estabilidad**: Tests robustos con retry automático
 - **Performance**: Tiempos de ejecución optimizados
@@ -312,7 +339,7 @@ Los tests monitorean:
 
 ---
 
-*Tests diseñados específicamente para VonSim8 - Simulador de Arquitectura de Computadoras* 
+_Tests diseñados específicamente para VonSim8 - Simulador de Arquitectura de Computadoras_
 
 ---
 
@@ -324,18 +351,18 @@ Esto es un problema clásico de diferencias de entorno. Aquí tienes los pasos y
 
 ## **Causas más comunes**
 
-1. **Diferencias de sistema operativo**  
-   - Local: Windows  
-   - CI: Linux  
+1. **Diferencias de sistema operativo**
+   - Local: Windows
+   - CI: Linux
    - Puede cambiar el orden de los archivos, los saltos de línea (`\r\n` vs `\n`), encoding, rutas, etc.
 
-2. **Versión de Node o dependencias**  
+2. **Versión de Node o dependencias**
    - Si en local y en CI tienes versiones distintas, el output puede variar.
 
-3. **Snapshots desactualizados**  
+3. **Snapshots desactualizados**
    - Si cambiaste el ensamblador y no actualizaste los snapshots, fallarán.
 
-4. **Orden de archivos**  
+4. **Orden de archivos**
    - El test recorre los archivos de la carpeta `fixtures` y los procesa en el orden que devuelve el sistema de archivos, que puede variar entre Windows y Linux.
 
 ---
@@ -343,16 +370,19 @@ Esto es un problema clásico de diferencias de entorno. Aquí tienes los pasos y
 ## **¿Cómo lo soluciono?**
 
 ### 1. **Fuerza el orden de los archivos en el test**
+
 Modifica tu test para ordenar los archivos antes de iterar:
 
 ```ts
 const files = (await readdir(path)).sort();
 ```
+
 Esto asegura que el orden sea igual en todos los sistemas.
 
 ---
 
 ### 2. **Actualiza los snapshots en el entorno donde fallan**
+
 - Haz un checkout de tu rama en **Linux** (puedes usar WSL, una VM, o incluso GitHub Codespaces).
 - Ejecuta:
   ```bash
@@ -365,16 +395,18 @@ Esto asegura que el orden sea igual en todos los sistemas.
 ---
 
 ### 3. **Asegura versiones iguales de Node y dependencias**
+
 - Fija la versión de Node en tu workflow de GitHub Actions (por ejemplo, `"20"`).
 - Usa `pnpm-lock.yaml` para asegurar dependencias iguales.
 
 ---
 
 ### 4. **Normaliza saltos de línea y encoding**
-- Si el problema persiste, revisa si el output del ensamblador depende de los saltos de línea o encoding.  
+
+- Si el problema persiste, revisa si el output del ensamblador depende de los saltos de línea o encoding.
 - Puedes normalizar el output antes de hacer snapshot:
   ```ts
-  expect(assemble(source).replace(/\r\n/g, '\n')).toMatchSnapshot();
+  expect(assemble(source).replace(/\r\n/g, "\n")).toMatchSnapshot();
   ```
 
 ---
@@ -388,4 +420,4 @@ Esto asegura que el orden sea igual en todos los sistemas.
 
 ---
 
-¿Quieres que te ayude a modificar el test para ordenar los archivos y normalizar el output? ¿O prefieres instrucciones para actualizar los snapshots en Linux? 
+¿Quieres que te ayude a modificar el test para ordenar los archivos y normalizar el output? ¿O prefieres instrucciones para actualizar los snapshots en Linux?

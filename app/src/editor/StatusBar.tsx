@@ -8,21 +8,19 @@ import { toast } from "@/lib/toast";
 
 import { getSavedProgram } from "./files";
 
-
-
 export const lintErrorsAtom = atom(0);
 
 // Átomos para manejar el estado del archivo
 const _fileHandleAtom = atom(null as any);
 const fileHandleAtom = atom(
-  (get) => get(_fileHandleAtom),
+  get => get(_fileHandleAtom),
   (get, set, newValue: any) => {
     set(_fileHandleAtom, newValue);
-  }
+  },
 );
 const lastSavedProgramAtom = atom("");
 const programAtom = atom(() => {
-  if (typeof window !== 'undefined' && window.codemirror) {
+  if (typeof window !== "undefined" && window.codemirror) {
     return window.codemirror.state.doc.toString();
   }
   return getSavedProgram() || "";
@@ -53,9 +51,9 @@ export function StatusBar() {
   const setFileHandle = useSetAtom(fileHandleAtom);
   const setLastSavedProgram = useSetAtom(lastSavedProgramAtom);
   const dirty = useAtomValue(dirtyAtom);
-  
+
   const unsavedChanges = fileHandle && dirty;
-  
+
   // Sincronizar el estado del programa cuando cambie
   useEffect(() => {
     if (window.codemirror) {
@@ -63,10 +61,10 @@ export function StatusBar() {
         // Actualizar el programAtom cuando cambie el contenido
         // Esto se maneja automáticamente por el syncStatePlugin
       };
-      
-      window.codemirror.dom.addEventListener('input', updateListener);
+
+      window.codemirror.dom.addEventListener("input", updateListener);
       return () => {
-        window.codemirror.dom.removeEventListener('input', updateListener);
+        window.codemirror.dom.removeEventListener("input", updateListener);
       };
     }
   }, []);
@@ -133,7 +131,7 @@ export function StatusBar() {
   const saveFileAs = useCallback(async () => {
     const source = window.codemirror!.state.doc.toString();
     const filename = fileHandle?.name || `vonsim-${new Date().toISOString().slice(0, 10)}.asm`;
-    
+
     if (supportsNativeFileSystem) {
       try {
         const fileHandle = await window.showSaveFilePicker({
@@ -171,22 +169,23 @@ export function StatusBar() {
   }, [fileHandle, setFileHandle, setLastSavedProgram]);
 
   return (
-    <div data-testid="status-bar" className="flex items-center justify-between border-t border-stone-700 bg-gradient-to-r from-stone-800 to-stone-900 px-4 py-0.5 font-sans text-xs text-stone-300 shadow-inner">
+    <div
+      data-testid="status-bar"
+      className="flex items-center justify-between border-t border-stone-700 bg-gradient-to-r from-stone-800 to-stone-900 px-4 py-0.5 font-sans text-xs text-stone-300 shadow-inner"
+    >
       {/* Sección izquierda - Nombre del archivo e iconos */}
       <div className="flex items-center gap-4">
         {/* Nombre del archivo */}
         {fileHandle && (
           <div className="flex items-center gap-2">
-            <span className="font-medium text-white transition-colors">
-              {fileHandle.name}
-            </span>
+            <span className="font-medium text-white transition-colors">{fileHandle.name}</span>
             {unsavedChanges && <span className="size-2 rounded-full bg-orange-400" />}
           </div>
         )}
-        
+
         {/* Separador */}
         {fileHandle && <div className="h-4 w-px bg-stone-600" />}
-        
+
         {/* Iconos de archivo */}
         <div className="flex items-center gap-2">
           <Tooltip content="editor.files.open" position="top">
@@ -200,7 +199,7 @@ export function StatusBar() {
               <span className="icon-[lucide--folder-open] size-4" />
             </Button>
           </Tooltip>
-          
+
           <Tooltip content="editor.files.save" position="top">
             <Button
               variant="ghost"
@@ -213,7 +212,7 @@ export function StatusBar() {
               <span className="icon-[lucide--save] size-4" />
             </Button>
           </Tooltip>
-          
+
           <Tooltip content="editor.files.save-as" position="top">
             <Button
               variant="ghost"
@@ -231,18 +230,19 @@ export function StatusBar() {
       {/* Sección derecha - Errores */}
       <div className="flex items-center gap-3">
         {/* Indicador de errores */}
-        <div className={clsx(
-          "flex items-center gap-1.5 rounded-full px-2 py-0.5 font-medium transition-colors",
-          lintErrors > 0 
-            ? "border border-red-500/30 bg-red-500/20 text-red-300"
-            : "border border-green-500/30 bg-green-500/20 text-green-300"
-        )}>
-          <div className={clsx(
-            "size-2 rounded-full",
-            lintErrors > 0 ? "bg-red-400" : "bg-green-400"
-          )} />
+        <div
+          className={clsx(
+            "flex items-center gap-1.5 rounded-full px-2 py-0.5 font-medium transition-colors",
+            lintErrors > 0
+              ? "border border-red-500/30 bg-red-500/20 text-red-300"
+              : "border border-green-500/30 bg-green-500/20 text-green-300",
+          )}
+        >
+          <div
+            className={clsx("size-2 rounded-full", lintErrors > 0 ? "bg-red-400" : "bg-green-400")}
+          />
           <span className="font-mono">
-            {lintErrors > 0 ? `${lintErrors} error${lintErrors > 1 ? 'es' : ''}` : "Sin errores"}
+            {lintErrors > 0 ? `${lintErrors} error${lintErrors > 1 ? "es" : ""}` : "Sin errores"}
           </span>
         </div>
       </div>

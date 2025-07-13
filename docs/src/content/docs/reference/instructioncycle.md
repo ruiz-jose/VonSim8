@@ -35,12 +35,10 @@ En esta etapa, común a todas las instrucciones, se realiza la lectura de la ins
 En esta etapa, las operaciones específicas dependen del tipo de instrucción. A continuación, se describen algunos casos representativos:
 
 - MOV `Rx`, `Ry` (Copiar entre registros)
-
   1. **`Rx` ← `Ry`**:
      El contenido del registro `Ry` se copia en el registro `Rx`.
 
 - MOV `Rx`, `[Dirección]` (Cargar a registro)
-
   1. **`MAR` ← `IP`**:
      El valor del `IP` se transfiere a `MAR`.
   2. **`MBR` ← `read(Memoria[MAR])`; `IP` ← `IP` + 1**:

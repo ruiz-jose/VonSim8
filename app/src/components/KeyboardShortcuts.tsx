@@ -17,8 +17,12 @@ const keyboardShortcuts: Shortcut[] = [
   { key: "F8", description: "Ejecutar una instrucción completa", category: "Simulación" },
   { key: "F4", description: "Ejecución infinita", category: "Simulación" },
   { key: "F9", description: "Resetear simulación", category: "Simulación" },
-  { key: "Espacio", description: "Pausar/Reanudar (cuando está ejecutando)", category: "Simulación" },
-  
+  {
+    key: "Espacio",
+    description: "Pausar/Reanudar (cuando está ejecutando)",
+    category: "Simulación",
+  },
+
   // Editor
   { key: "Ctrl+S", description: "Guardar archivo", category: "Editor" },
   { key: "Ctrl+O", description: "Abrir archivo", category: "Editor" },
@@ -29,32 +33,32 @@ const keyboardShortcuts: Shortcut[] = [
   { key: "Ctrl+H", description: "Reemplazar", category: "Editor" },
   { key: "Tab", description: "Indentar", category: "Editor" },
   { key: "Shift+Tab", description: "Desindentar", category: "Editor" },
-  
+
   // Navegación
   { key: "F1", description: "Mostrar atajos de teclado", category: "Navegación" },
   { key: "F2", description: "Abrir configuración", category: "Navegación" },
   { key: "F3", description: "Buscar en el código", category: "Navegación" },
   { key: "F5", description: "Actualizar página", category: "Navegación" },
   { key: "F6", description: "Cambiar foco al editor", category: "Navegación" },
-  
+
   // Interfaz
   { key: "Escape", description: "Cerrar diálogos", category: "Interfaz" },
   { key: "Ctrl+Shift+P", description: "Paleta de comandos", category: "Interfaz" },
   { key: "Ctrl+B", description: "Mostrar/ocultar barra lateral", category: "Interfaz" },
   { key: "Ctrl+J", description: "Mostrar/ocultar terminal", category: "Interfaz" },
-  
+
   // Zoom y vista
   { key: "Ctrl++", description: "Zoom in", category: "Vista" },
   { key: "Ctrl+-", description: "Zoom out", category: "Vista" },
   { key: "Ctrl+0", description: "Resetear zoom", category: "Vista" },
   { key: "Ctrl+Shift+Z", description: "Zoom a la selección", category: "Vista" },
-  
+
   // Desarrollo
   { key: "F12", description: "Herramientas de desarrollador", category: "Desarrollo" },
   { key: "Ctrl+Shift+I", description: "Inspeccionar elemento", category: "Desarrollo" },
   { key: "Ctrl+Shift+C", description: "Seleccionar elemento", category: "Desarrollo" },
   { key: "Ctrl+Shift+J", description: "Consola", category: "Desarrollo" },
-  { key: "Ctrl+Shift+M", description: "Vista móvil", category: "Desarrollo" }
+  { key: "Ctrl+Shift+M", description: "Vista móvil", category: "Desarrollo" },
 ];
 
 // Hook personalizado para manejar el estado del modal
@@ -88,13 +92,16 @@ const useKeyboardShortcutsModal = () => {
 // Hook personalizado para organizar atajos por categoría
 const useShortcutsByCategory = () => {
   return useMemo(() => {
-    const grouped = keyboardShortcuts.reduce((acc, shortcut) => {
-      if (!acc[shortcut.category]) {
-        acc[shortcut.category] = [];
-      }
-      acc[shortcut.category].push(shortcut);
-      return acc;
-    }, {} as Record<string, Shortcut[]>);
+    const grouped = keyboardShortcuts.reduce(
+      (acc, shortcut) => {
+        if (!acc[shortcut.category]) {
+          acc[shortcut.category] = [];
+        }
+        acc[shortcut.category].push(shortcut);
+        return acc;
+      },
+      {} as Record<string, Shortcut[]>,
+    );
 
     return Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b));
   }, []);
@@ -110,46 +117,48 @@ const ShortcutItem = memo(({ shortcut }: { shortcut: Shortcut }) => (
   </div>
 ));
 
-ShortcutItem.displayName = 'ShortcutItem';
+ShortcutItem.displayName = "ShortcutItem";
 
 // Componente de categoría optimizado
-const ShortcutCategory = memo(({ 
-  category, 
-  shortcuts 
-}: {
-  category: string;
-  shortcuts: Shortcut[];
-}) => (
-  <div className="space-y-2">
-    <h3 className="border-b border-stone-600 pb-2 text-lg font-semibold text-mantis-400">
-      {category}
-    </h3>
+const ShortcutCategory = memo(
+  ({ category, shortcuts }: { category: string; shortcuts: Shortcut[] }) => (
     <div className="space-y-2">
-      {shortcuts.map((shortcut, index) => (
-        <ShortcutItem key={`${category}-${index}`} shortcut={shortcut} />
-      ))}
+      <h3 className="border-b border-stone-600 pb-2 text-lg font-semibold text-mantis-400">
+        {category}
+      </h3>
+      <div className="space-y-2">
+        {shortcuts.map((shortcut, index) => (
+          <ShortcutItem key={`${category}-${index}`} shortcut={shortcut} />
+        ))}
+      </div>
     </div>
-  </div>
-));
+  ),
+);
 
-ShortcutCategory.displayName = 'ShortcutCategory';
+ShortcutCategory.displayName = "ShortcutCategory";
 
 // Componente principal optimizado
 export const KeyboardShortcuts = memo(() => {
   const { isOpen, closeModal } = useKeyboardShortcutsModal();
   const shortcutsByCategory = useShortcutsByCategory();
 
-  const handleBackdropClick = useCallback((event: React.MouseEvent) => {
-    if (event.target === event.currentTarget) {
-      closeModal();
-    }
-  }, [closeModal]);
+  const handleBackdropClick = useCallback(
+    (event: React.MouseEvent) => {
+      if (event.target === event.currentTarget) {
+        closeModal();
+      }
+    },
+    [closeModal],
+  );
 
-  const handleEscapeKey = useCallback((event: KeyboardEvent) => {
-    if (event.key === "Escape") {
-      closeModal();
-    }
-  }, [closeModal]);
+  const handleEscapeKey = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        closeModal();
+      }
+    },
+    [closeModal],
+  );
 
   // Manejar tecla Escape para cerrar
   useEffect(() => {
@@ -162,7 +171,7 @@ export const KeyboardShortcuts = memo(() => {
   if (!isOpen) return null;
 
   return (
-    <div 
+    <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
       onClick={handleBackdropClick}
     >
@@ -171,9 +180,7 @@ export const KeyboardShortcuts = memo(() => {
         <div className="flex items-center justify-between border-b border-stone-600 p-4">
           <div className="flex items-center gap-3">
             <span className="icon-[lucide--keyboard] size-6 text-mantis-400" />
-            <h2 className="text-xl font-semibold text-white">
-              Atajos de Teclado
-            </h2>
+            <h2 className="text-xl font-semibold text-white">Atajos de Teclado</h2>
           </div>
           <button
             onClick={closeModal}
@@ -187,11 +194,7 @@ export const KeyboardShortcuts = memo(() => {
         <div className="max-h-[calc(80vh-80px)] overflow-y-auto p-4">
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {shortcutsByCategory.map(([category, shortcuts]) => (
-              <ShortcutCategory 
-                key={category} 
-                category={category} 
-                shortcuts={shortcuts} 
-              />
+              <ShortcutCategory key={category} category={category} shortcuts={shortcuts} />
             ))}
           </div>
         </div>
@@ -200,7 +203,11 @@ export const KeyboardShortcuts = memo(() => {
         <div className="border-t border-stone-600 bg-stone-800 p-4">
           <div className="flex items-center justify-between text-sm text-stone-400">
             <span>
-              Presiona <kbd className="rounded border border-stone-600 bg-stone-700 px-1 py-0.5 font-mono text-xs">F1</kbd> para abrir este diálogo
+              Presiona{" "}
+              <kbd className="rounded border border-stone-600 bg-stone-700 px-1 py-0.5 font-mono text-xs">
+                F1
+              </kbd>{" "}
+              para abrir este diálogo
             </span>
             <Button
               variant="ghost"
@@ -217,4 +224,4 @@ export const KeyboardShortcuts = memo(() => {
   );
 });
 
-KeyboardShortcuts.displayName = 'KeyboardShortcuts'; 
+KeyboardShortcuts.displayName = "KeyboardShortcuts";

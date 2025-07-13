@@ -1,7 +1,16 @@
 import { MemoryAddress } from "@vonsim/common/address";
 
 import { MBRAtom } from "@/computer/cpu/state";
-import { activateRegister, anim, deactivateRegister, hideReadControlText, hideWriteControlText,showReadControlText, showWriteControlText, updateRegisterWithGlow } from "@/computer/shared/animate";
+import {
+  activateRegister,
+  anim,
+  deactivateRegister,
+  hideReadControlText,
+  hideWriteControlText,
+  showReadControlText,
+  showWriteControlText,
+  updateRegisterWithGlow,
+} from "@/computer/shared/animate";
 import type { SimulatorEvent } from "@/computer/shared/types";
 import { finishSimulation } from "@/computer/simulation";
 import { store } from "@/lib/jotai";
@@ -18,11 +27,11 @@ function generateExternalDataPath(direction: "memory-to-mbr" | "mbr-to-memory"):
   // Coordenadas que coinciden exactamente con el dataPath estático en DataLines.tsx
   const mbrX = 629; // Coordenada x del MBR (coincide con dataPath)
   const mbrY = 249; // Coordenada y del MBR (coincide con dataPath)
-  
+
   // Coordenadas de la memoria (coinciden con dataPath)
   const memoryX = 800;
   const memoryY = 249; // Misma altura que el MBR
-  
+
   if (direction === "memory-to-mbr") {
     // Animación desde la memoria hacia el MBR
     return `M ${memoryX} ${memoryY} L ${mbrX} ${mbrY}`;
@@ -37,7 +46,7 @@ const drawExternalDataPath = (direction: "memory-to-mbr" | "mbr-to-memory") => {
   try {
     const path = generateExternalDataPath(direction);
     if (!path) return Promise.resolve();
-    
+
     return anim(
       [
         { key: "bus.data.path", from: path },
@@ -71,7 +80,7 @@ export const drawExternalAddressPath = () => {
   try {
     const path = generateExternalAddressPath();
     if (!path) return Promise.resolve();
-    
+
     return anim(
       [
         { key: "bus.address.path", from: path },
@@ -95,7 +104,7 @@ const drawRDControlPath = () => {
   try {
     // Path desde CPU hacia memoria y otros dispositivos
     const path = "M 380 420 H 800"; // Path básico CPU -> Memory
-    
+
     return anim(
       [
         { key: "bus.rd.path", from: path },
@@ -115,7 +124,7 @@ const drawWRControlPath = () => {
   try {
     // Path desde CPU hacia memoria y otros dispositivos
     const path = "M 380 440 H 800"; // Path básico CPU -> Memory
-    
+
     return anim(
       [
         { key: "bus.wr.path", from: path },
@@ -154,22 +163,22 @@ export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promi
 
     case "memory:read.ok": {
       store.set(operatingAddressAtom, MemoryAddress.from(event.address));
-      
+
       // Animar la celda de memoria como punto de origen
       await anim(
         { key: "memory.operating-cell.color", to: colors.mantis[400] },
         { duration: 1, easing: "easeOutQuart" },
       );
-      
+
       // Animar el bus de datos desde la memoria hacia el MBR (igual que bus interno)
       await drawExternalDataPath("memory-to-mbr");
-      
+
       // Actualizar el valor primero
       store.set(MBRAtom, event.value);
-      
+
       // DESPUÉS usar la nueva animación para el MBR (después del bus)
       await updateRegisterWithGlow("cpu.MBR");
-      
+
       // Resetear animaciones
       await Promise.all([
         anim(
@@ -198,25 +207,25 @@ export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promi
 
     case "memory:write.ok": {
       store.set(operatingAddressAtom, MemoryAddress.from(event.address));
-      
+
       // Para escritura, usar el color específico del MBR
       await activateRegister("cpu.MBR");
-      
+
       // Animar el bus de datos desde el MBR hacia la memoria (igual que bus interno)
       await drawExternalDataPath("mbr-to-memory");
-      
+
       // Animar la celda de memoria de destino
       await anim(
         { key: "memory.operating-cell.color", to: colors.mantis[400] },
         { duration: 1, easing: "easeOutQuart" },
       );
-      
+
       store.set(memoryAtom, arr => [
         ...arr.slice(0, event.address.value),
         event.value,
         ...arr.slice(event.address.value + 1),
       ]);
-      
+
       // Resetear animaciones
       await Promise.all([
         deactivateRegister("cpu.MBR"),

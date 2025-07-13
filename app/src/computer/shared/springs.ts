@@ -37,7 +37,11 @@ export type SimplePathKey = SpringPathWhere<SimplePathSprings>;
 
 // Used for data bus animations (same as CPU internal bus)
 export type DataBusSprings = Opaque<
-  { strokeDashoffset: SpringValue<number>; opacity: SpringValue<number>; path: SpringValue<string> },
+  {
+    strokeDashoffset: SpringValue<number>;
+    opacity: SpringValue<number>;
+    path: SpringValue<string>;
+  },
   "DataBusSprings"
 >;
 export type DataBusKey = SpringPathWhere<DataBusSprings>;

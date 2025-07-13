@@ -130,10 +130,10 @@ export function resetCPUState(computer: ComputerState, clearRegisters = false) {
     store.set(registerAtoms.MAR, Byte.zero(16));
     store.set(registerAtoms.MBR, Byte.zero(8));
   } else {
-    store.set(registerAtoms.AL, Byte.fromUnsigned(computer.cpu.AX & 0xFF, 8));
-    store.set(registerAtoms.BL, Byte.fromUnsigned(computer.cpu.BX & 0xFF, 8));
-    store.set(registerAtoms.CL, Byte.fromUnsigned(computer.cpu.CX & 0xFF, 8));
-    store.set(registerAtoms.DL, Byte.fromUnsigned(computer.cpu.DX & 0xFF, 8));
+    store.set(registerAtoms.AL, Byte.fromUnsigned(computer.cpu.AX & 0xff, 8));
+    store.set(registerAtoms.BL, Byte.fromUnsigned(computer.cpu.BX & 0xff, 8));
+    store.set(registerAtoms.CL, Byte.fromUnsigned(computer.cpu.CX & 0xff, 8));
+    store.set(registerAtoms.DL, Byte.fromUnsigned(computer.cpu.DX & 0xff, 8));
     store.set(registerAtoms.SP, Byte.fromUnsigned(computer.cpu.SP, 16));
     store.set(registerAtoms.IP, Byte.fromUnsigned(computer.cpu.IP, 16));
     store.set(registerAtoms.IR, Byte.fromUnsigned(computer.cpu.IR, 8));

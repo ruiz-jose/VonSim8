@@ -19,22 +19,22 @@ export function Control() {
   // Funciones para la información del ciclo
   const getPhaseDescription = () => {
     if (!cycle) return "CPU detenida";
-    
+
     switch (cycle.phase) {
-      case 'fetching':
+      case "fetching":
         return "Leyendo instrucción";
-      case 'fetching-operands':
+      case "fetching-operands":
         return "Obteniendo operandos";
-      case 'executing':
+      case "executing":
         return "Ejecutando operación";
-      case 'writeback':
+      case "writeback":
         return "Escribiendo resultado";
-      case 'interrupt':
+      case "interrupt":
         return "Procesando interrupción";
-      case 'int6':
-      case 'int7':
+      case "int6":
+      case "int7":
         return "Rutina de interrupción";
-      case 'stopped':
+      case "stopped":
         return cycle.error ? `Error: ${cycle.error.message}` : "CPU detenida";
       default:
         return "Estado desconocido";
@@ -43,22 +43,22 @@ export function Control() {
 
   const getPhaseIcon = () => {
     if (!cycle) return "⏹️";
-    
+
     switch (cycle.phase) {
-      case 'fetching':
+      case "fetching":
         return "📥";
-      case 'fetching-operands':
+      case "fetching-operands":
         return "🔍";
-      case 'executing':
+      case "executing":
         return "⚡";
-      case 'writeback':
+      case "writeback":
         return "💾";
-      case 'interrupt':
+      case "interrupt":
         return "🚨";
-      case 'int6':
-      case 'int7':
+      case "int6":
+      case "int7":
         return "🔄";
-      case 'stopped':
+      case "stopped":
         return cycle.error ? "❌" : "⏹️";
       default:
         return "❓";
@@ -67,22 +67,22 @@ export function Control() {
 
   const getPhaseColor = () => {
     if (!cycle) return "text-stone-400";
-    
+
     switch (cycle.phase) {
-      case 'fetching':
+      case "fetching":
         return "text-blue-400";
-      case 'fetching-operands':
+      case "fetching-operands":
         return "text-yellow-400";
-      case 'executing':
+      case "executing":
         return "text-green-400";
-      case 'writeback':
+      case "writeback":
         return "text-purple-400";
-      case 'interrupt':
+      case "interrupt":
         return "text-red-400";
-      case 'int6':
-      case 'int7':
+      case "int6":
+      case "int7":
         return "text-orange-400";
-      case 'stopped':
+      case "stopped":
         return cycle.error ? "text-red-400" : "text-stone-400";
       default:
         return "text-stone-400";
@@ -90,14 +90,14 @@ export function Control() {
   };
 
   const getCurrentPhase = () => {
-    if (!cycle) return 'idle';
-    
-    if (cycle.phase === 'fetching') return 'fetch';
-    if (cycle.phase === 'fetching-operands') return 'execute';
-    if (cycle.phase === 'executing') return 'execute';
-    if (cycle.phase === 'writeback') return 'execute';
-    
-    return 'idle';
+    if (!cycle) return "idle";
+
+    if (cycle.phase === "fetching") return "fetch";
+    if (cycle.phase === "fetching-operands") return "execute";
+    if (cycle.phase === "executing") return "execute";
+    if (cycle.phase === "writeback") return "execute";
+
+    return "idle";
   };
 
   return (
@@ -143,19 +143,24 @@ export function Control() {
               onClick={() => setShowCycleInfo(!showCycleInfo)}
               className={clsx(
                 "rounded px-1 py-0.5 text-xs transition-colors",
-                showCycleInfo 
-                  ? "bg-mantis-400/20 text-mantis-400" 
-                  : "text-stone-400 hover:bg-mantis-400/10 hover:text-mantis-400"
+                showCycleInfo
+                  ? "bg-mantis-400/20 text-mantis-400"
+                  : "text-stone-400 hover:bg-mantis-400/10 hover:text-mantis-400",
               )}
             >
-              {showCycleInfo ? '−' : '+'}
+              {showCycleInfo ? "−" : "+"}
             </button>
           </div>
 
           {/* Estado actual del ciclo - Compacto */}
           <div className="mb-0.5 rounded border border-stone-600 bg-stone-900/80 p-0.5">
             <div className="min-w-0 flex-1 text-center">
-              <div className={clsx("flex items-center justify-center gap-1 text-xs font-semibold", getPhaseColor())}>
+              <div
+                className={clsx(
+                  "flex items-center justify-center gap-1 text-xs font-semibold",
+                  getPhaseColor(),
+                )}
+              >
                 <span className="text-sm">{getPhaseIcon()}</span>
                 {getPhaseDescription()}
               </div>
@@ -177,11 +182,25 @@ export function Control() {
               <div className="rounded border border-stone-600 bg-stone-900/80 p-0.5">
                 <div className="mb-1 text-xs font-bold text-mantis-400">Fases:</div>
                 <div className="flex items-center justify-center gap-1 text-xs text-stone-300">
-                  <div className={clsx("rounded px-1 py-0.5", getCurrentPhase() === 'fetch' ? "bg-blue-500/20 text-blue-400" : "text-stone-500")}>
+                  <div
+                    className={clsx(
+                      "rounded px-1 py-0.5",
+                      getCurrentPhase() === "fetch"
+                        ? "bg-blue-500/20 text-blue-400"
+                        : "text-stone-500",
+                    )}
+                  >
                     📥 Busqueda
                   </div>
                   <span className="text-stone-500">→</span>
-                  <div className={clsx("rounded px-1 py-0.5", getCurrentPhase() === 'execute' ? "bg-green-500/20 text-green-400" : "text-stone-500")}>
+                  <div
+                    className={clsx(
+                      "rounded px-1 py-0.5",
+                      getCurrentPhase() === "execute"
+                        ? "bg-green-500/20 text-green-400"
+                        : "text-stone-500",
+                    )}
+                  >
                     ⚡ Ejecución
                   </div>
                 </div>

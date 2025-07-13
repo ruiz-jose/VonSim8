@@ -41,7 +41,10 @@ export function Memory() {
   // const memoryCells = useAtomValue(memoryShownAtom) as { address: MemoryAddress; value: Byte<8>; }[];
 
   return (
-    <div className="absolute left-[800px] top-0 z-10 size-auto rounded-lg border border-stone-600 bg-stone-900 shadow-2xl [&_*]:z-20" data-testid="memory-component">
+    <div
+      className="absolute left-[800px] top-0 z-10 size-auto rounded-lg border border-stone-600 bg-stone-900 shadow-2xl [&_*]:z-20"
+      data-testid="memory-component"
+    >
       <span className="block w-min rounded-br-lg rounded-tl-lg border-b border-r border-stone-600 bg-mantis-500 px-2 py-1 text-3xl text-white shadow">
         {translate("computer.memory.name")}
       </span>

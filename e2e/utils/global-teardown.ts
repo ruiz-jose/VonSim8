@@ -1,9 +1,9 @@
-import { FullConfig } from '@playwright/test';
+import { FullConfig } from "@playwright/test";
 
 async function globalTeardown(config: FullConfig) {
   // Cleanup global que se ejecuta una vez después de todos los tests
-  console.log('🧹 Finalizando tests E2E...');
-  
+  console.log("🧹 Finalizando tests E2E...");
+
   // Aquí puedes agregar lógica como:
   // - Limpiar archivos temporales
   // - Cerrar conexiones de base de datos
@@ -11,4 +11,4 @@ async function globalTeardown(config: FullConfig) {
   // - Enviar notificaciones
 }
 
-export default globalTeardown; 
+export default globalTeardown;

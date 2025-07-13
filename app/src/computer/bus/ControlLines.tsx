@@ -30,8 +30,16 @@ export function ControlLines() {
   const memPath = "M 750 545 H 800";
 
   // Obtener las propiedades de animación de los buses de control
-  const { path: rdPath_anim, strokeDashoffset: rdDashoffset, opacity: rdOpacity } = getSpring("bus.rd");
-  const { path: wrPath_anim, strokeDashoffset: wrDashoffset, opacity: wrOpacity } = getSpring("bus.wr");
+  const {
+    path: rdPath_anim,
+    strokeDashoffset: rdDashoffset,
+    opacity: rdOpacity,
+  } = getSpring("bus.rd");
+  const {
+    path: wrPath_anim,
+    strokeDashoffset: wrDashoffset,
+    opacity: wrOpacity,
+  } = getSpring("bus.wr");
 
   return (
     <svg className="pointer-events-none absolute inset-0 z-[15] size-full">
@@ -57,7 +65,7 @@ export function ControlLines() {
         className="pointer-events-none fill-red-500 font-mono text-xs font-bold"
         textAnchor="middle"
         style={{
-          opacity: rdOpacity
+          opacity: rdOpacity,
         }}
       >
         Read
@@ -85,7 +93,7 @@ export function ControlLines() {
         className="pointer-events-none fill-blue-500 font-mono text-xs font-bold"
         textAnchor="middle"
         style={{
-          opacity: wrOpacity
+          opacity: wrOpacity,
         }}
       >
         Write

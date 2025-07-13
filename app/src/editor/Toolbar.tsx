@@ -1,4 +1,4 @@
-import { faPause, faPlay, faRotateLeft,faStop } from "@fortawesome/free-solid-svg-icons";
+import { faPause, faPlay, faRotateLeft, faStop } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
 import { memo } from "react";
@@ -38,25 +38,25 @@ export const Toolbar = memo(() => {
       {/* Controles de simulación */}
       <div className="flex items-center gap-2">
         <div className="flex items-center gap-1 rounded-lg bg-stone-800/50 p-1">
-          <Tooltip content={isRunning ? "Detener simulación" : "Ejecutar simulación"} position="bottom">
+          <Tooltip
+            content={isRunning ? "Detener simulación" : "Ejecutar simulación"}
+            position="bottom"
+          >
             <Button
               variant={isRunning ? "destructive" : "default"}
               size="sm"
               onClick={handleRun}
-              className={clsx(
-                "size-8 p-0 transition-all",
-                isRunning && "animate-pulse-glow"
-              )}
+              className={clsx("size-8 p-0 transition-all", isRunning && "animate-pulse-glow")}
               aria-label={isRunning ? "Detener" : "Ejecutar"}
             >
-              <FontAwesomeIcon 
-                icon={isRunning ? faStop : faPlay} 
-                className="size-3" 
-              />
+              <FontAwesomeIcon icon={isRunning ? faStop : faPlay} className="size-3" />
             </Button>
           </Tooltip>
 
-          <Tooltip content={isPaused ? "Reanudar simulación" : "Pausar simulación"} position="bottom">
+          <Tooltip
+            content={isPaused ? "Reanudar simulación" : "Pausar simulación"}
+            position="bottom"
+          >
             <Button
               variant={isPaused ? "secondary" : "ghost"}
               size="sm"
@@ -86,26 +86,28 @@ export const Toolbar = memo(() => {
 
         {/* Estado de simulación */}
         <div className="flex items-center gap-2 text-xs">
-          <div className={clsx(
-            "flex items-center gap-1.5 rounded-full px-2 py-1 font-medium",
-            isRunning 
-              ? "border border-green-500/30 bg-green-500/20 text-green-300"
-              : isPaused
-                ? "border border-yellow-500/30 bg-yellow-500/20 text-yellow-300"
-                : "border border-stone-600/30 bg-stone-600/20 text-stone-300"
-          )}>
-            <div className={clsx(
-              "size-2 rounded-full",
-              isRunning ? "animate-pulse bg-green-400" : "bg-stone-400"
-            )} />
+          <div
+            className={clsx(
+              "flex items-center gap-1.5 rounded-full px-2 py-1 font-medium",
+              isRunning
+                ? "border border-green-500/30 bg-green-500/20 text-green-300"
+                : isPaused
+                  ? "border border-yellow-500/30 bg-yellow-500/20 text-yellow-300"
+                  : "border border-stone-600/30 bg-stone-600/20 text-stone-300",
+            )}
+          >
+            <div
+              className={clsx(
+                "size-2 rounded-full",
+                isRunning ? "animate-pulse bg-green-400" : "bg-stone-400",
+              )}
+            />
             {isRunning ? "Ejecutando" : isPaused ? "Pausado" : "Detenido"}
           </div>
         </div>
       </div>
-
-
     </div>
   );
 });
 
-Toolbar.displayName = 'Toolbar'; 
+Toolbar.displayName = "Toolbar";

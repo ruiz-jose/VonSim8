@@ -39,7 +39,8 @@ export const lineHighlightField = StateField.define({
 });
 
 const lineHighlightMark = Decoration.line({
-  class: "!bg-gradient-to-r !from-mantis-500/8 !via-mantis-500/5 !to-transparent !border-l-2 !border-mantis-400/40 !shadow-sm",
+  class:
+    "!bg-gradient-to-r !from-mantis-500/8 !via-mantis-500/5 !to-transparent !border-l-2 !border-mantis-400/40 !shadow-sm",
 });
 
 const currentInstructionMark = Decoration.line({
