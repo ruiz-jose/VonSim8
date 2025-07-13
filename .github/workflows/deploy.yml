@@ -44,7 +44,11 @@ jobs:
         cd packages/assembler
         pnpm test
       continue-on-error: true  # Esto hace que el job no falle si los tests del ensamblador fallan
-    
+
+    - name: Lint code (no bloquea despliegue)
+      run: pnpm lint
+      continue-on-error: true
+
     - name: Build application
       run: pnpm build
     

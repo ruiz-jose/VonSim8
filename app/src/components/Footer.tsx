@@ -1,7 +1,6 @@
-import { faGithub, faTwitter } from "@fortawesome/free-brands-svg-icons";
+import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
-import { useAtomValue } from "jotai";
 import { memo, useMemo } from "react";
 
 import { Button } from "@/components/ui/Button";

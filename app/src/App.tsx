@@ -20,7 +20,7 @@ const App = memo(() => {
   const lang = useLanguage();
   const filter = useFilters();
   const isMobile = useMedia("(max-width: 640px)");
-  const translate = useTranslate();
+  // Elimino la declaración de 'translate' si no se usa
 
   // Memoizar el estilo para evitar re-renders innecesarios
   const containerStyle = useMemo(() => ({ filter }), [filter]);

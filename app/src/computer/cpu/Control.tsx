@@ -6,36 +6,18 @@ import { animated, getSpring } from "@/computer/shared/springs";
 import { useSimulation } from "@/computer/simulation";
 import { useTranslate } from "@/lib/i18n";
 
-import { cycleAtom, cycleCountAtom, messageAtom } from "./state";
+import { cycleAtom, messageAtom } from "./state";
 
 /**
  * Control component, to be used inside <CPU />
  */
 export function Control() {
   const translate = useTranslate();
-  const cycleCount = useAtomValue(cycleCountAtom); // Obtener el valor de cycleCount
   const [showCycleInfo, setShowCycleInfo] = useState(false);
 
   const { status } = useSimulation();
   const cycle = useAtomValue(cycleAtom);
   const message = useAtomValue(messageAtom);
-
-  const operandsText = useMemo(() => {
-    if (!("metadata" in cycle)) return "";
-    if (cycle.metadata.operands.length === 0) return "";
-
-    if (cycle.phase === "fetching-operands") {
-      let text = " __";
-      for (let i = 1; i < cycle.metadata.operands.length; i++) {
-        text += ", __";
-      }
-      return text;
-    } else {
-      return " " + cycle.metadata.operands.join(", ");
-    }
-  }, [cycle]);
-
-
 
   // Funciones para la información del ciclo
   const getPhaseDescription = () => {

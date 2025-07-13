@@ -1,8 +1,5 @@
 import clsx from "clsx";
-import { useAtomValue } from "jotai";
 import { memo, useEffect, useState } from "react";
-
-import { cycleAtom } from "./state";
 
 type ExecutionPhase = 'fetch' | 'decode' | 'execute' | 'idle';
 
@@ -18,8 +15,6 @@ export const ExecutionPhases = memo(({
   const [pulsePhase, setPulsePhase] = useState<ExecutionPhase>('idle');
   const [showDetails, setShowDetails] = useState(false);
 
-  const cycle = useAtomValue(cycleAtom);
-
   // Efecto para animar la fase actual
   useEffect(() => {
     if (currentPhase !== 'idle') {
@@ -30,9 +25,7 @@ export const ExecutionPhases = memo(({
   }, [currentPhase]);
 
   // Obtener información de la instrucción actual
-  const currentInstruction = cycle && "metadata" in cycle && cycle.metadata 
-    ? `${cycle.metadata.name}${cycle.metadata.operands.length ? " " + cycle.metadata.operands.join(", ") : ""}`
-    : "";
+  // Elimino la declaración de 'currentInstruction' si no se usa
 
   const phases = [
     {

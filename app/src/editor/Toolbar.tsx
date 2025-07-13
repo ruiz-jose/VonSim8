@@ -6,14 +6,8 @@ import { memo } from "react";
 import { Button } from "@/components/ui/Button";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { useSimulation } from "@/computer/simulation";
-import { useTranslate } from "@/lib/i18n";
 
-type ToolbarProps = {
-  // Props vacíos para mantener compatibilidad
-}
-
-export const Toolbar = memo(({}: ToolbarProps) => {
-  const translate = useTranslate();
+export const Toolbar = memo(() => {
   const { status, dispatch } = useSimulation();
 
   const isRunning = status.type === "running";

@@ -43,7 +43,9 @@ vi.mock("@/lib/i18n", () => ({
   useTranslate: () => (key: string) => key,
   translate: (lang: string, key: string) => key,
   getSettings: () => ({ language: "es" }),
-  setLanguage: () => {},
+  setLanguage() {
+    // Método intencionalmente vacío
+  },
 }));
 
 // Mock para @/lib/settings
@@ -141,7 +143,6 @@ vi.mock("jotai", () => ({
 
 // Mock para Jotai React
 vi.mock("jotai/react", async (importOriginal) => {
-  const actual = await importOriginal();
   return {
     useAtom: vi.fn(() => [{}, vi.fn()]),
     useAtomValue: vi.fn(() => ({})),

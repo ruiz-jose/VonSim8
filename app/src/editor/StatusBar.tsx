@@ -4,10 +4,9 @@ import { useCallback, useEffect } from "react";
 
 import { Button } from "@/components/ui/Button";
 import { Tooltip } from "@/components/ui/Tooltip";
-import { translate, useTranslate } from "@/lib/i18n";
 import { toast } from "@/lib/toast";
 
-import { getSavedProgram, syncStatePlugin } from "./files";
+import { getSavedProgram } from "./files";
 
 
 
@@ -49,7 +48,6 @@ declare global {
 const supportsNativeFileSystem = "showSaveFilePicker" in window;
 
 export function StatusBar() {
-  const translate = useTranslate();
   const lintErrors = useAtomValue(lintErrorsAtom);
   const fileHandle = useAtomValue(fileHandleAtom);
   const setFileHandle = useSetAtom(fileHandleAtom);
@@ -62,7 +60,6 @@ export function StatusBar() {
   useEffect(() => {
     if (window.codemirror) {
       const updateListener = () => {
-        const currentProgram = window.codemirror!.state.doc.toString();
         // Actualizar el programAtom cuando cambie el contenido
         // Esto se maneja automáticamente por el syncStatePlugin
       };
@@ -76,12 +73,12 @@ export function StatusBar() {
 
   const openFile = useCallback(async () => {
     if (!supportsNativeFileSystem) {
-      toast({ title: translate("editor.files.unsupported"), variant: "error" });
+      toast({ title: "editor.files.unsupported", variant: "error" });
       return;
     }
 
     if (unsavedChanges) {
-      const discard = confirm(translate("editor.files.unsaved"));
+      const discard = confirm("editor.files.unsaved");
       if (!discard) return;
     }
 
@@ -103,13 +100,13 @@ export function StatusBar() {
       }
     } catch (error) {
       console.error(error);
-      toast({ title: translate("editor.files.open-error"), variant: "error" });
+      toast({ title: "editor.files.open-error", variant: "error" });
     }
-  }, [translate, unsavedChanges, setFileHandle, setLastSavedProgram]);
+  }, [unsavedChanges, setFileHandle, setLastSavedProgram]);
 
   const saveFile = useCallback(async () => {
     if (!supportsNativeFileSystem) {
-      toast({ title: translate("editor.files.unsupported"), variant: "error" });
+      toast({ title: "editor.files.unsupported", variant: "error" });
       return;
     }
 
@@ -129,9 +126,9 @@ export function StatusBar() {
       toast({ title: "Archivo guardado", variant: "info" });
     } catch (error) {
       console.error(error);
-      toast({ title: translate("editor.files.save-error"), variant: "error" });
+      toast({ title: "editor.files.save-error", variant: "error" });
     }
-  }, [translate, fileHandle, unsavedChanges, setLastSavedProgram]);
+  }, [fileHandle, unsavedChanges, setLastSavedProgram]);
 
   const saveFileAs = useCallback(async () => {
     const source = window.codemirror!.state.doc.toString();
@@ -155,7 +152,7 @@ export function StatusBar() {
         }
       } catch (error) {
         console.error(error);
-        toast({ title: translate("editor.files.save-error"), variant: "error" });
+        toast({ title: "editor.files.save-error", variant: "error" });
       }
     } else {
       const blob = new Blob([source], { type: "text/plain" });
@@ -171,7 +168,7 @@ export function StatusBar() {
       document.body.removeChild(a);
       URL.revokeObjectURL(href);
     }
-  }, [translate, fileHandle, setFileHandle, setLastSavedProgram]);
+  }, [fileHandle, setFileHandle, setLastSavedProgram]);
 
   return (
     <div data-testid="status-bar" className="flex items-center justify-between border-t border-stone-700 bg-gradient-to-r from-stone-800 to-stone-900 px-4 py-0.5 font-sans text-xs text-stone-300 shadow-inner">
@@ -192,38 +189,38 @@ export function StatusBar() {
         
         {/* Iconos de archivo */}
         <div className="flex items-center gap-2">
-          <Tooltip content={translate("editor.files.open")} position="top">
+          <Tooltip content="editor.files.open" position="top">
             <Button
               variant="ghost"
               size="sm"
               onClick={openFile}
               className="hover-lift"
-              aria-label={translate("editor.files.open")}
+              aria-label="editor.files.open"
             >
               <span className="icon-[lucide--folder-open] size-4" />
             </Button>
           </Tooltip>
           
-          <Tooltip content={translate("editor.files.save")} position="top">
+          <Tooltip content="editor.files.save" position="top">
             <Button
               variant="ghost"
               size="sm"
               onClick={saveFile}
               disabled={!fileHandle || !unsavedChanges}
               className="hover-lift"
-              aria-label={translate("editor.files.save")}
+              aria-label="editor.files.save"
             >
               <span className="icon-[lucide--save] size-4" />
             </Button>
           </Tooltip>
           
-          <Tooltip content={translate("editor.files.save-as")} position="top">
+          <Tooltip content="editor.files.save-as" position="top">
             <Button
               variant="ghost"
               size="sm"
               onClick={saveFileAs}
               className="hover-lift"
-              aria-label={translate("editor.files.save-as")}
+              aria-label="editor.files.save-as"
             >
               <span className="icon-[lucide--save-all] size-4" />
             </Button>

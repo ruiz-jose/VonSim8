@@ -183,7 +183,7 @@ export function CPU() {
       {showSP && (
         <Reg name="SP" emphasis className={clsx("left-[450px] top-[292px]", "border-yellow-400")} />
       )}
-      <Reg name="IP" emphasis className={clsx("left-[450px] top-[332px]", "border-red-color")} />
+      <Reg name="IP" emphasis className={clsx("left-[450px] top-[332px]", "border-red-500")} />
 
       {showri && (
         <Reg name="ri" emphasis className={clsx("left-[470px] top-[372px]", "border-cyan-400")} />

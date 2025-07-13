@@ -12,7 +12,7 @@ import {
 import type { RegisterKey, SimplePathKey } from "@/computer/shared/springs";
 import type { SimulatorEvent } from "@/computer/shared/types";
 import { finishSimulation, pauseSimulation } from "@/computer/simulation";
-import { highlightCurrentInstruction,highlightLine } from "@/editor/methods";
+import { highlightCurrentInstruction } from "@/editor/methods";
 import { store } from "@/lib/jotai";
 import { colors } from "@/lib/tailwind";
 

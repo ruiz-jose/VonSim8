@@ -1,9 +1,6 @@
 import { 
   faBook,
-  faChartLine,
-  faCogs,
   faEye, 
-  faGraduationCap, 
   faLightbulb,
   faPlay, 
   faTrophy} from "@fortawesome/free-solid-svg-icons";
@@ -11,10 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
 import { memo, useState } from "react";
 
-import { Button } from "@/components/ui/Button";
-
 import { ConceptVisualizer } from "./ConceptVisualizer";
-import { EducationalProgress } from "./EducationalProgress";
 import { AVAILABLE_TUTORIALS,InteractiveTutorial } from "./InteractiveTutorial";
 
 type EducationalMenuProps = {
@@ -24,7 +18,7 @@ type EducationalMenuProps = {
   onShowProgress?: () => void;
 }
 
-export const EducationalMenu = memo(({ className, isOpen = false, onClose, onShowProgress }: EducationalMenuProps) => {
+export const EducationalMenu = memo(({ isOpen = false, onClose, onShowProgress }: EducationalMenuProps) => {
   const [tutorialsExpanded, setTutorialsExpanded] = useState(false);
   const [visualizationsExpanded, setVisualizationsExpanded] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);

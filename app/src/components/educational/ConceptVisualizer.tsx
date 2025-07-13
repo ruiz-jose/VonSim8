@@ -11,18 +11,6 @@ import { memo, useCallback,useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/Button";
 
-type VisualStep = {
-  id: string;
-  title: string;
-  description: string;
-  duration: number;
-  animation: {
-    type: 'highlight' | 'flow' | 'transform' | 'sequence';
-    targets: string[];
-    data?: any;
-  };
-}
-
 type ConceptVisualizerProps = {
   concept: 'fetch-decode-execute' | 'memory-access' | 'register-transfer' | 'alu-operation' | 'bus-communication';
   onClose?: () => void;
@@ -455,7 +443,7 @@ export const ConceptVisualizer = memo(({
         {/* Content */}
         <div className="flex-1 p-4">
           <div className="mb-4">
-            <h3 className="text-md mb-2 font-medium text-white">
+            <h3 className="text-base mb-2 font-medium text-white">
               {currentStep.title}
             </h3>
             <p className="text-sm text-stone-300">

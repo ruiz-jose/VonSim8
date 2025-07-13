@@ -227,7 +227,7 @@ describe('Utility Functions', () => {
       let callCount = 0;
       const testFn = () => { callCount++; };
       
-      const debounce = (fn: Function, delay: number) => {
+      const debounce = (fn: (...args: any[]) => any, delay: number) => {
         let timeoutId: NodeJS.Timeout;
         return (...args: any[]) => {
           clearTimeout(timeoutId);

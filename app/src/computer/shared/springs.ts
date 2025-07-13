@@ -219,11 +219,19 @@ export function getSpring<const Key extends SpringPath>(key: Key) {
         return {
           backgroundColor: dummySpring,
           opacity: new SpringValue(1),
-          stop: () => {},
-          pause: () => {},
-          resume: () => {},
+          stop() {
+            // Método intencionalmente vacío
+          },
+          pause() {
+            // Método intencionalmente vacío
+          },
+          resume() {
+            // Método intencionalmente vacío
+          },
           start: () => Promise.resolve(),
-          set: () => {},
+          set() {
+            // Método intencionalmente vacío
+          },
           get: () => colors.stone[800],
           isPaused: false,
         };

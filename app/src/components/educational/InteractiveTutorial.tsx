@@ -221,20 +221,9 @@ export const InteractiveTutorial = memo(({
   const completedSteps = steps.filter(s => s.completed).length;
   const progress = (completedSteps / steps.length) * 100;
 
-  // Auto-advance cuando está en modo reproducción
-  useEffect(() => {
-    if (isPlaying && currentStep.type === 'explanation') {
-      const timer = setTimeout(() => {
-        if (!isLastStep) {
-          nextStep();
-        } else {
-          setIsPlaying(false);
-        }
-      }, 5000); // 5 segundos por paso explicativo
-
-      return () => clearTimeout(timer);
-    }
-  }, [isPlaying, currentStepIndex, isLastStep]);
+  const completeTutorial = useCallback(() => {
+    onComplete?.(tutorial.id);
+  }, [tutorial.id, onComplete]);
 
   const nextStep = useCallback(() => {
     if (!isLastStep) {
@@ -244,7 +233,7 @@ export const InteractiveTutorial = memo(({
     } else {
       completeTutorial();
     }
-  }, [isLastStep]);
+  }, [isLastStep, completeTutorial]);
 
   const prevStep = useCallback(() => {
     if (!isFirstStep) {
@@ -259,10 +248,6 @@ export const InteractiveTutorial = memo(({
       index === currentStepIndex ? { ...step, completed: true } : step
     ));
   }, [currentStepIndex]);
-
-  const completeTutorial = useCallback(() => {
-    onComplete?.(tutorial.id);
-  }, [tutorial.id, onComplete]);
 
   const handleAnswerSubmit = useCallback(() => {
     if (!currentStep.exercise) return;
@@ -286,6 +271,21 @@ export const InteractiveTutorial = memo(({
   const togglePlay = useCallback(() => {
     setIsPlaying(!isPlaying);
   }, [isPlaying]);
+
+  // Auto-advance cuando está en modo reproducción
+  useEffect(() => {
+    if (isPlaying && currentStep.type === 'explanation') {
+      const timer = setTimeout(() => {
+        if (!isLastStep) {
+          nextStep();
+        } else {
+          setIsPlaying(false);
+        }
+      }, 5000); // 5 segundos por paso explicativo
+
+      return () => clearTimeout(timer);
+    }
+  }, [isPlaying, currentStepIndex, isLastStep, currentStep.type, nextStep]);
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
@@ -356,7 +356,7 @@ export const InteractiveTutorial = memo(({
         {/* Content */}
         <div className="max-h-96 overflow-y-auto p-4">
           <div className="mb-4">
-            <h3 className="text-md mb-2 font-medium text-white">
+            <h3 className="text-base mb-2 font-medium text-white">
               {currentStep.title}
             </h3>
             <p className="mb-3 text-sm text-stone-300">

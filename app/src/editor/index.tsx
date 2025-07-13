@@ -36,7 +36,6 @@ import { VonSim } from "./vonsim";
 
 export function Editor({ className }: { className?: string }) {
   const [element, setElement] = useState<HTMLElement>();
-  const [currentLine, setCurrentLine] = useState(1);
   const fontSize = useEditorFontSize();
 
   const ref = useCallback((node: HTMLElement | null) => {
@@ -71,8 +70,6 @@ export function Editor({ className }: { className?: string }) {
           highlightActiveLine(),
           EditorView.updateListener.of((update) => {
             if (update.selectionSet) {
-              const line = update.state.doc.lineAt(update.state.selection.main.head).number;
-              setCurrentLine(line);
             }
           }),
           keymap.of([

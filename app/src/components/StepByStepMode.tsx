@@ -72,14 +72,6 @@ export const StepByStepMode = memo(({
     }
   }, [isPlaying]);
 
-  // Auto-advance when playing
-  const autoAdvance = useCallback(() => {
-    if (isPlaying && !isLastStep) {
-      const timer = setTimeout(nextStep, playbackSpeed);
-      return () => clearTimeout(timer);
-    }
-  }, [isPlaying, isLastStep, nextStep, playbackSpeed]);
-
   // Effect for auto-advance
   if (isPlaying && !isLastStep) {
     setTimeout(nextStep, playbackSpeed);
