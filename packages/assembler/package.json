@@ -7,6 +7,7 @@
   },
   "scripts": {
     "lint": "tsc --noEmit && eslint --ignore-path .gitignore .",
+    "lint:fix": "tsc --noEmit && eslint --ignore-path .gitignore . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "bench": "vitest bench --run",

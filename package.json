@@ -3,8 +3,8 @@
   "license": "AGPL-3.0-only",
   "type": "module",
   "scripts": {
-    "format": "prettier -w .",
-    "format:check": "prettier --check .",
+    "format": "turbo run format",
+    "format:check": "turbo run format:check",
     "test": "turbo run test",
     "test:no-assembler": "turbo run test --filter=!@vonsim/assembler",
     "test:coverage": "turbo run test:coverage",
@@ -13,6 +13,7 @@
     "test:e2e": "playwright test",
     "test:e2e:optional": "cd e2e && pnpm test:e2e:optional",
     "lint": "turbo run lint",
+    "lint:fix": "turbo run lint:fix",
     "audit": "pnpm audit --audit-level moderate",
     "dev": "pnpm --dir app run dev",
     "docs:dev": "pnpm --dir docs run dev",

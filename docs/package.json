@@ -8,6 +8,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "lint": "astro check && eslint --ignore-path .gitignore .",
+    "lint:fix": "astro check && eslint --ignore-path .gitignore . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "echo 'No tests for docs package'",

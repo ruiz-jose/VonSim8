@@ -5,6 +5,7 @@
   "scripts": {
     "build": "node src/build.js",
     "lint": "tsc --noEmit && eslint --ignore-path .gitignore .",
+    "lint:fix": "tsc --noEmit && eslint --ignore-path .gitignore . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "echo 'No tests for scripts package'",
