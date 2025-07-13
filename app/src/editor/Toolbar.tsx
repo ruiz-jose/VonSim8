@@ -1,4 +1,4 @@
-import { faPlay, faStop, faPause, faRotateLeft } from "@fortawesome/free-solid-svg-icons";
+import { faPause, faPlay, faRotateLeft,faStop } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
 import { memo } from "react";
@@ -8,7 +8,7 @@ import { Tooltip } from "@/components/ui/Tooltip";
 import { useSimulation } from "@/computer/simulation";
 import { useTranslate } from "@/lib/i18n";
 
-interface ToolbarProps {
+type ToolbarProps = {
   // Props vacíos para mantener compatibilidad
 }
 
@@ -50,7 +50,7 @@ export const Toolbar = memo(({}: ToolbarProps) => {
               size="sm"
               onClick={handleRun}
               className={clsx(
-                "h-8 w-8 p-0 transition-all",
+                "size-8 p-0 transition-all",
                 isRunning && "animate-pulse-glow"
               )}
               aria-label={isRunning ? "Detener" : "Ejecutar"}
@@ -67,7 +67,7 @@ export const Toolbar = memo(({}: ToolbarProps) => {
               variant={isPaused ? "secondary" : "ghost"}
               size="sm"
               onClick={handlePause}
-              className="h-8 w-8 p-0"
+              className="size-8 p-0"
               aria-label={isPaused ? "Reanudar" : "Pausar"}
             >
               <FontAwesomeIcon icon={faPause} className="size-3" />
@@ -79,7 +79,7 @@ export const Toolbar = memo(({}: ToolbarProps) => {
               variant="ghost"
               size="sm"
               onClick={handleReset}
-              className="h-8 w-8 p-0"
+              className="size-8 p-0"
               aria-label="Reiniciar"
             >
               <FontAwesomeIcon icon={faRotateLeft} className="size-3" />
@@ -95,14 +95,14 @@ export const Toolbar = memo(({}: ToolbarProps) => {
           <div className={clsx(
             "flex items-center gap-1.5 rounded-full px-2 py-1 font-medium",
             isRunning 
-              ? "bg-green-500/20 text-green-300 border border-green-500/30"
+              ? "border border-green-500/30 bg-green-500/20 text-green-300"
               : isPaused
-                ? "bg-yellow-500/20 text-yellow-300 border border-yellow-500/30"
-                : "bg-stone-600/20 text-stone-300 border border-stone-600/30"
+                ? "border border-yellow-500/30 bg-yellow-500/20 text-yellow-300"
+                : "border border-stone-600/30 bg-stone-600/20 text-stone-300"
           )}>
             <div className={clsx(
               "size-2 rounded-full",
-              isRunning ? "bg-green-400 animate-pulse" : "bg-stone-400"
+              isRunning ? "animate-pulse bg-green-400" : "bg-stone-400"
             )} />
             {isRunning ? "Ejecutando" : isPaused ? "Pausado" : "Detenido"}
           </div>

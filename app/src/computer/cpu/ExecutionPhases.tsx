@@ -1,11 +1,12 @@
-import { memo, useEffect, useState } from "react";
 import clsx from "clsx";
 import { useAtomValue } from "jotai";
+import { memo, useEffect, useState } from "react";
+
 import { cycleAtom } from "./state";
 
 type ExecutionPhase = 'fetch' | 'decode' | 'execute' | 'idle';
 
-interface ExecutionPhasesProps {
+type ExecutionPhasesProps = {
   currentPhase?: ExecutionPhase;
   className?: string;
 }
@@ -95,23 +96,23 @@ export const ExecutionPhases = memo(({
 
   return (
     <div className={clsx(
-      "flex flex-col gap-2 p-2 rounded-lg bg-stone-900/95 border-2 border-mantis-400/50 shadow-lg backdrop-blur-sm",
+      "flex flex-col gap-2 rounded-lg border-2 border-mantis-400/50 bg-stone-900/95 p-2 shadow-lg backdrop-blur-sm",
       "min-w-[280px] max-w-[320px]",
       className
     )}>
       {/* Header mejorado */}
-      <div className="flex items-center justify-between mb-2">
+      <div className="mb-2 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-bold text-mantis-400 uppercase tracking-wide">
+          <span className="text-xs font-bold uppercase tracking-wide text-mantis-400">
             Ciclo CPU
           </span>
           <button
             onClick={() => setShowDetails(!showDetails)}
             className={clsx(
-              "text-xs px-2 py-1 rounded transition-colors",
+              "rounded px-2 py-1 text-xs transition-colors",
               showDetails 
                 ? "bg-mantis-400/20 text-mantis-400" 
-                : "text-stone-400 hover:text-mantis-400 hover:bg-mantis-400/10"
+                : "text-stone-400 hover:bg-mantis-400/10 hover:text-mantis-400"
             )}
           >
             {showDetails ? '−' : '+'}
@@ -125,7 +126,7 @@ export const ExecutionPhases = memo(({
           <div key={phase.id} className="flex items-center">
             <div
               className={clsx(
-                "flex flex-col items-center gap-1 px-2 py-1 rounded transition-all duration-300 cursor-pointer",
+                "flex cursor-pointer flex-col items-center gap-1 rounded px-2 py-1 transition-all duration-300",
                 "border border-transparent hover:border-mantis-400/30",
                 currentPhase === phase.id && "border-mantis-400 bg-mantis-400/20 shadow-lg",
                 pulsePhase === phase.id && "animate-pulse"
@@ -145,20 +146,20 @@ export const ExecutionPhases = memo(({
                 {phase.icon}
               </div>
               <span className={clsx(
-                "text-xs font-bold transition-colors uppercase tracking-wide",
+                "text-xs font-bold uppercase tracking-wide transition-colors",
                 currentPhase === phase.id 
                   ? "text-mantis-400" 
                   : "text-stone-400"
               )}>
                 {phase.label}
               </span>
-              <span className="text-[9px] text-stone-500 text-center max-w-16 leading-tight">
+              <span className="max-w-16 text-center text-[9px] leading-tight text-stone-500">
                 {phase.description}
               </span>
             </div>
             {/* Flecha entre fases */}
             {index < phases.length - 1 && (
-              <div className="text-stone-500 mx-1">→</div>
+              <div className="mx-1 text-stone-500">→</div>
             )}
           </div>
         ))}
@@ -168,30 +169,30 @@ export const ExecutionPhases = memo(({
 
       {/* Información detallada */}
       {showDetails && (
-        <div className="mt-2 p-2 bg-stone-800/80 rounded border border-stone-600">
+        <div className="mt-2 rounded border border-stone-600 bg-stone-800/80 p-2">
           <div className="text-xs text-stone-300">
-            <div className="font-bold mb-1 text-mantis-400">Estado actual:</div>
+            <div className="mb-1 font-bold text-mantis-400">Estado actual:</div>
             {currentPhase === 'fetch' && (
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></span>
+                <span className="size-2 animate-pulse rounded-full bg-blue-400"></span>
                 <span>Leyendo instrucción desde memoria</span>
               </div>
             )}
             {currentPhase === 'decode' && (
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></span>
+                <span className="size-2 animate-pulse rounded-full bg-yellow-400"></span>
                 <span>Interpretando código de operación</span>
               </div>
             )}
             {currentPhase === 'execute' && (
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                <span className="size-2 animate-pulse rounded-full bg-green-400"></span>
                 <span>Ejecutando operación en ALU</span>
               </div>
             )}
             {currentPhase === 'idle' && (
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 bg-stone-400 rounded-full"></span>
+                <span className="size-2 rounded-full bg-stone-400"></span>
                 <span>CPU en espera de instrucciones</span>
               </div>
             )}
@@ -200,7 +201,7 @@ export const ExecutionPhases = memo(({
       )}
 
       {/* Información educativa */}
-      <div className="text-[8px] text-stone-500 text-center">
+      <div className="text-center text-[8px] text-stone-500">
         Haz clic en las fases para ver detalles
       </div>
     </div>

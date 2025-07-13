@@ -1,18 +1,17 @@
-import { memo, useState, useEffect, useCallback } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
-  faPlay, 
-  faPause, 
-  faRotateLeft,
-  faExpand,
   faCompress,
-  faInfoCircle
-} from "@fortawesome/free-solid-svg-icons";
+  faExpand,
+  faInfoCircle,
+  faPause, 
+  faPlay, 
+  faRotateLeft} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
+import { memo, useCallback,useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/Button";
 
-interface VisualStep {
+type VisualStep = {
   id: string;
   title: string;
   description: string;
@@ -24,7 +23,7 @@ interface VisualStep {
   };
 }
 
-interface ConceptVisualizerProps {
+type ConceptVisualizerProps = {
   concept: 'fetch-decode-execute' | 'memory-access' | 'register-transfer' | 'alu-operation' | 'bus-communication';
   onClose?: () => void;
   className?: string;
@@ -306,14 +305,14 @@ export const ConceptVisualizer = memo(({
             {targets.map((target, index) => (
               <div
                 key={index}
-                className="absolute inset-0 border-2 border-mantis-400 bg-mantis-400/20 rounded animate-pulse"
+                className="absolute inset-0 animate-pulse rounded border-2 border-mantis-400 bg-mantis-400/20"
                 style={{
                   animationDelay: `${index * 200}ms`
                 }}
               />
             ))}
             {data && (
-              <div className="absolute top-2 right-2 bg-mantis-500 text-white px-2 py-1 rounded text-xs">
+              <div className="absolute right-2 top-2 rounded bg-mantis-500 px-2 py-1 text-xs text-white">
                 {Object.entries(data).map(([key, value]) => (
                   <div key={key}>{key}: {String(value)}</div>
                 ))}
@@ -325,7 +324,7 @@ export const ConceptVisualizer = memo(({
       case 'flow':
         return (
           <div className="relative">
-            <svg className="absolute inset-0 w-full h-full">
+            <svg className="absolute inset-0 size-full">
               <defs>
                 <linearGradient id="flowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                   <stop offset="0%" stopColor="#10b981" stopOpacity="0.8" />
@@ -344,8 +343,8 @@ export const ConceptVisualizer = memo(({
             </svg>
             
             {'value' in data && data.value && (
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                <div className="bg-mantis-500 text-white px-2 py-1 rounded text-xs font-mono">
+              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                <div className="rounded bg-mantis-500 px-2 py-1 font-mono text-xs text-white">
                   {data.value}
                 </div>
               </div>
@@ -359,14 +358,14 @@ export const ConceptVisualizer = memo(({
             {targets.map((target, index) => (
               <div
                 key={index}
-                className="absolute inset-0 bg-mantis-400/30 rounded animate-ping"
+                className="absolute inset-0 animate-ping rounded bg-mantis-400/30"
                 style={{
                   animationDelay: `${index * 300}ms`
                 }}
               />
             ))}
             {'newValue' in data && data.newValue && (
-              <div className="absolute top-2 left-2 bg-mantis-500 text-white px-2 py-1 rounded text-xs font-mono">
+              <div className="absolute left-2 top-2 rounded bg-mantis-500 px-2 py-1 font-mono text-xs text-white">
                 Nuevo: {data.newValue}
               </div>
             )}
@@ -377,12 +376,12 @@ export const ConceptVisualizer = memo(({
         return (
           <div className="relative">
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="bg-mantis-500 text-white px-4 py-2 rounded-lg text-sm font-mono">
+              <div className="rounded-lg bg-mantis-500 px-4 py-2 font-mono text-sm text-white">
                 {'operation' in data && data.operation ? data.operation : 'Operación'}
               </div>
             </div>
             {'result' in data && data.result && (
-              <div className="absolute bottom-2 right-2 bg-green-500 text-white px-2 py-1 rounded text-xs font-mono">
+              <div className="absolute bottom-2 right-2 rounded bg-green-500 px-2 py-1 font-mono text-xs text-white">
                 = {data.result}
               </div>
             )}
@@ -396,17 +395,17 @@ export const ConceptVisualizer = memo(({
 
   return (
     <div className={clsx(
-      "fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4",
+      "fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4",
       isFullscreen && "p-0",
       className
     )}>
       <div className={clsx(
-        "bg-stone-900 border border-stone-600 rounded-lg shadow-xl",
-        isFullscreen ? "w-full h-full" : "max-w-4xl w-full max-h-[90vh]"
+        "rounded-lg border border-stone-600 bg-stone-900 shadow-xl",
+        isFullscreen ? "size-full" : "max-h-[90vh] w-full max-w-4xl"
       )}>
         {/* Header */}
-        <div className="p-4 border-b border-stone-600">
-          <div className="flex items-center justify-between mb-2">
+        <div className="border-b border-stone-600 p-4">
+          <div className="mb-2 flex items-center justify-between">
             <h2 className="text-lg font-semibold text-mantis-400">
               {visualization.title}
             </h2>
@@ -445,33 +444,33 @@ export const ConceptVisualizer = memo(({
           </div>
 
           {/* Progress bar */}
-          <div className="mt-3 w-full bg-stone-700 rounded-full h-2">
+          <div className="mt-3 h-2 w-full rounded-full bg-stone-700">
             <div 
-              className="bg-mantis-500 h-2 rounded-full transition-all duration-300"
+              className="h-2 rounded-full bg-mantis-500 transition-all duration-300"
               style={{ width: `${((currentStepIndex + 1) / visualization.steps.length) * 100}%` }}
             />
           </div>
         </div>
 
         {/* Content */}
-        <div className="p-4 flex-1">
+        <div className="flex-1 p-4">
           <div className="mb-4">
-            <h3 className="text-md font-medium text-white mb-2">
+            <h3 className="text-md mb-2 font-medium text-white">
               {currentStep.title}
             </h3>
-            <p className="text-stone-300 text-sm">
+            <p className="text-sm text-stone-300">
               {currentStep.description}
             </p>
           </div>
 
           {/* Visualization area */}
-          <div className="relative bg-stone-800 rounded-lg border border-stone-600 h-64 overflow-hidden">
+          <div className="relative h-64 overflow-hidden rounded-lg border border-stone-600 bg-stone-800">
             {renderAnimation()}
             
             {/* Info overlay */}
             {showInfo && (
-              <div className="absolute top-2 left-2 bg-stone-900/90 border border-stone-600 rounded p-3 max-w-xs">
-                <h4 className="font-medium text-mantis-400 mb-2">Información</h4>
+              <div className="absolute left-2 top-2 max-w-xs rounded border border-stone-600 bg-stone-900/90 p-3">
+                <h4 className="mb-2 font-medium text-mantis-400">Información</h4>
                 <p className="text-xs text-stone-300">
                   {visualization.description}
                 </p>
@@ -485,7 +484,7 @@ export const ConceptVisualizer = memo(({
         </div>
 
         {/* Controls */}
-        <div className="p-4 border-t border-stone-600">
+        <div className="border-t border-stone-600 p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Button

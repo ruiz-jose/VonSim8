@@ -9,7 +9,6 @@ import { Header } from "@/components/Header";
 import { KeyboardShortcuts } from "@/components/KeyboardShortcuts";
 import { Settings, settingsOpenAtom } from "@/components/Settings";
 import { WelcomeTour } from "@/components/WelcomeTour";
-
 import { ComputerContainer } from "@/computer";
 import { cycleAtom } from "@/computer/cpu/state";
 import { Editor } from "@/editor";

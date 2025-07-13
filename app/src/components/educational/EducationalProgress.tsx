@@ -1,23 +1,22 @@
-import { memo, useState, useEffect, useCallback } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
-  faTrophy, 
-  faStar, 
-  faGraduationCap, 
   faChartLine,
+  faCogs,
+  faDatabase,
+  faGraduationCap, 
   faLightbulb,
   faMicrochip,
-  faDatabase,
-  faCogs
-} from "@fortawesome/free-solid-svg-icons";
+  faStar, 
+  faTrophy} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
+import { memo, useCallback,useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/Button";
 
 // Tipos de logros
 type AchievementType = 'concept_mastered' | 'instructions_executed' | 'programs_written' | 'time_spent' | 'tutorials_completed';
 
-interface Achievement {
+type Achievement = {
   id: string;
   type: AchievementType;
   title: string;
@@ -29,7 +28,7 @@ interface Achievement {
   points: number;
 }
 
-interface LearningLevel {
+type LearningLevel = {
   id: string;
   name: string;
   description: string;
@@ -39,7 +38,7 @@ interface LearningLevel {
   completed: boolean;
 }
 
-interface EducationalProgressProps {
+type EducationalProgressProps = {
   className?: string;
   isVisible?: boolean;
   onClose?: () => void;
@@ -219,8 +218,8 @@ export const EducationalProgress = memo(({ className, isVisible = false, onClose
     // Crear notificación temporal
     const notification = document.createElement('div');
     notification.className = clsx(
-      'fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg border-2',
-      'bg-mantis-500 text-white animate-slide-in-right'
+      'fixed right-4 top-4 z-50 rounded-lg border-2 p-4 shadow-lg',
+      'animate-slide-in-right bg-mantis-500 text-white'
     );
     notification.innerHTML = `
       <div class="flex items-center gap-3">
@@ -281,12 +280,12 @@ export const EducationalProgress = memo(({ className, isVisible = false, onClose
 
   return (
     <div className={clsx(
-      "fixed bottom-20 right-4 z-50 w-96 h-80 bg-stone-900 border border-stone-600 rounded-lg shadow-xl",
+      "fixed bottom-20 right-4 z-50 h-80 w-96 rounded-lg border border-stone-600 bg-stone-900 shadow-xl",
       className
     )}>
       {/* Header */}
-      <div className="flex items-center justify-between p-3 border-b border-stone-600">
-        <h3 className="text-sm font-semibold text-mantis-400 flex items-center gap-2">
+      <div className="flex items-center justify-between border-b border-stone-600 p-3">
+        <h3 className="flex items-center gap-2 text-sm font-semibold text-mantis-400">
           <FontAwesomeIcon icon={faTrophy} />
           Progreso Educativo
         </h3>
@@ -301,16 +300,16 @@ export const EducationalProgress = memo(({ className, isVisible = false, onClose
       </div>
 
       {/* Contenido */}
-      <div className="h-64 overflow-y-auto p-3 space-y-3">
+      <div className="h-64 space-y-3 overflow-y-auto p-3">
         {/* Puntos totales */}
-        <div className="text-center p-3 bg-stone-800 rounded-lg">
+        <div className="rounded-lg bg-stone-800 p-3 text-center">
           <div className="text-2xl font-bold text-mantis-400">{totalPoints}</div>
           <div className="text-xs text-stone-400">Puntos Totales</div>
         </div>
 
         {/* Niveles */}
         <div>
-          <h4 className="text-sm font-medium text-stone-300 mb-1 flex items-center gap-2">
+          <h4 className="mb-1 flex items-center gap-2 text-sm font-medium text-stone-300">
             <FontAwesomeIcon icon={faGraduationCap} />
             Niveles de Aprendizaje
           </h4>
@@ -319,16 +318,16 @@ export const EducationalProgress = memo(({ className, isVisible = false, onClose
               <div
                 key={level.id}
                 className={clsx(
-                  "p-2 rounded border text-xs",
+                  "rounded border p-2 text-xs",
                   level.unlocked 
-                    ? "bg-mantis-400/10 border-mantis-400 text-mantis-400" 
-                    : "bg-stone-800 border-stone-600 text-stone-500"
+                    ? "border-mantis-400 bg-mantis-400/10 text-mantis-400" 
+                    : "border-stone-600 bg-stone-800 text-stone-500"
                 )}
               >
                 <div className="font-medium">{level.name}</div>
                 <div className="text-stone-400">{level.description}</div>
                 {!level.unlocked && (
-                  <div className="text-stone-500 mt-1">
+                  <div className="mt-1 text-stone-500">
                     Requiere {level.requiredPoints} puntos
                   </div>
                 )}
@@ -339,7 +338,7 @@ export const EducationalProgress = memo(({ className, isVisible = false, onClose
 
         {/* Logros */}
         <div>
-          <h4 className="text-sm font-medium text-stone-300 mb-1 flex items-center gap-2">
+          <h4 className="mb-1 flex items-center gap-2 text-sm font-medium text-stone-300">
             <FontAwesomeIcon icon={faStar} />
             Logros ({unlockedAchievements.length}/{achievements.length})
           </h4>
@@ -348,10 +347,10 @@ export const EducationalProgress = memo(({ className, isVisible = false, onClose
               <div
                 key={achievement.id}
                 className={clsx(
-                  "p-2 rounded border text-xs",
+                  "rounded border p-2 text-xs",
                   achievement.unlocked 
-                    ? "bg-mantis-400/10 border-mantis-400" 
-                    : "bg-stone-800 border-stone-600"
+                    ? "border-mantis-400 bg-mantis-400/10" 
+                    : "border-stone-600 bg-stone-800"
                 )}
               >
                 <div className="flex items-center gap-2">
@@ -368,13 +367,13 @@ export const EducationalProgress = memo(({ className, isVisible = false, onClose
                     </div>
                     <div className="text-stone-500">{achievement.description}</div>
                     <div className="mt-1">
-                      <div className="w-full bg-stone-700 rounded-full h-1">
+                      <div className="h-1 w-full rounded-full bg-stone-700">
                         <div 
-                          className="bg-mantis-400 h-1 rounded-full transition-all duration-300"
+                          className="h-1 rounded-full bg-mantis-400 transition-all duration-300"
                           style={{ width: `${(achievement.current / achievement.requirement) * 100}%` }}
                         />
                       </div>
-                      <div className="text-stone-500 mt-1">
+                      <div className="mt-1 text-stone-500">
                         {achievement.current}/{achievement.requirement}
                       </div>
                     </div>
@@ -387,7 +386,7 @@ export const EducationalProgress = memo(({ className, isVisible = false, onClose
 
         {/* Estadísticas de sesión */}
         <div>
-          <h4 className="text-sm font-medium text-stone-300 mb-1 flex items-center gap-2">
+          <h4 className="mb-1 flex items-center gap-2 text-sm font-medium text-stone-300">
             <FontAwesomeIcon icon={faChartLine} />
             Estadísticas
           </h4>
@@ -404,7 +403,7 @@ export const EducationalProgress = memo(({ className, isVisible = false, onClose
 EducationalProgress.displayName = 'EducationalProgress';
 
 // Función helper para emitir eventos de progreso
-export const emitProgressEvent = (type: AchievementType, value: number = 1) => {
+export const emitProgressEvent = (type: AchievementType, value = 1) => {
   window.dispatchEvent(new CustomEvent('educational-progress', {
     detail: { type, value }
   }));

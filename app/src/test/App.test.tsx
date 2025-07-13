@@ -1,5 +1,5 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { beforeEach,describe, expect, it, vi } from 'vitest';
 
 // El mock de @/computer ha sido eliminado para evitar conflicto con el mock global
 

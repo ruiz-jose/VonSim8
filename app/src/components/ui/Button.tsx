@@ -1,7 +1,7 @@
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
-import { memo, forwardRef } from "react";
+import { forwardRef,memo } from "react";
 
 type ButtonVariant = 
   | "default" 
@@ -84,8 +84,8 @@ export const Button = memo(forwardRef<HTMLButtonElement, ButtonProps>(({
       className={clsx(
         "inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all duration-200",
         "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-stone-900",
-        "disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none",
-        "active:scale-95 hover:scale-105",
+        "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
+        "hover:scale-105 active:scale-95",
         variantClasses[variant],
         sizeClasses[size],
         fullWidth && "w-full",
@@ -163,8 +163,8 @@ export const IconButton = memo(forwardRef<HTMLButtonElement, IconButtonProps>(({
       className={clsx(
         "inline-flex items-center justify-center rounded-lg transition-all duration-200",
         "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-stone-900",
-        "disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none",
-        "active:scale-95 hover:scale-105",
+        "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
+        "hover:scale-105 active:scale-95",
         variantClasses[variant],
         iconSizeClasses[size],
         className

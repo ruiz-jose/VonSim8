@@ -1,17 +1,17 @@
-import { faQuestionCircle, faGraduationCap } from "@fortawesome/free-solid-svg-icons";
+import { faGraduationCap,faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
 import { useAtom } from "jotai";
 import { memo, useCallback, useMemo, useState } from "react";
 
 import { Controls } from "@/components/Controls";
+import { EducationalMenu,EducationalProgress } from "@/components/educational";
 import { NotificationCenter } from "@/components/NotificationCenter";
 import { settingsOpenAtom } from "@/components/Settings";
 import { IconButton } from "@/components/ui/Button";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { useSimulation } from "@/computer/simulation";
 import { useTranslate } from "@/lib/i18n";
-import { EducationalProgress, EducationalMenu } from "@/components/educational";
 
 // Hook personalizado para manejar el tour
 const useTourControl = () => {
@@ -44,7 +44,7 @@ const SimulationStatus = memo(({ status }: { status: any }) => {
   return (
     <div className="flex items-center gap-2 text-xs">
       <div className={clsx(
-        "flex items-center gap-1.5 rounded-full px-2 py-1 text-white font-medium",
+        "flex items-center gap-1.5 rounded-full px-2 py-1 font-medium text-white",
         statusColor,
         status.type === "running" && "animate-pulse-glow"
       )}>
@@ -150,7 +150,7 @@ export const Header = memo(() => {
 
   // Memoizar el logo y título
   const logoSection = useMemo(() => (
-    <div className="flex select-none items-center justify-center hover-scale">
+    <div className="hover-scale flex select-none items-center justify-center">
       <img
         src={`${import.meta.env.BASE_URL}favicon.svg`}
         className="mr-2 size-8"
@@ -169,7 +169,7 @@ export const Header = memo(() => {
 
   return (
     <>
-      <header className="relative p-2 text-sm text-white bg-black" data-testid="header">
+      <header className="relative bg-black p-2 text-sm text-white" data-testid="header">
         <div className="grid grid-cols-3 items-center">
           {/* Columna izquierda: Logo y estado */}
           <div className="flex items-center gap-4">

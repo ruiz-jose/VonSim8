@@ -176,7 +176,7 @@ export const UsageStats = memo(() => {
         </h3>
         <button
           onClick={toggleOpen}
-          className="rounded p-1 text-stone-400 hover:text-white transition-colors"
+          className="rounded p-1 text-stone-400 transition-colors hover:text-white"
         >
           <FontAwesomeIcon icon={faTimes} size="sm" />
         </button>

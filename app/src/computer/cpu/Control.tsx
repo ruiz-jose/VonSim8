@@ -140,7 +140,7 @@ export function Control() {
         </span>
       </div>
 
-      <div className="absolute bottom-[17px] left-[30px] flex w-[350px] h-[160px] flex-col items-center rounded-lg border border-stone-600 bg-stone-800">
+      <div className="absolute bottom-[17px] left-[30px] flex h-[160px] w-[350px] flex-col items-center rounded-lg border border-stone-600 bg-stone-800">
         <div className="overflow-hidden rounded-b-lg border border-t-0 border-stone-600 bg-stone-900 px-3 py-0.5">
           <span className="text-sm leading-none">{translate("computer.cpu.decoder")}</span>
           <div className="my-1 h-1 w-full overflow-hidden rounded-full bg-stone-600">
@@ -156,17 +156,17 @@ export function Control() {
 
         {/* Información del ciclo de instrucción - Compacta */}
         <div className="w-full flex-1 p-0.5">
-          <div className="flex items-center justify-between mb-0.5">
-            <span className="text-xs font-bold text-mantis-400 uppercase tracking-wide w-16 whitespace-nowrap">
+          <div className="mb-0.5 flex items-center justify-between">
+            <span className="w-16 whitespace-nowrap text-xs font-bold uppercase tracking-wide text-mantis-400">
               Ciclo CPU
             </span>
             <button
               onClick={() => setShowCycleInfo(!showCycleInfo)}
               className={clsx(
-                "text-xs px-1 py-0.5 rounded transition-colors",
+                "rounded px-1 py-0.5 text-xs transition-colors",
                 showCycleInfo 
                   ? "bg-mantis-400/20 text-mantis-400" 
-                  : "text-stone-400 hover:text-mantis-400 hover:bg-mantis-400/10"
+                  : "text-stone-400 hover:bg-mantis-400/10 hover:text-mantis-400"
               )}
             >
               {showCycleInfo ? '−' : '+'}
@@ -174,14 +174,14 @@ export function Control() {
           </div>
 
           {/* Estado actual del ciclo - Compacto */}
-          <div className="p-0.5 bg-stone-900/80 rounded border border-stone-600 mb-0.5">
-            <div className="flex-1 min-w-0 text-center">
-              <div className={clsx("text-xs font-semibold flex items-center justify-center gap-1", getPhaseColor())}>
+          <div className="mb-0.5 rounded border border-stone-600 bg-stone-900/80 p-0.5">
+            <div className="min-w-0 flex-1 text-center">
+              <div className={clsx("flex items-center justify-center gap-1 text-xs font-semibold", getPhaseColor())}>
                 <span className="text-sm">{getPhaseIcon()}</span>
                 {getPhaseDescription()}
               </div>
               {cycle && "metadata" in cycle && cycle.metadata && (
-                <div className="text-xs text-stone-400 truncate">
+                <div className="truncate text-xs text-stone-400">
                   <span className="font-mono text-mantis-300">{cycle.metadata.name}</span>
                   {cycle.metadata.operands.length > 0 && (
                     <span className="text-white"> {cycle.metadata.operands.join(", ")}</span>
@@ -195,14 +195,14 @@ export function Control() {
           {showCycleInfo && (
             <div className="space-y-0.5">
               {/* Fases del ciclo - Solo Busqueda y Ejecución */}
-              <div className="p-0.5 bg-stone-900/80 rounded border border-stone-600">
-                <div className="text-xs font-bold text-mantis-400 mb-1">Fases:</div>
+              <div className="rounded border border-stone-600 bg-stone-900/80 p-0.5">
+                <div className="mb-1 text-xs font-bold text-mantis-400">Fases:</div>
                 <div className="flex items-center justify-center gap-1 text-xs text-stone-300">
-                  <div className={clsx("px-1 py-0.5 rounded", getCurrentPhase() === 'fetch' ? "bg-blue-500/20 text-blue-400" : "text-stone-500")}>
+                  <div className={clsx("rounded px-1 py-0.5", getCurrentPhase() === 'fetch' ? "bg-blue-500/20 text-blue-400" : "text-stone-500")}>
                     📥 Busqueda
                   </div>
                   <span className="text-stone-500">→</span>
-                  <div className={clsx("px-1 py-0.5 rounded", getCurrentPhase() === 'execute' ? "bg-green-500/20 text-green-400" : "text-stone-500")}>
+                  <div className={clsx("rounded px-1 py-0.5", getCurrentPhase() === 'execute' ? "bg-green-500/20 text-green-400" : "text-stone-500")}>
                     ⚡ Ejecución
                   </div>
                 </div>

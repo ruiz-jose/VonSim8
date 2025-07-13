@@ -1,12 +1,12 @@
-import { memo, useState, useCallback } from "react";
+import { faPause, faPlay, faRedo,faStepBackward, faStepForward } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlay, faPause, faStepForward, faStepBackward, faRedo } from "@fortawesome/free-solid-svg-icons";
 import clsx from "clsx";
+import { memo, useCallback,useState } from "react";
 
 import { Button } from "@/components/ui/Button";
 import { ExecutionPhases } from "@/computer/cpu/ExecutionPhases";
 
-export interface Step {
+export type Step = {
   id: string;
   phase: 'fetch' | 'decode' | 'execute';
   title: string;
@@ -16,7 +16,7 @@ export interface Step {
   memory?: Record<string, string>;
 }
 
-interface StepByStepModeProps {
+type StepByStepModeProps = {
   steps: Step[];
   onStepChange?: (stepIndex: number) => void;
   onComplete?: () => void;
@@ -87,11 +87,11 @@ export const StepByStepMode = memo(({
 
   return (
     <div className={clsx(
-      "bg-stone-900 border border-stone-600 rounded-lg p-4",
+      "rounded-lg border border-stone-600 bg-stone-900 p-4",
       className
     )}>
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="mb-4 flex items-center justify-between">
         <h3 className="text-lg font-semibold text-mantis-400">
           Modo Paso a Paso
         </h3>
@@ -109,19 +109,19 @@ export const StepByStepMode = memo(({
       />
 
       {/* Contenido del paso actual */}
-      <div className="bg-stone-800 rounded-lg p-4 mb-4">
-        <div className="flex items-center gap-2 mb-2">
+      <div className="mb-4 rounded-lg bg-stone-800 p-4">
+        <div className="mb-2 flex items-center gap-2">
           <span className="text-sm font-medium text-mantis-400">
             {currentStep?.title}
           </span>
         </div>
-        <p className="text-sm text-stone-300 mb-3">
+        <p className="mb-3 text-sm text-stone-300">
           {currentStep?.description}
         </p>
 
         {/* Información de la instrucción */}
         {currentStep?.instruction && (
-          <div className="bg-stone-700 rounded p-2 mb-3">
+          <div className="mb-3 rounded bg-stone-700 p-2">
             <span className="text-xs text-stone-400">Instrucción:</span>
             <div className="font-mono text-sm text-mantis-400">
               {currentStep.instruction}
@@ -131,10 +131,10 @@ export const StepByStepMode = memo(({
 
         {/* Estado de registros */}
         {currentStep?.registers && (
-          <div className="grid grid-cols-2 gap-4 mb-3">
+          <div className="mb-3 grid grid-cols-2 gap-4">
             <div>
               <span className="text-xs text-stone-400">Registros:</span>
-              <div className="space-y-1 mt-1">
+              <div className="mt-1 space-y-1">
                 {Object.entries(currentStep.registers).map(([reg, value]) => (
                   <div key={reg} className="flex justify-between text-xs">
                     <span className="text-stone-300">{reg}:</span>
@@ -150,9 +150,9 @@ export const StepByStepMode = memo(({
         {currentStep?.memory && (
           <div>
             <span className="text-xs text-stone-400">Memoria:</span>
-            <div className="grid grid-cols-4 gap-1 mt-1">
+            <div className="mt-1 grid grid-cols-4 gap-1">
               {Object.entries(currentStep.memory).map(([addr, value]) => (
-                <div key={addr} className="text-xs text-center">
+                <div key={addr} className="text-center text-xs">
                   <div className="text-stone-500">{addr}</div>
                   <div className="font-mono text-mantis-400">{value}</div>
                 </div>
@@ -216,7 +216,7 @@ export const StepByStepMode = memo(({
           <select
             value={playbackSpeed}
             onChange={(e) => setPlaybackSpeed(Number(e.target.value))}
-            className="bg-stone-800 border border-stone-600 rounded px-2 py-1 text-xs"
+            className="rounded border border-stone-600 bg-stone-800 px-2 py-1 text-xs"
           >
             <option value={1000}>Rápida</option>
             <option value={2000}>Normal</option>
@@ -227,9 +227,9 @@ export const StepByStepMode = memo(({
 
       {/* Barra de progreso */}
       <div className="mt-4">
-        <div className="w-full bg-stone-700 rounded-full h-2">
+        <div className="h-2 w-full rounded-full bg-stone-700">
           <div
-            className="bg-mantis-500 h-2 rounded-full transition-all duration-300"
+            className="h-2 rounded-full bg-mantis-500 transition-all duration-300"
             style={{ width: `${((currentStepIndex + 1) / steps.length) * 100}%` }}
           />
         </div>

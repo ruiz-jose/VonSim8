@@ -1,11 +1,11 @@
 import clsx from "clsx";
 import { useAtomValue } from "jotai";
 
+import { EducationalTooltip } from "@/components/EducationalTooltip";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover";
 import { animated, getSpring, RegisterKey } from "@/computer/shared/springs";
 import type { AnyByteAtom } from "@/computer/shared/types";
 import { useTranslate } from "@/lib/i18n";
-import { EducationalTooltip } from "@/components/EducationalTooltip";
 
 export function Register({
   name,

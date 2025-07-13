@@ -102,9 +102,9 @@ const useShortcutsByCategory = () => {
 
 // Componente de atajo individual optimizado
 const ShortcutItem = memo(({ shortcut }: { shortcut: Shortcut }) => (
-  <div className="flex items-center justify-between rounded-lg bg-stone-800 p-3 hover:bg-stone-700 transition-colors">
+  <div className="flex items-center justify-between rounded-lg bg-stone-800 p-3 transition-colors hover:bg-stone-700">
     <span className="text-sm text-stone-300">{shortcut.description}</span>
-    <kbd className="rounded bg-stone-700 px-2 py-1 text-xs font-mono text-white border border-stone-600">
+    <kbd className="rounded border border-stone-600 bg-stone-700 px-2 py-1 font-mono text-xs text-white">
       {shortcut.key}
     </kbd>
   </div>
@@ -121,7 +121,7 @@ const ShortcutCategory = memo(({
   shortcuts: Shortcut[];
 }) => (
   <div className="space-y-2">
-    <h3 className="text-lg font-semibold text-mantis-400 border-b border-stone-600 pb-2">
+    <h3 className="border-b border-stone-600 pb-2 text-lg font-semibold text-mantis-400">
       {category}
     </h3>
     <div className="space-y-2">
@@ -166,7 +166,7 @@ export const KeyboardShortcuts = memo(() => {
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
       onClick={handleBackdropClick}
     >
-      <div className="w-full max-w-4xl max-h-[80vh] rounded-lg border border-stone-600 bg-stone-900 shadow-xl overflow-hidden">
+      <div className="max-h-[80vh] w-full max-w-4xl overflow-hidden rounded-lg border border-stone-600 bg-stone-900 shadow-xl">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-stone-600 p-4">
           <div className="flex items-center gap-3">
@@ -177,15 +177,15 @@ export const KeyboardShortcuts = memo(() => {
           </div>
           <button
             onClick={closeModal}
-            className="rounded p-2 text-stone-400 hover:text-white transition-colors"
+            className="rounded p-2 text-stone-400 transition-colors hover:text-white"
           >
             <FontAwesomeIcon icon={faTimes} size="lg" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-4 overflow-y-auto max-h-[calc(80vh-80px)]">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="max-h-[calc(80vh-80px)] overflow-y-auto p-4">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {shortcutsByCategory.map(([category, shortcuts]) => (
               <ShortcutCategory 
                 key={category} 
@@ -197,10 +197,10 @@ export const KeyboardShortcuts = memo(() => {
         </div>
 
         {/* Footer */}
-        <div className="border-t border-stone-600 p-4 bg-stone-800">
+        <div className="border-t border-stone-600 bg-stone-800 p-4">
           <div className="flex items-center justify-between text-sm text-stone-400">
             <span>
-              Presiona <kbd className="rounded bg-stone-700 px-1 py-0.5 text-xs font-mono border border-stone-600">F1</kbd> para abrir este diálogo
+              Presiona <kbd className="rounded border border-stone-600 bg-stone-700 px-1 py-0.5 font-mono text-xs">F1</kbd> para abrir este diálogo
             </span>
             <Button
               variant="ghost"

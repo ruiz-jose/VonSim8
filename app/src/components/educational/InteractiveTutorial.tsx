@@ -1,21 +1,20 @@
-import { memo, useState, useEffect, useCallback } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
-  faPlay, 
-  faPause, 
-  faStepForward, 
-  faStepBackward,
   faCheck,
-  faTimes,
-  faLightbulb,
   faGraduationCap,
-  faRocket
-} from "@fortawesome/free-solid-svg-icons";
+  faLightbulb,
+  faPause, 
+  faPlay, 
+  faRocket,
+  faStepBackward,
+  faStepForward, 
+  faTimes} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
+import { memo, useCallback,useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/Button";
 
-interface TutorialStep {
+type TutorialStep = {
   id: string;
   title: string;
   description: string;
@@ -32,7 +31,7 @@ interface TutorialStep {
   completed: boolean;
 }
 
-interface Tutorial {
+type Tutorial = {
   id: string;
   title: string;
   description: string;
@@ -42,7 +41,7 @@ interface Tutorial {
   estimatedTime: number; // en minutos
 }
 
-interface InteractiveTutorialProps {
+type InteractiveTutorialProps = {
   tutorial: Tutorial;
   onComplete?: (tutorialId: string) => void;
   onClose?: () => void;
@@ -308,13 +307,13 @@ export const InteractiveTutorial = memo(({
 
   return (
     <div className={clsx(
-      "fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4",
+      "fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4",
       className
     )}>
-      <div className="bg-stone-900 border border-stone-600 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+      <div className="max-h-[90vh] w-full max-w-2xl overflow-hidden rounded-lg border border-stone-600 bg-stone-900 shadow-xl">
         {/* Header */}
-        <div className="p-4 border-b border-stone-600">
-          <div className="flex items-center justify-between mb-2">
+        <div className="border-b border-stone-600 p-4">
+          <div className="mb-2 flex items-center justify-between">
             <h2 className="text-lg font-semibold text-mantis-400">
               {tutorial.title}
             </h2>
@@ -346,32 +345,32 @@ export const InteractiveTutorial = memo(({
           </div>
 
           {/* Progress bar */}
-          <div className="mt-3 w-full bg-stone-700 rounded-full h-2">
+          <div className="mt-3 h-2 w-full rounded-full bg-stone-700">
             <div 
-              className="bg-mantis-500 h-2 rounded-full transition-all duration-300"
+              className="h-2 rounded-full bg-mantis-500 transition-all duration-300"
               style={{ width: `${progress}%` }}
             />
           </div>
         </div>
 
         {/* Content */}
-        <div className="p-4 overflow-y-auto max-h-96">
+        <div className="max-h-96 overflow-y-auto p-4">
           <div className="mb-4">
-            <h3 className="text-md font-medium text-white mb-2">
+            <h3 className="text-md mb-2 font-medium text-white">
               {currentStep.title}
             </h3>
-            <p className="text-stone-300 text-sm mb-3">
+            <p className="mb-3 text-sm text-stone-300">
               {currentStep.description}
             </p>
-            <div className="text-stone-400 text-sm leading-relaxed">
+            <div className="text-sm leading-relaxed text-stone-400">
               {currentStep.content}
             </div>
           </div>
 
           {/* Exercise/Quiz content */}
           {currentStep.type === 'exercise' || currentStep.type === 'quiz' ? (
-            <div className="bg-stone-800 rounded-lg p-4 border border-stone-600">
-              <h4 className="font-medium text-white mb-3">
+            <div className="rounded-lg border border-stone-600 bg-stone-800 p-4">
+              <h4 className="mb-3 font-medium text-white">
                 {currentStep.exercise?.question}
               </h4>
               
@@ -381,10 +380,10 @@ export const InteractiveTutorial = memo(({
                     <label
                       key={index}
                       className={clsx(
-                        "flex items-center gap-3 p-3 rounded border cursor-pointer transition-colors",
+                        "flex cursor-pointer items-center gap-3 rounded border p-3 transition-colors",
                         userAnswer === index.toString()
-                          ? "bg-mantis-400/20 border-mantis-400"
-                          : "bg-stone-700 border-stone-600 hover:bg-stone-600"
+                          ? "border-mantis-400 bg-mantis-400/20"
+                          : "border-stone-600 bg-stone-700 hover:bg-stone-600"
                       )}
                     >
                       <input
@@ -405,17 +404,17 @@ export const InteractiveTutorial = memo(({
                   value={userAnswer}
                   onChange={(e) => setUserAnswer(e.target.value)}
                   placeholder="Escribe tu respuesta..."
-                  className="w-full p-2 bg-stone-700 border border-stone-600 rounded text-white"
+                  className="w-full rounded border border-stone-600 bg-stone-700 p-2 text-white"
                 />
               )}
 
               {/* Feedback */}
               {answerFeedback && (
                 <div className={clsx(
-                  "mt-3 p-3 rounded border",
+                  "mt-3 rounded border p-3",
                   answerFeedback.correct 
-                    ? "bg-green-400/20 border-green-400 text-green-400"
-                    : "bg-red-400/20 border-red-400 text-red-400"
+                    ? "border-green-400 bg-green-400/20 text-green-400"
+                    : "border-red-400 bg-red-400/20 text-red-400"
                 )}>
                   <div className="flex items-center gap-2">
                     <FontAwesomeIcon 
@@ -440,8 +439,8 @@ export const InteractiveTutorial = memo(({
                   </Button>
                   
                   {showHints && (
-                    <div className="mt-2 p-3 bg-stone-700 rounded border border-stone-600">
-                      <ul className="text-sm text-stone-300 space-y-1">
+                    <div className="mt-2 rounded border border-stone-600 bg-stone-700 p-3">
+                      <ul className="space-y-1 text-sm text-stone-300">
                         {currentStep.hints.map((hint, index) => (
                           <li key={index}>• {hint}</li>
                         ))}
@@ -455,7 +454,7 @@ export const InteractiveTutorial = memo(({
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-stone-600">
+        <div className="border-t border-stone-600 p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Button
@@ -496,7 +495,7 @@ export const InteractiveTutorial = memo(({
                 <Button
                   size="sm"
                   onClick={nextStep}
-                  className="bg-mantis-600 hover:bg-mantis-700 flex items-center gap-1"
+                  className="flex items-center gap-1 bg-mantis-600 hover:bg-mantis-700"
                 >
                   {isLastStep ? 'Completar Tutorial' : 'Siguiente'}
                   {!isLastStep && <FontAwesomeIcon icon={faStepForward} />}

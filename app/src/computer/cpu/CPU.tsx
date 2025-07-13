@@ -1,4 +1,3 @@
-import type { PhysicalRegister } from "./state";
 import clsx from "clsx";
 import { useAtomValue } from "jotai";
 import { useEffect, useState } from "react";
@@ -10,8 +9,8 @@ import { AddressBus } from "./AddressBus";
 import { ALU } from "./ALU";
 import { Control } from "./Control";
 import { DataBus } from "./DataBus";
-
-import { registerAtoms, showSPAtom, cycleAtom } from "./state";
+import type { PhysicalRegister } from "./state";
+import { cycleAtom,registerAtoms, showSPAtom } from "./state";
 
 // Add IPPlusOneAnimation component
 function IPPlusOneAnimation() {

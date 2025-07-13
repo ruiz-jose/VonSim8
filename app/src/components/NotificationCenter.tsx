@@ -182,14 +182,14 @@ const NotificationItem = memo(({
     )}>
       <div className="flex items-start gap-3">
         <NotificationIcon type={notification.type} />
-        <div className="flex-1 min-w-0">
+        <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between">
             <h4 className="font-medium text-white">
               {notification.title}
             </h4>
             <button
               onClick={() => onDelete(notification.id)}
-              className="ml-2 rounded p-1 text-stone-400 hover:text-white transition-colors"
+              className="ml-2 rounded p-1 text-stone-400 transition-colors hover:text-white"
             >
               <FontAwesomeIcon icon={faTimes} size="sm" />
             </button>
@@ -204,7 +204,7 @@ const NotificationItem = memo(({
             {!notification.read && (
               <button
                 onClick={() => onMarkAsRead(notification.id)}
-                className="text-xs text-mantis-400 hover:text-mantis-300 transition-colors"
+                className="text-xs text-mantis-400 transition-colors hover:text-mantis-300"
               >
                 Marcar como leída
               </button>
@@ -257,7 +257,7 @@ export const NotificationCenter = memo(() => {
       >
         <FontAwesomeIcon icon={faBell} className="size-4" />
         {unread > 0 && (
-          <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
+          <span className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
             {unread > 99 ? "99+" : unread}
           </span>
         )}
@@ -274,7 +274,7 @@ export const NotificationCenter = memo(() => {
       >
         <FontAwesomeIcon icon={faBell} className="size-4" />
         {unread > 0 && (
-          <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
+          <span className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
             {unread > 99 ? "99+" : unread}
           </span>
         )}

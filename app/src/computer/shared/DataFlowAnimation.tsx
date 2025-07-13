@@ -1,7 +1,7 @@
-import { memo, useEffect, useState } from "react";
 import clsx from "clsx";
+import { memo, useEffect, useState } from "react";
 
-interface DataFlowAnimationProps {
+type DataFlowAnimationProps = {
   from: string;
   to: string;
   data: string;
@@ -48,9 +48,9 @@ export const DataFlowAnimation = memo(({
   if (!isVisible) return null;
 
   return (
-    <div className={clsx("absolute inset-0 pointer-events-none", className)}>
+    <div className={clsx("pointer-events-none absolute inset-0", className)}>
       {/* Línea de flujo */}
-      <svg className="absolute inset-0 w-full h-full">
+      <svg className="absolute inset-0 size-full">
         <defs>
           <linearGradient id="dataFlowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#10b981" stopOpacity="0.8" />
@@ -73,7 +73,7 @@ export const DataFlowAnimation = memo(({
       {/* Paquete de datos */}
       <div
         className={clsx(
-          "absolute px-2 py-1 bg-mantis-500 text-white text-xs font-mono rounded",
+          "absolute rounded bg-mantis-500 px-2 py-1 font-mono text-xs text-white",
           "border border-mantis-400 shadow-lg",
           "transition-all duration-300 ease-out"
         )}
@@ -85,7 +85,7 @@ export const DataFlowAnimation = memo(({
         }}
       >
         {data}
-        <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-mantis-500" />
+        <div className="absolute -top-1 left-1/2 size-0 -translate-x-1/2 border-x-4 border-b-4 border-transparent border-b-mantis-500" />
       </div>
     </div>
   );
@@ -95,13 +95,13 @@ DataFlowAnimation.displayName = 'DataFlowAnimation';
 
 // Hook para manejar múltiples animaciones de flujo de datos
 export const useDataFlow = () => {
-  const [flows, setFlows] = useState<Array<{
+  const [flows, setFlows] = useState<{
     id: string;
     from: string;
     to: string;
     data: string;
     duration?: number;
-  }>>([]);
+  }[]>([]);
 
   const addFlow = (flow: Omit<typeof flows[0], 'id'>) => {
     const id = `${flow.from}-${flow.to}-${Date.now()}`;

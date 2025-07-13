@@ -1,23 +1,23 @@
-import { memo, useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
-  faGraduationCap, 
-  faTrophy, 
-  faPlay, 
-  faEye, 
   faBook,
-  faLightbulb,
   faChartLine,
-  faCogs
-} from "@fortawesome/free-solid-svg-icons";
+  faCogs,
+  faEye, 
+  faGraduationCap, 
+  faLightbulb,
+  faPlay, 
+  faTrophy} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
+import { memo, useState } from "react";
 
 import { Button } from "@/components/ui/Button";
-import { EducationalProgress } from "./EducationalProgress";
-import { InteractiveTutorial, AVAILABLE_TUTORIALS } from "./InteractiveTutorial";
-import { ConceptVisualizer } from "./ConceptVisualizer";
 
-interface EducationalMenuProps {
+import { ConceptVisualizer } from "./ConceptVisualizer";
+import { EducationalProgress } from "./EducationalProgress";
+import { AVAILABLE_TUTORIALS,InteractiveTutorial } from "./InteractiveTutorial";
+
+type EducationalMenuProps = {
   className?: string;
   isOpen?: boolean;
   onClose?: () => void;
@@ -151,10 +151,10 @@ export const EducationalMenu = memo(({ className, isOpen = false, onClose, onSho
     <>
       {/* Menú desplegable */}
       {isOpen && (
-        <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 z-50">
-          <div className="bg-stone-900 border border-stone-600 rounded-lg shadow-xl p-4 min-w-80">
-            <div className="text-center mb-4">
-              <h3 className="text-lg font-semibold text-mantis-400 mb-1">
+        <div className="fixed bottom-12 left-1/2 z-50 -translate-x-1/2">
+          <div className="min-w-80 rounded-lg border border-stone-600 bg-stone-900 p-4 shadow-xl">
+            <div className="mb-4 text-center">
+              <h3 className="mb-1 text-lg font-semibold text-mantis-400">
                 Centro de Aprendizaje
               </h3>
               <p className="text-sm text-stone-400">
@@ -170,8 +170,8 @@ export const EducationalMenu = memo(({ className, isOpen = false, onClose, onSho
                       <button
                         onClick={item.action}
                         className={clsx(
-                          "w-full text-left p-3 rounded-lg border border-stone-600 hover:bg-stone-800",
-                          "transition-all duration-200 flex items-center gap-3"
+                          "w-full rounded-lg border border-stone-600 p-3 text-left hover:bg-stone-800",
+                          "flex items-center gap-3 transition-all duration-200"
                         )}
                       >
                         <FontAwesomeIcon icon={item.icon} className={clsx("text-lg", item.color)} />
@@ -181,18 +181,18 @@ export const EducationalMenu = memo(({ className, isOpen = false, onClose, onSho
                         </div>
                         <FontAwesomeIcon 
                           icon={tutorialsExpanded ? faPlay : faPlay} 
-                          className={clsx("text-stone-400 text-sm", tutorialsExpanded && "text-blue-400")} 
+                          className={clsx("text-sm text-stone-400", tutorialsExpanded && "text-blue-400")} 
                         />
                       </button>
                       
                       {/* Submenú de tutoriales */}
                       {tutorialsExpanded && (
-                        <div className="mt-2 ml-8 space-y-1">
+                        <div className="ml-8 mt-2 space-y-1">
                           {tutorialItems.map((tutorial) => (
                             <button
                               key={tutorial.id}
                               onClick={() => handleTutorialSelect(tutorial.id)}
-                              className="w-full text-left p-2 rounded border border-stone-700 hover:bg-stone-800 transition-colors"
+                              className="w-full rounded border border-stone-700 p-2 text-left transition-colors hover:bg-stone-800"
                             >
                               <div className="flex items-center justify-between">
                                 <div>
@@ -214,8 +214,8 @@ export const EducationalMenu = memo(({ className, isOpen = false, onClose, onSho
                       <button
                         onClick={item.action}
                         className={clsx(
-                          "w-full text-left p-3 rounded-lg border border-stone-600 hover:bg-stone-800",
-                          "transition-all duration-200 flex items-center gap-3"
+                          "w-full rounded-lg border border-stone-600 p-3 text-left hover:bg-stone-800",
+                          "flex items-center gap-3 transition-all duration-200"
                         )}
                       >
                         <FontAwesomeIcon icon={item.icon} className={clsx("text-lg", item.color)} />
@@ -225,18 +225,18 @@ export const EducationalMenu = memo(({ className, isOpen = false, onClose, onSho
                         </div>
                         <FontAwesomeIcon 
                           icon={visualizationsExpanded ? faEye : faEye} 
-                          className={clsx("text-stone-400 text-sm", visualizationsExpanded && "text-green-400")} 
+                          className={clsx("text-sm text-stone-400", visualizationsExpanded && "text-green-400")} 
                         />
                       </button>
                       
                       {/* Submenú de visualizaciones */}
                       {visualizationsExpanded && (
-                        <div className="mt-2 ml-8 space-y-1">
+                        <div className="ml-8 mt-2 space-y-1">
                           {visualizationItems.map((viz) => (
                             <button
                               key={viz.id}
                               onClick={() => handleVisualizerSelect(viz.id)}
-                              className="w-full text-left p-2 rounded border border-stone-700 hover:bg-stone-800 transition-colors"
+                              className="w-full rounded border border-stone-700 p-2 text-left transition-colors hover:bg-stone-800"
                             >
                               <div>
                                 <div className="text-sm font-medium text-white">{viz.title}</div>
@@ -251,8 +251,8 @@ export const EducationalMenu = memo(({ className, isOpen = false, onClose, onSho
                     <button
                       onClick={item.action}
                       className={clsx(
-                        "w-full text-left p-3 rounded-lg border border-stone-600 hover:bg-stone-800",
-                        "transition-all duration-200 flex items-center gap-3"
+                        "w-full rounded-lg border border-stone-600 p-3 text-left hover:bg-stone-800",
+                        "flex items-center gap-3 transition-all duration-200"
                       )}
                     >
                       <FontAwesomeIcon icon={item.icon} className={clsx("text-lg", item.color)} />
@@ -267,7 +267,7 @@ export const EducationalMenu = memo(({ className, isOpen = false, onClose, onSho
             </div>
 
             {/* Footer */}
-            <div className="mt-4 pt-3 border-t border-stone-600">
+            <div className="mt-4 border-t border-stone-600 pt-3">
               <div className="flex items-center justify-between text-xs text-stone-400">
                 <span>Herramientas educativas</span>
                 <span>VonSim8</span>

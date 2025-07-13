@@ -1,7 +1,8 @@
-import { vi, afterEach, expect } from 'vitest';
-import { cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom';
+
+import { cleanup } from '@testing-library/react';
 import React from 'react';
+import { afterEach, expect,vi } from 'vitest';
 
 // Mock ABSOLUTO para @/computer (debe ir antes de cualquier import)
 function ComputerContainerMock() {

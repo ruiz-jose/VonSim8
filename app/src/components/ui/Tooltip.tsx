@@ -1,7 +1,7 @@
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
-import { memo, useState, useRef, useEffect, useCallback } from "react";
+import { memo, useCallback,useEffect, useRef, useState } from "react";
 
 type TooltipPosition = "top" | "bottom" | "left" | "right" | "top-start" | "top-end" | "bottom-start" | "bottom-end";
 
@@ -121,7 +121,7 @@ export const Tooltip = memo(({
         <div
           ref={tooltipRef}
           className={clsx(
-            "absolute z-50 px-3 py-2 text-sm text-white bg-stone-800 rounded-lg shadow-lg border border-stone-600",
+            "absolute z-50 rounded-lg border border-stone-600 bg-stone-800 px-3 py-2 text-sm text-white shadow-lg",
             "animate-fade-in",
             positionClasses[tooltipPosition]
           )}
@@ -132,7 +132,7 @@ export const Tooltip = memo(({
           {showArrow && (
             <div
               className={clsx(
-                "absolute w-0 h-0 border-4 border-transparent",
+                "absolute size-0 border-4 border-transparent",
                 arrowClasses[tooltipPosition]
               )}
             />
@@ -167,7 +167,7 @@ export const InfoTooltip = memo(({
     <Tooltip content={content} className={className}>
       <FontAwesomeIcon
         icon={faInfoCircle}
-        className={clsx("text-stone-400 hover:text-stone-300 cursor-help transition-colors", sizeClasses[size])}
+        className={clsx("cursor-help text-stone-400 transition-colors hover:text-stone-300", sizeClasses[size])}
       />
     </Tooltip>
   );
@@ -231,7 +231,7 @@ export const CustomTooltip = memo(({
         <div
           ref={tooltipRef}
           className={clsx(
-            "absolute z-50 px-3 py-2 text-sm text-white bg-stone-800 rounded-lg shadow-lg border border-stone-600",
+            "absolute z-50 rounded-lg border border-stone-600 bg-stone-800 px-3 py-2 text-sm text-white shadow-lg",
             "animate-fade-in",
             positionClasses[position]
           )}
@@ -242,7 +242,7 @@ export const CustomTooltip = memo(({
           {showArrow && (
             <div
               className={clsx(
-                "absolute w-0 h-0 border-4 border-transparent",
+                "absolute size-0 border-4 border-transparent",
                 arrowClasses[position]
               )}
             />

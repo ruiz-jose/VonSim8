@@ -110,10 +110,10 @@ export function Editor({ className }: { className?: string }) {
   }, [element]);
 
   return (
-    <div className={clsx("flex flex-col bg-gradient-to-br from-stone-900 to-stone-800 rounded-lg border border-stone-700 shadow-xl", className)}>
+    <div className={clsx("flex flex-col rounded-lg border border-stone-700 bg-gradient-to-br from-stone-900 to-stone-800 shadow-xl", className)}>
       <div
         ref={ref}
-        className="grow overflow-auto font-mono rounded-t-lg"
+        className="grow overflow-auto rounded-t-lg font-mono"
         style={{
           fontSize: `${fontSize}px`,
           lineHeight: 1.25,

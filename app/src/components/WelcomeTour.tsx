@@ -1,11 +1,10 @@
+import { faCheckCircle, faChevronLeft, faChevronRight, faExclamationTriangle, faTimes, faUser } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { atom, useAtom } from "jotai";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { faCheckCircle, faChevronLeft, faChevronRight, faExclamationTriangle, faTimes, faUser } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
-import { Button } from "@/components/ui/Button";
 import { settingsOpenAtom } from "@/components/Settings";
+import { Button } from "@/components/ui/Button";
 
 export const tourActiveAtom = atom(false);
 
@@ -291,7 +290,7 @@ const useTooltipPosition = (step: TourStep) => {
 };
 
 const ProgressBar = memo(({ current, total }: { current: number; total: number }) => (
-  <div className="mb-2 w-full h-2 bg-stone-700 rounded-full overflow-hidden">
+  <div className="mb-2 h-2 w-full overflow-hidden rounded-full bg-stone-700">
     <div
       className="h-full bg-mantis-500 transition-all duration-300"
       style={{ width: `${((current + 1) / total) * 100}%` }}
@@ -337,7 +336,7 @@ const TourTooltip = memo(({
   if (!targetFound || !positionData) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-        <div className="rounded-lg bg-stone-900 p-8 text-center shadow-2xl border-2 border-mantis-400 max-w-sm">
+        <div className="max-w-sm rounded-lg border-2 border-mantis-400 bg-stone-900 p-8 text-center shadow-2xl">
           <FontAwesomeIcon icon={faExclamationTriangle} className="mb-4 text-4xl text-yellow-400" />
           <h3 className="mb-2 text-lg font-semibold text-mantis-400">Elemento no encontrado</h3>
           <p className="mb-4 text-stone-300">No se pudo encontrar el elemento de la interfaz para este paso del tour.</p>
@@ -363,18 +362,18 @@ const TourTooltip = memo(({
           tabIndex={-1}
           role="dialog"
           aria-modal="true"
-          className={`absolute max-w-sm rounded-lg bg-stone-900 p-6 text-white shadow-xl border border-mantis-400 focus:outline-none ${animationClass}`}
+          className={`absolute max-w-sm rounded-lg border border-mantis-400 bg-stone-900 p-6 text-white shadow-xl focus:outline-none ${animationClass}`}
           style={positionStyles}
         >
           <ProgressBar current={currentStep} total={totalSteps} />
-          <div className="flex items-center gap-3 mb-2">
+          <div className="mb-2 flex items-center gap-3">
             {step.icon && (typeof step.icon === "string"
               ? <span className={`${step.icon} text-2xl text-mantis-400`} />
               : <FontAwesomeIcon icon={step.icon} className="text-2xl text-mantis-400" />)}
             <h3 className="text-lg font-semibold text-mantis-400">{step.title}</h3>
           </div>
           <p className="mb-4 text-sm text-stone-300">{step.content}</p>
-          <div className="flex items-center justify-between mt-4 gap-2">
+          <div className="mt-4 flex items-center justify-between gap-2">
             <Button
               variant="ghost"
               size="sm"
@@ -400,7 +399,7 @@ const TourTooltip = memo(({
                 <Button
                   size="sm"
                   onClick={onNext}
-                  className="bg-mantis-600 hover:bg-mantis-700 flex items-center gap-1"
+                  className="flex items-center gap-1 bg-mantis-600 hover:bg-mantis-700"
                   aria-label="Siguiente"
                 >
                   Siguiente
@@ -410,7 +409,7 @@ const TourTooltip = memo(({
                 <Button
                   size="sm"
                   onClick={onFinish}
-                  className="bg-mantis-600 hover:bg-mantis-700 flex items-center gap-1"
+                  className="flex items-center gap-1 bg-mantis-600 hover:bg-mantis-700"
                   aria-label="Finalizar"
                 >
                   Finalizar
@@ -419,12 +418,12 @@ const TourTooltip = memo(({
               )}
             </div>
           </div>
-          <div className="mt-2 text-xs text-stone-500 text-right">
+          <div className="mt-2 text-right text-xs text-stone-500">
             Paso {currentStep + 1} de {totalSteps}
           </div>
           <button
             onClick={onSkip}
-            className="absolute top-2 right-2 rounded p-1 text-stone-400 hover:text-white focus:outline-none"
+            className="absolute right-2 top-2 rounded p-1 text-stone-400 hover:text-white focus:outline-none"
             aria-label="Cerrar"
           >
             <FontAwesomeIcon icon={faTimes} size="sm" />

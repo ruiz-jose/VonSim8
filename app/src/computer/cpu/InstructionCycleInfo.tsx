@@ -1,9 +1,10 @@
-import { memo, useState } from "react";
 import clsx from "clsx";
 import { useAtomValue } from "jotai";
+import { memo, useState } from "react";
+
 import { cycleAtom } from "./state";
 
-interface InstructionCycleInfoProps {
+type InstructionCycleInfoProps = {
   className?: string;
 }
 
@@ -93,23 +94,23 @@ export const InstructionCycleInfo = memo(({ className }: InstructionCycleInfoPro
 
   return (
     <div className={clsx(
-      "flex flex-col gap-2 p-3 rounded-lg bg-stone-900/95 border border-stone-600 shadow-lg",
+      "flex flex-col gap-2 rounded-lg border border-stone-600 bg-stone-900/95 p-3 shadow-lg",
       "min-w-[300px] max-w-[350px]",
       className
     )}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-bold text-mantis-400 uppercase tracking-wide">
+          <span className="text-sm font-bold uppercase tracking-wide text-mantis-400">
             Información del Ciclo
           </span>
           <button
             onClick={() => setShowDetails(!showDetails)}
             className={clsx(
-              "text-xs px-2 py-1 rounded transition-colors",
+              "rounded px-2 py-1 text-xs transition-colors",
               showDetails 
                 ? "bg-mantis-400/20 text-mantis-400" 
-                : "text-stone-400 hover:text-mantis-400 hover:bg-mantis-400/10"
+                : "text-stone-400 hover:bg-mantis-400/10 hover:text-mantis-400"
             )}
           >
             {showDetails ? '−' : '+'}
@@ -118,7 +119,7 @@ export const InstructionCycleInfo = memo(({ className }: InstructionCycleInfoPro
       </div>
 
       {/* Estado actual */}
-      <div className="flex items-center gap-3 p-2 bg-stone-800/80 rounded border border-stone-600">
+      <div className="flex items-center gap-3 rounded border border-stone-600 bg-stone-800/80 p-2">
         <div className={clsx("text-2xl", getPhaseColor())}>
           {getPhaseIcon()}
         </div>
@@ -127,7 +128,7 @@ export const InstructionCycleInfo = memo(({ className }: InstructionCycleInfoPro
             {getPhaseDescription()}
           </div>
           {currentInstruction && (
-            <div className="text-xs text-stone-400 mt-1">
+            <div className="mt-1 text-xs text-stone-400">
               Instrucción: <span className="font-mono text-mantis-300">{currentInstruction}</span>
             </div>
           )}
@@ -138,31 +139,31 @@ export const InstructionCycleInfo = memo(({ className }: InstructionCycleInfoPro
       {showDetails && (
         <div className="space-y-3">
           {/* Fases del ciclo */}
-          <div className="p-2 bg-stone-800/80 rounded border border-stone-600">
-            <div className="text-xs font-bold text-mantis-400 mb-2">Fases del Ciclo de Instrucción:</div>
+          <div className="rounded border border-stone-600 bg-stone-800/80 p-2">
+            <div className="mb-2 text-xs font-bold text-mantis-400">Fases del Ciclo de Instrucción:</div>
             <div className="space-y-1 text-xs text-stone-300">
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 bg-blue-400 rounded-full"></span>
+                <span className="size-2 rounded-full bg-blue-400"></span>
                 <span><strong>Fetch:</strong> Leer instrucción desde memoria</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 bg-yellow-400 rounded-full"></span>
+                <span className="size-2 rounded-full bg-yellow-400"></span>
                 <span><strong>Decode:</strong> Interpretar opcode y operandos</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 bg-green-400 rounded-full"></span>
+                <span className="size-2 rounded-full bg-green-400"></span>
                 <span><strong>Execute:</strong> Ejecutar operación en ALU</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 bg-purple-400 rounded-full"></span>
+                <span className="size-2 rounded-full bg-purple-400"></span>
                 <span><strong>Writeback:</strong> Guardar resultado</span>
               </div>
             </div>
           </div>
 
                      {/* Registros involucrados */}
-           <div className="p-2 bg-stone-800/80 rounded border border-stone-600">
-             <div className="text-xs font-bold text-mantis-400 mb-2">Registros Clave:</div>
+           <div className="rounded border border-stone-600 bg-stone-800/80 p-2">
+             <div className="mb-2 text-xs font-bold text-mantis-400">Registros Clave:</div>
              <div className="grid grid-cols-2 gap-1 text-xs text-stone-400">
                <div>IP: Contador de programa</div>
                <div>IR: Registro de instrucción</div>
@@ -175,8 +176,8 @@ export const InstructionCycleInfo = memo(({ className }: InstructionCycleInfoPro
 
           {/* Información de la instrucción */}
           {cycle && "metadata" in cycle && cycle.metadata && (
-            <div className="p-2 bg-stone-800/80 rounded border border-stone-600">
-              <div className="text-xs font-bold text-mantis-400 mb-2">Detalles de la Instrucción:</div>
+            <div className="rounded border border-stone-600 bg-stone-800/80 p-2">
+              <div className="mb-2 text-xs font-bold text-mantis-400">Detalles de la Instrucción:</div>
               <div className="space-y-1 text-xs text-stone-300">
                 <div><strong>Nombre:</strong> {cycle.metadata.name}</div>
                 <div><strong>Operandos:</strong> {cycle.metadata.operands.length > 0 ? cycle.metadata.operands.join(", ") : "Ninguno"}</div>
@@ -189,9 +190,9 @@ export const InstructionCycleInfo = memo(({ className }: InstructionCycleInfoPro
           )}
 
           {/* Información educativa */}
-          <div className="p-2 bg-stone-800/80 rounded border border-stone-600">
-            <div className="text-xs font-bold text-mantis-400 mb-2">💡 Concepto Educativo:</div>
-            <div className="text-xs text-stone-300 leading-relaxed">
+          <div className="rounded border border-stone-600 bg-stone-800/80 p-2">
+            <div className="mb-2 text-xs font-bold text-mantis-400">💡 Concepto Educativo:</div>
+            <div className="text-xs leading-relaxed text-stone-300">
               El ciclo fetch-decode-execute es el corazón de toda CPU. Cada instrucción pasa por estas fases de manera secuencial, 
               permitiendo que la computadora ejecute programas complejos una instrucción a la vez.
             </div>

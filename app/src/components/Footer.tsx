@@ -1,13 +1,13 @@
 import { faGithub, faTwitter } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
-import { memo, useMemo } from "react";
 import { useAtomValue } from "jotai";
+import { memo, useMemo } from "react";
 
 import { Button } from "@/components/ui/Button";
 import { Tooltip } from "@/components/ui/Tooltip";
-import { getSettings } from "@/lib/settings";
 import { useTranslate } from "@/lib/i18n";
+import { getSettings } from "@/lib/settings";
 
 // Enlaces útiles
 const USEFUL_LINKS = [
@@ -57,7 +57,7 @@ export const Footer = memo(() => {
   }, [translate, settings]);
 
   return (
-    <footer className="px-3 py-1.5 text-xs text-white bg-black" data-testid="footer">
+    <footer className="bg-black px-3 py-1.5 text-xs text-white" data-testid="footer">
       <div className="flex items-center justify-between">
         <span className="text-stone-400">
           © Copyright 2017-2025 — III-LIDI, FI, UNLP, UNER

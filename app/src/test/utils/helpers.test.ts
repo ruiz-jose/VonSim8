@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { beforeEach,describe, expect, it, vi } from 'vitest';
 
 // Tests para funciones helper y utilidades
 describe('Utility Functions', () => {
@@ -65,7 +65,7 @@ describe('Utility Functions', () => {
 
   describe('String Utilities', () => {
     it('should pad strings correctly', () => {
-      const padLeft = (str: string, length: number, char: string = '0'): string => {
+      const padLeft = (str: string, length: number, char = '0'): string => {
         return str.padStart(length, char);
       };
       
@@ -87,7 +87,7 @@ describe('Utility Functions', () => {
 
     it('should validate assembly labels', () => {
       const isValidLabel = (label: string): boolean => {
-        return /^[A-Za-z_][A-Za-z0-9_]*$/.test(label) && label.length <= 16;
+        return /^[A-Z_]\w*$/i.test(label) && label.length <= 16;
       };
       
       expect(isValidLabel('START')).toBe(true);
@@ -101,7 +101,7 @@ describe('Utility Functions', () => {
 
   describe('Array Utilities', () => {
     it('should create memory array', () => {
-      const createMemory = (size: number, defaultValue: number = 0): number[] => {
+      const createMemory = (size: number, defaultValue = 0): number[] => {
         return new Array(size).fill(defaultValue);
       };
       

@@ -237,8 +237,8 @@ export function StatusBar() {
         <div className={clsx(
           "flex items-center gap-1.5 rounded-full px-2 py-0.5 font-medium transition-colors",
           lintErrors > 0 
-            ? "bg-red-500/20 text-red-300 border border-red-500/30"
-            : "bg-green-500/20 text-green-300 border border-green-500/30"
+            ? "border border-red-500/30 bg-red-500/20 text-red-300"
+            : "border border-green-500/30 bg-green-500/20 text-green-300"
         )}>
           <div className={clsx(
             "size-2 rounded-full",

@@ -1,5 +1,5 @@
-import { memo } from "react";
 import clsx from "clsx";
+import { memo } from "react";
 
 type LoadingSpinnerProps = {
   size?: "sm" | "md" | "lg" | "xl";
@@ -44,7 +44,7 @@ export const LoadingSpinner = memo(({
         aria-label="Cargando"
       />
       {showText && (
-        <span className="text-sm text-stone-400 animate-pulse">
+        <span className="animate-pulse text-sm text-stone-400">
           {text || "Cargando..."}
         </span>
       )}
@@ -117,7 +117,7 @@ export const LoadingOverlay = memo(({
     <div className="relative">
       {children}
       <div className={clsx(
-        "absolute inset-0 flex items-center justify-center z-50",
+        "absolute inset-0 z-50 flex items-center justify-center",
         backdrop ? "bg-black/50 backdrop-blur-sm" : "bg-stone-900/90"
       )}>
         <div className="text-center">

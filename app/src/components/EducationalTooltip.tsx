@@ -1,13 +1,13 @@
-import { memo, useState } from "react";
+import { faGraduationCap, faLightbulb, faRocket } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLightbulb, faGraduationCap, faRocket } from "@fortawesome/free-solid-svg-icons";
 import clsx from "clsx";
+import { memo, useState } from "react";
 
 import { Tooltip } from "@/components/ui/Tooltip";
 
 type ComplexityLevel = 'beginner' | 'intermediate' | 'advanced';
 
-interface EducationalTooltipProps {
+type EducationalTooltipProps = {
   concept: string;
   level?: ComplexityLevel;
   children: React.ReactNode;
@@ -109,7 +109,7 @@ export const EducationalTooltip = memo(({
 
   const tooltipContent = (
     <div className="max-w-xs p-3">
-      <div className="flex items-center gap-2 mb-2">
+      <div className="mb-2 flex items-center gap-2">
         <FontAwesomeIcon 
           icon={IconComponent} 
           className={clsx("text-sm", LEVEL_COLORS[currentLevel])} 
@@ -118,7 +118,7 @@ export const EducationalTooltip = memo(({
           Nivel {currentLevel === 'beginner' ? 'Básico' : currentLevel === 'intermediate' ? 'Intermedio' : 'Avanzado'}
         </span>
       </div>
-      <p className="text-sm text-stone-300 mb-3">{explanation}</p>
+      <p className="mb-3 text-sm text-stone-300">{explanation}</p>
       
       {/* Selector de nivel */}
       <div className="flex gap-1">
@@ -130,7 +130,7 @@ export const EducationalTooltip = memo(({
               setCurrentLevel(lvl);
             }}
             className={clsx(
-              "px-2 py-1 text-xs rounded transition-colors",
+              "rounded px-2 py-1 text-xs transition-colors",
               currentLevel === lvl 
                 ? "bg-mantis-600 text-white" 
                 : "bg-stone-700 text-stone-400 hover:bg-stone-600"
@@ -145,11 +145,11 @@ export const EducationalTooltip = memo(({
 
   return (
     <Tooltip content={tooltipContent as any} position="top">
-      <span className={clsx("inline-flex items-center gap-1 cursor-help", className)}>
+      <span className={clsx("inline-flex cursor-help items-center gap-1", className)}>
         {children}
         <FontAwesomeIcon 
           icon={faLightbulb} 
-          className="text-xs text-mantis-400 opacity-70 hover:opacity-100 transition-opacity" 
+          className="text-xs text-mantis-400 opacity-70 transition-opacity hover:opacity-100" 
         />
       </span>
     </Tooltip>

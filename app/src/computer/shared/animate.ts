@@ -98,11 +98,9 @@ export async function anim(
         const spring = getSpring(key);
 
         if (to === undefined) {
-          // @ts-expect-error ensured by `SpringAnimation`
           return spring.set(from);
         } else {
           runningAnimations.add(key);
-          // @ts-expect-error ensured by `SpringAnimation`
           const result = await getSpring(key).start({ from, to, config: springConfig });
           runningAnimations.delete(key);
           return result;
@@ -315,15 +313,15 @@ export function hideWriteControlText() {
 export async function turnLineOn(line: SimplePathKey, duration: number) {
   return await anim(
     [
-      { key: `${line}.strokeDashoffset`, from: 1, to: 0 },
-      { key: `${line}.opacity`, from: 1 },
+      { key: `${line}.strokeDashoffset`, from: 1, to: 0 } as SpringAnimation,
+      { key: `${line}.opacity`, from: 1 } as SpringAnimation,
     ],
     { duration, easing: "easeInOutSine" },
   );
 }
 
 export async function turnLineOff(line: SimplePathKey) {
-  return await anim({ key: `${line}.opacity`, to: 0 }, { duration: 1, easing: "easeInSine" });
+  return await anim({ key: `${line}.opacity`, to: 0 } as SpringAnimation, { duration: 1, easing: "easeInSine" });
 }
 
 // (No-op blocks eliminados; si tienes bloques vacíos en funciones reales, usa simplemente: // noop)

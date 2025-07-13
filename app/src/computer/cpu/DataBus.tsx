@@ -13,11 +13,12 @@
  * @see {@link https://graphology.github.io/}
  */
 
-import type { PhysicalRegister } from "./state";
 import { UndirectedGraph } from "graphology";
 import { bidirectional } from "graphology-shortest-path/unweighted";
 
 import { animated, getSpring } from "@/computer/shared/springs";
+
+import type { PhysicalRegister } from "./state";
 
 type Node = { position: [x: number, y: number] };
 

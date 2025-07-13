@@ -10,7 +10,7 @@ import { useMemo } from "react";
 
 import { hasINTInstructionAtom } from "@/computer/cpu/state";
 import { dataAddressesAtom, programAddressesAtom } from "@/computer/memory/state";
-import { highlightLine, highlightCurrentInstruction, setReadOnly } from "@/editor/methods";
+import { highlightCurrentInstruction, highlightLine, setReadOnly } from "@/editor/methods";
 import { programModifiedAtom } from "@/editor/state"; // Importar programModifiedAtom
 import { translate } from "@/lib/i18n";
 import { store } from "@/lib/jotai";
