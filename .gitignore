@@ -31,3 +31,11 @@ dist/
 
 # Ignore best-practicas instructions file
 .github/instructions/best-practicas.instructions.md
+
+**/*.coverage
+# Archivos específicos de coverage
+**/coverage/**/*.html
+**/coverage/**/*.xml
+**/coverage/**/*.css
+**/coverage/**/*.js
+**/coverage/**/*.json
