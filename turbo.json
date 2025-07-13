@@ -5,15 +5,25 @@
       "outputs": ["dist/**"]
     },
     "test": {
-      "outputs": ["coverage/**"]
+      "outputs": ["coverage/**", "test-results/**", "playwright-report/**"]
     },
     "test:coverage": {
       "outputs": ["coverage/**"]
     },
-    "test:integration": {},
-    "lint": {},
-    "format": {},
-    "format:check": {},
-    "audit": {}
+    "test:integration": {
+      "outputs": ["test-results/**"]
+    },
+    "lint": {
+      "outputs": []
+    },
+    "format": {
+      "outputs": []
+    },
+    "format:check": {
+      "outputs": []
+    },
+    "audit": {
+      "outputs": []
+    }
   }
 }
