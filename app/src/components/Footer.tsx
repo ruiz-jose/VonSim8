@@ -8,6 +8,9 @@ import { Tooltip } from "@/components/ui/Tooltip";
 import { useTranslate } from "@/lib/i18n";
 import { getSettings } from "@/lib/settings";
 
+// Declaración de la variable global definida por Vite
+declare const __COMMIT_HASH__: string;
+
 // Enlaces útiles
 const USEFUL_LINKS = [
   { name: "Documentación", url: "https://ruiz-jose.github.io/VonSim8/docs/", icon: "icon-[lucide--book-open]" },
@@ -59,7 +62,7 @@ export const Footer = memo(() => {
     <footer className="bg-black px-3 py-1.5 text-xs text-white" data-testid="footer">
       <div className="flex items-center justify-between">
         <span className="text-stone-400">
-          © Copyright 2017-2025 — III-LIDI, FI, UNLP, UNER
+          © Copyright 2017-2025 — III-LIDI, FI, UNLP, UNER — v{__COMMIT_HASH__}
         </span>
         
         {/* Enlaces útiles */}
