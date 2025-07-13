@@ -1,6 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
 import { useAtom, useAtomValue } from "jotai";
-import { memo, useCallback, useMemo, useState, useEffect } from "react";
+import { memo, useCallback, useEffect,useMemo, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useMedia } from "react-use";
 
@@ -8,6 +8,7 @@ import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { KeyboardShortcuts } from "@/components/KeyboardShortcuts";
 import { Settings, settingsOpenAtom } from "@/components/Settings";
+import { ToastAction } from "@/components/ui/Toast";
 import { WelcomeTour } from "@/components/WelcomeTour";
 import { ComputerContainer } from "@/computer";
 import { cycleAtom } from "@/computer/cpu/state";
@@ -15,7 +16,6 @@ import { Editor } from "@/editor";
 import { useTranslate } from "@/lib/i18n";
 import { useFilters, useLanguage } from "@/lib/settings";
 import { toast } from "@/lib/toast";
-import { ToastAction } from "@/components/ui/Toast";
 
 // Declaración de la variable global definida por Vite
 // eslint-disable-next-line no-var
