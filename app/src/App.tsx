@@ -38,10 +38,12 @@ const App = memo(() => {
     if (lastHash && lastHash !== __COMMIT_HASH__) {
       toast({
         title: translate("update.update-available"),
-        description: '',
+        description: "",
         action: (
-          <ToastAction altText={translate("update.reload")}
-            onClick={() => window.location.reload()}>
+          <ToastAction
+            altText={translate("update.reload")}
+            onClick={() => window.location.reload()}
+          >
             {translate("update.reload")}
           </ToastAction>
         ),
