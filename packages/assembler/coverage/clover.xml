@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1752441510952" clover="3.2.0">
-  <project timestamp="1752441510952" name="All files">
-    <metrics statements="4046" coveredstatements="3493" conditionals="704" coveredconditionals="564" methods="255" coveredmethods="185" elements="5005" coveredelements="4242" complexity="0" loc="4046" ncloc="4046" packages="9" files="31" classes="31"/>
+<coverage generated="1752448989990" clover="3.2.0">
+  <project timestamp="1752448989990" name="All files">
+    <metrics statements="4046" coveredstatements="3493" conditionals="703" coveredconditionals="563" methods="255" coveredmethods="185" elements="5004" coveredelements="4241" complexity="0" loc="4046" ncloc="4046" packages="9" files="31" classes="31"/>
     <package name="src">
-      <metrics statements="1211" coveredstatements="1134" conditionals="280" coveredconditionals="243" methods="64" coveredmethods="60"/>
+      <metrics statements="1211" coveredstatements="1134" conditionals="279" coveredconditionals="242" methods="64" coveredmethods="60"/>
       <file name="global-store.ts" path="C:\temp\2025\VonSim8\packages\assembler\src\global-store.ts">
         <metrics statements="355" coveredstatements="305" conditionals="87" coveredconditionals="63" methods="8" coveredmethods="8"/>
         <line num="1" count="1" type="stmt"/>
@@ -658,7 +658,7 @@
         <line num="186" count="20" type="stmt"/>
       </file>
       <file name="parser.ts" path="C:\temp\2025\VonSim8\packages\assembler\src\parser.ts">
-        <metrics statements="451" coveredstatements="444" conditionals="145" coveredconditionals="141" methods="28" coveredmethods="28"/>
+        <metrics statements="451" coveredstatements="444" conditionals="144" coveredconditionals="140" methods="28" coveredmethods="28"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
         <line num="3" count="1" type="stmt"/>
@@ -916,7 +916,7 @@
         <line num="255" count="14" type="cond" truecount="1" falsecount="0"/>
         <line num="256" count="14" type="cond" truecount="1" falsecount="0"/>
         <line num="257" count="14" type="stmt"/>
-        <line num="258" count="19" type="cond" truecount="1" falsecount="0"/>
+        <line num="258" count="14" type="cond" truecount="1" falsecount="0"/>
         <line num="259" count="5" type="stmt"/>
         <line num="260" count="5" type="stmt"/>
         <line num="261" count="5" type="stmt"/>
@@ -929,7 +929,7 @@
         <line num="268" count="5" type="cond" truecount="1" falsecount="0"/>
         <line num="269" count="5" type="stmt"/>
         <line num="270" count="5" type="stmt"/>
-        <line num="271" count="277" type="cond" truecount="3" falsecount="0"/>
+        <line num="271" count="277" type="cond" truecount="2" falsecount="0"/>
         <line num="272" count="1" type="stmt"/>
         <line num="273" count="1" type="stmt"/>
         <line num="274" count="1" type="cond" truecount="1" falsecount="0"/>

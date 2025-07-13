@@ -23,7 +23,7 @@ declare module "virtual:pwa-register" {
 }
 
 declare global {
-  interface Window {
+  type Window = typeof globalThis & {
     codemirror: import("@codemirror/view").EditorView | null;
     updateVonSim8?: () => void;
   }
