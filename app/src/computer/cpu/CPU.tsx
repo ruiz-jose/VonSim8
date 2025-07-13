@@ -10,7 +10,7 @@ import { ALU } from "./ALU";
 import { Control } from "./Control";
 import { DataBus } from "./DataBus";
 import type { PhysicalRegister } from "./state";
-import { cycleAtom,registerAtoms, showSPAtom } from "./state";
+import { registerAtoms, showSPAtom } from "./state";
 
 // Add IPPlusOneAnimation component
 function IPPlusOneAnimation() {
@@ -83,7 +83,6 @@ export function CPU() {
   const translate = useTranslate();
 
   const showSP = useAtomValue(showSPAtom); // Usar el átomo showSPAtom
-  const cycle = useAtomValue(cycleAtom);
   const [showid, setShowid] = useState(false);
   const [showri, setShowri] = useState(false);
 

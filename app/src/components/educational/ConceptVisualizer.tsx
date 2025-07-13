@@ -443,7 +443,7 @@ export const ConceptVisualizer = memo(({
         {/* Content */}
         <div className="flex-1 p-4">
           <div className="mb-4">
-            <h3 className="text-base mb-2 font-medium text-white">
+            <h3 className="mb-2 text-base font-medium text-white">
               {currentStep.title}
             </h3>
             <p className="text-sm text-stone-300">

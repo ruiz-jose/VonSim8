@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { beforeEach,describe, expect, it, vi } from 'vitest';
 
 // El mock de jotai ha sido eliminado para evitar conflicto con el mock global

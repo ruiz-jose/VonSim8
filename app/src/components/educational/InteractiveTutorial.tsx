@@ -356,7 +356,7 @@ export const InteractiveTutorial = memo(({
         {/* Content */}
         <div className="max-h-96 overflow-y-auto p-4">
           <div className="mb-4">
-            <h3 className="text-base mb-2 font-medium text-white">
+            <h3 className="mb-2 text-base font-medium text-white">
               {currentStep.title}
             </h3>
             <p className="mb-3 text-sm text-stone-300">

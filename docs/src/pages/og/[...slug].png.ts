@@ -1,7 +1,7 @@
 import * as fs from "node:fs/promises";
 
 import type { APIContext, GetStaticPathsResult } from "astro";
-import { getCollection, getEntryBySlug } from "astro:content";
+import { getCollection } from "astro:content";
 import satori, { type Font } from "satori";
 import { html } from "satori-html";
 import sharp from "sharp";
@@ -36,7 +36,8 @@ export async function getStaticPaths(): Promise<GetStaticPathsResult> {
 
 // https://docs.astro.build/en/core-concepts/endpoints/#params-and-dynamic-routing
 export async function GET({ params }: APIContext): Promise<Response> {
-  const entry = (await getEntryBySlug("docs", params.slug!))!;
+  const entries = await getCollection("docs", ({ slug }) => slug === params.slug);
+  const entry = entries[0]!;
 
   const markup = html`
     <div

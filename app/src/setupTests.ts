@@ -142,7 +142,7 @@ vi.mock("jotai", () => ({
 }));
 
 // Mock para Jotai React
-vi.mock("jotai/react", async (importOriginal) => {
+vi.mock("jotai/react", async () => {
   return {
     useAtom: vi.fn(() => [{}, vi.fn()]),
     useAtomValue: vi.fn(() => ({})),

@@ -39,7 +39,7 @@ export const EducationalMenu = memo(({ isOpen = false, onClose, onShowProgress }
     // No cerrar el menú cuando se selecciona una visualización
   };
 
-  const handleTutorialComplete = (tutorialId: string) => {
+  const handleTutorialComplete = () => {
     setShowTutorial(false);
     setSelectedTutorial(null);
     // Aquí se podría emitir un evento de progreso

@@ -1,12 +1,11 @@
 import clsx from "clsx";
 import { useAtomValue } from "jotai";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import { animated, getSpring } from "@/computer/shared/springs";
-import { useSimulation } from "@/computer/simulation";
 import { useTranslate } from "@/lib/i18n";
 
-import { cycleAtom, messageAtom } from "./state";
+import { cycleAtom } from "./state";
 
 /**
  * Control component, to be used inside <CPU />
@@ -15,9 +14,7 @@ export function Control() {
   const translate = useTranslate();
   const [showCycleInfo, setShowCycleInfo] = useState(false);
 
-  const { status } = useSimulation();
   const cycle = useAtomValue(cycleAtom);
-  const message = useAtomValue(messageAtom);
 
   // Funciones para la información del ciclo
   const getPhaseDescription = () => {

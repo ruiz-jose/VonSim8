@@ -70,6 +70,7 @@ export function Editor({ className }: { className?: string }) {
           highlightActiveLine(),
           EditorView.updateListener.of((update) => {
             if (update.selectionSet) {
+              // Bloque intencionalmente vacío
             }
           }),
           keymap.of([
