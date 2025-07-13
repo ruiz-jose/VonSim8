@@ -20,6 +20,8 @@ export const english = {
 
   update: {
     "update-available": "There's a new version available!",
+    "new-version-available": "There's a new version available in the repository.",
+    "local-update": "A new local version has been detected.",
     reload: "Update",
   },
 

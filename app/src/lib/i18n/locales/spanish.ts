@@ -21,6 +21,8 @@ export const spanish: Locale = {
 
   update: {
     "update-available": "¡Hay una nueva versión disponible!",
+    "new-version-available": "Hay una nueva versión disponible en el repositorio.",
+    "local-update": "Se ha detectado una nueva versión local.",
     reload: "Actualizar",
   },
 

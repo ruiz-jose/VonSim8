@@ -7,7 +7,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { createContext, memo, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/Button";
 
@@ -22,8 +22,29 @@ type Notification = {
   read: boolean;
 };
 
+// Contexto para las notificaciones
+type NotificationContextType = {
+  addNotification: (notification: Omit<Notification, "id" | "timestamp" | "read">) => void;
+  markAsRead: (id: string) => void;
+  markAllAsRead: () => void;
+  deleteNotification: (id: string) => void;
+  clearAll: () => void;
+  notifications: Notification[];
+};
+
+const NotificationContext = createContext<NotificationContextType | null>(null);
+
+// Hook para usar el contexto de notificaciones
+export const useNotifications = () => {
+  const context = useContext(NotificationContext);
+  if (!context) {
+    throw new Error("useNotifications must be used within a NotificationProvider");
+  }
+  return context;
+};
+
 // Hook personalizado para manejar las notificaciones
-const useNotifications = () => {
+const useNotificationState = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -241,7 +262,7 @@ export const NotificationCenter = memo(() => {
     markAllAsRead,
     deleteNotification,
     clearAll,
-  } = useNotifications();
+  } = useNotificationState();
 
   const { total, unread } = useNotificationStats(notifications);
 
@@ -358,9 +379,23 @@ export const NotificationCenter = memo(() => {
 
 NotificationCenter.displayName = "NotificationCenter";
 
-// Función para agregar notificaciones desde otros componentes
-export const addNotification = (notification: Omit<Notification, "id" | "timestamp" | "read">) => {
-  // Esta función se puede usar desde otros componentes
-  // Implementar lógica para agregar notificaciones globalmente
-  console.log("Adding notification:", notification);
+// Provider para el contexto de notificaciones
+export const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
+  const notificationState = useNotificationState();
+
+  const contextValue = useMemo(
+    () => ({
+      addNotification: notificationState.addNotification,
+      markAsRead: notificationState.markAsRead,
+      markAllAsRead: notificationState.markAllAsRead,
+      deleteNotification: notificationState.deleteNotification,
+      clearAll: notificationState.clearAll,
+      notifications: notificationState.notifications,
+    }),
+    [notificationState],
+  );
+
+  return (
+    <NotificationContext.Provider value={contextValue}>{children}</NotificationContext.Provider>
+  );
 };
