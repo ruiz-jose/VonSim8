@@ -90,6 +90,7 @@ const DesktopLayout = memo(() => {
         id="panel-editor"
         order={1}
         minSize={30}
+        defaultSize={50}
         tagName="section"
         className="rounded-lg border border-stone-600 bg-black"
         data-testid="panel-editor"
@@ -101,6 +102,7 @@ const DesktopLayout = memo(() => {
         id="panel-computer"
         order={2}
         minSize={20}
+        defaultSize={50}
         tagName="section"
         className="computer-background rounded-lg border border-stone-600"
         data-testid="panel-computer"
@@ -114,6 +116,7 @@ const DesktopLayout = memo(() => {
             id="panel-settings"
             order={3}
             minSize={30}
+            defaultSize={25}
             tagName="section"
             className="rounded-lg border border-stone-600 bg-stone-800"
             data-testid="panel-settings"
