@@ -1,61 +1,36 @@
-name: Deploy to Production
+name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '22'
-    
-    - name: Setup pnpm
-      uses: pnpm/action-setup@v2
-      with:
-        version: '10'
-    
-    - name: Install dependencies
-      run: pnpm install --frozen-lockfile
-    
-    - name: Run unit tests (excluding assembler)
-      run: pnpm test:no-assembler
-    
-    - name: Install Playwright
-      run: pnpm exec playwright install --with-deps
-    
-    - name: Run E2E tests (optional)
-      run: |
-        cd e2e
-        pnpm install
-        pnpm test:e2e:optional
-      continue-on-error: true  # Esto hace que el job no falle si los tests e2e fallan
-    
-    - name: Run assembler tests (optional)
-      run: |
-        cd packages/assembler
-        pnpm test
-      continue-on-error: true  # Esto hace que el job no falle si los tests del ensamblador fallan
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
 
-    - name: Lint code (no bloquea despliegue)
-      run: pnpm lint
-      continue-on-error: true
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
 
-    - name: Build application
-      run: pnpm build
-    
-    - name: Deploy to production
-      if: github.ref == 'refs/heads/main'
-      run: |
-        echo "🚀 Desplegando a producción..."
-        # Aquí van tus comandos de despliegue específicos
-        # pnpm run deploy
-        # o git push a tu repositorio de producción
+      - name: Install pnpm
+        run: npm install -g pnpm@10.5.2
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile 
+
+      - name: Build project
+        run: pnpm --dir app run build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./app/dist
