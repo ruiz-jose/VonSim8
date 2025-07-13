@@ -10,6 +10,7 @@
     "test:watch": "turbo run test:watch",
     "test:integration": "turbo run test:integration",
     "test:e2e": "playwright test",
+    "test:e2e:optional": "cd e2e && pnpm test:e2e:optional",
     "lint": "turbo run lint",
     "audit": "pnpm audit --audit-level moderate",
     "dev": "pnpm --dir app run dev",

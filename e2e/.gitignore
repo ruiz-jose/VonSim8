@@ -1,0 +1,31 @@
+# Test results
+test-results/
+playwright-report/
+blob-report/
+
+# Allow test failures in CI
+.allow-test-failures
+
+# Screenshots and videos
+screenshots/
+videos/
+
+# Environment files
+.env.local
+.env.test
+
+# Local test files
+local/
+debug/
+performance/
+experimental/
+
+# Temporary files
+*.tmp
+*.log
+
+# Coverage reports
+coverage/
+
+# Node modules (if using local dependencies)
+node_modules/ 

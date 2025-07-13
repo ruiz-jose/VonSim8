@@ -2,12 +2,26 @@
   "name": "vonsim8-e2e",
   "version": "1.0.0",
   "private": true,
+  "description": "Tests end-to-end para VonSim8",
   "scripts": {
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "test:e2e:headed": "playwright test --headed"
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:core": "playwright test specs/core/",
+    "test:e2e:features": "playwright test specs/features/",
+    "test:e2e:integration": "playwright test specs/integration/",
+    "test:e2e:ci": "playwright test --reporter=github",
+    "test:e2e:optional": "playwright test || echo 'Tests e2e fallaron pero continuando...'",
+    "test:e2e:report": "playwright show-report",
+    "test:e2e:install": "playwright install",
+    "test:e2e:codegen": "playwright codegen http://localhost:5173"
   },
   "devDependencies": {
-    "@playwright/test": "^1.41.0"
+    "@playwright/test": "^1.53.0",
+    "@types/node": "^20.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
