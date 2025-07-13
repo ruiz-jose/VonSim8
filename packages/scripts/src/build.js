@@ -1,7 +1,6 @@
+import { glob } from "glob";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { execSync } from "node:child_process";
-import { glob } from "glob";
 
 import { $ } from "execa";
 
@@ -98,7 +97,7 @@ if (await fs.stat(appDistDir).catch(() => false)) {
       console.info(`✅ Archivos copiados exitosamente a ${distPath}`);
       // Limpiar app/dist después de copiar
       await fs.rm(appDistDir, { recursive: true });
-      console.info(`🗑️  Directorio ${appDistPath} limpiado`);
+      console.info(`��️  Directorio ${appDistPath} limpiado`);
     } catch (error) {
       console.error(`❌ Error copiando archivos: ${error.message}`);
       // No fallar el build, solo mostrar el error
@@ -188,7 +187,6 @@ if (await fs.stat(docsDistDir).catch(() => false)) {
 
 // Mostrar información del build completado
 try {
-  const distStats = await fs.stat(distDir);
   const buildTime = new Date().toLocaleTimeString();
   
   console.info("\n" + "=".repeat(50));
