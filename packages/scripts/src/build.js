@@ -58,12 +58,27 @@ try {
   process.exit(1);
 }
 
+// Normaliza el path para evitar doble barra
+function normalizePathForGlob(url) {
+  let p = url.pathname;
+  if (p.endsWith('/')) p = p.slice(0, -1);
+  return p;
+}
+
 // Copiar archivos de app/dist a dist
 const appDistDir = new URL("./dist/", appDir);
+const appDistPath = normalizePathForGlob(appDistDir);
+const distPath = normalizePathForGlob(distDir);
 if (await fs.stat(appDistDir).catch(() => false)) {
-  await $`cp -r ${appDistDir.pathname}/* ${distDir.pathname}`;
-  // Limpiar app/dist después de copiar
-  await fs.rm(appDistDir, { recursive: true });
+  // Verifica que el directorio no esté vacío
+  const files = await fs.readdir(appDistDir);
+  if (files.length > 0) {
+    await $`cp -r ${appDistPath}/* ${distPath}/`;
+    // Limpiar app/dist después de copiar
+    await fs.rm(appDistDir, { recursive: true });
+  } else {
+    console.warn(`⚠️  El directorio ${appDistPath} está vacío, no se copian archivos.`);
+  }
 }
 
 console.info("\n\n========= Building @vonsim/docs =========\n");
@@ -78,18 +93,23 @@ try {
 
 // Copiar archivos de docs/dist a dist/docs
 const docsDistDir = new URL("./dist/", docsDir);
+const docsDistPath = normalizePathForGlob(docsDistDir);
 if (await fs.stat(docsDistDir).catch(() => false)) {
   const docsOutputDir = new URL("./docs/", distDir);
   await fs.mkdir(docsOutputDir, { recursive: true });
-  await $`cp -r ${docsDistDir.pathname}/* ${docsOutputDir.pathname}`;
-  
+  // Verifica que el directorio no esté vacío
+  const files = await fs.readdir(docsDistDir);
+  if (files.length > 0) {
+    await $`cp -r ${docsDistPath}/* ${docsOutputDir.pathname}`;
+  } else {
+    console.warn(`⚠️  El directorio ${docsDistPath} está vacío, no se copian archivos.`);
+  }
   // Mover 404.html a la raíz de dist
   const docs404Path = new URL("./404.html", docsOutputDir);
   const root404Path = new URL("./404.html", distDir);
   if (await fs.stat(docs404Path).catch(() => false)) {
     await fs.rename(docs404Path, root404Path);
   }
-  
   // Limpiar docs/dist después de copiar
   await fs.rm(docsDistDir, { recursive: true });
 }
