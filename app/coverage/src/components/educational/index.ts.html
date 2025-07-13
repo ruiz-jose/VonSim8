@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for src/components/ui/Switch.tsx</title>
+    <title>Code coverage report for src/components/educational/index.ts</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../../prettify.css" />
     <link rel="stylesheet" href="../../../base.css" />
@@ -19,13 +19,13 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/components/ui</a> Switch.tsx</h1>
+        <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/components/educational</a> index.ts</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>26/26</span>
+                <span class='fraction'>18/18</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>26/26</span>
+                <span class='fraction'>18/18</span>
             </div>
         
             
@@ -81,15 +81,7 @@
 <a name='L16'></a><a href='#L16'>16</a>
 <a name='L17'></a><a href='#L17'>17</a>
 <a name='L18'></a><a href='#L18'>18</a>
-<a name='L19'></a><a href='#L19'>19</a>
-<a name='L20'></a><a href='#L20'>20</a>
-<a name='L21'></a><a href='#L21'>21</a>
-<a name='L22'></a><a href='#L22'>22</a>
-<a name='L23'></a><a href='#L23'>23</a>
-<a name='L24'></a><a href='#L24'>24</a>
-<a name='L25'></a><a href='#L25'>25</a>
-<a name='L26'></a><a href='#L26'>26</a>
-<a name='L27'></a><a href='#L27'>27</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L19'></a><a href='#L19'>19</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -107,40 +99,24 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import * as SwitchPrimitives from "@radix-ui/react-switch";
-import clsx from "clsx";
-import { forwardRef } from "react";
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// Componentes educativos para VonSim8
+export { StepByStepMode } from "../StepByStepMode";
 &nbsp;
-const Switch = forwardRef&lt;
-  React.ElementRef&lt;typeof SwitchPrimitives.Root&gt;,
-  React.ComponentPropsWithoutRef&lt;typeof SwitchPrimitives.Root&gt;
-&gt;(({ className, ...props }, ref) =&gt; (
-  &lt;SwitchPrimitives.Root
-    className={clsx(
-      "peer inline-flex h-[24px] w-[44px] shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-mantis-400 data-[state=unchecked]:bg-stone-900",
-      className,
-    )}
-    {...props}
-    ref={ref}
-  &gt;
-    &lt;SwitchPrimitives.Thumb
-      className={clsx(
-        "pointer-events-none block size-5 rounded-full bg-white shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0",
-      )}
-    /&gt;
-  &lt;/SwitchPrimitives.Root&gt;
-));
-Switch.displayName = SwitchPrimitives.Root.displayName;
+// Componentes de la CPU
+export { ExecutionPhases } from "../../computer/cpu/ExecutionPhases";
 &nbsp;
-export { Switch };
+// Componentes de flujo de datos
+export { DataFlowAnimation, useDataFlow } from "../../computer/shared/DataFlowAnimation";
+&nbsp;
+// Nuevos componentes educativos
+export { ConceptVisualizer } from "./ConceptVisualizer";
+export { EducationalMenu } from "./EducationalMenu";
+export { EducationalProgress, emitProgressEvent } from "./EducationalProgress";
+export { AVAILABLE_TUTORIALS, InteractiveTutorial } from "./InteractiveTutorial";
+&nbsp;
+// Tipos educativos
+&nbsp;
+export type { Step } from "../StepByStepMode";
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->

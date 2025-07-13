@@ -255,6 +255,8 @@ Object.defineProperty(window, "CSS", {
   },
 });
 
+(globalThis as any).__COMMIT_HASH__ = "test-hash";
+
 // Cleanup después de cada test
 afterEach(() => {
   cleanup();
