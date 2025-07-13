@@ -1,6 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
 import { useAtom, useAtomValue } from "jotai";
-import { memo, useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useMemo, useState, useEffect } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useMedia } from "react-use";
 
@@ -14,18 +14,43 @@ import { cycleAtom } from "@/computer/cpu/state";
 import { Editor } from "@/editor";
 import { useTranslate } from "@/lib/i18n";
 import { useFilters, useLanguage } from "@/lib/settings";
+import { toast } from "@/lib/toast";
+import { ToastAction } from "@/components/ui/Toast";
+
+// Declaración de la variable global definida por Vite
+// eslint-disable-next-line no-var
+declare const __COMMIT_HASH__: string;
 
 // Componente principal optimizado con memo
 const App = memo(() => {
   const lang = useLanguage();
   const filter = useFilters();
   const isMobile = useMedia("(max-width: 640px)");
-  // Elimino la declaración de 'translate' si no se usa
+  const translate = useTranslate();
 
   // Memoizar el estilo para evitar re-renders innecesarios
   const containerStyle = useMemo(() => ({ filter }), [filter]);
 
-  // Configurar notificaciones de actualización PWA
+  // Aviso de nueva versión disponible
+  useEffect(() => {
+    const STORAGE_KEY = "vonsim8-commit-hash";
+    const lastHash = localStorage.getItem(STORAGE_KEY);
+    if (lastHash && lastHash !== __COMMIT_HASH__) {
+      toast({
+        title: translate("update.update-available"),
+        description: '',
+        action: (
+          <ToastAction altText={translate("update.reload")}
+            onClick={() => window.location.reload()}>
+            {translate("update.reload")}
+          </ToastAction>
+        ),
+        variant: "info",
+        duration: 60000,
+      });
+    }
+    localStorage.setItem(STORAGE_KEY, __COMMIT_HASH__);
+  }, [translate]);
 
   return (
     <div
