@@ -212,6 +212,16 @@ vi.mock("virtual:pwa-register/react", () => ({
   })),
 }));
 
+// Mock para virtual:pwa-register (directo)
+vi.mock("virtual:pwa-register", () => ({
+  registerSW: vi.fn(() => vi.fn()),
+}));
+
+// Mock para usePWAUpdate hook
+vi.mock("@/hooks/usePWAUpdate", () => ({
+  usePWAUpdate: vi.fn(),
+}));
+
 // Mock para ResizeObserver
 global.ResizeObserver = vi.fn().mockImplementation(() => ({
   observe: vi.fn(),
