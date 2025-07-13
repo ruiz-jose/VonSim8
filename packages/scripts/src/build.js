@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { execSync } from "node:child_process";
+import { glob } from "glob";
 
 import { $ } from "execa";
 
@@ -69,16 +70,46 @@ function normalizePathForGlob(url) {
 const appDistDir = new URL("./dist/", appDir);
 const appDistPath = normalizePathForGlob(appDistDir);
 const distPath = normalizePathForGlob(distDir);
+
 if (await fs.stat(appDistDir).catch(() => false)) {
-  // Verifica que el directorio no esté vacío
-  const files = await fs.readdir(appDistDir);
-  if (files.length > 0) {
-    await $`cp -r ${appDistPath}/* ${distPath}/`;
-    // Limpiar app/dist después de copiar
-    await fs.rm(appDistDir, { recursive: true });
-  } else {
-    console.warn(`⚠️  El directorio ${appDistPath} está vacío, no se copian archivos.`);
+  console.info(`🔍 Verificando contenido de: ${appDistPath}`);
+  
+  // Listar contenido del directorio para debug
+  try {
+    const dirContents = await fs.readdir(appDistDir, { withFileTypes: true });
+    console.info(`📁 Contenido del directorio:`);
+    dirContents.forEach(item => {
+      const type = item.isDirectory() ? '📁' : '📄';
+      console.info(`  ${type} ${item.name}`);
+    });
+  } catch (error) {
+    console.warn(`⚠️  No se pudo leer el directorio: ${error.message}`);
   }
+  
+  // Verificar que existan archivos para copiar usando glob
+  const filesToCopy = await glob(appDistPath + "/*", { windowsPathsNoEscape: true });
+  
+  if (filesToCopy.length > 0) {
+    console.info(`✅ Encontrados ${filesToCopy.length} archivos para copiar:`);
+    filesToCopy.forEach(file => console.info(`  📄 ${path.basename(file)}`));
+    
+    try {
+      await $`cp -r ${appDistPath}/* ${distPath}/`;
+      console.info(`✅ Archivos copiados exitosamente a ${distPath}`);
+      // Limpiar app/dist después de copiar
+      await fs.rm(appDistDir, { recursive: true });
+      console.info(`🗑️  Directorio ${appDistPath} limpiado`);
+    } catch (error) {
+      console.error(`❌ Error copiando archivos: ${error.message}`);
+      // No fallar el build, solo mostrar el error
+      console.warn(`⚠️  Continuando sin copiar archivos de app...`);
+    }
+  } else {
+    console.warn(`⚠️  No se encontraron archivos para copiar en ${appDistPath}`);
+    console.warn(`⚠️  Continuando sin copiar archivos de app...`);
+  }
+} else {
+  console.warn(`⚠️  El directorio ${appDistPath} no existe`);
 }
 
 console.info("\n\n========= Building @vonsim/docs =========\n");
@@ -94,24 +125,65 @@ try {
 // Copiar archivos de docs/dist a dist/docs
 const docsDistDir = new URL("./dist/", docsDir);
 const docsDistPath = normalizePathForGlob(docsDistDir);
+
 if (await fs.stat(docsDistDir).catch(() => false)) {
+  console.info(`🔍 Verificando contenido de: ${docsDistPath}`);
+  
   const docsOutputDir = new URL("./docs/", distDir);
   await fs.mkdir(docsOutputDir, { recursive: true });
-  // Verifica que el directorio no esté vacío
-  const files = await fs.readdir(docsDistDir);
-  if (files.length > 0) {
-    await $`cp -r ${docsDistPath}/* ${docsOutputDir.pathname}`;
-  } else {
-    console.warn(`⚠️  El directorio ${docsDistPath} está vacío, no se copian archivos.`);
+  
+  // Listar contenido del directorio para debug
+  try {
+    const dirContents = await fs.readdir(docsDistDir, { withFileTypes: true });
+    console.info(`📁 Contenido del directorio docs:`);
+    dirContents.forEach(item => {
+      const type = item.isDirectory() ? '📁' : '📄';
+      console.info(`  ${type} ${item.name}`);
+    });
+  } catch (error) {
+    console.warn(`⚠️  No se pudo leer el directorio docs: ${error.message}`);
   }
+  
+  // Verificar que existan archivos para copiar usando glob
+  const filesToCopy = await glob(docsDistPath + "/*", { windowsPathsNoEscape: true });
+  
+  if (filesToCopy.length > 0) {
+    console.info(`✅ Encontrados ${filesToCopy.length} archivos para copiar desde docs:`);
+    filesToCopy.forEach(file => console.info(`  📄 ${path.basename(file)}`));
+    
+    try {
+      await $`cp -r ${docsDistPath}/* ${docsOutputDir.pathname}`;
+      console.info(`✅ Archivos de docs copiados exitosamente`);
+    } catch (error) {
+      console.error(`❌ Error copiando archivos de docs: ${error.message}`);
+      console.warn(`⚠️  Continuando sin copiar archivos de docs...`);
+    }
+  } else {
+    console.warn(`⚠️  No se encontraron archivos para copiar en ${docsDistPath}`);
+    console.warn(`⚠️  Continuando sin copiar archivos de docs...`);
+  }
+  
   // Mover 404.html a la raíz de dist
   const docs404Path = new URL("./404.html", docsOutputDir);
   const root404Path = new URL("./404.html", distDir);
   if (await fs.stat(docs404Path).catch(() => false)) {
-    await fs.rename(docs404Path, root404Path);
+    try {
+      await fs.rename(docs404Path, root404Path);
+      console.info(`✅ 404.html movido a la raíz`);
+    } catch (error) {
+      console.warn(`⚠️  Error moviendo 404.html: ${error.message}`);
+    }
   }
+  
   // Limpiar docs/dist después de copiar
-  await fs.rm(docsDistDir, { recursive: true });
+  try {
+    await fs.rm(docsDistDir, { recursive: true });
+    console.info(`🗑️  Directorio docs ${docsDistPath} limpiado`);
+  } catch (error) {
+    console.warn(`⚠️  Error limpiando directorio docs: ${error.message}`);
+  }
+} else {
+  console.warn(`⚠️  El directorio docs ${docsDistPath} no existe`);
 }
 
 // Mostrar información del build completado
