@@ -234,14 +234,29 @@ const NotificationItem = memo(
             <p className="mt-1 text-sm text-stone-300">{notification.message}</p>
             <div className="mt-2 flex items-center justify-between">
               <span className="text-xs text-stone-500">{formatTime(notification.timestamp)}</span>
-              {!notification.read && (
-                <button
-                  onClick={() => onMarkAsRead(notification.id)}
-                  className="text-xs text-mantis-400 transition-colors hover:text-mantis-300"
-                >
-                  Marcar como leída
-                </button>
-              )}
+              <div className="flex gap-2">
+                {notification.title === "Nueva versión disponible" && (
+                  <button
+                    onClick={() => {
+                      if ((window as any).updateVonSim8) {
+                        (window as any).updateVonSim8();
+                      }
+                      onMarkAsRead(notification.id);
+                    }}
+                    className="text-xs bg-mantis-600 text-white px-2 py-1 rounded transition-colors hover:bg-mantis-500"
+                  >
+                    Actualizar
+                  </button>
+                )}
+                {!notification.read && (
+                  <button
+                    onClick={() => onMarkAsRead(notification.id)}
+                    className="text-xs text-mantis-400 transition-colors hover:text-mantis-300"
+                  >
+                    Marcar como leída
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>

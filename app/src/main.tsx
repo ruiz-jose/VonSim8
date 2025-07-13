@@ -9,18 +9,21 @@ import App from "@/App";
 import { JotaiProvider } from "@/lib/jotai";
 import { posthog } from "@/lib/posthog";
 import { Toaster } from "@/lib/toast/toaster";
+import { NotificationProvider } from "@/components/NotificationCenter";
 
 // Initialize CodeMirror as null
-window.codemirror = null;
+(window as any).codemirror = null;
 
 const root = createRoot(document.getElementById("root") as HTMLDivElement);
 root.render(
   <StrictMode>
     <PostHogProvider client={posthog}>
-      <JotaiProvider>
-        <App />
-      </JotaiProvider>
-      <Toaster />
+      <NotificationProvider>
+        <JotaiProvider>
+          <App />
+        </JotaiProvider>
+        <Toaster />
+      </NotificationProvider>
     </PostHogProvider>
   </StrictMode>,
 );

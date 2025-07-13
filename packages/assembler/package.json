@@ -20,11 +20,12 @@
   },
   "devDependencies": {
     "@vonsim/tsconfig": "workspace:^",
+    "@vitest/coverage-v8": "^1.6.1",
     "eslint": "^8.56.0",
     "eslint-config-vonsim": "workspace:^",
     "prettier": "^3.5.3",
     "type-fest": "^4.9.0",
     "typescript": "~5.3.3",
-    "vitest": "^1.1.3"
+    "vitest": "^1.6.1"
   }
 }

@@ -134,7 +134,10 @@ export function Controls({ className }: { className?: string }) {
         disabled={status.type === "running"}
         onClick={runCycle}
         title={translate("control.action.run.cycle-change")}
-        className="group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-mantis-600/20 focus-visible:ring-2 focus-visible:ring-mantis-400 disabled:opacity-50"
+        className={clsx(
+          "group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-mantis-600/20 focus-visible:ring-2 focus-visible:ring-mantis-400 disabled:opacity-50",
+          status.type === "running" && status.until === "cycle-change" && "animate-pulse-glow",
+        )}
       >
         <span className="flex items-center justify-center">
           <FontAwesomeIcon
@@ -157,7 +160,10 @@ export function Controls({ className }: { className?: string }) {
         disabled={status.type === "running"}
         onClick={runInstruction}
         title={translate("control.action.run.end-of-instruction")}
-        className="group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-blue-600/20 focus-visible:ring-2 focus-visible:ring-blue-400 disabled:opacity-50"
+        className={clsx(
+          "group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-blue-600/20 focus-visible:ring-2 focus-visible:ring-blue-400 disabled:opacity-50",
+          status.type === "running" && status.until === "end-of-instruction" && "animate-pulse-glow",
+        )}
       >
         <span className="flex items-center justify-center">
           <FontAwesomeIcon
@@ -184,7 +190,7 @@ export function Controls({ className }: { className?: string }) {
         title={translate("control.action.run.infinity")}
         className={clsx(
           "group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-orange-600/20 focus-visible:ring-2 focus-visible:ring-orange-400 disabled:opacity-50",
-          status.type === "running" && "animate-pulse-glow",
+          status.type === "running" && status.until === "infinity" && "animate-pulse-glow",
         )}
       >
         <span className="flex items-center justify-center">

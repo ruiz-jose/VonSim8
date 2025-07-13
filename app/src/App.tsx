@@ -13,6 +13,7 @@ import { WelcomeTour } from "@/components/WelcomeTour";
 import { ComputerContainer } from "@/computer";
 import { cycleAtom } from "@/computer/cpu/state";
 import { Editor } from "@/editor";
+import { usePWAUpdate } from "@/hooks/usePWAUpdate";
 import { useTranslate } from "@/lib/i18n";
 import { useFilters, useLanguage } from "@/lib/settings";
 import { toast } from "@/lib/toast";
@@ -27,6 +28,9 @@ const App = memo(() => {
   const filter = useFilters();
   const isMobile = useMedia("(max-width: 640px)");
   const translate = useTranslate();
+  
+  // Inicializar el hook de actualización PWA
+  usePWAUpdate();
 
   // Memoizar el estilo para evitar re-renders innecesarios
   const containerStyle = useMemo(() => ({ filter }), [filter]);

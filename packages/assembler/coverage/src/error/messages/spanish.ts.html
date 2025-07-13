@@ -1,0 +1,379 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for src/error/messages/spanish.ts</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../../prettify.css" />
+    <link rel="stylesheet" href="../../../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/error/messages</a> spanish.ts</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>98/98</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>0/0</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>0/24</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>98/98</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line high'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a>
+<a name='L99'></a><a href='#L99'>99</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { IOAddress, MemoryAddress } from "@vonsim/common/address";
+&nbsp;
+import type { Messages } from "..";
+&nbsp;
+const maxAddress = MemoryAddress.from(MemoryAddress.MAX_ADDRESS).toString();
+const maxIOAddress = IOAddress.from(IOAddress.MAX_ADDRESS).toString();
+&nbsp;
+export const spanish: Messages = {
+  // prettier-ignore
+  "address-has-code": <span class="fstat-no" title="function not covered" >address =&gt; `La dirección de memoria ${MemoryAddress.format(address)} tiene instrucciones. No se puede usar como dirección de datos.`,</span>
+  // prettier-ignore
+  "address-out-of-range": <span class="fstat-no" title="function not covered" >address =&gt; `La dirección de memoria ${MemoryAddress.format(address)} está fuera de rango (dirección máxima de memoria: ${maxAddress}).`,</span>
+  "cannot-accept-strings": <span class="fstat-no" title="function not covered" >directive =&gt; `${directive} no puede aceptar cadenas de texto.`,</span>
+  "cannot-be-indirect": "Este operando no puede ser una dirección de memoria indirecta.",
+  "cannot-be-unassinged": <span class="fstat-no" title="function not covered" >directive =&gt; `${directive} no puede estar sin asignar.`,</span>
+  "cannot-be-word": "Este operando no puede ser de 16 bits.",
+  "circular-reference": "Se detectó una referencia circular.",
+  "constant-must-have-a-label": "La constante debe tener una etiqueta.",
+  "constant-must-have-one-value": "La constante debe tener una exactamente un valor.",
+  "destination-cannot-be-immediate": "El destino no puede ser un valor inmediato.",
+  "double-memory-access": "No se puede acceder a una memoria dos veces en la misma instrucción.",
+  "duplicated-label": <span class="fstat-no" title="function not covered" >label =&gt; `Etiqueta duplicada "${label}".`,</span>
+  "empty-program": "Programa vacío. El programa debe tener, al menos, una instrucción END.",
+  "end-must-be-the-last-statement": "END debe ser la última instrucción.",
+  "equ-not-found": <span class="fstat-no" title="function not covered" >label =&gt; `EQU "${label}" no encontrado.`,</span>
+  "expects-ax": "Este operando debe ser AX o AL.",
+  "expects-dx": "El único registro válido es DX.",
+  "expects-immediate": "Este operando debe ser inmediato.",
+  "expects-label": "Este operando debe ser una etiqueta.",
+  "expects-no-operands": "Esta instrucción no espera ningún operando.",
+  "expects-one-operand": "Esta instrucción espera un operando.",
+  "expects-two-operands": "Esta instrucción espera dos operandos.",
+  "expects-word-register": "Esta instrucción espera un registro de 16 bits como su operando.",
+  "parser.data-block-no-parameters":
+    "La directiva .DATA no debe tener parámetros. Solo se permiten comentarios en la misma línea.",
+  "parser.code-block-no-parameters":
+    "La directiva .CODE no debe tener parámetros. Solo se permiten comentarios en la misma línea.",
+  // prettier-ignore
+  "instruction-out-of-range": <span class="fstat-no" title="function not covered" >address =&gt; `Esta instrucción se colocaría en la dirección ${MemoryAddress.format(address)}, la cual se encuentra fuera del rango de memoria (dirección máxima de memoria: ${(maxAddress)}).`,</span>
+  "invalid-interrupt": <span class="fstat-no" title="function not covered" >interrupt =&gt; `${interrupt} no es un número de interrupción válido.`,</span>
+  // prettier-ignore
+  "io-address-out-of-range": <span class="fstat-no" title="function not covered" >address =&gt; `La dirección de E/S ${address} está fuera de rango (dirección máxima de memoria E/S: ${maxIOAddress}).`,</span>
+  "label-not-found": <span class="fstat-no" title="function not covered" >label =&gt; `La etiqueta "${label}" no ha sido definida.`,</span>
+  // prettier-ignore
+  "label-should-be-a-number": <span class="fstat-no" title="function not covered" >label =&gt; `La etiqueta ${label} debería apuntar a una constante EQU o a una instrucción. Quizás quiso escribir OFFSET ${label}.`,</span>
+  // prettier-ignore
+  "label-should-be-an-instruction": <span class="fstat-no" title="function not covered" >label =&gt; `La etiqueta ${label} debería apuntar a una instrucción.`,</span>
+  // prettier-ignore
+  "missing-org": "No hay ningún ORG antes de esta instrucción, por lo que no se puede determinar su ubicación en memoria.",
+  "must-have-one-or-more-values": <span class="fstat-no" title="function not covered" >directive =&gt; `${directive} debe tener al menos un valor.`,</span>
+  // prettier-ignore
+  "occupied-address": <span class="fstat-no" title="function not covered" >address =&gt; `Esta instrucción sería colocada en la dirección ${MemoryAddress.format(address)}, la cual ya está ocupada.`,</span>
+  "offset-only-with-data-directive": "OFFSET solo puede ser usado con variables.",
+  // prettier-ignore
+  "reserved-address": <span class="fstat-no" title="function not covered" >address =&gt; `Esta instrucción sería colocada en la dirección ${MemoryAddress.format(address)}, la cual ya está reservada por el sistema.`,</span>
+  // prettier-ignore
+  "size-mismatch": <span class="fstat-no" title="function not covered" >(src, out) =&gt; `La fuente (${src} bits) y el destino (${out} bits) deben ser del mismo tamaño.`,</span>
+  "unexpected-error": <span class="fstat-no" title="function not covered" >err =&gt; `Error inesperado: ${String(err)}`,</span>
+  // prettier-ignore
+  "unknown-size": "Acceder a una dirección de memoria desconocida con un operando inmediato requiere especificar el tipo de puntero con WORD PTR o BYTE PTR antes de la dirección.",
+  // prettier-ignore
+  "value-out-of-range": <span class="fstat-no" title="function not covered" >(value, size) =&gt; `El número ${value} no puede ser representado con ${size} bits.`,</span>
+&nbsp;
+  lexer: {
+    "character-too-long": "El carácter solo puede contener un carácter.",
+    "empty-character": "Los carácter no puede estar vacío.",
+    "invalid-binary": "Número binario inválido. Solo puede contener ceros y unos.",
+    "invalid-decimal": "Número decimal inválido. Solo puede contener dígitos.",
+    "only-ascii": "Solo se soportan caracteres ASCII para caracteres y cadenas de texto.",
+    "unexpected-character": <span class="fstat-no" title="function not covered" >char =&gt; `Carácter inesperado "${char}".`,</span>
+    "unterminated-character": "Carácter sin terminar.",
+    "unterminated-string": "Cadena sin terminar.",
+  },
+&nbsp;
+  parser: {
+    // prettier-ignore
+    "ambiguous-unary": "Se detectó una expresión unaria ambigua. Use paréntesis para evitar ambigüedades.",
+    "expected-address-after-org": "Se esperaba una dirección después de ORG.",
+    "expected-argument": "Se esperaba un argumento.",
+    "expected-eos": "Se esperaba que la instrucción termine.",
+    "expected-instruction": <span class="fstat-no" title="function not covered" >got =&gt; `Se esperaba una instrucción, se obtuvo ${got.type}.`,</span>
+    "expected-label-after-offset": "Se esperaba una etiqueta después de OFFSET.",
+    // prettier-ignore
+    "expected-instruction-after-label": <span class="fstat-no" title="function not covered" >got =&gt; `Se esperaba una instrucción después de la etiqueta, se obtuvo ${got.type}.`,</span>
+    // prettier-ignore
+    "expected-literal-after-expression": <span class="fstat-no" title="function not covered" >expected =&gt; `Se esperaba "${expected}" después de la expresión.`,</span>
+    // prettier-ignore
+    "expected-literal-after-literal": <span class="fstat-no" title="function not covered" >(expected, after) =&gt; `Se esperaba "${expected}" después de "${after}".`,</span>
+    "expected-type": <span class="fstat-no" title="function not covered" >(expected, got) =&gt; `Se esperaba ${expected}, se obtuvo ${got}.`,</span>
+    // prettier-ignore
+    "indirect-addressing-must-be-bx": "El único registro válido para el direccionamiento indirecto es BL.",
+    "unclosed-parenthesis": "Paréntesis sin cerrar.",
+    // prettier-ignore
+    "unexpected-identifier": "Identificador inesperado. Tal vez te olvidaste agregar dos puntos (:) para hacerlo una etiqueta.",
+    "parser.data-block-no-parameters":
+      "La directiva .DATA no debe tener parámetros. Solo se permiten comentarios en la misma línea.",
+  },
+};
+&nbsp;</pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2025-07-13T21:18:30.861Z
+            </div>
+        <script src="../../../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../../../sorter.js"></script>
+        <script src="../../../block-navigation.js"></script>
+    </body>
+</html>
+    

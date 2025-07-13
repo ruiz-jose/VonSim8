@@ -64,6 +64,8 @@ const SimulationStatus = memo(({ status }: { status: any }) => {
 
 SimulationStatus.displayName = "SimulationStatus";
 
+
+
 // Componente de botones de acción optimizado
 const ActionButtons = memo(
   ({
@@ -119,6 +121,8 @@ const ActionButtons = memo(
             data-testid="settings-button"
           />
         </Tooltip>
+
+
       </div>
     );
   },

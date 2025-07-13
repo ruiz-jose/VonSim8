@@ -73,12 +73,23 @@ export default defineConfig({
   resolve: {
     alias: { "@/": "/src/" },
   },
+  server: {
+    hmr: {
+      overlay: true,
+    },
+    watch: {
+      usePolling: true,
+    },
+  },
 });
 
 function getCommitHash() {
   try {
-    return execSync("git rev-parse --short HEAD", { encoding: "utf-8" }).toString().trim();
+    const hash = execSync("git rev-parse --short HEAD", { encoding: "utf-8" }).toString().trim();
+    console.log("Current commit hash:", hash);
+    return hash;
   } catch {
+    console.log("Could not get commit hash, using 'unknown'");
     return "unknown";
   }
 }
