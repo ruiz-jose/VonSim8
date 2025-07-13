@@ -313,3 +313,79 @@ Los tests monitorean:
 ---
 
 *Tests diseñados específicamente para VonSim8 - Simulador de Arquitectura de Computadoras* 
+
+---
+
+**En local los tests pasan, pero en GitHub Actions fallan los snapshots del ensamblador.**
+
+Esto es un problema clásico de diferencias de entorno. Aquí tienes los pasos y causas más probables, en español y orientados a tu caso:
+
+---
+
+## **Causas más comunes**
+
+1. **Diferencias de sistema operativo**  
+   - Local: Windows  
+   - CI: Linux  
+   - Puede cambiar el orden de los archivos, los saltos de línea (`\r\n` vs `\n`), encoding, rutas, etc.
+
+2. **Versión de Node o dependencias**  
+   - Si en local y en CI tienes versiones distintas, el output puede variar.
+
+3. **Snapshots desactualizados**  
+   - Si cambiaste el ensamblador y no actualizaste los snapshots, fallarán.
+
+4. **Orden de archivos**  
+   - El test recorre los archivos de la carpeta `fixtures` y los procesa en el orden que devuelve el sistema de archivos, que puede variar entre Windows y Linux.
+
+---
+
+## **¿Cómo lo soluciono?**
+
+### 1. **Fuerza el orden de los archivos en el test**
+Modifica tu test para ordenar los archivos antes de iterar:
+
+```ts
+const files = (await readdir(path)).sort();
+```
+Esto asegura que el orden sea igual en todos los sistemas.
+
+---
+
+### 2. **Actualiza los snapshots en el entorno donde fallan**
+- Haz un checkout de tu rama en **Linux** (puedes usar WSL, una VM, o incluso GitHub Codespaces).
+- Ejecuta:
+  ```bash
+  pnpm i
+  pnpm test -u
+  ```
+- Haz commit de los nuevos snapshots generados en Linux.
+- Sube los cambios y verifica que ahora pasan en CI.
+
+---
+
+### 3. **Asegura versiones iguales de Node y dependencias**
+- Fija la versión de Node en tu workflow de GitHub Actions (por ejemplo, `"20"`).
+- Usa `pnpm-lock.yaml` para asegurar dependencias iguales.
+
+---
+
+### 4. **Normaliza saltos de línea y encoding**
+- Si el problema persiste, revisa si el output del ensamblador depende de los saltos de línea o encoding.  
+- Puedes normalizar el output antes de hacer snapshot:
+  ```ts
+  expect(assemble(source).replace(/\r\n/g, '\n')).toMatchSnapshot();
+  ```
+
+---
+
+## **Resumen de pasos recomendados**
+
+1. **Ordena los archivos en el test** (`.sort()`).
+2. **Actualiza los snapshots en Linux** y haz commit.
+3. **Fija la versión de Node en CI**.
+4. (Opcional) Normaliza saltos de línea en el output.
+
+---
+
+¿Quieres que te ayude a modificar el test para ordenar los archivos y normalizar el output? ¿O prefieres instrucciones para actualizar los snapshots en Linux? 
