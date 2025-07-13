@@ -174,7 +174,7 @@ export function StatusBar() {
   }, [translate, fileHandle, setFileHandle, setLastSavedProgram]);
 
   return (
-    <div className="flex items-center justify-between border-t border-stone-700 bg-gradient-to-r from-stone-800 to-stone-900 px-4 py-0.5 font-sans text-xs text-stone-300 shadow-inner">
+    <div data-testid="status-bar" className="flex items-center justify-between border-t border-stone-700 bg-gradient-to-r from-stone-800 to-stone-900 px-4 py-0.5 font-sans text-xs text-stone-300 shadow-inner">
       {/* Sección izquierda - Nombre del archivo e iconos */}
       <div className="flex items-center gap-4">
         {/* Nombre del archivo */}

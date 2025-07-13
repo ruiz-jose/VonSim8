@@ -121,7 +121,7 @@ export function Controls({ className }: { className?: string }) {
   }, []);
 
   return (
-    <div data-testid="controls-container"
+    <div data-testid="controls"
       className={clsx(
         // Reduce py-4 a py-1 y px-8 a px-4 para menor altura
         "flex items-center justify-center gap-4 rounded-xl border border-stone-700 bg-stone-900/80 px-3 py-1 shadow-lg",

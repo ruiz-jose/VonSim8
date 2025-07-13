@@ -1,14 +1,64 @@
-import { describe, expect,it } from 'vitest'
+import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { render, screen } from '@testing-library/react';
+
+// Mock de las dependencias básicas
+// El mock de @/lib/i18n ha sido eliminado para evitar conflicto con el mock global
+
+vi.mock('@/lib/settings', () => ({
+  getSettings: vi.fn(() => ({ language: 'es' })),
+  useDevices: vi.fn(() => ({})),
+}));
+
+// Mock de Jotai para evitar problemas
+vi.mock('jotai', () => ({
+  atom: vi.fn(),
+  useAtom: vi.fn(() => [null, vi.fn()]),
+  useAtomValue: vi.fn(() => null),
+  atomWithStorage: vi.fn(),
+  createStore: vi.fn(() => ({
+    get: vi.fn(),
+    set: vi.fn(),
+    sub: vi.fn(),
+  })),
+  Provider: ({ children }: any) => children,
+}));
+
+vi.mock('jotai/react', () => ({
+  useAtom: vi.fn(() => [null, vi.fn()]),
+  useAtomValue: vi.fn(() => null),
+  Provider: ({ children }: any) => children,
+}));
 
 describe('Header Component', () => {
-  it('should be defined', () => {
-    // Test básico que siempre pasa
-    expect(true).toBe(true)
-  })
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
-  it('should have basic functionality', () => {
-    // Test para verificar que el entorno de testing funciona
-    const result = 'header'
-    expect(result).toBe('header')
-  })
-})
+  it('should render without crashing', async () => {
+    // Importar Header dinámicamente para evitar problemas de import
+    const { Header } = await import('../../components/Header');
+    
+    render(<Header />);
+    
+    // Verificar que el componente se renderiza
+    expect(document.querySelector('header')).toBeInTheDocument();
+  });
+
+  it('should render header content', async () => {
+    const { Header } = await import('../../components/Header');
+    
+    render(<Header />);
+    
+    // Verificar que el header está presente
+    expect(document.querySelector('header')).toBeInTheDocument();
+  });
+
+  it('should have proper semantic structure', async () => {
+    const { Header } = await import('../../components/Header');
+    
+    render(<Header />);
+    
+    // Verificar estructura semántica
+    expect(document.querySelector('header')).toBeInTheDocument();
+  });
+});

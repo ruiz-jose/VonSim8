@@ -1,0 +1,15 @@
+{
+  "files": [
+    {
+      "path": "dist/assets/*.js",
+      "maxSize": "2 MB"
+    },
+    {
+      "path": "dist/assets/*.css",
+      "maxSize": "500 KB"
+    }
+  ],
+  "ci": {
+    "trackBranches": ["main", "develop"]
+  }
+} 

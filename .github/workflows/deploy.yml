@@ -1,36 +1,144 @@
-name: Deploy to GitHub Pages
+name: 🚀 Deploy to Production
 
 on:
   push:
     branches:
       - main
+  workflow_dispatch: # Permite deploy manual
+
+env:
+  NODE_VERSION: '22'
+  PNPM_VERSION: '10'
 
 jobs:
-  build:
+  # Job de validación previa al deploy
+  pre-deploy-validation:
+    name: ✅ Pre-deploy Validation
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-        with:
-          persist-credentials: false
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🟢 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'pnpm'
+        
+    - name: 📦 Setup pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: ${{ env.PNPM_VERSION }}
+        
+    - name: 📋 Install dependencies
+      run: pnpm install --frozen-lockfile
+      
+    - name: 🧪 Run critical tests
+      run: pnpm test
+      
+    - name: 🏗️ Build project
+      run: pnpm build
+      
+    - name: 📋 Upload build for deployment
+      uses: actions/upload-artifact@v4
+      with:
+        name: production-build
+        path: dist/
+        retention-days: 1
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-
-      - name: Install pnpm
-        run: npm install -g pnpm@10.5.2
-
-      - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile 
-
-      - name: Build project
-        run: pnpm run build
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+  # Job de deploy a GitHub Pages
+  deploy-gh-pages:
+    name: 🌐 Deploy to GitHub Pages
+    runs-on: ubuntu-latest
+    needs: pre-deploy-validation
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🟢 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'pnpm'
+        
+    - name: 📦 Setup pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: ${{ env.PNPM_VERSION }}
+        
+    - name: 📋 Install dependencies
+      run: pnpm install --frozen-lockfile
+      
+    - name: 🏗️ Build project
+      run: pnpm build
+      
+    - name: 📋 Cache build
+      uses: actions/cache@v4
+      with:
+        path: dist/
+        key: ${{ runner.os }}-build-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-build-
+      
+    - name: 🌐 Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./dist
+        force_orphan: true
+        user_name: 'github-actions[bot]'
+        user_email: 'github-actions[bot]@users.noreply.github.com'
+        commit_message: '🚀 Deploy to GitHub Pages - ${{ github.sha }}'
+        
+    - name: 🔗 Create deployment URL
+      run: |
+        echo "🌐 Deployment URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
+        echo "📅 Deployed at: $(date)"
+        
+  # Job de notificación de deploy
+  deploy-notification:
+    name: 📢 Deploy Notification
+    runs-on: ubuntu-latest
+    needs: [pre-deploy-validation, deploy-gh-pages]
+    if: always() && github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: 📊 Deploy Status Summary
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const { data: deployments } = await github.rest.repos.listDeployments({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            ref: context.sha,
+          });
+          
+          if (deployments.length > 0) {
+            const latestDeployment = deployments[0];
+            console.log(`🚀 Deployment Status: ${latestDeployment.state}`);
+            console.log(`🌐 Environment: ${latestDeployment.environment}`);
+            console.log(`📅 Created: ${latestDeployment.created_at}`);
+            
+            if (latestDeployment.state === 'success') {
+              console.log('✅ Deployment completed successfully!');
+              console.log(`🔗 URL: https://${context.repo.owner}.github.io/${context.repo.repo}/`);
+            } else {
+              console.log('❌ Deployment failed or is pending');
+            }
+          } else {
+            console.log('⚠️ No deployments found for this commit');
+          }
+          
+    - name: 📋 Create deployment summary
+      run: |
+        echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Repository:** ${{ github.repository }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Deployed at:** $(date)" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**URL:** https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/" >> $GITHUB_STEP_SUMMARY

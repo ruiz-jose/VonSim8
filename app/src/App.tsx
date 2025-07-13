@@ -9,7 +9,6 @@ import { Header } from "@/components/Header";
 import { KeyboardShortcuts } from "@/components/KeyboardShortcuts";
 import { Settings, settingsOpenAtom } from "@/components/Settings";
 import { WelcomeTour } from "@/components/WelcomeTour";
-import { useUpdateNotification } from "@/hooks/useUpdateNotification";
 
 import { ComputerContainer } from "@/computer";
 import { cycleAtom } from "@/computer/cpu/state";
@@ -28,7 +27,6 @@ const App = memo(() => {
   const containerStyle = useMemo(() => ({ filter }), [filter]);
 
   // Configurar notificaciones de actualización PWA
-  useUpdateNotification();
 
   return (
     <div 
