@@ -28,7 +28,7 @@ const App = memo(() => {
   const filter = useFilters();
   const isMobile = useMedia("(max-width: 640px)");
   const translate = useTranslate();
-  
+
   // Inicializar el hook de actualización PWA
   usePWAUpdate();
 

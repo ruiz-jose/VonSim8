@@ -13,7 +13,8 @@ export const usePWAUpdate = () => {
         addNotification({
           type: "info",
           title: "Nueva versión disponible",
-          message: "Hay una nueva versión de VonSim8 disponible. Haz clic en 'Actualizar' para aplicar los cambios.",
+          message:
+            "Hay una nueva versión de VonSim8 disponible. Haz clic en 'Actualizar' para aplicar los cambios.",
         });
       },
       onOfflineReady() {
@@ -33,7 +34,8 @@ export const usePWAUpdate = () => {
         addNotification({
           type: "error",
           title: "Error de actualización",
-          message: "No se pudo configurar la actualización automática. Algunas funciones pueden no estar disponibles.",
+          message:
+            "No se pudo configurar la actualización automática. Algunas funciones pueden no estar disponibles.",
         });
       },
     });
@@ -51,4 +53,4 @@ export const usePWAUpdate = () => {
       delete (window as any).updateVonSim8;
     };
   }, [addNotification]);
-}; 
+};

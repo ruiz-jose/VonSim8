@@ -243,7 +243,7 @@ const NotificationItem = memo(
                       }
                       onMarkAsRead(notification.id);
                     }}
-                    className="text-xs bg-mantis-600 text-white px-2 py-1 rounded transition-colors hover:bg-mantis-500"
+                    className="rounded bg-mantis-600 px-2 py-1 text-xs text-white transition-colors hover:bg-mantis-500"
                   >
                     Actualizar
                   </button>

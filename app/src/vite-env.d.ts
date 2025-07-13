@@ -1,8 +1,17 @@
 /// <reference types="vite/client" />
 /// <reference types="vite-plugin-pwa/react" />
 
+type ImportMetaEnv = {
+  readonly VITE_API_URL: string;
+  // otras variables de entorno personalizadas...
+};
+
+type ImportMeta = {
+  readonly env: ImportMetaEnv;
+};
+
 declare module "virtual:pwa-register" {
-  export interface RegisterSWOptions {
+  export type RegisterSWOptions = {
     immediate?: boolean;
     onNeedRefresh?: () => void;
     onOfflineReady?: () => void;
