@@ -371,6 +371,9 @@ importers:
       execa:
         specifier: ^8.0.1
         version: 8.0.1
+      glob:
+        specifier: ^10.3.10
+        version: 10.4.5
     devDependencies:
       '@types/node':
         specifier: ^20.10.8
