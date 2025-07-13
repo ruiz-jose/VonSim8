@@ -4,7 +4,11 @@
   "type": "module",
   "scripts": {
     "build": "node src/build.js",
-    "lint": "tsc --noEmit && eslint --ignore-path .gitignore ."
+    "lint": "tsc --noEmit && eslint --ignore-path .gitignore .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "echo 'No tests for scripts package'",
+    "test:coverage": "echo 'No tests for scripts package'"
   },
   "dependencies": {
     "execa": "^8.0.1"
@@ -14,6 +18,7 @@
     "@vonsim/tsconfig": "workspace:^",
     "eslint": "^8.56.0",
     "eslint-config-vonsim": "workspace:^",
+    "prettier": "^3.5.3",
     "typescript": "~5.3.3"
   }
 }

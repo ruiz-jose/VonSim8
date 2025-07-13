@@ -12,12 +12,17 @@
     "./position": "./src/position.ts"
   },
   "scripts": {
-    "lint": "tsc --noEmit && eslint --ignore-path .gitignore ."
+    "lint": "tsc --noEmit && eslint --ignore-path .gitignore .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "echo 'No tests for common package'",
+    "test:coverage": "echo 'No tests for common package'"
   },
   "devDependencies": {
     "@vonsim/tsconfig": "workspace:*",
     "eslint": "^8.56.0",
     "eslint-config-vonsim": "workspace:*",
+    "prettier": "^3.5.3",
     "type-fest": "^4.9.0",
     "typescript": "~5.3.3"
   }

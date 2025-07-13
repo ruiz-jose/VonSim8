@@ -9,7 +9,10 @@
   },
   "scripts": {
     "lint": "tsc --noEmit && eslint --ignore-path .gitignore .",
-    "test": "vitest --run --reporter verbose"
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest --run --reporter verbose",
+    "test:coverage": "vitest --coverage"
   },
   "dependencies": {
     "@vonsim/assembler": "workspace:^",
@@ -19,6 +22,7 @@
     "@vonsim/tsconfig": "workspace:^",
     "eslint": "^8.56.0",
     "eslint-config-vonsim": "workspace:^",
+    "prettier": "^3.5.3",
     "type-fest": "^4.9.0",
     "typescript": "~5.3.3",
     "vitest": "^1.1.3"

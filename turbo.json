@@ -4,7 +4,16 @@
     "build": {
       "outputs": ["dist/**"]
     },
-    "test": {},
-    "lint": {}
+    "test": {
+      "outputs": ["coverage/**"]
+    },
+    "test:coverage": {
+      "outputs": ["coverage/**"]
+    },
+    "test:integration": {},
+    "lint": {},
+    "format": {},
+    "format:check": {},
+    "audit": {}
   }
 }
