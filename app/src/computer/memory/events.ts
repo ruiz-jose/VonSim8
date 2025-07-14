@@ -12,7 +12,7 @@ import {
   updateRegisterWithGlow,
 } from "@/computer/shared/animate";
 import type { SimulatorEvent } from "@/computer/shared/types";
-import { finishSimulation } from "@/computer/simulation";
+import { finishSimulation, notifyWarning } from "@/computer/simulation";
 import { store } from "@/lib/jotai";
 import { colors } from "@/lib/tailwind";
 import { toast } from "@/lib/toast";
@@ -247,12 +247,8 @@ export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promi
       return;
     }
     case "memory:write.warning": {
-      // Mostrar un mensaje de advertencia con toast
-      toast({
-        title: "Advertencia de Memoria",
-        description: `${event.warning}`,
-        variant: "info", // Usar el estilo de advertencia
-      });
+      // Reemplazar el toast por notifyWarning en el warning de memoria
+      notifyWarning("Advertencia de Memoria", `${event.warning}`);
       return;
     }
 

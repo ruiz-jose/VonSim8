@@ -17,6 +17,7 @@ import { store } from "@/lib/jotai";
 import { posthog } from "@/lib/posthog";
 import { getSettings, settingsAtom, useDevices } from "@/lib/settings";
 import { toast } from "@/lib/toast";
+import { useNotifications } from "@/components/NotificationCenter";
 
 import {
   connectScreenAndKeyboardAtom,
@@ -51,9 +52,63 @@ type SimulationStatus =
 
 export const simulationAtom = atom<SimulationStatus>({ type: "stopped" });
 
+// Obtener el sistema de notificaciones (solo si estamos en un entorno React)
+let addNotification: ((n: { type: string; title: string; message: string }) => void) | null = null;
+try {
+  // Esto solo funcionará si estamos en un contexto React
+  // (en hooks o componentes, useNotifications funciona, pero aquí es módulo global)
+  // Por eso, lo exponemos globalmente si existe
+  if ((window as any).VonSimAddNotification) {
+    addNotification = (window as any).VonSimAddNotification;
+  }
+} catch {}
+
+function tryNotifyGlobal(notification: { type: string; title: string; message: string }, retries = 10) {
+  if ((window as any).VonSimAddNotification) {
+    (window as any).VonSimAddNotification(notification);
+  } else if (retries > 0) {
+    setTimeout(() => tryNotifyGlobal(notification, retries - 1), 100);
+  }
+}
+
 function notifyError(error: SimulatorError<any>) {
   const message = error.translate(getSettings().language);
   toast({ title: message, variant: "error" });
+  if (addNotification) {
+    addNotification({
+      type: "error",
+      title: "Error de simulación",
+      message,
+    });
+  } else {
+    tryNotifyGlobal({
+      type: "error",
+      title: "Error de simulación",
+      message,
+    });
+  }
+}
+
+function notifyInfo(title: string, message: string) {
+  toast({ title, description: message, variant: "info" });
+  if (addNotification) {
+    addNotification({
+      type: "info",
+      title,
+      message,
+    });
+  }
+}
+
+export function notifyWarning(title: string, message: string) {
+  toast({ title, description: message, variant: "info" }); // 'warning' no es válido, usar 'info' para toast
+  if (addNotification) {
+    addNotification({
+      type: "warning",
+      title,
+      message,
+    });
+  }
 }
 
 export function finishSimulation(error?: SimulatorError<any>) {
@@ -79,7 +134,21 @@ export function pauseSimulation() {
 }
 
 function assembleError() {
-  toast({ title: translate(getSettings().language, "messages.assemble-error"), variant: "error" });
+  const message = translate(getSettings().language, "messages.assemble-error");
+  toast({ title: message, variant: "error" });
+  if (addNotification) {
+    addNotification({
+      type: "error",
+      title: "Error de ensamblado",
+      message,
+    });
+  } else {
+    tryNotifyGlobal({
+      type: "error",
+      title: "Error de ensamblado",
+      message,
+    });
+  }
 }
 
 function invalidAction() {

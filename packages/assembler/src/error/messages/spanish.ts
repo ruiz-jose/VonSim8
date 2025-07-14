@@ -20,7 +20,8 @@ export const spanish: Messages = {
   "destination-cannot-be-immediate": "El destino no puede ser un valor inmediato.",
   "double-memory-access": "No se puede acceder a una memoria dos veces en la misma instrucción.",
   "duplicated-label": label => `Etiqueta duplicada "${label}".`,
-  "empty-program": "Programa vacío. El programa debe tener, al menos, una instrucción END.",
+  "empty-program":
+    "El programa está vacío o no contiene instrucciones ejecutables.\n\nRecuerda que un programa válido debe tener al menos una instrucción y finalizar con la directiva END.\n\nPor ejemplo:\n\n    org 1000h\n    mov al, 3\n    hlt\n    end\n\nConsulta la documentación o los ejemplos para más ayuda.",
   "end-must-be-the-last-statement": "END debe ser la última instrucción.",
   "equ-not-found": label => `EQU "${label}" no encontrado.`,
   "expects-ax": "Este operando debe ser AX o AL.",

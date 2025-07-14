@@ -20,6 +20,8 @@ export function Control() {
   const getPhaseDescription = () => {
     if (!cycle) return "CPU detenida";
 
+    if (cycle.phase === "stopped" && "error" in cycle && cycle.error) return "CPU detenida";
+
     switch (cycle.phase) {
       case "fetching":
         return "Leyendo instrucción";
@@ -35,7 +37,7 @@ export function Control() {
       case "int7":
         return "Rutina de interrupción";
       case "stopped":
-        return cycle.error ? `Error: ${cycle.error.message}` : "CPU detenida";
+        return "CPU detenida";
       default:
         return "Estado desconocido";
     }

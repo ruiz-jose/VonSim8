@@ -18,9 +18,14 @@ export const InstructionCycleInfo = memo(({ className }: InstructionCycleInfoPro
       ? `${cycle.metadata.name}${cycle.metadata.operands.length ? " " + cycle.metadata.operands.join(", ") : ""}`
       : "";
 
+  // Mensaje de error profesional centralizado
+  const ERROR_MSG = "Error en la ejecución";
+
   // Obtener descripción de la fase actual
   const getPhaseDescription = () => {
     if (!cycle) return "CPU detenida";
+
+    if (cycle.phase === "stopped" && "error" in cycle && cycle.error) return "CPU detenida";
 
     switch (cycle.phase) {
       case "fetching":
@@ -37,7 +42,7 @@ export const InstructionCycleInfo = memo(({ className }: InstructionCycleInfoPro
       case "int7":
         return "Ejecutando rutina de interrupción";
       case "stopped":
-        return cycle.error ? `Error: ${cycle.error.message}` : "CPU detenida";
+        return "CPU detenida";
       default:
         return "Estado desconocido";
     }
