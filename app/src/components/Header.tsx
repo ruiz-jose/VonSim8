@@ -12,6 +12,7 @@ import { IconButton } from "@/components/ui/Button";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { useSimulation } from "@/computer/simulation";
 import { useTranslate } from "@/lib/i18n";
+import { useEffect } from "react";
 
 // Hook personalizado para manejar el tour
 const useTourControl = () => {
@@ -30,17 +31,15 @@ const useTourControl = () => {
 };
 
 // Componente de estado de simulación optimizado
-const SimulationStatus = memo(({ status }: { status: any }) => {
+const SimulationStatus = memo(({ status, isMobile }: { status: any; isMobile: boolean }) => {
   const statusText = useMemo(
     () => (status.type === "running" ? "Ejecutando" : "Detenido"),
     [status.type],
   );
-
   const statusColor = useMemo(
     () => (status.type === "running" ? "bg-green-600" : "bg-stone-600"),
     [status.type],
   );
-
   return (
     <div className="flex items-center gap-2 text-xs">
       <div
@@ -56,7 +55,7 @@ const SimulationStatus = memo(({ status }: { status: any }) => {
             status.type === "running" ? "bg-green-300" : "bg-stone-300",
           )}
         />
-        {statusText}
+        {!isMobile && statusText}
       </div>
     </div>
   );
@@ -132,8 +131,21 @@ export const Header = memo(() => {
   const [educationalOpen, setEducationalOpen] = useState(false);
   const [progressOpen, setProgressOpen] = useState(false);
   const { status } = useSimulation();
-
   const { handleShowTour } = useTourControl();
+
+  // Detectar si es móvil/PWA
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(
+        window.innerWidth <= 600 ||
+          (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches),
+      );
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   // Callbacks optimizados
   const handleToggleSettings = useCallback(() => {
@@ -177,7 +189,7 @@ export const Header = memo(() => {
           {/* Columna izquierda: Logo y estado */}
           <div className="flex items-center gap-4">
             {logoSection}
-            <SimulationStatus status={status} />
+            <SimulationStatus status={status} isMobile={isMobile} />
           </div>
 
           {/* Columna central: Controles */}
@@ -187,26 +199,28 @@ export const Header = memo(() => {
 
           {/* Columna derecha: Botones de acción */}
           <div className="flex justify-end">
-            <ActionButtons
-              onShowTour={handleShowTour}
-              onToggleSettings={handleToggleSettings}
-              settingsOpen={settingsOpen}
-              onToggleEducational={handleToggleEducational}
-              educationalOpen={educationalOpen}
-            />
+            {!isMobile && (
+              <ActionButtons
+                onShowTour={handleShowTour}
+                onToggleSettings={handleToggleSettings}
+                settingsOpen={settingsOpen}
+                onToggleEducational={handleToggleEducational}
+                educationalOpen={educationalOpen}
+              />
+            )}
           </div>
         </div>
       </header>
 
       {/* Componentes educativos */}
-      {educationalOpen && (
+      {!isMobile && educationalOpen && (
         <EducationalMenu
           isOpen={educationalOpen}
           onClose={() => setEducationalOpen(false)}
           onShowProgress={handleToggleProgress}
         />
       )}
-      {progressOpen && (
+      {!isMobile && progressOpen && (
         <EducationalProgress isVisible={progressOpen} onClose={() => setProgressOpen(false)} />
       )}
     </>

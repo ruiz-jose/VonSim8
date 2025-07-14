@@ -12,7 +12,9 @@ import { useKey } from "react-use";
 
 import { useSimulation } from "@/computer/simulation";
 import { useTranslate } from "@/lib/i18n";
-import { RunUntil } from "@/computer/types";
+
+// Definir el tipo localmente
+type RunUntil = "cycle-change" | "end-of-instruction" | "infinity";
 
 export function Controls({ className }: { className?: string }) {
   const translate = useTranslate();
@@ -162,7 +164,7 @@ export function Controls({ className }: { className?: string }) {
             />
             {!isMobile && (
               <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
-                F7
+                Space
               </span>
             )}
           </span>
@@ -215,7 +217,7 @@ export function Controls({ className }: { className?: string }) {
             />
             {!isMobile && (
               <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
-                F8
+                Space
               </span>
             )}
           </span>
@@ -270,7 +272,7 @@ export function Controls({ className }: { className?: string }) {
             />
             {!isMobile && (
               <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
-                F4
+                Space
               </span>
             )}
           </span>
