@@ -694,8 +694,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
               (currentInstructionModeri &&
                 (executeStageCounter === 4 || executeStageCounter === 8) &&
                 currentInstructionName === "INT") ||
-              (currentInstructionModeri &&
-                executeStageCounter === 3 &&
+              (executeStageCounter === 3 &&
                 currentInstructionName === "MOV") ||
               (currentInstructionModeid &&
                 executeStageCounter === 4 &&

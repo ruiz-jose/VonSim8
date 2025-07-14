@@ -90,7 +90,7 @@ export function RegisterTransferMessages() {
                             : "text-sm font-bold text-white"
                     }`}
                   >
-                    Etapa: {msg.stage}
+                    Fase: {msg.stage}
                   </div>
                   {/* Títulos de las columnas */}
                   {msg.stage !== "Interrupción" && (
