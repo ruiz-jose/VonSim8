@@ -22,16 +22,12 @@ export const ExecutionPhases = memo(
       }
     }, [currentPhase]);
 
-    // Obtener información de la instrucción actual
-    // Elimino la declaración de 'currentInstruction' si no se usa
-
     const phases = [
       {
         id: "fetch" as ExecutionPhase,
         label: "Fetch",
         icon: "📥",
         description: "Leer instrucción",
-        color: "bg-blue-500",
         details: {
           title: "Fase Fetch",
           description: "La CPU lee la instrucción desde la dirección apuntada por el IP",
@@ -50,7 +46,6 @@ export const ExecutionPhases = memo(
         label: "Decode",
         icon: "🔍",
         description: "Interpretar instrucción",
-        color: "bg-yellow-500",
         details: {
           title: "Fase Decode",
           description:
@@ -70,7 +65,6 @@ export const ExecutionPhases = memo(
         label: "Execute",
         icon: "⚡",
         description: "Ejecutar operación",
-        color: "bg-green-500",
         details: {
           title: "Fase Execute",
           description: "La CPU ejecuta la operación especificada y actualiza registros y flags",
@@ -89,24 +83,24 @@ export const ExecutionPhases = memo(
     return (
       <div
         className={clsx(
-          "flex flex-col gap-2 rounded-lg border-2 border-mantis-400/50 bg-stone-900/95 p-2 shadow-lg backdrop-blur-sm",
+          "flex flex-col gap-2 rounded-lg border-2 border-stone-400 bg-gradient-to-br from-stone-700 via-stone-600 to-stone-800 p-3 shadow-lg ring-1 ring-stone-300",
           "min-w-[280px] max-w-[320px]",
           className,
         )}
       >
-        {/* Header mejorado */}
+        {/* Header unificado */}
         <div className="mb-2 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold uppercase tracking-wide text-mantis-400">
-              Ciclo CPU
+            <span className="pointer-events-none absolute left-0.5 top-0.5 rounded bg-stone-900/80 px-0.5 text-[6px] font-bold text-stone-300">
+              CICLO CPU
             </span>
             <button
               onClick={() => setShowDetails(!showDetails)}
               className={clsx(
-                "rounded px-2 py-1 text-xs transition-colors",
+                "rounded border px-2 py-1 text-[10px] font-bold transition-all duration-200",
                 showDetails
-                  ? "bg-mantis-400/20 text-mantis-400"
-                  : "text-stone-400 hover:bg-mantis-400/10 hover:text-mantis-400",
+                  ? "border-stone-300 bg-stone-300 text-stone-950 shadow-[0_0_4px_rgba(120,113,108,0.6)]"
+                  : "border-stone-600 bg-stone-800 text-stone-300 hover:border-stone-400 hover:bg-stone-700",
               )}
             >
               {showDetails ? "−" : "+"}
@@ -114,20 +108,21 @@ export const ExecutionPhases = memo(
           </div>
         </div>
 
-        {/* Fases principales */}
-        <div className="flex items-center justify-center gap-2">
+        {/* Fases principales con estilo unificado */}
+        <div className="mt-2 flex items-center justify-center gap-2">
           {phases.map((phase, index) => (
             <div key={phase.id} className="flex items-center">
               <div
                 className={clsx(
-                  "flex cursor-pointer flex-col items-center gap-1 rounded px-2 py-1 transition-all duration-300",
-                  "border border-transparent hover:border-mantis-400/30",
-                  currentPhase === phase.id && "border-mantis-400 bg-mantis-400/20 shadow-lg",
+                  "flex cursor-pointer flex-col items-center gap-1 rounded border-2 px-2 py-1 transition-all duration-200",
+                  "hover:border-stone-300 hover:bg-stone-700",
+                  currentPhase === phase.id 
+                    ? "border-stone-300 bg-stone-300 text-stone-950 shadow-[0_0_4px_rgba(120,113,108,0.6)]" 
+                    : "border-stone-600 bg-stone-800 text-stone-300",
                   pulsePhase === phase.id && "animate-pulse",
                 )}
                 onClick={() => {
                   if (showDetails) {
-                    // Mostrar información detallada de la fase
                     const details = phase.details;
                     alert(
                       `${details.title}\n\n${details.description}\n\nPasos:\n${details.steps.map((step, i) => `${i + 1}. ${step}`).join("\n")}\n\nRegistros involucrados: ${details.registers.join(", ")}`,
@@ -145,8 +140,8 @@ export const ExecutionPhases = memo(
                 </div>
                 <span
                   className={clsx(
-                    "text-xs font-bold uppercase tracking-wide transition-colors",
-                    currentPhase === phase.id ? "text-mantis-400" : "text-stone-400",
+                    "text-[10px] font-bold uppercase tracking-wide transition-colors",
+                    currentPhase === phase.id ? "text-stone-950" : "text-stone-300",
                   )}
                 >
                   {phase.label}
@@ -156,31 +151,33 @@ export const ExecutionPhases = memo(
                 </span>
               </div>
               {/* Flecha entre fases */}
-              {index < phases.length - 1 && <div className="mx-1 text-stone-500">→</div>}
+              {index < phases.length - 1 && (
+                <div className="mx-1 text-stone-400 font-bold">→</div>
+              )}
             </div>
           ))}
         </div>
 
-        {/* Información detallada */}
+        {/* Información detallada con estilo unificado */}
         {showDetails && (
-          <div className="mt-2 rounded border border-stone-600 bg-stone-800/80 p-2">
+          <div className="mt-2 rounded border-2 border-stone-600 bg-stone-800/80 p-2">
             <div className="text-xs text-stone-300">
-              <div className="mb-1 font-bold text-mantis-400">Estado actual:</div>
+              <div className="mb-1 font-bold text-stone-200">Estado actual:</div>
               {currentPhase === "fetch" && (
                 <div className="flex items-center gap-2">
-                  <span className="size-2 animate-pulse rounded-full bg-blue-400"></span>
+                  <span className="size-2 animate-pulse rounded-full bg-stone-300"></span>
                   <span>Leyendo instrucción desde memoria</span>
                 </div>
               )}
               {currentPhase === "decode" && (
                 <div className="flex items-center gap-2">
-                  <span className="size-2 animate-pulse rounded-full bg-yellow-400"></span>
+                  <span className="size-2 animate-pulse rounded-full bg-stone-300"></span>
                   <span>Interpretando código de operación</span>
                 </div>
               )}
               {currentPhase === "execute" && (
                 <div className="flex items-center gap-2">
-                  <span className="size-2 animate-pulse rounded-full bg-green-400"></span>
+                  <span className="size-2 animate-pulse rounded-full bg-stone-300"></span>
                   <span>Ejecutando operación en ALU</span>
                 </div>
               )}
