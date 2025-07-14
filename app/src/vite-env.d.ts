@@ -17,7 +17,7 @@ declare module "virtual:pwa-register" {
     onOfflineReady?: () => void;
     onRegistered?: (swRegistration?: ServiceWorkerRegistration) => void;
     onRegisterError?: (error?: any) => void;
-  }
+  };
 
   export function registerSW(options?: RegisterSWOptions): (reloadPage?: boolean) => Promise<void>;
 }
@@ -26,7 +26,7 @@ declare global {
   type Window = typeof globalThis & {
     codemirror: import("@codemirror/view").EditorView | null;
     updateVonSim8?: () => void;
-  }
+  };
 }
 
 declare const __COMMIT_HASH__: string;
