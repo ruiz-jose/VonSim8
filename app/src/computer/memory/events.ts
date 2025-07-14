@@ -15,7 +15,6 @@ import type { SimulatorEvent } from "@/computer/shared/types";
 import { finishSimulation, notifyWarning } from "@/computer/simulation";
 import { store } from "@/lib/jotai";
 import { colors } from "@/lib/tailwind";
-import { toast } from "@/lib/toast";
 
 import { memoryAtom, operatingAddressAtom } from "./state";
 

@@ -17,7 +17,7 @@ import { Toaster } from "@/lib/toast/toaster";
 function VonSimNotificationBridge() {
   // Exponer el método addNotification globalmente
   const { addNotification } = useNotifications();
-  // @ts-ignore
+  // @ts-expect-error: Exponemos addNotification globalmente para módulos no React
   window.VonSimAddNotification = addNotification;
   return null;
 }
@@ -49,7 +49,10 @@ window.onerror = function (msg, url, line, col, error) {
 };
 
 window.onunhandledrejection = function (event) {
-  const reason = event.reason instanceof Error ? event.reason.stack || event.reason.message : String(event.reason);
+  const reason =
+    event.reason instanceof Error
+      ? event.reason.stack || event.reason.message
+      : String(event.reason);
   notifyGlobalError("Promesa no manejada", reason);
   return false;
 };

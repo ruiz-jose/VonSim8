@@ -17,7 +17,6 @@ import { store } from "@/lib/jotai";
 import { posthog } from "@/lib/posthog";
 import { getSettings, settingsAtom, useDevices } from "@/lib/settings";
 import { toast } from "@/lib/toast";
-import { useNotifications } from "@/components/NotificationCenter";
 
 import {
   connectScreenAndKeyboardAtom,
@@ -61,9 +60,14 @@ try {
   if ((window as any).VonSimAddNotification) {
     addNotification = (window as any).VonSimAddNotification;
   }
-} catch {}
+} catch (e) {
+  // No se pudo acceder a VonSimAddNotification, se ignora el error.
+}
 
-function tryNotifyGlobal(notification: { type: string; title: string; message: string }, retries = 10) {
+function tryNotifyGlobal(
+  notification: { type: string; title: string; message: string },
+  retries = 10,
+) {
   if ((window as any).VonSimAddNotification) {
     (window as any).VonSimAddNotification(notification);
   } else if (retries > 0) {
@@ -84,17 +88,6 @@ function notifyError(error: SimulatorError<any>) {
     tryNotifyGlobal({
       type: "error",
       title: "Error de simulación",
-      message,
-    });
-  }
-}
-
-function notifyInfo(title: string, message: string) {
-  toast({ title, description: message, variant: "info" });
-  if (addNotification) {
-    addNotification({
-      type: "info",
-      title,
       message,
     });
   }
@@ -694,8 +687,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
               (currentInstructionModeri &&
                 (executeStageCounter === 4 || executeStageCounter === 8) &&
                 currentInstructionName === "INT") ||
-              (executeStageCounter === 3 &&
-                currentInstructionName === "MOV") ||
+              (executeStageCounter === 3 && currentInstructionName === "MOV") ||
               (currentInstructionModeid &&
                 executeStageCounter === 4 &&
                 (currentInstructionName === "CALL" ||

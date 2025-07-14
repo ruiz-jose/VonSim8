@@ -18,9 +18,6 @@ export const InstructionCycleInfo = memo(({ className }: InstructionCycleInfoPro
       ? `${cycle.metadata.name}${cycle.metadata.operands.length ? " " + cycle.metadata.operands.join(", ") : ""}`
       : "";
 
-  // Mensaje de error profesional centralizado
-  const ERROR_MSG = "Error en la ejecución";
-
   // Obtener descripción de la fase actual
   const getPhaseDescription = () => {
     if (!cycle) return "CPU detenida";
