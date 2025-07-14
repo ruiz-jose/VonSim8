@@ -153,7 +153,7 @@ export function Controls({ className }: { className?: string }) {
           title={translate("control.action.pause")}
           className={clsx(
             "group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-red-600/20 focus-visible:ring-2 focus-visible:ring-red-400",
-            "animate-pulse-glow"
+            "animate-pulse-glow",
           )}
         >
           <span className="flex items-center justify-center">
@@ -206,7 +206,7 @@ export function Controls({ className }: { className?: string }) {
           title={translate("control.action.pause")}
           className={clsx(
             "group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-red-600/20 focus-visible:ring-2 focus-visible:ring-red-400",
-            "animate-pulse-glow"
+            "animate-pulse-glow",
           )}
         >
           <span className="flex items-center justify-center">
@@ -231,7 +231,9 @@ export function Controls({ className }: { className?: string }) {
           title={translate("control.action.run.end-of-instruction")}
           className={clsx(
             "group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-blue-600/20 focus-visible:ring-2 focus-visible:ring-blue-400 disabled:opacity-50",
-            status.type === "running" && status.until === "end-of-instruction" && "animate-pulse-glow",
+            status.type === "running" &&
+              status.until === "end-of-instruction" &&
+              "animate-pulse-glow",
           )}
         >
           <span className="flex items-center justify-center">
@@ -261,7 +263,7 @@ export function Controls({ className }: { className?: string }) {
           title={translate("control.action.pause")}
           className={clsx(
             "group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-red-600/20 focus-visible:ring-2 focus-visible:ring-red-400",
-            "animate-pulse-glow"
+            "animate-pulse-glow",
           )}
         >
           <span className="flex items-center justify-center">

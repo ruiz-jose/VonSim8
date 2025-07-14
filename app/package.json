@@ -8,7 +8,7 @@
     "preview": "vite preview",
     "lint": "tsc --noEmit && eslint --ignore-path .gitignore . --fix",
     "lint:fix": "tsc --noEmit && eslint --ignore-path .gitignore . --fix",
-    "format": "prettier --write .",
+    "format": "prettier --write . && pnpm lint",
     "format:check": "prettier --check .",
     "test": "vitest --run",
     "test:watch": "vitest",

@@ -2,7 +2,7 @@ import { faGraduationCap, faQuestionCircle } from "@fortawesome/free-solid-svg-i
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
 import { useAtom } from "jotai";
-import { memo, useCallback, useEffect,useMemo, useState  } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 
 import { Controls } from "@/components/Controls";
 import { EducationalMenu, EducationalProgress } from "@/components/educational";
