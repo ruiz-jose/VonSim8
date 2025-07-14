@@ -134,7 +134,7 @@ export function Control() {
         </div>
 
         {/* Información del ciclo de instrucción - Compacta */}
-        <div className="w-full flex-1 p-0.5 flex justify-center items-start">
+        <div className="flex w-full flex-1 items-start justify-center p-0.5">
           <div className="w-[220px] max-w-[220px]">
             <div className="mb-0.5 flex items-center justify-between">
               <span className="w-16 whitespace-nowrap text-xs font-bold uppercase tracking-wide text-mantis-400">

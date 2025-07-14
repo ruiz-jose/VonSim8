@@ -2,7 +2,7 @@ import { faGraduationCap, faQuestionCircle } from "@fortawesome/free-solid-svg-i
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
 import { useAtom } from "jotai";
-import { memo, useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useEffect,useMemo, useState  } from "react";
 
 import { Controls } from "@/components/Controls";
 import { EducationalMenu, EducationalProgress } from "@/components/educational";
@@ -12,7 +12,6 @@ import { IconButton } from "@/components/ui/Button";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { useSimulation } from "@/computer/simulation";
 import { useTranslate } from "@/lib/i18n";
-import { useEffect } from "react";
 
 // Hook personalizado para manejar el tour
 const useTourControl = () => {

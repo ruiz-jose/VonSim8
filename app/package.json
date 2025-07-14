@@ -6,7 +6,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "tsc --noEmit && eslint --ignore-path .gitignore .",
+    "lint": "tsc --noEmit && eslint --ignore-path .gitignore . --fix",
     "lint:fix": "tsc --noEmit && eslint --ignore-path .gitignore . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
