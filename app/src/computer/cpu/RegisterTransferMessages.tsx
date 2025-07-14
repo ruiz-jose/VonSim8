@@ -7,7 +7,6 @@ import { useTranslate } from "@/lib/i18n";
 import { store } from "@/lib/jotai";
 import { useSettings } from "@/lib/settings";
 import { toast } from "@/lib/toast";
-import { Tooltip } from "@/components/ui/Tooltip";
 
 import { cycleCountAtom, messageAtom, messageHistoryAtom } from "./state";
 
@@ -31,21 +30,37 @@ function getActionColor(stage: string, action: string) {
   // Si la fase es Ejecución, detectar las subfases específicas
   if (stage === "Ejecución") {
     // Subfase: Obtener operando (amarillo)
-    if (/obten/i.test(action) || /operando/i.test(action) || /leer/i.test(action) || /cargar/i.test(action)) {
+    if (
+      /obten/i.test(action) ||
+      /operando/i.test(action) ||
+      /leer/i.test(action) ||
+      /cargar/i.test(action)
+    ) {
       return "text-yellow-400";
     }
     // Subfase: Escribir resultado (violeta)
-    if (/escrib/i.test(action) || /guardar/i.test(action) || /almacenar/i.test(action) || /resultado/i.test(action)) {
+    if (
+      /escrib/i.test(action) ||
+      /guardar/i.test(action) ||
+      /almacenar/i.test(action) ||
+      /resultado/i.test(action)
+    ) {
       return "text-purple-400";
     }
     // Subfase: Procesar en ALU (verde)
-    if (/procesar/i.test(action) || /alu/i.test(action) || /calcular/i.test(action) || /operar/i.test(action) || /ejecut/i.test(action)) {
+    if (
+      /procesar/i.test(action) ||
+      /alu/i.test(action) ||
+      /calcular/i.test(action) ||
+      /operar/i.test(action) ||
+      /ejecut/i.test(action)
+    ) {
       return "text-green-400";
     }
     // Si no se detecta subtipo específico, usar verde por defecto para ejecución
     return "text-green-400";
   }
-  
+
   // Fases normales (no ejecución)
   switch (stage) {
     case "Captación":
@@ -79,36 +94,34 @@ function getPhaseIcon(stage: string) {
   }
 }
 
-// Función para obtener el color de fondo de la fase
-function getPhaseBgColor(stage: string) {
-  switch (stage) {
-    case "Captación":
-      return "bg-blue-500/10 border-blue-400/30";
-    case "Obtención de operandos":
-      return "bg-yellow-500/10 border-yellow-400/30";
-    case "Ejecución":
-      return "bg-green-500/10 border-green-400/30";
-    case "Escritura":
-      return "bg-purple-500/10 border-purple-400/30";
-    case "Interrupción":
-      return "bg-red-500/10 border-red-400/30";
-    default:
-      return "bg-stone-500/10 border-stone-400/30";
-  }
-}
-
 // Función para obtener el color de fondo específico de las subfases de ejecución
 function getExecutionSubphaseBgColor(action: string) {
   // Subfase: Obtener operando (amarillo)
-  if (/obten/i.test(action) || /operando/i.test(action) || /leer/i.test(action) || /cargar/i.test(action)) {
+  if (
+    /obten/i.test(action) ||
+    /operando/i.test(action) ||
+    /leer/i.test(action) ||
+    /cargar/i.test(action)
+  ) {
     return "bg-yellow-500/5 border-yellow-400/20";
   }
   // Subfase: Escribir resultado (violeta)
-  if (/escrib/i.test(action) || /guardar/i.test(action) || /almacenar/i.test(action) || /resultado/i.test(action)) {
+  if (
+    /escrib/i.test(action) ||
+    /guardar/i.test(action) ||
+    /almacenar/i.test(action) ||
+    /resultado/i.test(action)
+  ) {
     return "bg-purple-500/5 border-purple-400/20";
   }
   // Subfase: Procesar en ALU (verde)
-  if (/procesar/i.test(action) || /alu/i.test(action) || /calcular/i.test(action) || /operar/i.test(action) || /ejecut/i.test(action)) {
+  if (
+    /procesar/i.test(action) ||
+    /alu/i.test(action) ||
+    /calcular/i.test(action) ||
+    /operar/i.test(action) ||
+    /ejecut/i.test(action)
+  ) {
     return "bg-green-500/5 border-green-400/20";
   }
   // Por defecto, usar el color de ejecución
@@ -116,7 +129,6 @@ function getExecutionSubphaseBgColor(action: string) {
 }
 
 export function RegisterTransferMessages() {
-  const translate = useTranslate();
   const message = useAtomValue(messageAtom);
   const messageHistory = useAtomValue(messageHistoryAtom);
   const simulationStatus = useAtomValue(simulationAtom);
@@ -167,16 +179,14 @@ export function RegisterTransferMessages() {
   return (
     <div className="absolute left-[120px] top-[520px] z-10 h-min w-[360px]">
       {/* Contenedor principal simplificado */}
-      <div className="rounded-lg border-2 border-stone-400 bg-gradient-to-br from-stone-800 to-stone-900 shadow-lg">
+      <div className="rounded-lg border-2 border-stone-400 bg-stone-800 shadow-lg">
         {/* Header simple y claro */}
         <div className="border-b-2 border-stone-600 bg-stone-700 px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="text-lg">🔄</span>
               <div>
-                <h3 className="text-sm font-bold text-stone-200">
-                  Ciclo de Instrucción
-                </h3>
+                <h3 className="text-sm font-bold text-stone-200">Ciclo de Instrucción</h3>
                 <p className="text-xs text-stone-400">Seguimiento paso a paso</p>
               </div>
             </div>
@@ -188,10 +198,7 @@ export function RegisterTransferMessages() {
         </div>
 
         {/* Contenido principal simplificado */}
-        <div
-          ref={containerRef}
-          className="max-h-[300px] overflow-y-auto p-3"
-        >
+        <div ref={containerRef} className="max-h-80 overflow-y-auto p-3">
           {/* Renderizar mensajes de forma más simple */}
           {messageHistory.map((msg, index) => {
             const isNewStage = index === 0 || messageHistory[index - 1].stage !== msg.stage;
@@ -219,45 +226,59 @@ export function RegisterTransferMessages() {
                     </div>
                   </div>
                 )}
-                
+
                 {/* Mensaje individual simplificado */}
                 {msg.stage === "Interrupción" ? (
-                  <div className={`rounded-lg border-l-4 border-red-400 bg-red-900/20 p-3 ${isLatest ? 'ring-2 ring-red-400/30' : ''}`}>
+                  <div
+                    className={`rounded-lg border-l-4 border-red-400 bg-red-900/20 p-3 ${
+                      isLatest ? "ring-2 ring-red-400/30" : ""
+                    }`}
+                  >
                     <div className="flex items-center gap-2">
                       <span className="text-sm">🚨</span>
-                      <span className={`text-sm font-medium ${getActionColor(msg.stage, msg.action)}`}>
+                      <span
+                        className={`text-sm font-medium ${getActionColor(msg.stage, msg.action)}`}
+                      >
                         {msg.action}
                       </span>
                     </div>
                   </div>
                 ) : (
-                  <div className={`flex items-center gap-3 rounded-lg border p-3 ${
-                    msg.stage === "Ejecución" 
-                      ? `${getExecutionSubphaseBgColor(msg.action)} ${isLatest ? 'ring-2 ring-stone-400/30' : ''}`
-                      : `border-stone-600 bg-stone-800/50 ${isLatest ? 'ring-2 ring-stone-400/30 bg-stone-700/50' : ''}`
-                  }`}>
+                  <div
+                    className={`flex items-center gap-3 rounded-lg border p-3 ${
+                      msg.stage === "Ejecución"
+                        ? `${getExecutionSubphaseBgColor(msg.action)} ${
+                            isLatest ? "ring-2 ring-stone-400/30" : ""
+                          }`
+                        : `border-stone-600 bg-stone-800/50 ${
+                            isLatest ? "bg-stone-700/50 ring-2 ring-stone-400/30" : ""
+                          }`
+                    }`}
+                  >
                     {/* Número de ciclo */}
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-stone-700 font-bold text-stone-300 text-sm">
+                    <div className="flex size-8 items-center justify-center rounded-full bg-stone-700 text-sm font-bold text-stone-300">
                       {msg.cycle}
                     </div>
-                    
+
                     {/* Acción */}
                     <div className="flex-1">
-                      <span className={`text-sm font-medium ${getActionColor(msg.stage, msg.action)}`}>
+                      <span
+                        className={`text-sm font-medium ${getActionColor(msg.stage, msg.action)}`}
+                      >
                         {msg.action}
                       </span>
                     </div>
-                    
+
                     {/* Indicador de último mensaje */}
                     {isLatest && (
-                      <div className="flex h-2 w-2 animate-pulse rounded-full bg-stone-400"></div>
+                      <div className="flex size-2 animate-pulse rounded-full bg-stone-400"></div>
                     )}
                   </div>
                 )}
               </div>
             );
           })}
-          
+
           {/* Estado vacío simplificado */}
           {messageHistory.length === 0 && (
             <div className="flex items-center justify-center py-8">

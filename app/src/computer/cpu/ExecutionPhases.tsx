@@ -116,8 +116,8 @@ export const ExecutionPhases = memo(
                 className={clsx(
                   "flex cursor-pointer flex-col items-center gap-1 rounded border-2 px-2 py-1 transition-all duration-200",
                   "hover:border-stone-300 hover:bg-stone-700",
-                  currentPhase === phase.id 
-                    ? "border-stone-300 bg-stone-300 text-stone-950 shadow-[0_0_4px_rgba(120,113,108,0.6)]" 
+                  currentPhase === phase.id
+                    ? "border-stone-300 bg-stone-300 text-stone-950 shadow-[0_0_4px_rgba(120,113,108,0.6)]"
                     : "border-stone-600 bg-stone-800 text-stone-300",
                   pulsePhase === phase.id && "animate-pulse",
                 )}
@@ -151,9 +151,7 @@ export const ExecutionPhases = memo(
                 </span>
               </div>
               {/* Flecha entre fases */}
-              {index < phases.length - 1 && (
-                <div className="mx-1 text-stone-400 font-bold">→</div>
-              )}
+              {index < phases.length - 1 && <div className="mx-1 font-bold text-stone-400">→</div>}
             </div>
           ))}
         </div>
