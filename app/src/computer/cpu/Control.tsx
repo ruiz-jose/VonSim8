@@ -134,79 +134,81 @@ export function Control() {
         </div>
 
         {/* Información del ciclo de instrucción - Compacta */}
-        <div className="w-full flex-1 p-0.5">
-          <div className="mb-0.5 flex items-center justify-between">
-            <span className="w-16 whitespace-nowrap text-xs font-bold uppercase tracking-wide text-mantis-400">
-              Ciclo CPU
-            </span>
-            <button
-              onClick={() => setShowCycleInfo(!showCycleInfo)}
-              className={clsx(
-                "rounded px-1 py-0.5 text-xs transition-colors",
-                showCycleInfo
-                  ? "bg-mantis-400/20 text-mantis-400"
-                  : "text-stone-400 hover:bg-mantis-400/10 hover:text-mantis-400",
-              )}
-            >
-              {showCycleInfo ? "−" : "+"}
-            </button>
-          </div>
-
-          {/* Estado actual del ciclo - Compacto */}
-          <div className="mb-0.5 rounded border border-stone-600 bg-stone-900/80 p-0.5">
-            <div className="min-w-0 flex-1 text-center">
-              <div
+        <div className="w-full flex-1 p-0.5 flex justify-center items-start">
+          <div className="w-[220px] max-w-[220px]">
+            <div className="mb-0.5 flex items-center justify-between">
+              <span className="w-16 whitespace-nowrap text-xs font-bold uppercase tracking-wide text-mantis-400">
+                Ciclo CPU
+              </span>
+              <button
+                onClick={() => setShowCycleInfo(!showCycleInfo)}
                 className={clsx(
-                  "flex items-center justify-center gap-1 text-xs font-semibold",
-                  getPhaseColor(),
+                  "rounded px-1 py-0.5 text-xs transition-colors",
+                  showCycleInfo
+                    ? "bg-mantis-400/20 text-mantis-400"
+                    : "text-stone-400 hover:bg-mantis-400/10 hover:text-mantis-400",
                 )}
               >
-                <span className="text-sm">{getPhaseIcon()}</span>
-                {getPhaseDescription()}
-              </div>
-              {cycle && "metadata" in cycle && cycle.metadata && (
-                <div className="truncate text-xs text-stone-400">
-                  <span className="font-mono text-mantis-300">{cycle.metadata.name}</span>
-                  {cycle.metadata.operands.length > 0 && (
-                    <span className="text-white"> {cycle.metadata.operands.join(", ")}</span>
-                  )}
-                </div>
-              )}
+                {showCycleInfo ? "−" : "+"}
+              </button>
             </div>
-          </div>
 
-          {/* Información detallada del ciclo - Solo cuando está expandida */}
-          {showCycleInfo && (
-            <div className="space-y-0.5">
-              {/* Fases del ciclo - Solo Busqueda y Ejecución */}
-              <div className="rounded border border-stone-600 bg-stone-900/80 p-0.5">
-                <div className="mb-1 text-xs font-bold text-mantis-400">Fases:</div>
-                <div className="flex items-center justify-center gap-1 text-xs text-stone-300">
-                  <div
-                    className={clsx(
-                      "rounded px-1 py-0.5",
-                      getCurrentPhase() === "fetch"
-                        ? "bg-blue-500/20 text-blue-400"
-                        : "text-stone-500",
+            {/* Estado actual del ciclo - Compacto */}
+            <div className="mb-0.5 rounded border border-stone-600 bg-stone-900/80 p-0.5">
+              <div className="min-w-0 flex-1 text-center">
+                <div
+                  className={clsx(
+                    "flex items-center justify-center gap-1 text-xs font-semibold",
+                    getPhaseColor(),
+                  )}
+                >
+                  <span className="text-sm">{getPhaseIcon()}</span>
+                  {getPhaseDescription()}
+                </div>
+                {cycle && "metadata" in cycle && cycle.metadata && (
+                  <div className="truncate text-xs text-stone-400">
+                    <span className="font-mono text-mantis-300">{cycle.metadata.name}</span>
+                    {cycle.metadata.operands.length > 0 && (
+                      <span className="text-white"> {cycle.metadata.operands.join(", ")}</span>
                     )}
-                  >
-                    📥 Busqueda
                   </div>
-                  <span className="text-stone-500">→</span>
-                  <div
-                    className={clsx(
-                      "rounded px-1 py-0.5",
-                      getCurrentPhase() === "execute"
-                        ? "bg-green-500/20 text-green-400"
-                        : "text-stone-500",
-                    )}
-                  >
-                    ⚡ Ejecución
+                )}
+              </div>
+            </div>
+
+            {/* Información detallada del ciclo - Solo cuando está expandida */}
+            {showCycleInfo && (
+              <div className="space-y-0.5">
+                {/* Fases del ciclo - Solo Busqueda y Ejecución */}
+                <div className="rounded border border-stone-600 bg-stone-900/80 p-0.5">
+                  <div className="mb-1 text-xs font-bold text-mantis-400">Fases:</div>
+                  <div className="flex items-center justify-center gap-1 text-xs text-stone-300">
+                    <div
+                      className={clsx(
+                        "rounded px-1 py-0.5",
+                        getCurrentPhase() === "fetch"
+                          ? "bg-blue-500/20 text-blue-400"
+                          : "text-stone-500",
+                      )}
+                    >
+                      📥 Busqueda
+                    </div>
+                    <span className="text-stone-500">→</span>
+                    <div
+                      className={clsx(
+                        "rounded px-1 py-0.5",
+                        getCurrentPhase() === "execute"
+                          ? "bg-green-500/20 text-green-400"
+                          : "text-stone-500",
+                      )}
+                    >
+                      ⚡ Ejecución
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </>
