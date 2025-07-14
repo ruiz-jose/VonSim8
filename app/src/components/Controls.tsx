@@ -12,13 +12,25 @@ import { useKey } from "react-use";
 
 import { useSimulation } from "@/computer/simulation";
 import { useTranslate } from "@/lib/i18n";
+import { RunUntil } from "@/computer/types";
 
 export function Controls({ className }: { className?: string }) {
   const translate = useTranslate();
   const { status, dispatch } = useSimulation();
 
+  // Nuevo estado para recordar el modo de ejecución activo
+  const [activeRunMode, setActiveRunMode] = useState<null | RunUntil>(null);
+
+  // Cuando la simulación se detiene, limpiar el modo activo
+  useEffect(() => {
+    if (status.type !== "running") {
+      setActiveRunMode(null);
+    }
+  }, [status.type]);
+
   const runCycle = useCallback(() => {
     if (status.type === "running") return;
+    setActiveRunMode("cycle-change");
     dispatch("cpu.run", "cycle-change");
   }, [status.type, dispatch]);
   useKey(
@@ -33,6 +45,7 @@ export function Controls({ className }: { className?: string }) {
 
   const runInstruction = useCallback(() => {
     if (status.type === "running") return;
+    setActiveRunMode("end-of-instruction");
     dispatch("cpu.run", "end-of-instruction");
   }, [status.type, dispatch]);
   useKey(
@@ -47,6 +60,7 @@ export function Controls({ className }: { className?: string }) {
 
   const runInfinity = useCallback(() => {
     if (status.type === "running") return;
+    setActiveRunMode("infinity");
     dispatch("cpu.run", "infinity");
   }, [status.type, dispatch]);
   useKey(
@@ -129,94 +143,16 @@ export function Controls({ className }: { className?: string }) {
         className,
       )}
     >
-      <button
-        data-testid="cycle-button"
-        disabled={status.type === "running"}
-        onClick={runCycle}
-        title={translate("control.action.run.cycle-change")}
-        className={clsx(
-          "group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-mantis-600/20 focus-visible:ring-2 focus-visible:ring-mantis-400 disabled:opacity-50",
-          status.type === "running" && status.until === "cycle-change" && "animate-pulse-glow",
-        )}
-      >
-        <span className="flex items-center justify-center">
-          <FontAwesomeIcon
-            icon={faPlay}
-            size="lg"
-            className="text-mantis-400 transition group-hover:scale-110"
-          />
-          {!isMobile && (
-            <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
-              F7
-            </span>
-          )}
-        </span>
-        {!isMobile && (
-          <span className="mt-0.5 text-xs">{translate("control.action.run.cycle-change")}</span>
-        )}
-      </button>
-      <button
-        data-testid="new-button"
-        disabled={status.type === "running"}
-        onClick={runInstruction}
-        title={translate("control.action.run.end-of-instruction")}
-        className={clsx(
-          "group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-blue-600/20 focus-visible:ring-2 focus-visible:ring-blue-400 disabled:opacity-50",
-          status.type === "running" &&
-            status.until === "end-of-instruction" &&
-            "animate-pulse-glow",
-        )}
-      >
-        <span className="flex items-center justify-center">
-          <FontAwesomeIcon
-            icon={faStepForward}
-            size="lg"
-            className="text-blue-400 transition group-hover:scale-110"
-          />
-          {!isMobile && (
-            <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
-              F8
-            </span>
-          )}
-        </span>
-        {!isMobile && (
-          <span className="mt-0.5 text-xs">
-            {translate("control.action.run.end-of-instruction")}
-          </span>
-        )}
-      </button>
-      <button
-        data-testid="open-button"
-        disabled={status.type === "running"}
-        onClick={runInfinity}
-        title={translate("control.action.run.infinity")}
-        className={clsx(
-          "group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-orange-600/20 focus-visible:ring-2 focus-visible:ring-orange-400 disabled:opacity-50",
-          status.type === "running" && status.until === "infinity" && "animate-pulse-glow",
-        )}
-      >
-        <span className="flex items-center justify-center">
-          <FontAwesomeIcon
-            icon={faInfinity}
-            size="lg"
-            className="text-orange-400 transition group-hover:scale-110"
-          />
-          {!isMobile && (
-            <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
-              F4
-            </span>
-          )}
-        </span>
-        {!isMobile && (
-          <span className="mt-0.5 text-xs">{translate("control.action.run.infinity")}</span>
-        )}
-      </button>
-      {status.type === "running" ? (
+      {/* Botón ciclo */}
+      {status.type === "running" && activeRunMode === "cycle-change" ? (
         <button
-          data-testid="save-button"
+          data-testid="cycle-button"
           onClick={handlePause}
           title={translate("control.action.pause")}
-          className="group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-red-600/20 focus-visible:ring-2 focus-visible:ring-red-400"
+          className={clsx(
+            "group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-red-600/20 focus-visible:ring-2 focus-visible:ring-red-400",
+            "animate-pulse-glow"
+          )}
         >
           <span className="flex items-center justify-center">
             <FontAwesomeIcon
@@ -226,7 +162,7 @@ export function Controls({ className }: { className?: string }) {
             />
             {!isMobile && (
               <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
-                F9
+                F7
               </span>
             )}
           </span>
@@ -234,27 +170,162 @@ export function Controls({ className }: { className?: string }) {
         </button>
       ) : (
         <button
-          data-testid="assemble-button"
-          onClick={handleReset}
-          disabled={status.type === "stopped"}
-          title={translate("control.action.reset")}
-          className="group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-red-600/20 focus-visible:ring-2 focus-visible:ring-red-400 disabled:opacity-50"
+          data-testid="cycle-button"
+          disabled={status.type === "running"}
+          onClick={runCycle}
+          title={translate("control.action.run.cycle-change")}
+          className={clsx(
+            "group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-mantis-600/20 focus-visible:ring-2 focus-visible:ring-mantis-400 disabled:opacity-50",
+            status.type === "running" && status.until === "cycle-change" && "animate-pulse-glow",
+          )}
         >
           <span className="flex items-center justify-center">
             <FontAwesomeIcon
-              icon={faRedo}
+              icon={faPlay}
+              size="lg"
+              className="text-mantis-400 transition group-hover:scale-110"
+            />
+            {!isMobile && (
+              <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
+                F7
+              </span>
+            )}
+          </span>
+          {!isMobile && (
+            <span className="mt-0.5 text-xs">{translate("control.action.run.cycle-change")}</span>
+          )}
+        </button>
+      )}
+      {/* Botón instrucción */}
+      {status.type === "running" && activeRunMode === "end-of-instruction" ? (
+        <button
+          data-testid="new-button"
+          onClick={handlePause}
+          title={translate("control.action.pause")}
+          className={clsx(
+            "group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-red-600/20 focus-visible:ring-2 focus-visible:ring-red-400",
+            "animate-pulse-glow"
+          )}
+        >
+          <span className="flex items-center justify-center">
+            <FontAwesomeIcon
+              icon={faPause}
               size="lg"
               className="text-red-400 transition group-hover:scale-110"
             />
             {!isMobile && (
               <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
-                F9
+                F8
               </span>
             )}
           </span>
-          {!isMobile && <span className="mt-0.5 text-xs">{translate("control.action.reset")}</span>}
+          {!isMobile && <span className="mt-0.5 text-xs">{translate("control.action.pause")}</span>}
+        </button>
+      ) : (
+        <button
+          data-testid="new-button"
+          disabled={status.type === "running"}
+          onClick={runInstruction}
+          title={translate("control.action.run.end-of-instruction")}
+          className={clsx(
+            "group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-blue-600/20 focus-visible:ring-2 focus-visible:ring-blue-400 disabled:opacity-50",
+            status.type === "running" && status.until === "end-of-instruction" && "animate-pulse-glow",
+          )}
+        >
+          <span className="flex items-center justify-center">
+            <FontAwesomeIcon
+              icon={faStepForward}
+              size="lg"
+              className="text-blue-400 transition group-hover:scale-110"
+            />
+            {!isMobile && (
+              <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
+                F8
+              </span>
+            )}
+          </span>
+          {!isMobile && (
+            <span className="mt-0.5 text-xs">
+              {translate("control.action.run.end-of-instruction")}
+            </span>
+          )}
         </button>
       )}
+      {/* Botón infinito */}
+      {status.type === "running" && activeRunMode === "infinity" ? (
+        <button
+          data-testid="open-button"
+          onClick={handlePause}
+          title={translate("control.action.pause")}
+          className={clsx(
+            "group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-red-600/20 focus-visible:ring-2 focus-visible:ring-red-400",
+            "animate-pulse-glow"
+          )}
+        >
+          <span className="flex items-center justify-center">
+            <FontAwesomeIcon
+              icon={faPause}
+              size="lg"
+              className="text-red-400 transition group-hover:scale-110"
+            />
+            {!isMobile && (
+              <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
+                F4
+              </span>
+            )}
+          </span>
+          {!isMobile && <span className="mt-0.5 text-xs">{translate("control.action.pause")}</span>}
+        </button>
+      ) : (
+        <button
+          data-testid="open-button"
+          disabled={status.type === "running"}
+          onClick={runInfinity}
+          title={translate("control.action.run.infinity")}
+          className={clsx(
+            "group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-orange-600/20 focus-visible:ring-2 focus-visible:ring-orange-400 disabled:opacity-50",
+            status.type === "running" && status.until === "infinity" && "animate-pulse-glow",
+          )}
+        >
+          <span className="flex items-center justify-center">
+            <FontAwesomeIcon
+              icon={faInfinity}
+              size="lg"
+              className="text-orange-400 transition group-hover:scale-110"
+            />
+            {!isMobile && (
+              <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
+                F4
+              </span>
+            )}
+          </span>
+          {!isMobile && (
+            <span className="mt-0.5 text-xs">{translate("control.action.run.infinity")}</span>
+          )}
+        </button>
+      )}
+      {/* Botón reset/reiniciar (no cambia a pausa) */}
+      <button
+        data-testid="assemble-button"
+        onClick={handleReset}
+        disabled={status.type === "stopped" || status.type === "running"}
+        title={translate("control.action.reset")}
+        className="group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-red-600/20 focus-visible:ring-2 focus-visible:ring-red-400 disabled:opacity-50"
+      >
+        <span className="flex items-center justify-center">
+          <FontAwesomeIcon
+            icon={faRedo}
+            size="lg"
+            className="text-red-400 transition group-hover:scale-110"
+          />
+          {!isMobile && (
+            <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
+              F9
+            </span>
+          )}
+        </span>
+        {!isMobile && <span className="mt-0.5 text-xs">{translate("control.action.reset")}</span>}
+      </button>
     </div>
   );
 }
