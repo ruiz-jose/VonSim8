@@ -161,8 +161,6 @@ export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promi
       await drawRDControlPath();
       // Ocultar texto "Read" al terminar la animación
       hideReadControlText();
-      // Desactivar la animación del texto 'Read' en el bus de control RD
-      store.set(showReadBusAnimationAtom, false);
       return;
     }
 

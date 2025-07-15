@@ -62,33 +62,37 @@ export function ControlLines() {
         <path ref={rdPathRef} className="fill-none stroke-stone-900 stroke-[6px]" strokeLinejoin="round" d={rdPath} />
         <path className="fill-none stroke-stone-700 stroke-[4px]" strokeLinejoin="round" d={rdPath} />
         {/* Línea animada del bus RD - usando path dinámico del spring */}
-        <animated.path
-          ref={rdAnimatedPathRef}
-          d={rdPath_anim}
-          className="fill-none stroke-red-500 stroke-[4px]"
-          strokeLinejoin="round"
-          pathLength={1}
-          strokeDasharray={1}
-          style={{
-            strokeDashoffset: rdDashoffset,
-            opacity: rdOpacity,
-          }}
-        />
+        {showReadAnim && (
+          <animated.path
+            ref={rdAnimatedPathRef}
+            d={rdPath_anim}
+            className="fill-none stroke-red-500 stroke-[4px]"
+            strokeLinejoin="round"
+            pathLength={1}
+            strokeDasharray={1}
+            style={{
+              strokeDashoffset: rdDashoffset,
+              opacity: rdOpacity,
+            }}
+          />
+        )}
 
         <path className="fill-none stroke-stone-900 stroke-[6px]" strokeLinejoin="round" d={wrPath} />
         <path className="fill-none stroke-stone-700 stroke-[4px]" strokeLinejoin="round" d={wrPath} />
         {/* Línea animada del bus WR - usando path dinámico del spring */}
-        <animated.path
-          d={wrPath_anim}
-          className="fill-none stroke-blue-500 stroke-[4px]"
-          strokeLinejoin="round"
-          pathLength={1}
-          strokeDasharray={1}
-          style={{
-            strokeDashoffset: wrDashoffset,
-            opacity: wrOpacity,
-          }}
-        />
+        {showWriteAnim && (
+          <animated.path
+            d={wrPath_anim}
+            className="fill-none stroke-orange-400 stroke-[4px]"
+            strokeLinejoin="round"
+            pathLength={1}
+            strokeDasharray={1}
+            style={{
+              strokeDashoffset: wrDashoffset,
+              opacity: wrOpacity,
+            }}
+          />
+        )}
 
         {/* Chip select */}
 
@@ -368,8 +372,8 @@ function WriteBusAnimation() {
       className="pointer-events-none absolute z-[100] font-extrabold text-xs select-none"
       style={{
         left: x,
-        top: y - 32,
-        color: '#f59e42', // naranja tailwind-400
+        top: y + 12, // Debajo del bus
+        color: '#f59e42', // naranja tailwind-400 (igual que la animación)
         textShadow: '0 0 4px #000, 0 0 2px #000',
         background: 'rgba(0,0,0,0.2)',
         padding: '2px 8px',
