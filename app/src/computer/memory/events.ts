@@ -15,6 +15,8 @@ import type { SimulatorEvent } from "@/computer/shared/types";
 import { finishSimulation, notifyWarning } from "@/computer/simulation";
 import { store } from "@/lib/jotai";
 import { colors } from "@/lib/tailwind";
+import { showReadBusAnimationAtom } from "@/computer/bus/state";
+import { showWriteBusAnimationAtom } from "@/computer/bus/state";
 
 import { memoryAtom, operatingAddressAtom } from "./state";
 
@@ -151,12 +153,16 @@ export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promi
     case "memory:read": {
       // Animar el bus de direcciones desde MAR hacia la memoria al iniciar la lectura
       await drawExternalAddressPath();
+      // Activar la animación del texto 'Read' en el bus de control RD
+      store.set(showReadBusAnimationAtom, true);
       // Mostrar texto "Read" al animar el bus de control RD
       showReadControlText();
       // Animar el bus de control RD desde CPU hacia dispositivos
       await drawRDControlPath();
       // Ocultar texto "Read" al terminar la animación
       hideReadControlText();
+      // Desactivar la animación del texto 'Read' en el bus de control RD
+      store.set(showReadBusAnimationAtom, false);
       return;
     }
 
@@ -195,12 +201,16 @@ export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promi
     case "memory:write": {
       // Animar el bus de direcciones desde MAR hacia la memoria al iniciar la escritura
       await drawExternalAddressPath();
+      // Activar la animación del texto 'Write' en el bus de control WR
+      store.set(showWriteBusAnimationAtom, true);
       // Mostrar texto "Write" al animar el bus de control WR
       showWriteControlText();
       // Animar el bus de control WR desde CPU hacia dispositivos
       await drawWRControlPath();
       // Ocultar texto "Write" al terminar la animación
       hideWriteControlText();
+      // Desactivar la animación del texto 'Write' en el bus de control WR
+      store.set(showWriteBusAnimationAtom, false);
       return;
     }
 

@@ -64,23 +64,51 @@ export const DataFlowAnimation = memo(
           />
         </svg>
 
-        {/* Paquete de datos */}
-        <div
-          className={clsx(
-            "absolute rounded bg-mantis-500 px-2 py-1 font-mono text-xs text-white",
-            "border border-mantis-400 shadow-lg",
-            "transition-all duration-300 ease-out",
-          )}
-          style={{
-            left: `${progress * 100}%`,
-            transform: "translateX(-50%)",
-            top: "50%",
-            marginTop: "-12px",
-          }}
-        >
-          {data}
-          <div className="absolute -top-1 left-1/2 size-0 -translate-x-1/2 border-x-4 border-b-4 border-transparent border-b-mantis-500" />
-        </div>
+        {/* Texto flotante especial para Read/Write */}
+        {(["Read", "Write"].includes(data)) ? (() => {
+          // from y to son strings tipo '380 420' y '800 420'
+          const [fromX, fromY] = from.split(" ").map(Number);
+          const [toX, toY] = to.split(" ").map(Number);
+          // Interpolación lineal para la posición
+          const x = fromX + (toX - fromX) * progress;
+          const y = fromY + (toY - fromY) * progress;
+          return (
+            <div
+              className={`absolute font-extrabold text-lg select-none z-[100] ${data === "Read" ? "text-red-500" : "text-orange-400"}`}
+              style={{
+                left: x,
+                top: y - 32, // Más arriba del bus
+                textShadow: "0 0 4px #000, 0 0 2px #000",
+                background: "rgba(0,0,0,0.2)",
+                padding: "2px 8px",
+                borderRadius: "6px",
+                transition: "left 0.1s linear, top 0.1s linear",
+                opacity: isVisible ? 1 : 0,
+                pointerEvents: "none",
+              }}
+            >
+              {data}
+            </div>
+          );
+        })() : (
+          // Paquete de datos habitual
+          <div
+            className={clsx(
+              "absolute rounded bg-mantis-500 px-2 py-1 font-mono text-xs text-white",
+              "border border-mantis-400 shadow-lg",
+              "transition-all duration-300 ease-out",
+            )}
+            style={{
+              left: `${progress * 100}%`,
+              transform: "translateX(-50%)",
+              top: "50%",
+              marginTop: "-12px",
+            }}
+          >
+            {data}
+            <div className="absolute -top-1 left-1/2 size-0 -translate-x-1/2 border-x-4 border-b-4 border-transparent border-b-mantis-500" />
+          </div>
+        )}
       </div>
     );
   },

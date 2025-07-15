@@ -3,9 +3,16 @@ import clsx from "clsx";
 import { animated, getSpring, SimplePathKey } from "@/computer/shared/springs";
 import { useSimulation } from "@/computer/simulation";
 import { useTranslate } from "@/lib/i18n";
+import { useAtomValue, useSetAtom } from "jotai";
+import { showReadBusAnimationAtom } from "@/computer/bus/state";
+import { DataFlowAnimation } from "@/computer/shared/DataFlowAnimation";
+import { useState, useEffect } from "react";
+import { showWriteBusAnimationAtom } from "@/computer/bus/state";
 
 export function ControlLines() {
   const { devices } = useSimulation();
+  const showReadAnim = useAtomValue(showReadBusAnimationAtom);
+  const showWriteAnim = useAtomValue(showWriteBusAnimationAtom);
 
   const rdPath = [
     "M 380 420 H 800", // CPU -> Memory
@@ -42,130 +49,108 @@ export function ControlLines() {
   } = getSpring("bus.wr");
 
   return (
-    <svg className="pointer-events-none absolute inset-0 z-[15] size-full">
-      <path className="fill-none stroke-stone-900 stroke-[6px]" strokeLinejoin="round" d={rdPath} />
-      <path className="fill-none stroke-stone-700 stroke-[4px]" strokeLinejoin="round" d={rdPath} />
-      {/* Línea animada del bus RD - usando path dinámico del spring */}
-      <animated.path
-        d={rdPath_anim}
-        className="fill-none stroke-red-500 stroke-[4px]"
-        strokeLinejoin="round"
-        pathLength={1}
-        strokeDasharray={1}
-        style={{
-          strokeDashoffset: rdDashoffset,
-          opacity: rdOpacity,
-        }}
-      />
+    <>
+      {showReadAnim && <ReadBusAnimation />}
+      {showWriteAnim && <WriteBusAnimation />}
+      <svg className="pointer-events-none absolute inset-0 z-[15] size-full">
+        <path className="fill-none stroke-stone-900 stroke-[6px]" strokeLinejoin="round" d={rdPath} />
+        <path className="fill-none stroke-stone-700 stroke-[4px]" strokeLinejoin="round" d={rdPath} />
+        {/* Línea animada del bus RD - usando path dinámico del spring */}
+        <animated.path
+          d={rdPath_anim}
+          className="fill-none stroke-red-500 stroke-[4px]"
+          strokeLinejoin="round"
+          pathLength={1}
+          strokeDasharray={1}
+          style={{
+            strokeDashoffset: rdDashoffset,
+            opacity: rdOpacity,
+          }}
+        />
 
-      {/* Animated command text for READ operations */}
-      <animated.text
-        x="590"
-        y="410"
-        className="pointer-events-none fill-red-500 font-mono text-xs font-bold"
-        textAnchor="middle"
-        style={{
-          opacity: rdOpacity,
-        }}
-      >
-        Read
-      </animated.text>
+        <path className="fill-none stroke-stone-900 stroke-[6px]" strokeLinejoin="round" d={wrPath} />
+        <path className="fill-none stroke-stone-700 stroke-[4px]" strokeLinejoin="round" d={wrPath} />
+        {/* Línea animada del bus WR - usando path dinámico del spring */}
+        <animated.path
+          d={wrPath_anim}
+          className="fill-none stroke-blue-500 stroke-[4px]"
+          strokeLinejoin="round"
+          pathLength={1}
+          strokeDasharray={1}
+          style={{
+            strokeDashoffset: wrDashoffset,
+            opacity: wrOpacity,
+          }}
+        />
 
-      <path className="fill-none stroke-stone-900 stroke-[6px]" strokeLinejoin="round" d={wrPath} />
-      <path className="fill-none stroke-stone-700 stroke-[4px]" strokeLinejoin="round" d={wrPath} />
-      {/* Línea animada del bus WR - usando path dinámico del spring */}
-      <animated.path
-        d={wrPath_anim}
-        className="fill-none stroke-blue-500 stroke-[4px]"
-        strokeLinejoin="round"
-        pathLength={1}
-        strokeDasharray={1}
-        style={{
-          strokeDashoffset: wrDashoffset,
-          opacity: wrOpacity,
-        }}
-      />
+        {/* Chip select */}
 
-      {/* Animated command text for WRITE operations */}
-      <animated.text
-        x="590"
-        y="455"
-        className="pointer-events-none fill-blue-500 font-mono text-xs font-bold"
-        textAnchor="middle"
-        style={{
-          opacity: wrOpacity,
-        }}
-      >
-        Write
-      </animated.text>
+        {devices.hasIOBus && (
+          <>
+            <ControlLine springs="bus.iom" d="M 380 460 H 675 V 525" />
 
-      {/* Chip select */}
+            <path
+              className="fill-none stroke-stone-900 stroke-[6px]"
+              strokeLinejoin="round"
+              d={memPath}
+            />
+            <animated.path
+              className="fill-none stroke-[4px]"
+              strokeLinejoin="round"
+              d={memPath}
+              style={getSpring("bus.mem")}
+            />
+          </>
+        )}
 
-      {devices.hasIOBus && (
-        <>
-          <ControlLine springs="bus.iom" d="M 380 460 H 675 V 525" />
+        {devices.pic && <ControlLine springs="bus.pic" d="M 521 595 V 730 H 450" />}
+        {devices.timer && <ControlLine springs="bus.timer" d="M 563 595 V 875" />}
+        {devices.pio && <ControlLine springs="bus.pio" d="M 612 595 V 730 H 900" />}
+        {devices.handshake && <ControlLine springs="bus.handshake" d="M 710 595 V 950 H 900" />}
 
-          <path
-            className="fill-none stroke-stone-900 stroke-[6px]"
-            strokeLinejoin="round"
-            d={memPath}
-          />
-          <animated.path
-            className="fill-none stroke-[4px]"
-            strokeLinejoin="round"
-            d={memPath}
-            style={getSpring("bus.mem")}
-          />
-        </>
-      )}
+        {/* CPU/PIC */}
 
-      {devices.pic && <ControlLine springs="bus.pic" d="M 521 595 V 730 H 450" />}
-      {devices.timer && <ControlLine springs="bus.timer" d="M 563 595 V 875" />}
-      {devices.pio && <ControlLine springs="bus.pio" d="M 612 595 V 730 H 900" />}
-      {devices.handshake && <ControlLine springs="bus.handshake" d="M 710 595 V 950 H 900" />}
+        {devices.pic && (
+          <>
+            <ControlLine springs="bus.intr" d="M 110 700 V 470" />
+            <ControlLine springs="bus.inta" d="M 160 470 V 700" />
+          </>
+        )}
 
-      {/* CPU/PIC */}
+        {/* Interrupt lines */}
 
-      {devices.pic && (
-        <>
-          <ControlLine springs="bus.intr" d="M 110 700 V 470" />
-          <ControlLine springs="bus.inta" d="M 160 470 V 700" />
-        </>
-      )}
+        {devices.pic && devices.f10 && <ControlLine springs="bus.int0" d="M 145 950 V 900" />}
+        {devices.pic && devices.timer && <ControlLine springs="bus.int1" d="M 475 955 H 400 V 900" />}
+        {devices.pic && devices.handshake && (
+          <ControlLine springs="bus.int2" d="M 900 1075 H 300 V 900" />
+        )}
 
-      {/* Interrupt lines */}
+        {/* Other devices */}
 
-      {devices.pic && devices.f10 && <ControlLine springs="bus.int0" d="M 145 950 V 900" />}
-      {devices.pic && devices.timer && <ControlLine springs="bus.int1" d="M 475 955 H 400 V 900" />}
-      {devices.pic && devices.handshake && (
-        <ControlLine springs="bus.int2" d="M 900 1075 H 300 V 900" />
-      )}
+        {devices.pio === "switches-and-leds" && (
+          <>
+            <ControlLine springs="bus.switches->pio" d="M 1300 758 H 1120" />
+            <ControlLine springs="bus.pio->leds" d="M 1120 868 H 1300" />
+          </>
+        )}
 
-      {/* Other devices */}
+        {devices.pio === "printer" && (
+          <>
+            <ControlLine springs="bus.printer.strobe" d="M 1120 770 H 1225 V 992 H 1300" />
+            <ControlLine springs="bus.printer.busy" d="M 1300 1007 H 1210 V 782 H 1120" />
+            <ControlLine springs="bus.printer.data" d="M 1120 850 H 1175 V 1062 H 1300" />
+          </>
+        )}
 
-      {devices.pio === "switches-and-leds" && (
-        <>
-          <ControlLine springs="bus.switches->pio" d="M 1300 758 H 1120" />
-          <ControlLine springs="bus.pio->leds" d="M 1120 868 H 1300" />
-        </>
-      )}
-
-      {devices.pio === "printer" && (
-        <>
-          <ControlLine springs="bus.printer.strobe" d="M 1120 770 H 1225 V 992 H 1300" />
-          <ControlLine springs="bus.printer.busy" d="M 1300 1007 H 1210 V 782 H 1120" />
-          <ControlLine springs="bus.printer.data" d="M 1120 850 H 1175 V 1062 H 1300" />
-        </>
-      )}
-
-      {devices.handshake === "printer" && (
-        <>
-          <ControlLine springs="bus.printer.strobe" d="M 1120 992 H 1300" />
-          <ControlLine springs="bus.printer.busy" d="M 1300 1007 H 1120" />
-          <ControlLine springs="bus.printer.data" d="M 1120 1062 H 1300" />
-        </>
-      )}
-    </svg>
+        {devices.handshake === "printer" && (
+          <>
+            <ControlLine springs="bus.printer.strobe" d="M 1120 992 H 1300" />
+            <ControlLine springs="bus.printer.busy" d="M 1300 1007 H 1120" />
+            <ControlLine springs="bus.printer.data" d="M 1120 1062 H 1300" />
+          </>
+        )}
+      </svg>
+    </>
   );
 }
 
@@ -263,5 +248,99 @@ function ControlLineLegend({
     >
       {children}
     </span>
+  );
+}
+
+// Animación de texto 'Read' de izquierda a derecha sobre el bus de control
+function ReadBusAnimation() {
+  const [progress, setProgress] = useState(0);
+  const [visible, setVisible] = useState(true);
+  const setShowReadAnim = useSetAtom(showReadBusAnimationAtom);
+  useEffect(() => {
+    let frame: number;
+    const duration = 2000;
+    const start = Date.now();
+    function animate() {
+      const elapsed = Date.now() - start;
+      const p = Math.min(elapsed / duration, 1);
+      setProgress(p);
+      if (p < 1) {
+        frame = requestAnimationFrame(animate);
+      } else {
+        setVisible(false);
+        setTimeout(() => setShowReadAnim(false), 100); // Desactiva el átomo tras la animación
+      }
+    }
+    animate();
+    return () => cancelAnimationFrame(frame);
+  }, [setShowReadAnim]);
+  if (!visible) return null;
+  // Coordenadas del bus de control RD: de 380 420 a 800 420
+  const fromX = 380, toX = 800, y = 420;
+  const x = fromX + (toX - fromX) * progress;
+  return (
+    <div
+      className="pointer-events-none absolute z-[100] font-extrabold text-xs select-none"
+      style={{
+        left: x,
+        top: y - 32,
+        color: '#ef4444', // rojo tailwind-500
+        textShadow: '0 0 4px #000, 0 0 2px #000',
+        background: 'rgba(0,0,0,0.2)',
+        padding: '2px 8px',
+        borderRadius: '6px',
+        transition: 'left 0.1s linear, top 0.1s linear',
+        opacity: visible ? 1 : 0,
+      }}
+    >
+      Read
+    </div>
+  );
+}
+
+// Animación de texto 'Write' de izquierda a derecha sobre el bus de control WR
+function WriteBusAnimation() {
+  const [progress, setProgress] = useState(0);
+  const [visible, setVisible] = useState(true);
+  const setShowWriteAnim = useSetAtom(showWriteBusAnimationAtom);
+  useEffect(() => {
+    let frame: number;
+    const duration = 2000;
+    const start = Date.now();
+    function animate() {
+      const elapsed = Date.now() - start;
+      const p = Math.min(elapsed / duration, 1);
+      setProgress(p);
+      if (p < 1) {
+        frame = requestAnimationFrame(animate);
+      } else {
+        setVisible(false);
+        setTimeout(() => setShowWriteAnim(false), 100);
+      }
+    }
+    animate();
+    return () => cancelAnimationFrame(frame);
+  }, [setShowWriteAnim]);
+  if (!visible) return null;
+  // Coordenadas del bus de control WR: de 380 440 a 800 440
+  const fromX = 380, toX = 800, y = 440;
+  const x = fromX + (toX - fromX) * progress;
+  return (
+    <div
+      className="pointer-events-none absolute z-[100] font-extrabold text-xs select-none"
+      style={{
+        left: x,
+        top: y - 32,
+        color: '#f59e42', // naranja tailwind-400
+        textShadow: '0 0 4px #000, 0 0 2px #000',
+        background: 'rgba(0,0,0,0.2)',
+        padding: '2px 8px',
+        borderRadius: '6px',
+        transition: 'left 0.1s linear, top 0.1s linear',
+        opacity: visible ? 1 : 0,
+      }}
+    >
+      Write
+    </div>
   );
 }
