@@ -1,9 +1,8 @@
 import { useAtomValue } from "jotai";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { simulationAtom } from "@/computer/simulation";
 import { programModifiedAtom } from "@/editor/state";
-import { useTranslate } from "@/lib/i18n";
 import { store } from "@/lib/jotai";
 import { useSettings } from "@/lib/settings";
 import { toast } from "@/lib/toast";
@@ -128,6 +127,91 @@ function getExecutionSubphaseBgColor(action: string) {
   return "bg-green-500/5 border-green-400/20";
 }
 
+// Definición de fases y subfases unificadas
+const fases = [
+  {
+    id: "captacion",
+    label: "Captación",
+    color: "text-blue-400",
+    icon: "📥",
+    descripcion: "Captando instrucción desde memoria",
+    pasos: [
+      "IP apunta a la dirección de memoria, el MAR recibe la dirección del IP",
+      "Se lee el contenido de memoria y se almacena en el MBR, IP se incrementa automáticamente",
+      "La instrucción se transfiere al IR",
+    ],
+  },
+  {
+    id: "ejecucion",
+    label: "Ejecución",
+    color: "text-green-400",
+    icon: "⚡",
+    descripcion: "Ejecutando instrucción",
+    subfases: [
+      {
+        id: "operandos",
+        label: "Obtención de operandos",
+        color: "text-yellow-400",
+        icon: "🔍",
+        descripcion: "Obteniendo operandos de la instrucción",
+        pasos: ["Se identifican y preparan los operandos necesarios para la operación."],
+      },
+      {
+        id: "alu",
+        label: "Procesar en ALU",
+        color: "text-green-400",
+        icon: "⚡",
+        descripcion: "Procesando en la ALU",
+        pasos: ["La ALU ejecuta la operación aritmética o lógica con los operandos."],
+      },
+      {
+        id: "escritura",
+        label: "Escribir resultado",
+        color: "text-purple-400",
+        icon: "💾",
+        descripcion: "Escribiendo resultado en registros",
+        pasos: ["El resultado de la operación se almacena en el registro destino."],
+      },
+    ],
+  },
+];
+
+// Función para obtener el color de la fase o subfase
+function getStageColor(stage: string, action: string) {
+  if (stage === "Captación") return "text-blue-400";
+  if (stage === "Ejecución") {
+    if (
+      /obten/i.test(action) ||
+      /operando/i.test(action) ||
+      /leer/i.test(action) ||
+      /cargar/i.test(action)
+    ) {
+      return "text-yellow-400";
+    }
+    if (
+      /escrib/i.test(action) ||
+      /guardar/i.test(action) ||
+      /almacenar/i.test(action) ||
+      /resultado/i.test(action)
+    ) {
+      return "text-purple-400";
+    }
+    if (
+      /procesar/i.test(action) ||
+      /alu/i.test(action) ||
+      /calcular/i.test(action) ||
+      /operar/i.test(action) ||
+      /ejecut/i.test(action)
+    ) {
+      return "text-green-400";
+    }
+    return "text-green-400";
+  }
+  if (stage === "Escritura") return "text-purple-400";
+  if (stage === "Obtención de operandos") return "text-yellow-400";
+  return "text-stone-400";
+}
+
 export function RegisterTransferMessages() {
   const message = useAtomValue(messageAtom);
   const messageHistory = useAtomValue(messageHistoryAtom);
@@ -135,6 +219,7 @@ export function RegisterTransferMessages() {
   const programModified = useAtomValue(programModifiedAtom);
 
   const [settings] = useSettings();
+  const [showCaptacionSteps, setShowCaptacionSteps] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -216,12 +301,32 @@ export function RegisterTransferMessages() {
                           {msg.stage}
                         </h4>
                         <p className="text-xs text-stone-400">
-                          {msg.stage === "Captación" && "Leer instrucción"}
+                          {msg.stage === "Captación" && (
+                            <>
+                              Leer instrucción
+                              <button
+                                className="ml-2 rounded bg-mantis-400/20 px-1 py-0.5 text-xs text-mantis-400 transition-colors hover:bg-mantis-400/40"
+                                onClick={() => setShowCaptacionSteps(v => !v)}
+                              >
+                                {showCaptacionSteps ? "− Ocultar pasos" : "+ Ver pasos"}
+                              </button>
+                            </>
+                          )}
                           {msg.stage === "Obtención de operandos" && "Preparar datos"}
                           {msg.stage === "Ejecución" && "Procesar instrucción"}
                           {msg.stage === "Escritura" && "Guardar resultado"}
                           {msg.stage === "Interrupción" && "Manejar interrupción"}
                         </p>
+                        {/* Pasos de captación expandibles */}
+                        {msg.stage === "Captación" && showCaptacionSteps && (
+                          <ul className="ml-2 mt-2 list-decimal text-xs text-blue-300">
+                            {fases
+                              .find(f => f.id === "captacion")
+                              ?.pasos.map((paso, i) => (
+                                <li key={i}>{paso}</li>
+                              ))}
+                          </ul>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -256,7 +361,9 @@ export function RegisterTransferMessages() {
                     }`}
                   >
                     {/* Número de ciclo */}
-                    <div className="flex size-8 items-center justify-center rounded-full bg-stone-700 text-sm font-bold text-stone-300">
+                    <div
+                      className={`flex size-8 items-center justify-center rounded-full bg-stone-700 text-sm font-bold ${getStageColor(msg.stage, msg.action)}`}
+                    >
                       {msg.cycle}
                     </div>
 

@@ -18,33 +18,6 @@ export const InstructionCycleInfo = memo(({ className }: InstructionCycleInfoPro
       ? `${cycle.metadata.name}${cycle.metadata.operands.length ? " " + cycle.metadata.operands.join(", ") : ""}`
       : "";
 
-  // Obtener descripción de la fase actual
-  const getPhaseDescription = () => {
-    if (!cycle) return "CPU detenida";
-
-    if (cycle.phase === "stopped" && "error" in cycle && cycle.error) return "CPU detenida";
-
-    switch (cycle.phase) {
-      case "fetching":
-        return "Leyendo instrucción desde memoria";
-      case "fetching-operands":
-        return "Obteniendo operandos de la instrucción";
-      case "executing":
-        return "Ejecutando operación en la ALU";
-      case "writeback":
-        return "Escribiendo resultado en registros";
-      case "interrupt":
-        return "Procesando interrupción";
-      case "int6":
-      case "int7":
-        return "Ejecutando rutina de interrupción";
-      case "stopped":
-        return "CPU detenida";
-      default:
-        return "Estado desconocido";
-    }
-  };
-
   // Obtener icono de la fase
   const getPhaseIcon = () => {
     if (!cycle) return "⏹️";
@@ -127,9 +100,7 @@ export const InstructionCycleInfo = memo(({ className }: InstructionCycleInfoPro
       <div className="flex items-center gap-3 rounded border border-stone-600 bg-stone-800/80 p-2">
         <div className={clsx("text-2xl", getPhaseColor())}>{getPhaseIcon()}</div>
         <div className="flex-1">
-          <div className={clsx("text-sm font-semibold", getPhaseColor())}>
-            {getPhaseDescription()}
-          </div>
+          <div className={clsx("text-sm font-semibold", getPhaseColor())}>{cycle?.phase}</div>
           {currentInstruction && (
             <div className="mt-1 text-xs text-stone-400">
               Instrucción: <span className="font-mono text-mantis-300">{currentInstruction}</span>

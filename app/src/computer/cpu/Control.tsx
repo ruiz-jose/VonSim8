@@ -24,7 +24,7 @@ export function Control() {
 
     switch (cycle.phase) {
       case "fetching":
-        return "Leyendo instrucción";
+        return "Captando instrucción";
       case "fetching-operands":
         return "Obteniendo operandos";
       case "executing":

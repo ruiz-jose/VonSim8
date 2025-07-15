@@ -8,6 +8,25 @@ type ExecutionPhasesProps = {
   className?: string;
 };
 
+// Definición de tipos para fases y subfases
+type Subfase = {
+  id: string;
+  label: string;
+  color: string;
+  icon: string;
+  descripcion: string;
+  pasos: string[];
+};
+type Fase = {
+  id: string;
+  label: string;
+  color: string;
+  icon: string;
+  descripcion: string;
+  pasos?: string[];
+  subfases?: Subfase[];
+};
+
 export const ExecutionPhases = memo(
   ({ currentPhase = "idle", className }: ExecutionPhasesProps) => {
     const [pulsePhase, setPulsePhase] = useState<ExecutionPhase>("idle");
@@ -22,61 +41,52 @@ export const ExecutionPhases = memo(
       }
     }, [currentPhase]);
 
-    const phases = [
+    // Definición de fases y subfases unificadas
+    const fases: Fase[] = [
       {
-        id: "fetch" as ExecutionPhase,
-        label: "Fetch",
+        id: "captacion",
+        label: "Captación",
+        color: "text-blue-400",
         icon: "📥",
-        description: "Leer instrucción",
-        details: {
-          title: "Fase Fetch",
-          description: "La CPU lee la instrucción desde la dirección apuntada por el IP",
-          steps: [
-            "IP apunta a la dirección de memoria",
-            "MAR recibe la dirección del IP",
-            "Se lee el contenido de memoria",
-            "MBR almacena la instrucción",
-            "IP se incrementa automáticamente",
-          ],
-          registers: ["IP", "MAR", "MBR"],
-        },
+        descripcion: "Captando instrucción desde memoria",
+        pasos: [
+          "IP apunta a la dirección de memoria, el MAR recibe la dirección del IP",
+          "Se lee el contenido de memoria y se almacena en el MBR, IP se incrementa automáticamente",
+          "La instrucción se transfiere al IR",
+        ],
       },
       {
-        id: "decode" as ExecutionPhase,
-        label: "Decode",
-        icon: "🔍",
-        description: "Interpretar instrucción",
-        details: {
-          title: "Fase Decode",
-          description:
-            "La CPU interpreta el código de operación y determina la operación a realizar",
-          steps: [
-            "IR recibe el código de operación del MBR",
-            "Se analiza el opcode",
-            "Se identifican los operandos",
-            "Se determina el modo de direccionamiento",
-            "Se preparan los operandos para la ejecución",
-          ],
-          registers: ["IR", "MBR"],
-        },
-      },
-      {
-        id: "execute" as ExecutionPhase,
-        label: "Execute",
+        id: "ejecucion",
+        label: "Ejecución",
+        color: "text-green-400",
         icon: "⚡",
-        description: "Ejecutar operación",
-        details: {
-          title: "Fase Execute",
-          description: "La CPU ejecuta la operación especificada y actualiza registros y flags",
-          steps: [
-            "ALU recibe los operandos",
-            "Se ejecuta la operación aritmética/lógica",
-            "Se actualiza el registro destino (AL, BL, CL, DL)",
-            "Se actualizan las flags según el resultado",
-            "Se completa el ciclo de instrucción",
-          ],
-          registers: ["ALU", "AL/BL/CL/DL", "Flags"],
-        },
+        descripcion: "Ejecutando instrucción",
+        subfases: [
+          {
+            id: "operandos",
+            label: "Obtención de operandos",
+            color: "text-yellow-400",
+            icon: "🔍",
+            descripcion: "Obteniendo operandos de la instrucción",
+            pasos: ["Se identifican y preparan los operandos necesarios para la operación."],
+          },
+          {
+            id: "alu",
+            label: "Procesar en ALU",
+            color: "text-green-400",
+            icon: "⚡",
+            descripcion: "Procesando en la ALU",
+            pasos: ["La ALU ejecuta la operación aritmética o lógica con los operandos."],
+          },
+          {
+            id: "escritura",
+            label: "Escribir resultado",
+            color: "text-purple-400",
+            icon: "💾",
+            descripcion: "Escribiendo resultado en registros",
+            pasos: ["El resultado de la operación se almacena en el registro destino."],
+          },
+        ],
       },
     ];
 
@@ -110,48 +120,57 @@ export const ExecutionPhases = memo(
 
         {/* Fases principales con estilo unificado */}
         <div className="mt-2 flex items-center justify-center gap-2">
-          {phases.map((phase, index) => (
-            <div key={phase.id} className="flex items-center">
+          {fases.map((fase, index) => (
+            <div key={fase.id} className="flex items-center">
               <div
                 className={clsx(
                   "flex cursor-pointer flex-col items-center gap-1 rounded border-2 px-2 py-1 transition-all duration-200",
                   "hover:border-stone-300 hover:bg-stone-700",
-                  currentPhase === phase.id
+                  currentPhase === fase.id
                     ? "border-stone-300 bg-stone-300 text-stone-950 shadow-[0_0_4px_rgba(120,113,108,0.6)]"
                     : "border-stone-600 bg-stone-800 text-stone-300",
-                  pulsePhase === phase.id && "animate-pulse",
+                  pulsePhase === fase.id && "animate-pulse",
                 )}
                 onClick={() => {
                   if (showDetails) {
-                    const details = phase.details;
-                    alert(
-                      `${details.title}\n\n${details.description}\n\nPasos:\n${details.steps.map((step, i) => `${i + 1}. ${step}`).join("\n")}\n\nRegistros involucrados: ${details.registers.join(", ")}`,
-                    );
+                    if (fase.subfases) {
+                      // Mostrar info de todas las subfases
+                      let mensaje = "";
+                      fase.subfases.forEach(sub => {
+                        mensaje += `${sub.label}\n${sub.descripcion}\nPasos:\n${sub.pasos.map((step, i) => `${i + 1}. ${step}`).join("\n")}`;
+                        mensaje += "\n\n";
+                      });
+                      alert(mensaje);
+                    } else {
+                      alert(
+                        `${fase.label}\n\n${fase.descripcion}\n\nPasos:\n${fase.pasos?.map((step, i) => `${i + 1}. ${step}`).join("\n")}`,
+                      );
+                    }
                   }
                 }}
               >
                 <div
                   className={clsx(
                     "text-lg transition-transform duration-300",
-                    currentPhase === phase.id && "scale-110",
+                    currentPhase === fase.id && "scale-110",
                   )}
                 >
-                  {phase.icon}
+                  {fase.icon}
                 </div>
                 <span
                   className={clsx(
                     "text-[10px] font-bold uppercase tracking-wide transition-colors",
-                    currentPhase === phase.id ? "text-stone-950" : "text-stone-300",
+                    currentPhase === fase.id ? "text-stone-950" : "text-stone-300",
                   )}
                 >
-                  {phase.label}
+                  {fase.label}
                 </span>
                 <span className="max-w-16 text-center text-[9px] leading-tight text-stone-500">
-                  {phase.description}
+                  {fase.descripcion}
                 </span>
               </div>
               {/* Flecha entre fases */}
-              {index < phases.length - 1 && <div className="mx-1 font-bold text-stone-400">→</div>}
+              {index < fases.length - 1 && <div className="mx-1 font-bold text-stone-400">→</div>}
             </div>
           ))}
         </div>
