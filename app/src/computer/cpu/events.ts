@@ -19,6 +19,8 @@ import { colors } from "@/lib/tailwind";
 import { DataRegister, generateDataPath } from "./DataBus";
 import { aluOperationAtom, cycleAtom, MARAtom, MBRAtom, registerAtoms } from "./state";
 
+const BUS_ANIMATION_DURATION = 5;
+
 const drawDataPath = (from: DataRegister, to: DataRegister, instruction: string, mode: string) => {
   try {
     const path = generateDataPath(from, to, instruction, mode);
@@ -30,7 +32,7 @@ const drawDataPath = (from: DataRegister, to: DataRegister, instruction: string,
         { key: "cpu.internalBus.data.opacity", from: 1 },
         { key: "cpu.internalBus.data.strokeDashoffset", from: 1, to: 0 },
       ],
-      { duration: 5, easing: "easeInOutSine" },
+      { duration: BUS_ANIMATION_DURATION, easing: "easeInOutSine" },
     );
   } catch (error) {
     console.warn("Error en drawDataPath:", error);

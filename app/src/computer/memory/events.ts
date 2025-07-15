@@ -42,8 +42,10 @@ function generateExternalDataPath(direction: "memory-to-mbr" | "mbr-to-memory"):
   }
 }
 
+const BUS_ANIMATION_DURATION = 5;
+
 // Función para animar el bus de datos externo (igual que el interno del CPU)
-const drawExternalDataPath = (direction: "memory-to-mbr" | "mbr-to-memory") => {
+export const drawExternalDataPath = (direction: "memory-to-mbr" | "mbr-to-memory") => {
   try {
     const path = generateExternalDataPath(direction);
     if (!path) return Promise.resolve();
@@ -54,7 +56,7 @@ const drawExternalDataPath = (direction: "memory-to-mbr" | "mbr-to-memory") => {
         { key: "bus.data.opacity", from: 1 },
         { key: "bus.data.strokeDashoffset", from: 1, to: 0 },
       ],
-      { duration: 5, easing: "easeInOutSine" },
+      { duration: BUS_ANIMATION_DURATION, easing: "easeInOutSine" },
     );
   } catch (error) {
     console.warn("Error en drawExternalDataPath:", error);
@@ -88,7 +90,7 @@ export const drawExternalAddressPath = () => {
         { key: "bus.address.opacity", from: 1 },
         { key: "bus.address.strokeDashoffset", from: 1, to: 0 },
       ],
-      { duration: 5, easing: "easeInOutSine" },
+      { duration: BUS_ANIMATION_DURATION, easing: "easeInOutSine" },
     );
   } catch (error) {
     console.warn("Error en drawExternalAddressPath:", error);
@@ -112,7 +114,7 @@ const drawRDControlPath = () => {
         { key: "bus.rd.opacity", from: 1 },
         { key: "bus.rd.strokeDashoffset", from: 1, to: 0 },
       ],
-      { duration: 5, easing: "easeInOutSine" },
+      { duration: BUS_ANIMATION_DURATION, easing: "easeInOutSine" },
     );
   } catch (error) {
     console.warn("Error en drawRDControlPath:", error);
@@ -132,7 +134,7 @@ const drawWRControlPath = () => {
         { key: "bus.wr.opacity", from: 1 },
         { key: "bus.wr.strokeDashoffset", from: 1, to: 0 },
       ],
-      { duration: 5, easing: "easeInOutSine" },
+      { duration: BUS_ANIMATION_DURATION, easing: "easeInOutSine" },
     );
   } catch (error) {
     console.warn("Error en drawWRControlPath:", error);
