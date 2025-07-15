@@ -10,6 +10,7 @@ import { dataAddressesAtom, programAddressesAtom } from "@/computer/memory/state
 import { animated, getSpring } from "@/computer/shared/springs";
 import { useTranslate } from "@/lib/i18n";
 import { useDevices } from "@/lib/settings";
+import { useSpring, animated as animatedSpring } from "@react-spring/web";
 
 import { memoryShownAtom, operatingAddressAtom } from "./state";
 
@@ -17,6 +18,24 @@ export function Memory() {
   const translate = useTranslate();
 
   const memory = useAtomValue(memoryShownAtom);
+  // Nuevo: animación global de fade-in al cargar el programa
+  const [fadeKey, setFadeKey] = useState(0);
+  const prevMemory = useRef(memory);
+  useEffect(() => {
+    // Detectar cambio masivo (carga o reset)
+    if (prevMemory.current !== memory) {
+      setFadeKey(f => f + 1);
+      prevMemory.current = memory;
+    }
+  }, [memory]);
+  const fadeSpring = useSpring({
+    from: { opacity: 0.5 },
+    to: { opacity: 1 },
+    reset: true,
+    config: { tension: 60, friction: 30 },
+    // key para reiniciar la animación
+    immediate: false,
+  });
   const ip = useAtomValue(registerAtoms.IP);
   const programAddresses = useAtomValue(programAddressesAtom);
   const dataAddresses = useAtomValue(dataAddressesAtom);
@@ -41,7 +60,9 @@ export function Memory() {
   // const memoryCells = useAtomValue(memoryShownAtom) as { address: MemoryAddress; value: Byte<8>; }[];
 
   return (
-    <div
+    <animatedSpring.div
+      key={fadeKey}
+      style={fadeSpring}
       className="absolute left-[800px] top-0 z-10 size-auto rounded-lg border border-stone-600 bg-stone-900 shadow-2xl [&_*]:z-20"
       data-testid="memory-component"
     >
@@ -121,7 +142,7 @@ export function Memory() {
           </tbody>
         </table>
       </div>
-    </div>
+    </animatedSpring.div>
   );
 }
 
