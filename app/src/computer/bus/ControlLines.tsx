@@ -6,16 +6,22 @@ import { useTranslate } from "@/lib/i18n";
 import { useAtomValue, useSetAtom } from "jotai";
 import { showReadBusAnimationAtom } from "@/computer/bus/state";
 import { DataFlowAnimation } from "@/computer/shared/DataFlowAnimation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { showWriteBusAnimationAtom } from "@/computer/bus/state";
+import { useSpringValue } from '@react-spring/web';
 
 export function ControlLines() {
   const { devices } = useSimulation();
   const showReadAnim = useAtomValue(showReadBusAnimationAtom);
   const showWriteAnim = useAtomValue(showWriteBusAnimationAtom);
 
+  // Ref para el path SVG del bus RD
+  const rdPathRef = useRef<SVGPathElement>(null);
+  // Ref para el path animado del bus RD
+  const rdAnimatedPathRef = useRef<SVGPathElement>(null);
+
   const rdPath = [
-    "M 380 420 H 800", // CPU -> Memory
+    "M 380 420 H 800", // CPU -> Memory (recto)
     devices.pic && "M 780 420 V 805 H 450",
     devices.pio && "M 780 420 V 805 H 900",
     devices.timer && "M 780 420 V 805 H 583 V 875",
@@ -50,13 +56,14 @@ export function ControlLines() {
 
   return (
     <>
-      {showReadAnim && <ReadBusAnimation />}
+      {showReadAnim && <ReadBusAnimation pathRef={rdAnimatedPathRef} progressSpring={rdDashoffset} rdPath={rdPath} />}
       {showWriteAnim && <WriteBusAnimation />}
       <svg className="pointer-events-none absolute inset-0 z-[15] size-full">
-        <path className="fill-none stroke-stone-900 stroke-[6px]" strokeLinejoin="round" d={rdPath} />
+        <path ref={rdPathRef} className="fill-none stroke-stone-900 stroke-[6px]" strokeLinejoin="round" d={rdPath} />
         <path className="fill-none stroke-stone-700 stroke-[4px]" strokeLinejoin="round" d={rdPath} />
         {/* Línea animada del bus RD - usando path dinámico del spring */}
         <animated.path
+          ref={rdAnimatedPathRef}
           d={rdPath_anim}
           className="fill-none stroke-red-500 stroke-[4px]"
           strokeLinejoin="round"
@@ -251,40 +258,71 @@ function ControlLineLegend({
   );
 }
 
-// Animación de texto 'Read' de izquierda a derecha sobre el bus de control
-function ReadBusAnimation() {
-  const [progress, setProgress] = useState(0);
+// Animación de texto 'Read' siguiendo exactamente la animación roja del bus de control
+interface ReadBusAnimationProps {
+  pathRef: React.RefObject<SVGPathElement>;
+  progressSpring: any;
+  rdPath: string;
+}
+function ReadBusAnimation({ pathRef, progressSpring, rdPath }: ReadBusAnimationProps) {
   const [visible, setVisible] = useState(true);
   const setShowReadAnim = useSetAtom(showReadBusAnimationAtom);
+  const [ready, setReady] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  // Sincroniza el progreso con el valor actual del spring (que va de 1 a 0)
   useEffect(() => {
-    let frame: number;
-    const duration = 2000;
-    const start = Date.now();
-    function animate() {
-      const elapsed = Date.now() - start;
-      const p = Math.min(elapsed / duration, 1);
-      setProgress(p);
-      if (p < 1) {
-        frame = requestAnimationFrame(animate);
-      } else {
-        setVisible(false);
-        setTimeout(() => setShowReadAnim(false), 100); // Desactiva el átomo tras la animación
-      }
+    if (!progressSpring || typeof progressSpring.get !== 'function') return;
+    let running = true;
+    function update() {
+      if (!running) return;
+      const val = progressSpring.get();
+      setProgress(1 - val);
+      if (val > 0) requestAnimationFrame(update);
     }
-    animate();
-    return () => cancelAnimationFrame(frame);
-  }, [setShowReadAnim]);
-  if (!visible) return null;
-  // Coordenadas del bus de control RD: de 380 420 a 800 420
-  const fromX = 380, toX = 800, y = 420;
-  const x = fromX + (toX - fromX) * progress;
+    update();
+    return () => { running = false; };
+  }, [progressSpring]);
+
+  useEffect(() => {
+    // Esperar a que el path esté disponible
+    if (!pathRef.current) {
+      const timeout = setTimeout(() => setReady(r => !r), 10);
+      return () => clearTimeout(timeout);
+    }
+    setReady(true);
+  }, [pathRef, pathRef.current]);
+
+  useEffect(() => {
+    if (!ready) return;
+    // Cuando el progreso llegue a 1, ocultar el texto
+    if (progress >= 1) {
+      setVisible(false);
+      setTimeout(() => setShowReadAnim(false), 100);
+    }
+  }, [progress, ready, setShowReadAnim]);
+
+  if (!visible || !ready) return null;
+  // Usar getPointAtLength para seguir el path animado
+  let x = 0, y = 0;
+  if (pathRef.current) {
+    const path = pathRef.current;
+    const totalLength = path.getTotalLength();
+    const point = path.getPointAtLength(progress * totalLength);
+    x = point.x + 40; // Desplazamiento extra a la derecha
+    y = point.y;
+  } else {
+    // Fallback: línea recta
+    x = 380 + (800 - 380) * progress + 40;
+    y = 420;
+  }
   return (
     <div
       className="pointer-events-none absolute z-[100] font-extrabold text-xs select-none"
       style={{
         left: x,
         top: y - 32,
-        color: '#ef4444', // rojo tailwind-500
+        color: '#ef4444',
         textShadow: '0 0 4px #000, 0 0 2px #000',
         background: 'rgba(0,0,0,0.2)',
         padding: '2px 8px',
@@ -324,7 +362,7 @@ function WriteBusAnimation() {
   if (!visible) return null;
   // Coordenadas del bus de control WR: de 380 440 a 800 440
   const fromX = 380, toX = 800, y = 440;
-  const x = fromX + (toX - fromX) * progress;
+  const x = fromX + (toX - fromX) * progress + 40;
   return (
     <div
       className="pointer-events-none absolute z-[100] font-extrabold text-xs select-none"
