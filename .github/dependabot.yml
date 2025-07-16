@@ -1,20 +1,16 @@
 version: 2
 updates:
-  # Actualización de dependencias npm en raíz
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
-      time: "10:00" # Ajustado al horario local (-03:00)
+      time: "10:00"
     open-pull-requests-limit: 10
     reviewers:
-      - "ruiz-jose" # Usuario real
+      - "ruiz-jose"
     assignees:
       - "ruiz-jose"
-    commit-message:
-      prefix: "chore"
-      include: "scope"
     labels:
       - "dependencies"
       - "automated"
@@ -24,27 +20,22 @@ updates:
         update-types: ["version-update:semver-major"]
     versioning-strategy: "increase"
 
-  # Actualización de dependencias npm en /app
   - package-ecosystem: "npm"
     directory: "/app"
     schedule:
       interval: "weekly"
       day: "monday"
-      time: "10:30" # 30 minutos después de la actualización raíz
+      time: "10:30"
     open-pull-requests-limit: 10
     reviewers:
       - "ruiz-jose"
     assignees:
       - "ruiz-jose"
-    commit-message:
-      prefix: "chore"
-      include: "scope"
     labels:
       - "dependencies"
       - "automated"
       - "app-dependencies"
     versioning-strategy: "increase"
-    security-advisories: true
       day: "monday"
       time: "09:00"
     open-pull-requests-limit: 10
