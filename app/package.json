@@ -74,7 +74,7 @@
     "@types/umami": "^0.1.5",
     "@types/wicg-file-system-access": "^2023.10.5",
     "@vitejs/plugin-react-swc": "^3.7.2",
-    "@vitest/coverage-v8": "^1.6.1",
+    "@vitest/coverage-v8": "^3.2.4",
     "@vitest/ui": "^1.6.1",
     "@vonsim/tsconfig": "workspace:^",
     "autoprefixer": "^10.4.20",
