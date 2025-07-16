@@ -1,3 +1,4 @@
+import { animated as animatedSpring, useSpring } from "@react-spring/web";
 import { MemoryAddress } from "@vonsim/common/address";
 import type { Byte } from "@vonsim/common/byte";
 import clsx from "clsx";
@@ -10,7 +11,6 @@ import { dataAddressesAtom, programAddressesAtom } from "@/computer/memory/state
 import { animated, getSpring } from "@/computer/shared/springs";
 import { useTranslate } from "@/lib/i18n";
 import { useDevices } from "@/lib/settings";
-import { useSpring, animated as animatedSpring } from "@react-spring/web";
 
 import { memoryShownAtom, operatingAddressAtom } from "./state";
 
@@ -57,6 +57,11 @@ export function Memory() {
     return rows;
   };
 
+  // Calcular fila y columna donde apunta el IP
+  const COLUMNS = 16;
+  const ipRow = Math.floor(Number(ip.valueOf()) / COLUMNS);
+  const ipCol = Number(ip.valueOf()) % COLUMNS;
+
   // const memoryCells = useAtomValue(memoryShownAtom) as { address: MemoryAddress; value: Byte<8>; }[];
 
   return (
@@ -79,11 +84,17 @@ export function Memory() {
                 <th
                   key={index}
                   className={clsx(
-                    "size-10 border border-gray-500 bg-mantis-500",
+                    "relative size-10 border border-gray-500 bg-mantis-500",
                     index % 4 === 0 && index !== 0 ? "border-l-4 border-mantis-600" : "",
                   )}
                 >
-                  {index.toString(16).toUpperCase()}
+                  <span className="inline-flex items-center">
+                    {index.toString(16).toUpperCase()}
+                    {/* Flecha en columna donde apunta IP */}
+                    {index === ipCol && (
+                      <span className="ml-0.5 align-middle text-xs text-red-500">↓</span>
+                    )}
+                  </span>
                 </th>
               ))}
             </tr>
@@ -96,8 +107,14 @@ export function Memory() {
                   rowIndex % 4 === 0 && rowIndex !== 0 ? "border-t-4 border-mantis-600" : ""
                 }
               >
-                <th className="size-10 border border-gray-500 bg-mantis-500">
-                  {rowIndex.toString(16).toUpperCase()}
+                <th className="relative size-10 border border-gray-500 bg-mantis-500">
+                  <span className="inline-flex items-center">
+                    {rowIndex.toString(16).toUpperCase()}
+                    {/* Flecha en fila donde apunta IP */}
+                    {rowIndex === ipRow && (
+                      <span className="ml-0.5 align-middle text-xs text-red-500">→</span>
+                    )}
+                  </span>
                 </th>
                 {row.map((cell, cellIndex) => (
                   <td

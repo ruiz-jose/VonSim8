@@ -1,5 +1,6 @@
 import { MemoryAddress } from "@vonsim/common/address";
 
+import { showReadBusAnimationAtom, showWriteBusAnimationAtom } from "@/computer/bus/state";
 import { MBRAtom } from "@/computer/cpu/state";
 import {
   activateRegister,
@@ -15,8 +16,6 @@ import type { SimulatorEvent } from "@/computer/shared/types";
 import { finishSimulation, notifyWarning } from "@/computer/simulation";
 import { store } from "@/lib/jotai";
 import { colors } from "@/lib/tailwind";
-import { showReadBusAnimationAtom } from "@/computer/bus/state";
-import { showWriteBusAnimationAtom } from "@/computer/bus/state";
 
 import { memoryAtom, operatingAddressAtom } from "./state";
 

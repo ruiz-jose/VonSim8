@@ -1,14 +1,10 @@
-import clsx from "clsx";
+import { useAtomValue, useSetAtom } from "jotai";
+import { useEffect, useRef, useState } from "react";
 
+import { showReadBusAnimationAtom, showWriteBusAnimationAtom } from "@/computer/bus/state";
 import { animated, getSpring, SimplePathKey } from "@/computer/shared/springs";
 import { useSimulation } from "@/computer/simulation";
 import { useTranslate } from "@/lib/i18n";
-import { useAtomValue, useSetAtom } from "jotai";
-import { showReadBusAnimationAtom } from "@/computer/bus/state";
-import { DataFlowAnimation } from "@/computer/shared/DataFlowAnimation";
-import { useState, useEffect, useRef } from "react";
-import { showWriteBusAnimationAtom } from "@/computer/bus/state";
-import { useSpringValue } from '@react-spring/web';
 
 export function ControlLines() {
   const { devices } = useSimulation();
@@ -56,11 +52,22 @@ export function ControlLines() {
 
   return (
     <>
-      {showReadAnim && <ReadBusAnimation pathRef={rdAnimatedPathRef} progressSpring={rdDashoffset} rdPath={rdPath} />}
+      {showReadAnim && (
+        <ReadBusAnimation pathRef={rdAnimatedPathRef} progressSpring={rdDashoffset} />
+      )}
       {showWriteAnim && <WriteBusAnimation />}
       <svg className="pointer-events-none absolute inset-0 z-[15] size-full">
-        <path ref={rdPathRef} className="fill-none stroke-stone-900 stroke-[6px]" strokeLinejoin="round" d={rdPath} />
-        <path className="fill-none stroke-stone-700 stroke-[4px]" strokeLinejoin="round" d={rdPath} />
+        <path
+          ref={rdPathRef}
+          className="fill-none stroke-stone-900 stroke-[6px]"
+          strokeLinejoin="round"
+          d={rdPath}
+        />
+        <path
+          className="fill-none stroke-stone-700 stroke-[4px]"
+          strokeLinejoin="round"
+          d={rdPath}
+        />
         {/* Línea animada del bus RD - usando path dinámico del spring */}
         {showReadAnim && (
           <animated.path
@@ -77,8 +84,16 @@ export function ControlLines() {
           />
         )}
 
-        <path className="fill-none stroke-stone-900 stroke-[6px]" strokeLinejoin="round" d={wrPath} />
-        <path className="fill-none stroke-stone-700 stroke-[4px]" strokeLinejoin="round" d={wrPath} />
+        <path
+          className="fill-none stroke-stone-900 stroke-[6px]"
+          strokeLinejoin="round"
+          d={wrPath}
+        />
+        <path
+          className="fill-none stroke-stone-700 stroke-[4px]"
+          strokeLinejoin="round"
+          d={wrPath}
+        />
         {/* Línea animada del bus WR - usando path dinámico del spring */}
         {showWriteAnim && (
           <animated.path
@@ -131,7 +146,9 @@ export function ControlLines() {
         {/* Interrupt lines */}
 
         {devices.pic && devices.f10 && <ControlLine springs="bus.int0" d="M 145 950 V 900" />}
-        {devices.pic && devices.timer && <ControlLine springs="bus.int1" d="M 475 955 H 400 V 900" />}
+        {devices.pic && devices.timer && (
+          <ControlLine springs="bus.int1" d="M 475 955 H 400 V 900" />
+        )}
         {devices.pic && devices.handshake && (
           <ControlLine springs="bus.int2" d="M 900 1075 H 300 V 900" />
         )}
@@ -193,82 +210,60 @@ export function ControlLinesLegends() {
 
   return (
     <>
-      <ControlLineLegend className="left-[384px] top-[403px]">rd</ControlLineLegend>
-      <ControlLineLegend className="left-[384px] top-[423px]">wr</ControlLineLegend>
+      <ControlLineLegend>rd</ControlLineLegend>
+      <ControlLineLegend>wr</ControlLineLegend>
       {devices.hasIOBus && (
         <>
-          <ControlLineLegend className="left-[384px] top-[443px]">io/m</ControlLineLegend>
-          <ControlLineLegend className="left-[715px] top-[538px]">
-            {translate("computer.chip-select.mem")}
-          </ControlLineLegend>
+          <ControlLineLegend>io/m</ControlLineLegend>
+          <ControlLineLegend>{translate("computer.chip-select.mem")}</ControlLineLegend>
         </>
       )}
 
       {devices.pic && (
-        <ControlLineLegend className="left-[510px] top-[573px]">
-          {translate("computer.chip-select.pic")}
-        </ControlLineLegend>
+        <ControlLineLegend>{translate("computer.chip-select.pic")}</ControlLineLegend>
       )}
       {devices.timer && (
-        <ControlLineLegend className="left-[545px] top-[573px]">
-          {translate("computer.chip-select.timer")}
-        </ControlLineLegend>
+        <ControlLineLegend>{translate("computer.chip-select.timer")}</ControlLineLegend>
       )}
       {devices.pio && (
-        <ControlLineLegend className="left-[600px] top-[573px]">
-          {translate("computer.chip-select.pio")}
-        </ControlLineLegend>
+        <ControlLineLegend>{translate("computer.chip-select.pio")}</ControlLineLegend>
       )}
       {devices.handshake && (
-        <ControlLineLegend className="left-[675px] top-[573px]">
-          {translate("computer.chip-select.handshake")}
-        </ControlLineLegend>
+        <ControlLineLegend>{translate("computer.chip-select.handshake")}</ControlLineLegend>
       )}
 
       {devices.pic && (
         <>
-          <ControlLineLegend className="left-[75px] top-[478px]">intr</ControlLineLegend>
-          <ControlLineLegend className="left-[125px] top-[478px]">inta</ControlLineLegend>
+          <ControlLineLegend>intr</ControlLineLegend>
+          <ControlLineLegend>inta</ControlLineLegend>
         </>
       )}
 
       {devices.printer && (
         <>
-          <ControlLineLegend className="left-[1310px] top-[983px]">strobe</ControlLineLegend>
-          <ControlLineLegend className="left-[1310px] top-[998px]">busy</ControlLineLegend>
-          <ControlLineLegend className="left-[1310px] top-[1053px]">data</ControlLineLegend>
+          <ControlLineLegend>strobe</ControlLineLegend>
+          <ControlLineLegend>busy</ControlLineLegend>
+          <ControlLineLegend>data</ControlLineLegend>
         </>
       )}
     </>
   );
 }
 
-function ControlLineLegend({
-  className,
-  children,
-}: {
-  className?: string;
-  children?: React.ReactNode;
-}) {
+function ControlLineLegend({ children }: { children?: React.ReactNode }) {
   return (
-    <span
-      className={clsx(
-        "pointer-events-none absolute z-[15] block font-mono text-xs font-bold tracking-wider text-stone-400",
-        className,
-      )}
-    >
+    <span className="pointer-events-none absolute z-[15] block font-mono text-xs font-bold tracking-wider text-stone-400">
       {children}
     </span>
   );
 }
 
 // Animación de texto 'Read' siguiendo exactamente la animación roja del bus de control
-interface ReadBusAnimationProps {
+type ReadBusAnimationProps = {
   pathRef: React.RefObject<SVGPathElement>;
   progressSpring: any;
-  rdPath: string;
-}
-function ReadBusAnimation({ pathRef, progressSpring, rdPath }: ReadBusAnimationProps) {
+};
+function ReadBusAnimation({ pathRef, progressSpring }: ReadBusAnimationProps) {
   const [visible, setVisible] = useState(true);
   const setShowReadAnim = useSetAtom(showReadBusAnimationAtom);
   const [ready, setReady] = useState(false);
@@ -276,7 +271,7 @@ function ReadBusAnimation({ pathRef, progressSpring, rdPath }: ReadBusAnimationP
 
   // Sincroniza el progreso con el valor actual del spring (que va de 1 a 0)
   useEffect(() => {
-    if (!progressSpring || typeof progressSpring.get !== 'function') return;
+    if (!progressSpring || typeof progressSpring.get !== "function") return;
     let running = true;
     function update() {
       if (!running) return;
@@ -285,7 +280,9 @@ function ReadBusAnimation({ pathRef, progressSpring, rdPath }: ReadBusAnimationP
       if (val > 0) requestAnimationFrame(update);
     }
     update();
-    return () => { running = false; };
+    return () => {
+      running = false;
+    };
   }, [progressSpring]);
 
   useEffect(() => {
@@ -295,7 +292,7 @@ function ReadBusAnimation({ pathRef, progressSpring, rdPath }: ReadBusAnimationP
       return () => clearTimeout(timeout);
     }
     setReady(true);
-  }, [pathRef, pathRef.current]);
+  }, [pathRef]); // Eliminado pathRef.current del array de dependencias
 
   useEffect(() => {
     if (!ready) return;
@@ -308,7 +305,8 @@ function ReadBusAnimation({ pathRef, progressSpring, rdPath }: ReadBusAnimationP
 
   if (!visible || !ready) return null;
   // Usar getPointAtLength para seguir el path animado
-  let x = 0, y = 0;
+  let x = 0,
+    y = 0;
   if (pathRef.current) {
     const path = pathRef.current;
     const totalLength = path.getTotalLength();
@@ -322,16 +320,16 @@ function ReadBusAnimation({ pathRef, progressSpring, rdPath }: ReadBusAnimationP
   }
   return (
     <div
-      className="pointer-events-none absolute z-[100] font-extrabold text-xs select-none"
+      className="pointer-events-none absolute z-[100] select-none text-xs font-extrabold"
       style={{
         left: x,
         top: y - 32,
-        color: '#ef4444',
-        textShadow: '0 0 4px #000, 0 0 2px #000',
-        background: 'rgba(0,0,0,0.2)',
-        padding: '2px 8px',
-        borderRadius: '6px',
-        transition: 'left 0.1s linear, top 0.1s linear',
+        color: "#ef4444",
+        textShadow: "0 0 4px #000, 0 0 2px #000",
+        background: "rgba(0,0,0,0.2)",
+        padding: "2px 8px",
+        borderRadius: "6px",
+        transition: "left 0.1s linear, top 0.1s linear",
         opacity: visible ? 1 : 0,
       }}
     >
@@ -365,20 +363,22 @@ function WriteBusAnimation() {
   }, [setShowWriteAnim]);
   if (!visible) return null;
   // Coordenadas del bus de control WR: de 380 440 a 800 440
-  const fromX = 380, toX = 800, y = 440;
+  const fromX = 380,
+    toX = 800,
+    y = 440;
   const x = fromX + (toX - fromX) * progress + 40;
   return (
     <div
-      className="pointer-events-none absolute z-[100] font-extrabold text-xs select-none"
+      className="pointer-events-none absolute z-[100] select-none text-xs font-extrabold"
       style={{
         left: x,
         top: y + 12, // Debajo del bus
-        color: '#f59e42', // naranja tailwind-400 (igual que la animación)
-        textShadow: '0 0 4px #000, 0 0 2px #000',
-        background: 'rgba(0,0,0,0.2)',
-        padding: '2px 8px',
-        borderRadius: '6px',
-        transition: 'left 0.1s linear, top 0.1s linear',
+        color: "#f59e42", // naranja tailwind-400 (igual que la animación)
+        textShadow: "0 0 4px #000, 0 0 2px #000",
+        background: "rgba(0,0,0,0.2)",
+        padding: "2px 8px",
+        borderRadius: "6px",
+        transition: "left 0.1s linear, top 0.1s linear",
         opacity: visible ? 1 : 0,
       }}
     >
