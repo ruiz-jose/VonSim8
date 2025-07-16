@@ -1,33 +1,51 @@
 version: 2
 updates:
-  # Mantener actualizadas las dependencias de npm
+  # Actualización de dependencias npm en raíz
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
-      time: "09:00"
+      time: "10:00" # Ajustado al horario local (-03:00)
     open-pull-requests-limit: 10
     reviewers:
-      - "your-username" # Reemplaza con tu username de GitHub
+      - "ruiz-jose" # Usuario real
     assignees:
-      - "your-username"
+      - "ruiz-jose"
     commit-message:
       prefix: "chore"
       include: "scope"
     labels:
       - "dependencies"
       - "automated"
+      - "security"
     ignore:
-      # Ignorar dependencias que requieren actualización manual
+      # Ignorar actualizaciones mayores de dependencias críticas
       - dependency-name: "@vonsim/*"
         update-types: ["version-update:semver-major"]
+    versioning-strategy: "increase"
 
-  # Mantener actualizadas las dependencias de npm en la app
+  # Actualización de dependencias npm en /app
   - package-ecosystem: "npm"
     directory: "/app"
     schedule:
       interval: "weekly"
+      day: "monday"
+      time: "10:30" # 30 minutos después de la actualización raíz
+    open-pull-requests-limit: 10
+    reviewers:
+      - "ruiz-jose"
+    assignees:
+      - "ruiz-jose"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "automated"
+      - "app-dependencies"
+    versioning-strategy: "increase"
+    security-advisories: true
       day: "monday"
       time: "09:00"
     open-pull-requests-limit: 10
