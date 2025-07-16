@@ -1,3 +1,8 @@
+
+---
+title: "Set de instrucciones"
+---
+
 # Set de instrucciones
 
 <a href="/instrucions/instructions.pdf" download="Set de instrucciones del simulador VonSim.pdf">Descargar en formato PDF (tamaño A5)</a>
