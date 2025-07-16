@@ -56,7 +56,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-resizable-panels": "^1.0.10",
-    "react-simple-keyboard": "^3.8.23",
+    "react-simple-keyboard": "^3.8.96",
     "react-use": "^17.5.1",
     "react-zoom-pan-pinch": "^3.6.1",
     "rimraf": "^5.0.5",
