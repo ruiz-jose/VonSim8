@@ -20,7 +20,6 @@ updates:
       - "automated"
       - "security"
     ignore:
-      # Ignorar actualizaciones mayores de dependencias críticas
       - dependency-name: "@vonsim/*"
         update-types: ["version-update:semver-major"]
     versioning-strategy: "increase"
