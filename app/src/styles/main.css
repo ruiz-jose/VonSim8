@@ -198,9 +198,18 @@
 }
 
 /* Mejoras para tooltips */
+
 .tooltip {
   @apply absolute z-50 px-3 py-2 text-sm text-white bg-stone-900 rounded-lg shadow-lg border border-stone-600;
   animation: fade-in 0.2s ease-out;
+  max-width: 240px;
+  overflow: visible;
+  pointer-events: none;
+}
+
+body.tooltip-open {
+  overflow-x: hidden !important;
+  overflow-y: hidden !important;
 }
 
 /* Mejoras para modales */

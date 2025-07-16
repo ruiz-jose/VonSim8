@@ -19,9 +19,7 @@ export default defineConfig({
       },
       pagination: false,
       lastUpdated: true,
-      social: [
-        { label: "GitHub", icon: "github", href: "https://github.com/ruiz-jose/VonSim8" },
-      ],
+      social: [{ label: "GitHub", icon: "github", href: "https://github.com/ruiz-jose/VonSim8" }],
 
       // Solo español, sin configuración de i18n
 

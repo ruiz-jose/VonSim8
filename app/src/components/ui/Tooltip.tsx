@@ -65,7 +65,7 @@ export const Tooltip = memo(
 
     const showTooltip = useCallback(() => {
       if (disabled) return;
-
+      document.body.classList.add("tooltip-open");
       timeoutRef.current = setTimeout(() => {
         setIsVisible(true);
       }, delay);
@@ -75,6 +75,7 @@ export const Tooltip = memo(
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
+      document.body.classList.remove("tooltip-open");
       setIsVisible(false);
     }, []);
 
