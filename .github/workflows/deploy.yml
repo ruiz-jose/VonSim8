@@ -26,8 +26,17 @@ jobs:
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
 
-      - name: Build project
+
+      - name: Build app
         run: pnpm --dir app run build
+
+      - name: Build docs
+        run: pnpm --dir docs run build
+
+      - name: Copy docs to app/dist/docs
+        run: |
+          mkdir -p app/dist/docs
+          cp -r docs/dist/* app/dist/docs/
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
