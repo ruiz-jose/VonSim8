@@ -37,13 +37,6 @@ export function* handleSyscall(
       return false; // Halt
     }
 
-    case 3: {
-      // INT 3 - Breakpoint
-      yield { type: "cpu:int.3" };
-      // Doesn't return -- retrieves machine state
-      break;
-    }
-
     case 6: {
       // INT 6 - Read character from the keyboard and store it in [BX]
       yield { type: "cpu:int.6" };
