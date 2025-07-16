@@ -247,14 +247,23 @@ export function generateDataPath(
   const registers = ["AL", "BL", "CL", "DL", "id"];
 
   // Usar los nombres normalizados para las comparaciones
-  if (normalizedFrom === "MBR" && normalizedTo === "left") {
+  if (registers.includes(normalizedFrom) && registers.includes(normalizedTo)) {
+    // Recorrido explícito: X, X out, X out join, outr mbr join, mbr reg join, Y join, Y
+    path = [
+      normalizedFrom,
+      `${normalizedFrom} out`,
+      `${normalizedFrom} out join`,
+      "outr mbr join",
+      "mbr reg join",
+      `${normalizedTo} join`,
+      normalizedTo,
+    ];
+  } else if (normalizedFrom === "MBR" && normalizedTo === "left") {
     path = ["MBR", "outr mbr join", "bleft1", "bleft2", "bleft3", "left"];
   } else if (normalizedFrom === "MBR" && normalizedTo === "ri") {
     path = ["MBR", "outr mbr join", "SP out join", "MAR join2", "MAR"];
   } else if (normalizedFrom === "MBR" && registers.includes(normalizedTo)) {
     path = ["MBR", "mbr reg join", `${normalizedTo} join`, normalizedTo];
-  } else if (registers.includes(normalizedFrom) && registers.includes(normalizedTo)) {
-    path = intermediatePath(normalizedFrom, normalizedTo);
   } else if (normalizedFrom === "IP" && normalizedTo === "id") {
     path = ["IP out", "IP out join", "outr mbr join", "mbr reg join", "id join", "id"];
   } else if (normalizedFrom === "id" && normalizedTo === "ri") {

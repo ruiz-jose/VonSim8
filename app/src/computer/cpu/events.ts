@@ -347,6 +347,21 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       return;
     }
 
+    case "cpu:register.buscopy": {
+      // Normalizar a DataRegister (sin sufijos .l/.h)
+      const normalize = (reg: string) => reg.replace(/\.(l|h)$/, "");
+      const src = normalize(event.src);
+      const dest = normalize(event.dest);
+      // Animar el bus de datos interno entre registros
+      await drawDataPath(src as DataRegister, dest as DataRegister, instructionName, mode);
+      // Copiar el valor en el frontend (para mantener sincronía visual)
+      store.set(registerAtoms[event.dest], store.get(registerAtoms[event.src]));
+      await activateRegister(`cpu.${event.dest}` as RegisterKey);
+      await deactivateRegister(`cpu.${event.dest}` as RegisterKey);
+      await resetDataPath();
+      return;
+    }
+
     default: {
       const _exhaustiveCheck: never = event;
       return _exhaustiveCheck;

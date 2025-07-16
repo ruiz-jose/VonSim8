@@ -115,10 +115,17 @@ export class MOVInstruction extends Instruction<"MOV"> {
 
     switch (mode) {
       case "reg<-reg": {
-        // Copy register
-        if (size === 8) yield* computer.cpu.copyByteRegister(src, out);
-        else yield* computer.cpu.copyWordRegister(src, out);
-
+        // Simular transferencia por el bus de datos interno usando el MBR
+        if (size === 8) {
+          yield { type: "cpu:register.buscopy", src, dest: out, size: 8 };
+        } else {
+          const [srcLow, srcHigh] = splitRegister(src);
+          const [outLow, outHigh] = splitRegister(out);
+          yield { type: "cpu:register.buscopy", src: srcLow, dest: outLow, size: 8 };
+          if (srcHigh && outHigh) {
+            yield { type: "cpu:register.buscopy", src: srcHigh, dest: outHigh, size: 8 };
+          }
+        }
         return true;
       }
       case "reg<-mem": {

@@ -29,6 +29,7 @@ export type CPUMicroOperation =
   | { type: "cpu:register.copy"; size: 16; src: WordRegister; dest: WordRegister }
   | { type: "cpu:register.update"; size: 8; register: ByteRegister; value: Byte<8> }
   | { type: "cpu:register.update"; size: 16; register: WordRegister; value: Byte<16> }
+  | { type: "cpu:register.buscopy"; src: ByteRegister; dest: ByteRegister; size: 8 }
   | { type: "cpu:rd.on" }
   | { type: "cpu:wr.on" }
   | { type: "cpu:iom.on" }
