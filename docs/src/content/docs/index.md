@@ -5,22 +5,60 @@ head:
     attrs: { property: og:image, content: https://github.com/ruiz-jose/VonSim8/docs/og/index.png }
 ---
 
-VonSim8 es una herramienta destinada a la enseñanza y aprendizaje de arquitectura y organización de computadoras. Consta de un entorno para desarrollar programas en [lenguaje ensamblador](/VonSim8/docs/cpu/assembly/) (_Assembly_ o _Assembler_) y de un simulador para los mismos.
 
-Está [basado](/VonSim8/docs/cpu/) en el VonSim que a su vez se basa en el procesador 8088 de Intel, y cuenta con:
 
-- cuatro registros multipropósito de 8 bits;
-- una [memoria principal](/VonSim8/docs/memory/) de 256 Bytes;
-- un bus de direcciones de 8 bits y un bus de datos de 8 bits;
-- interrupciones por software (como lectura del teclado y escritura en pantalla);
-- interrupciones por hardware con un [PIC](/VonSim8/docs/io/modules/pic/);
-- múltiples [dispositivos](/VonSim8/docs/io/devices/): reloj, llaves, leds y una impresora centronics.
+# Simulador de 8 bits — VonSim8
 
-Estos dispositivos están inspirados por sus análogos especificados por la iAPX 88 (o familia 8088) de Intel. Estos son un conjunto de dispositivos diseñados por Intel para su buen funcionamiento en conjunto con el procesador 8088. Más detalles pueden encontrarse en el [manual de usuario de iAPX 88 (1981)](http://www.bitsavers.org/components/intel/8086/1981_iAPX_86_88_Users_Manual.pdf).
+![Simulador de 8 bits](https://raw.githubusercontent.com/ruiz-jose/VonSim8/main/app/public/og.png)
 
-:::warning[Simplificaciones]
-Este simulador no busca ser un emulador fiel del 8088. Por el contrario, busca ser una herramienta para la enseñanza de la arquitectura de computadoras. Por eso, se han hecho múltiples simplificaciones con respecto al 8088 que dificultan su uso en un entorno real. Mismamente, el set de instrucciones es mucho más pequeño que el del 8088 y su codificación es más simple.
+:::info[¿Qué es VonSim8?]
+VonSim8 es un simulador interactivo y educativo que te permite aprender, practicar y experimentar los conceptos fundamentales de arquitectura y organización de computadoras. Es ideal para estudiantes, docentes y entusiastas que buscan una herramienta visual, sencilla y potente para comprender cómo funciona una computadora desde adentro.
 :::
+
+## Público objetivo
+
+- **Estudiantes** de informática, ingeniería y carreras afines.
+- **Docentes** que buscan recursos didácticos modernos.
+- **Personas curiosas** que quieren experimentar con un simulador realista y amigable.
+
+## ¿Qué puedes hacer con VonSim8?
+
+- Simular la ejecución de programas en un entorno seguro y visual.
+- Observar el funcionamiento de registros, memoria, buses y dispositivos.
+- Aprender instrucciones típicas de un procesador real.
+- Resolver ejercicios y desafíos prácticos.
+
+---
+
+## 🚀 Primeros pasos
+
+1. **Lee la [guía rápida](/VonSim8/docs/guia-rapida/)** para conocer la interfaz.
+2. **Ejecuta el ejemplo inicial** que viene cargado en el simulador.
+3. **Modifica el código** y observa cómo cambian los registros y la memoria.
+4. Consulta el [glosario](/VonSim8/docs/glosario/) si algún término no te resulta familiar.
+5. ¿Tienes dudas? Revisa la sección de [preguntas frecuentes](/VonSim8/docs/faq/).
+
+:::tip
+¡Explora, equivócate y aprende! El simulador está pensado para que experimentes sin miedo y a tu ritmo.
+:::
+
+---
+
+## Preguntas frecuentes
+
+**¿Necesito instalar algo?**  
+No, VonSim8 funciona directamente en tu navegador web.
+
+**¿Puedo guardar y cargar mis programas?**  
+Sí, puedes exportar e importar tus programas fácilmente desde la interfaz.
+
+**¿Dónde encuentro ejemplos?**  
+En la sección de la guía rápida y en los materiales de tu cátedra.
+
+**¿Qué hago si algo no funciona?**  
+Consulta la sección de preguntas frecuentes o reporta un problema desde el footer de la app.
+
+---
 
 ## Créditos
 
