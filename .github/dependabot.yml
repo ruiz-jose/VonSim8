@@ -36,20 +36,6 @@ updates:
       - "automated"
       - "app-dependencies"
     versioning-strategy: "increase"
-      day: "monday"
-      time: "09:00"
-    open-pull-requests-limit: 10
-    reviewers:
-      - "your-username"
-    assignees:
-      - "your-username"
-    commit-message:
-      prefix: "chore"
-      include: "scope"
-    labels:
-      - "dependencies"
-      - "automated"
-      - "app"
     ignore:
       - dependency-name: "@vonsim/*"
         update-types: ["version-update:semver-major"]
