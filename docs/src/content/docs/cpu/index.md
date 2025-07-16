@@ -97,7 +97,6 @@ Y así se comienza a ejecutar la rutina de interrupción. Estas tienen el mismo 
 El simulador permite realizar llamadas al sistema o _syscalls_. En el simulador, estas llamadas son realizadas idénticamente a las interrupciones. Así, para realizar una _syscall_ basta con interrumpir a la CPU con el número de interrupción correspondiente. Estos números son:
 
 - `INT 0`: termina la ejecución del programa, equivalente a la instrucción [`HLT`](/VonSim8/docs/cpu/instructions/hlt/);
-- `INT 3`: incia el modo de depuración (_breakpoint_);
 - `INT 6`: lee un carácter del [teclado](/VonSim8/docs/io/devices/keyboard/);
 - `INT 7`: escribe una cadena de caracteres en [pantalla](/VonSim8/docs/io/devices/screen/).
 
