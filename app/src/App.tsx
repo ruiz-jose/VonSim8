@@ -120,7 +120,7 @@ const DesktopLayout = memo(() => {
             id="panel-settings"
             order={3}
             minSize={30}
-            defaultSize={25}
+            defaultSize={30}
             tagName="section"
             className="rounded-lg border border-stone-600 bg-stone-800"
             data-testid="panel-settings"

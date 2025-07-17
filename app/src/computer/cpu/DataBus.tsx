@@ -41,6 +41,9 @@ dataBus.addNode("FLAGS", { position: [250, 225] });
 dataBus.addNode("IR", { position: [205, 272] });
 dataBus.addNode("left", { position: [130, 85] });
 dataBus.addNode("right", { position: [125, 145] });
+dataBus.addNode("left end", { position: [220, 85] }); // Nodo final en la entrada izquierda de la ALU
+dataBus.addNode("right end", { position: [220, 145] }); // Nodo final en la entrada derecha de la ALU
+dataBus.addNode("result start", { position: [280, 115] }); // Nodo inicial del bus de resultado
 dataBus.addNode("rmbr", { position: [250, 390] });
 dataBus.addNode("bleft1", { position: [550, 16] });
 dataBus.addNode("bleft2", { position: [90, 16] });
@@ -119,6 +122,7 @@ dataBus.addUndirectedEdge("id out join", "bleft1");
 dataBus.addUndirectedEdge("bleft1", "bleft2");
 dataBus.addUndirectedEdge("bleft2", "bleft3");
 dataBus.addUndirectedEdge("bleft3", "left");
+dataBus.addUndirectedEdge("left", "left end"); // Conectar left con left end
 
 dataBus.addUndirectedEdge("IP out join", "outr mbr join");
 dataBus.addUndirectedEdge("ri out join", "outr mbr join");
@@ -142,6 +146,9 @@ dataBus.addUndirectedEdge("mbr reg join", "DL join");
 dataBus.addUndirectedEdge("mbr reg join", "id join");
 dataBus.addUndirectedEdge("outr mbr join", "operands mbr join");
 
+// Conexión del bus de resultado desde data mbr join hasta el registro destino
+// Nota: Estas conexiones ya existen más abajo, no las duplicamos
+
 // These are the lines
 dataBus.addUndirectedEdge("AL join", "AL");
 dataBus.addUndirectedEdge("BL join", "BL");
@@ -162,6 +169,7 @@ dataBus.addUndirectedEdge("SP join", "ri join");
 dataBus.addUndirectedEdge("IP join", "addresses mbr join");
 dataBus.addUndirectedEdge("addresses mbr join", "data mbr join");
 
+dataBus.addUndirectedEdge("result start", "result");
 dataBus.addUndirectedEdge("result", "ALUresult");
 dataBus.addUndirectedEdge("ALUresult", "result mbr join");
 dataBus.addUndirectedEdge("result mbr join", "addresses mbr join");
@@ -176,9 +184,10 @@ dataBus.addUndirectedEdge("left", "left join");
 dataBus.addUndirectedEdge("right", "right join");
 dataBus.addUndirectedEdge("left join", "right join");
 dataBus.addUndirectedEdge("right join", "operands mbr join");
+dataBus.addUndirectedEdge("right", "right end"); // Conectar right con right end
 //dataBus.addUndirectedEdge("operands mbr join", "IR mbr join");
 
-export type DataRegister = PhysicalRegister | "MBR";
+export type DataRegister = PhysicalRegister | "MBR" | "result start";
 
 /**
  * Given two registers, returns the shortest path between them.
@@ -200,6 +209,12 @@ export function generateDataPath(
 
   const normalizedFrom = normalizeRegister(from);
   const normalizedTo = normalizeRegister(to);
+
+  console.log("🔍 generateDataPath llamado con:");
+  console.log("  from:", from, "normalized:", normalizedFrom);
+  console.log("  to:", to, "normalized:", normalizedTo);
+  console.log("  instruction:", instruction);
+  console.log("  mode:", mode);
 
   console.log("from:", from, "normalized:", normalizedFrom);
   console.log("to:", to, "normalized:", normalizedTo);
@@ -247,7 +262,31 @@ export function generateDataPath(
   const registers = ["AL", "BL", "CL", "DL", "id"];
 
   // Usar los nombres normalizados para las comparaciones
-  if (registers.includes(normalizedFrom) && registers.includes(normalizedTo)) {
+  if (normalizedTo === "left") {
+    path = [
+      normalizedFrom,
+      `${normalizedFrom} out`,
+      `${normalizedFrom} out join`,
+      "bleft1",
+      "bleft2",
+      "bleft3",
+      "left",
+      "left end", // Terminar en la entrada izquierda de la ALU
+    ];
+  } else if (normalizedTo === "right") {
+    path = [
+      normalizedFrom,
+      `${normalizedFrom} out`,
+      `${normalizedFrom} out join`,
+      "outr mbr join",
+      "mbr reg join",
+      "IR mbr join",
+      "operands mbr join",
+      "right join",
+      "right",
+      "right end", // Terminar en la entrada derecha de la ALU
+    ];
+  } else if (registers.includes(normalizedFrom) && registers.includes(normalizedTo)) {
     // Recorrido explícito: X, X out, X out join, outr mbr join, mbr reg join, Y join, Y
     path = [
       normalizedFrom,
@@ -274,6 +313,18 @@ export function generateDataPath(
     path = ["id out", "id out join", "outr mbr join", "MBR"];
   } else if (normalizedFrom === "id" && normalizedTo === "IP" && instruction === "RET") {
     path = ["MBR", "mbr reg join", "IP join", "IP"];
+  } else if (normalizedFrom === "result start" && registers.includes(normalizedTo)) {
+    // Path del bus de resultado: result start -> result -> ALUresult -> result mbr join -> addresses mbr join -> data mbr join -> registro destino
+    path = [
+      "result start",
+      "result", 
+      "ALUresult",
+      "result mbr join",
+      "addresses mbr join", 
+      "data mbr join",
+      `${normalizedTo} join`,
+      normalizedTo
+    ];
   } else {
     try {
       path = bidirectional(dataBus, normalizedFrom, normalizedTo) || [];
@@ -335,6 +386,8 @@ export function generateDataPath(
     return "";
   }
 
+  console.log("📐 Path generado:", path);
+
   const start = dataBus.getNodeAttribute(path[0], "position");
   let d = `M ${start[0]} ${start[1]}`;
 
@@ -343,6 +396,7 @@ export function generateDataPath(
     d += ` L ${x} ${y}`;
   }
 
+  console.log("📐 SVG path final:", d);
   return d;
 }
 
@@ -412,7 +466,17 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
 
       <animated.path
         d={path}
-        className="fill-none stroke-mantis-400 stroke-bus"
+        className="fill-none stroke-mantis-400 stroke-3 drop-shadow-[0_0_8px_rgba(34,197,94,0.6)]"
+        strokeLinejoin="round"
+        pathLength={1}
+        strokeDasharray={1}
+        style={style}
+      />
+      
+      {/* Efecto de brillo adicional para el bus de datos interno */}
+      <animated.path
+        d={path}
+        className="fill-none stroke-mantis-300 stroke-1 opacity-50"
         strokeLinejoin="round"
         pathLength={1}
         strokeDasharray={1}

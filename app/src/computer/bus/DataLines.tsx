@@ -51,7 +51,19 @@ export function DataLines() {
       {/* Línea animada del bus de datos - usando path dinámico del spring */}
       <animated.path
         d={path}
-        className="fill-none stroke-mantis-400 stroke-[12px]"
+        className="fill-none stroke-mantis-400 stroke-3 drop-shadow-[0_0_8px_rgba(34,197,94,0.6)]"
+        strokeLinejoin="round"
+        pathLength={1}
+        strokeDasharray={1}
+        style={{
+          strokeDashoffset,
+          opacity,
+        }}
+      />
+      {/* Efecto de brillo adicional para el bus de datos */}
+      <animated.path
+        d={path}
+        className="fill-none stroke-mantis-300 stroke-1 opacity-50"
         strokeLinejoin="round"
         pathLength={1}
         strokeDasharray={1}
@@ -76,7 +88,19 @@ export function DataLines() {
       {/* Línea animada del bus de direcciones - usando path dinámico del spring */}
       <animated.path
         d={addressAnimPath}
-        className="fill-none stroke-blue-400 stroke-[12px]"
+        className="fill-none stroke-blue-400 stroke-3 drop-shadow-[0_0_8px_rgba(59,130,246,0.6)]"
+        strokeLinejoin="round"
+        pathLength={1}
+        strokeDasharray={1}
+        style={{
+          strokeDashoffset: addressStrokeDashoffset,
+          opacity: addressOpacity,
+        }}
+      />
+      {/* Efecto de brillo adicional para el bus de direcciones */}
+      <animated.path
+        d={addressAnimPath}
+        className="fill-none stroke-blue-300 stroke-1 opacity-50"
         strokeLinejoin="round"
         pathLength={1}
         strokeDasharray={1}

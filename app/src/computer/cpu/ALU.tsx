@@ -6,7 +6,8 @@ import { useEffect, useState } from "react";
 import { animated, getSpring } from "@/computer/shared/springs";
 import { useSettings } from "@/lib/settings";
 
-import { aluOperationAtom, connectScreenAndKeyboardAtom, registerAtoms } from "./state";
+import { aluOperationAtom, connectScreenAndKeyboardAtom, registerAtoms, cycleAtom } from "./state";
+import { generateDataPath, type DataRegister } from "./DataBus";
 
 /**
  * ALU component, to be used inside <CPU />
@@ -14,43 +15,151 @@ import { aluOperationAtom, connectScreenAndKeyboardAtom, registerAtoms } from ".
 export function ALU() {
   const FLAGS = useAtomValue(registerAtoms.FLAGS);
   const operation = useAtomValue(aluOperationAtom);
+  const cycle = useAtomValue(cycleAtom);
   const [showOperation, setShowOperation] = useState(false);
+  const [leftPath, setLeftPath] = useState("");
+  const [rightPath, setRightPath] = useState("");
+  const [resultPath, setResultPath] = useState("");
+  const [leftSource, setLeftSource] = useState("");
+  const [rightSource, setRightSource] = useState("");
+  const [resultDestination, setResultDestination] = useState("");
 
-  const connectScreenAndKeyboard = useAtomValue(connectScreenAndKeyboardAtom); // Obtener el valor del átomo
+  const connectScreenAndKeyboard = useAtomValue(connectScreenAndKeyboardAtom);
+  const [settings] = useSettings();
 
-  const [settings] = useSettings(); // Obtener settings desde el menú de configuración
+  // Obtener la instrucción completa desde el ciclo actual
+  const getCurrentInstruction = () => {
+    if (cycle && "metadata" in cycle && cycle.metadata) {
+      const instruction = `${cycle.metadata.name}${cycle.metadata.operands.length ? " " + cycle.metadata.operands.join(", ") : ""}`;
+      return instruction;
+    }
+    return "";
+  };
+
+  // Función para detectar los registros origen y destino basándose en la instrucción
+  const detectRegisters = (instruction: string): { left: string; right: string; destination: string } => {
+    // Por defecto, asumimos AL y BL para la mayoría de operaciones
+    let leftReg = "AL";
+    let rightReg = "BL";
+    let destReg = "AL"; // Por defecto, el resultado va al primer operando
+
+    // Detectar patrones específicos en la instrucción
+    // Patrón general para instrucciones de dos operandos: INSTRUCCIÓN REG1, REG2
+    const patterns = [
+      /ADD\s+([A-Z]+),\s*([A-Z]+)/,
+      /SUB\s+([A-Z]+),\s*([A-Z]+)/,
+      /CMP\s+([A-Z]+),\s*([A-Z]+)/,
+      /AND\s+([A-Z]+),\s*([A-Z]+)/,
+      /OR\s+([A-Z]+),\s*([A-Z]+)/,
+      /XOR\s+([A-Z]+),\s*([A-Z]+)/,
+      /MOV\s+([A-Z]+),\s*([A-Z]+)/,
+    ];
+
+    for (const pattern of patterns) {
+      const match = instruction.match(pattern);
+      if (match) {
+        leftReg = match[1];  // Primer operando va a left
+        rightReg = match[2]; // Segundo operando va a right
+        destReg = match[1];  // El resultado va al primer operando (destino)
+        break;
+      }
+    }
+
+    // Validar que los registros son válidos (AL, BL, CL, DL)
+    const validRegisters = ["AL", "BL", "CL", "DL"];
+    if (!validRegisters.includes(leftReg)) {
+      leftReg = "AL";
+    }
+    if (!validRegisters.includes(rightReg)) {
+      rightReg = "BL";
+    }
+    if (!validRegisters.includes(destReg)) {
+      destReg = "AL";
+    }
+
+    return { left: leftReg, right: rightReg, destination: destReg };
+  };
 
   useEffect(() => {
     const handleInstruction = (instruction: string) => {
-      if (
-        instruction === "ADD" ||
-        instruction === "SUB" ||
-        instruction === "CMP" ||
-        instruction === "AND" ||
-        instruction === "OR" ||
-        instruction === "XOR" ||
-        instruction === "NOT" ||
-        instruction === "NEG" ||
-        instruction === "DEC" ||
-        instruction === "INC"
-      ) {
+      console.log("🎯 handleInstruction llamado con:", instruction);
+      // Usar la instrucción completa del ciclo actual para detectar registros
+      const fullInstruction = getCurrentInstruction();
+      const instructionToUse = fullInstruction || instruction;
+      console.log("🎯 Instrucción completa a usar:", instructionToUse);
+      if (instruction) {
         setShowOperation(true);
+        
+        // Detectar dinámicamente ambos registros origen y destino usando la función parametrizada
+        const { left: leftReg, right: rightReg, destination: destReg } = detectRegisters(instructionToUse);
+        console.log("🎯 Registros detectados:", { left: leftReg, right: rightReg, destination: destReg });
+        setLeftSource(leftReg);
+        setRightSource(rightReg);
+        setResultDestination(destReg);
+        
+        // Generar paths dinámicos para los buses de entrada
+        console.log("🎯 Generando path izquierdo...");
+        const leftPathSVG = generateDataPath(leftReg as DataRegister, "left", instruction);
+        console.log("🎯 Generando path derecho...");
+        const rightPathSVG = generateDataPath(rightReg as DataRegister, "right", instruction);
+        
+        // Generar path dinámico para el bus de resultado
+        console.log("🎯 Generando path de resultado...");
+        const resultPathSVG = generateDataPath("result start" as DataRegister, destReg as DataRegister, instruction);
+        
+        console.log("🔍 Debugging bus de resultado:");
+        console.log("  - Destino:", destReg);
+        console.log("  - Path dinámico:", resultPathSVG);
+        
+        // Para debugging: usar paths hardcodeados si los dinámicos fallan
+        const fallbackLeftPath = "M 455 45 L 465 45 L 550 45 L 550 16 L 90 16 L 90 85 L 130 85 L 220 85";
+        const fallbackRightPath = "M 455 85 L 465 85 L 550 85 L 550 250 L 90 250 L 90 145 L 125 145 L 220 145";
+        const fallbackResultPath = "M 280 115 L 272 115 L 370 115 L 370 250 L 421 250 L 425 45";
+        
+        console.log("  - Path fallback:", fallbackResultPath);
+        
+        // Usar los paths dinámicos si están disponibles, sino usar los hardcodeados
+        setLeftPath(leftPathSVG || fallbackLeftPath);
+        setRightPath(rightPathSVG || fallbackRightPath);
+        setResultPath(resultPathSVG || fallbackResultPath);
+        
+        console.log("  - Path final usado:", resultPathSVG || fallbackResultPath);
       } else {
         setShowOperation(false);
+        setLeftPath("");
+        setRightPath("");
+        setResultPath("");
+        setLeftSource("");
+        setRightSource("");
+        setResultDestination("");
       }
     };
 
     const eventListener = (event: Event) => {
       const customEvent = event as CustomEvent;
-      handleInstruction(customEvent.detail.instruction);
+      // Usar la instrucción completa del ciclo actual en lugar de solo la instrucción del evento
+      const fullInstruction = getCurrentInstruction();
+      handleInstruction(fullInstruction || customEvent.detail.instruction);
+    };
+
+    // Listener para cuando se ejecuta la ALU
+    const aluEventListener = (event: Event) => {
+      const customEvent = event as CustomEvent;
+      if (customEvent.detail && customEvent.detail.instruction) {
+        // Usar la instrucción completa del ciclo actual en lugar de solo la instrucción del evento
+        const fullInstruction = getCurrentInstruction();
+        handleInstruction(fullInstruction || customEvent.detail.instruction);
+      }
     };
 
     window.addEventListener("instructionChange", eventListener as EventListener);
+    window.addEventListener("cpu:alu.execute", aluEventListener as EventListener);
 
     return () => {
       window.removeEventListener("instructionChange", eventListener);
+      window.removeEventListener("cpu:alu.execute", aluEventListener);
     };
-  }, []);
+  }, [cycle]); // Agregar cycle como dependencia para que se actualice cuando cambie
 
   // https://vonsim.github.io/docs/cpu/#flags
   const CF = (FLAGS as Byte<16>).bit(1);
@@ -62,23 +171,113 @@ export function ALU() {
   return (
     <>
       <svg viewBox="0 0 650 500" className="pointer-events-none absolute inset-0">
-        {/* Buses de entrada con mejor animación */}
-        <animated.path
-          className="fill-none stroke-mantis-400 stroke-bus drop-shadow-[0_0_4px_rgba(60,180,120,0.4)]"
-          strokeLinejoin="round"
-          d="M 120 85 H 220"
-          pathLength={1}
-          strokeDasharray={1}
-          style={getSpring("cpu.alu.operands")}
-        />
-        <animated.path
-          className="fill-none stroke-mantis-400 stroke-bus drop-shadow-[0_0_4px_rgba(60,180,120,0.4)]"
-          strokeLinejoin="round"
-          d="M 120 145 H 220"
-          pathLength={1}
-          strokeDasharray={1}
-          style={getSpring("cpu.alu.operands")}
-        />
+        {/* Buses de entrada parametrizados usando paths dinámicos */}
+        {/* Bus izquierdo (AL) - Verde más brillante */}
+        {leftPath && (
+          <animated.path
+            className="fill-none stroke-green-400 stroke-3 drop-shadow-[0_0_8px_rgba(34,197,94,0.6)]"
+            strokeLinejoin="round"
+            d={leftPath}
+            pathLength={1}
+            strokeDasharray={1}
+            style={getSpring("cpu.alu.operands")}
+          />
+        )}
+        {/* Bus derecho (BL) - Azul más brillante */}
+        {rightPath && (
+          <animated.path
+            className="fill-none stroke-blue-400 stroke-3 drop-shadow-[0_0_8px_rgba(59,130,246,0.6)]"
+            strokeLinejoin="round"
+            d={rightPath}
+            pathLength={1}
+            strokeDasharray={1}
+            style={getSpring("cpu.alu.operands")}
+          />
+        )}
+        
+        {/* Bus de resultado - Naranja/Ambar más brillante */}
+        {resultPath && (
+          <animated.path
+            className="fill-none stroke-amber-400 stroke-3 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]"
+            strokeLinejoin="round"
+            d={resultPath}
+            pathLength={1}
+            strokeDasharray={1}
+            style={getSpring("cpu.alu.results")}
+          />
+        )}
+        
+        {/* Efectos de brillo adicionales para los buses */}
+        {leftPath && (
+          <animated.path
+            className="fill-none stroke-green-300 stroke-1 opacity-50"
+            strokeLinejoin="round"
+            d={leftPath}
+            pathLength={1}
+            strokeDasharray={1}
+            style={getSpring("cpu.alu.operands")}
+          />
+        )}
+        {rightPath && (
+          <animated.path
+            className="fill-none stroke-blue-300 stroke-1 opacity-50"
+            strokeLinejoin="round"
+            d={rightPath}
+            pathLength={1}
+            strokeDasharray={1}
+            style={getSpring("cpu.alu.operands")}
+          />
+        )}
+        {resultPath && (
+          <animated.path
+            className="fill-none stroke-amber-300 stroke-1 opacity-50"
+            strokeLinejoin="round"
+            d={resultPath}
+            pathLength={1}
+            strokeDasharray={1}
+            style={getSpring("cpu.alu.results")}
+          />
+        )}
+
+        {/* Etiquetas de los registros fuente - solo se muestran cuando ambos buses están activos */}
+        {leftSource && rightSource && showOperation && leftPath && rightPath && (
+          <animated.text 
+            x="110" 
+            y="90" 
+            fill="#34D399" 
+            fontSize="12" 
+            fontWeight="bold"
+            style={getSpring("cpu.alu.operands")}
+          >
+            {leftSource}
+          </animated.text>
+        )}
+        {leftSource && rightSource && showOperation && leftPath && rightPath && (
+          <animated.text 
+            x="110" 
+            y="150" 
+            fill="#60A5FA" 
+            fontSize="12" 
+            fontWeight="bold"
+            style={getSpring("cpu.alu.operands")}
+          >
+            {rightSource}
+          </animated.text>
+        )}
+        
+        {/* Etiqueta del registro destino - solo se muestra cuando el bus de resultado está activo */}
+        {resultDestination && showOperation && resultPath && (
+          <animated.text 
+            x="290" 
+            y="115" 
+            fill="#F59E0B" 
+            fontSize="12" 
+            fontWeight="bold"
+            style={getSpring("cpu.alu.results")}
+          >
+            {resultDestination}
+          </animated.text>
+        )}
 
         {/* ALU con gradiente mejorado */}
         <defs>
