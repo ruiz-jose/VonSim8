@@ -70,7 +70,7 @@ export function AddressBus({ showSP, showri }: AddressBusProps) {
 
       <animated.path
         d={path}
-        className="fill-none stroke-mantis-400 stroke-3 drop-shadow-[0_0_8px_rgba(34,197,94,0.6)]"
+        className="fill-none stroke-mantis-400 stroke-[3px] drop-shadow-[0_0_8px_rgba(34,197,94,0.6)]"
         strokeLinejoin="round"
         pathLength={1}
         strokeDasharray={1}

@@ -73,7 +73,7 @@ export function ControlLines() {
           <animated.path
             ref={rdAnimatedPathRef}
             d={rdPath_anim}
-            className="fill-none stroke-red-500 stroke-3 drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]"
+            className="fill-none stroke-red-500 stroke-[3px] drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]"
             strokeLinejoin="round"
             pathLength={1}
             strokeDasharray={1}
@@ -112,7 +112,7 @@ export function ControlLines() {
         {showWriteAnim && (
           <animated.path
             d={wrPath_anim}
-            className="fill-none stroke-orange-400 stroke-3 drop-shadow-[0_0_8px_rgba(251,146,60,0.6)]"
+            className="fill-none stroke-orange-400 stroke-[3px] drop-shadow-[0_0_8px_rgba(251,146,60,0.6)]"
             strokeLinejoin="round"
             pathLength={1}
             strokeDasharray={1}
@@ -214,10 +214,10 @@ function ControlLine({ d, springs }: { d: string; springs: SimplePathKey }) {
   return (
     <>
       <path className="fill-none stroke-stone-900 stroke-[6px]" strokeLinejoin="round" d={d} />
-      <path className="fill-none stroke-stone-700 stroke-3" strokeLinejoin="round" d={d} />
+      <path className="fill-none stroke-stone-700 stroke-[3px]" strokeLinejoin="round" d={d} />
       <animated.path
         d={d}
-        className="fill-none stroke-red-500 stroke-3 drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]"
+        className="fill-none stroke-red-500 stroke-[3px] drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]"
         strokeLinejoin="round"
         pathLength={1}
         strokeDasharray={1}

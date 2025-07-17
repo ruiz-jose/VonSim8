@@ -1,13 +1,13 @@
 import type { Byte } from "@vonsim/common/byte";
 import clsx from "clsx";
 import { useAtomValue } from "jotai";
-import { useEffect, useState } from "react";
+import { useCallback,useEffect, useState } from "react";
 
 import { animated, getSpring } from "@/computer/shared/springs";
 import { useSettings } from "@/lib/settings";
 
-import { aluOperationAtom, connectScreenAndKeyboardAtom, registerAtoms, cycleAtom } from "./state";
-import { generateDataPath, type DataRegister } from "./DataBus";
+import { type DataRegister,generateDataPath } from "./DataBus";
+import { aluOperationAtom, connectScreenAndKeyboardAtom, cycleAtom,registerAtoms } from "./state";
 
 /**
  * ALU component, to be used inside <CPU />
@@ -27,14 +27,14 @@ export function ALU() {
   const connectScreenAndKeyboard = useAtomValue(connectScreenAndKeyboardAtom);
   const [settings] = useSettings();
 
-  // Obtener la instrucción completa desde el ciclo actual
-  const getCurrentInstruction = () => {
+  // Obtener la instrucción completa desde el ciclo actual (memorizada)
+  const getCurrentInstruction = useCallback(() => {
     if (cycle && "metadata" in cycle && cycle.metadata) {
       const instruction = `${cycle.metadata.name}${cycle.metadata.operands.length ? " " + cycle.metadata.operands.join(", ") : ""}`;
       return instruction;
     }
     return "";
-  };
+  }, [cycle]);
 
   // Función para detectar los registros origen y destino basándose en la instrucción
   const detectRegisters = (
@@ -91,7 +91,6 @@ export function ALU() {
       console.log("🎯 Instrucción completa a usar:", instructionToUse);
       if (instruction) {
         setShowOperation(true);
-
         // Detectar dinámicamente ambos registros origen y destino usando la función parametrizada
         const {
           left: leftReg,
@@ -175,7 +174,7 @@ export function ALU() {
       window.removeEventListener("instructionChange", eventListener);
       window.removeEventListener("cpu:alu.execute", aluEventListener);
     };
-  }, [cycle]); // Agregar cycle como dependencia para que se actualice cuando cambie
+  }, [cycle, getCurrentInstruction]); // Agregar getCurrentInstruction como dependencia
 
   // https://vonsim.github.io/docs/cpu/#flags
   const CF = (FLAGS as Byte<16>).bit(1);
@@ -191,7 +190,7 @@ export function ALU() {
         {/* Bus izquierdo (AL) - Verde más brillante */}
         {leftPath && (
           <animated.path
-            className="fill-none stroke-green-400 stroke-3 drop-shadow-[0_0_8px_rgba(34,197,94,0.6)]"
+            className="fill-none stroke-green-400 stroke-[3px] drop-shadow-[0_0_8px_rgba(34,197,94,0.6)]"
             strokeLinejoin="round"
             d={leftPath}
             pathLength={1}
@@ -202,7 +201,7 @@ export function ALU() {
         {/* Bus derecho (BL) - Azul más brillante */}
         {rightPath && (
           <animated.path
-            className="fill-none stroke-blue-400 stroke-3 drop-shadow-[0_0_8px_rgba(59,130,246,0.6)]"
+            className="fill-none stroke-blue-400 stroke-[3px] drop-shadow-[0_0_8px_rgba(59,130,246,0.6)]"
             strokeLinejoin="round"
             d={rightPath}
             pathLength={1}
@@ -214,7 +213,7 @@ export function ALU() {
         {/* Bus de resultado - Naranja/Ambar más brillante */}
         {resultPath && (
           <animated.path
-            className="fill-none stroke-amber-400 stroke-3 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]"
+            className="fill-none stroke-amber-400 stroke-[3px] drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]"
             strokeLinejoin="round"
             d={resultPath}
             pathLength={1}

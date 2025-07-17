@@ -1,4 +1,3 @@
-import { animated as animatedSpring, useSpring } from "@react-spring/web";
 import { MemoryAddress } from "@vonsim/common/address";
 import type { Byte } from "@vonsim/common/byte";
 import clsx from "clsx";

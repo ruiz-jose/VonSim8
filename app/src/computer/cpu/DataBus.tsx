@@ -210,14 +210,12 @@ export function generateDataPath(
   const normalizedFrom = normalizeRegister(from);
   const normalizedTo = normalizeRegister(to);
 
-  console.log("🔍 generateDataPath llamado con:");
-  console.log("  from:", from, "normalized:", normalizedFrom);
-  console.log("  to:", to, "normalized:", normalizedTo);
-  console.log("  instruction:", instruction);
-  console.log("  mode:", mode);
+  // Lista de registros válidos
+  const registers = [
+    "AL", "BL", "CL", "DL", "id", "SP", "IP", "ri", "MAR"
+  ];
 
-  console.log("from:", from, "normalized:", normalizedFrom);
-  console.log("to:", to, "normalized:", normalizedTo);
+  let path: string[] = [];
 
   // Verificar que los nodos existen en el grafo antes de calcular la ruta
   if (!dataBus.hasNode(normalizedFrom)) {
@@ -229,39 +227,8 @@ export function generateDataPath(
     console.warn(`Nodo destino '${normalizedTo}' no existe en el grafo`);
     return "";
   }
-
-  const intermediatePath = (fromReg: string, toReg: string): string[] => {
-    if (toReg === "left") {
-      return [
-        fromReg,
-        "bleft1",
-        "bleft2",
-        "bleft3",
-        "left",
-        `${fromReg} out`,
-        `${fromReg} out join`,
-        "outr mbr join",
-        "mbr reg join",
-        `${toReg} join`,
-        toReg,
-      ];
-    }
-    return [
-      fromReg,
-      `${fromReg} out`,
-      `${fromReg} out join`,
-      "outr mbr join",
-      "mbr reg join",
-      `${toReg} join`,
-      toReg,
-    ];
-  };
-
-  let path: string[] = [];
-
-  const registers = ["AL", "BL", "CL", "DL", "id"];
-
-  // Usar los nombres normalizados para las comparaciones
+    //
+  // Lógica de rutas
   if (normalizedTo === "left") {
     path = [
       normalizedFrom,
@@ -300,7 +267,17 @@ export function generateDataPath(
   } else if (normalizedFrom === "MBR" && normalizedTo === "left") {
     path = ["MBR", "outr mbr join", "bleft1", "bleft2", "bleft3", "left"];
   } else if (normalizedFrom === "MBR" && normalizedTo === "ri") {
-    path = ["MBR", "outr mbr join", "SP out join", "MAR join2", "MAR"];
+    if (instruction === "CALL") {
+      path = ["MBR", "mbr reg join", "ri join", "ri"];
+    } else if (["JMP", "JZ", "JC"].includes(instruction ?? "")) {
+      return "";
+    } else if ((instruction === "MOV" || instruction === "INT") && mode === "mem<-imd") {
+      path = ["MBR", "mbr reg join", "ri join", "ri"];
+    } else if (mode === "mem<-imd" && (instruction === "ADD" || instruction === "SUB")) {
+      path = ["MBR", "mbr reg join", "ri join", "ri"];
+    } else {
+      path = ["MBR", "outr mbr join", "SP out join", "MAR join2", "MAR"];
+    }
   } else if (normalizedFrom === "MBR" && registers.includes(normalizedTo)) {
     path = ["MBR", "mbr reg join", `${normalizedTo} join`, normalizedTo];
   } else if (normalizedFrom === "IP" && normalizedTo === "id") {
@@ -386,8 +363,7 @@ export function generateDataPath(
     return "";
   }
 
-  console.log("📐 Path generado:", path);
-
+  // Generar el path SVG
   const start = dataBus.getNodeAttribute(path[0], "position");
   let d = `M ${start[0]} ${start[1]}`;
 
@@ -396,8 +372,8 @@ export function generateDataPath(
     d += ` L ${x} ${y}`;
   }
 
-  console.log("📐 SVG path final:", d);
   return d;
+
 }
 
 type DataBusProps = {
@@ -466,7 +442,7 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
 
       <animated.path
         d={path}
-        className="fill-none stroke-mantis-400 stroke-3 drop-shadow-[0_0_8px_rgba(34,197,94,0.6)]"
+        className="fill-none stroke-mantis-400 stroke-[3px] drop-shadow-[0_0_8px_rgba(34,197,94,0.6)]"
         strokeLinejoin="round"
         pathLength={1}
         strokeDasharray={1}
