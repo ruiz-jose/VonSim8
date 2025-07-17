@@ -206,6 +206,10 @@ function getRegisterColor(registerKey: string): string {
 
 export async function activateRegister(key: RegisterKey, color?: string) {
   try {
+    // Evitar la animación individual de MBR si el flag global está activo
+    if (key === "cpu.MBR" && window.__nextTransferMBRtoIP) {
+      return;
+    }
     // Usar el color específico del registro si no se proporciona uno
     const registerColor = color || getRegisterColor(key);
 
@@ -244,6 +248,10 @@ export async function deactivateRegister(key: RegisterKey) {
 // Nueva función para animación de actualización con efecto de brillo
 export async function updateRegisterWithGlow(key: RegisterKey) {
   try {
+    // Evitar la animación individual de MBR si el flag global está activo
+    if (key === "cpu.MBR" && window.__nextTransferMBRtoIP) {
+      return;
+    }
     const settings = getSettings();
     const registerColor = getRegisterColor(key);
 
@@ -354,3 +362,11 @@ export async function turnLineOff(line: SimplePathKey) {
 }
 
 // (No-op blocks eliminados; si tienes bloques vacíos en funciones reales, usa simplemente: // noop)
+
+// Declarar la propiedad global para TypeScript
+// (esto puede estar ya en otro archivo, pero lo repetimos aquí por seguridad)
+declare global {
+  interface Window {
+    __nextTransferMBRtoIP?: boolean;
+  }
+}

@@ -149,6 +149,13 @@ const resetRDControlPath = () =>
 const resetWRControlPath = () =>
   anim({ key: "bus.wr.opacity", to: 0 }, { duration: 1, easing: "easeInSine" });
 
+// Declarar la propiedad global para TypeScript
+declare global {
+  interface Window {
+    __nextTransferMBRtoIP?: boolean;
+  }
+}
+
 export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promise<void> {
   switch (event.type) {
     case "memory:read": {
@@ -180,8 +187,12 @@ export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promi
       // Actualizar el valor primero
       store.set(MBRAtom, event.value);
 
-      // DESPUÉS usar la nueva animación para el MBR (después del bus)
-      await updateRegisterWithGlow("cpu.MBR");
+      // (Eliminado) No ejecutar animación individual de MBR aquí
+      // const nextTransferIsToIP = window.__nextTransferMBRtoIP === true;
+      // if (!nextTransferIsToIP) {
+      //   await updateRegisterWithGlow("cpu.MBR");
+      // }
+      // window.__nextTransferMBRtoIP = false;
 
       // Resetear animaciones
       await Promise.all([

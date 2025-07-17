@@ -48,6 +48,19 @@ let mode = "";
 let showpath1 = false;
 let showpath2 = false;
 let countersetMAR = 0;
+
+// Añadir función auxiliar para animar MBR e IP juntos
+async function animateMBRAndIP() {
+  await Promise.all([
+    updateRegisterWithGlow("cpu.MBR"),
+    updateRegisterWithGlow("cpu.IP"),
+    new Promise<void>(resolve => {
+      window.dispatchEvent(new CustomEvent("ip-register-update"));
+      resolve();
+    }),
+  ]);
+}
+
 export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<void> {
   switch (event.type) {
     case "cpu:alu.execute": {
@@ -280,6 +293,11 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       // Normalizar el nombre del registro para evitar problemas con subniveles
       const normalizedRegister = event.register.replace(/\.(l|h)$/, "");
 
+      // Si la transferencia es a IP, marcar el flag global para evitar la animación individual de MBR en memoria
+      if (normalizedRegister === "IP") {
+        window.__nextTransferMBRtoIP = true;
+      }
+
       // NO activar el registro de destino antes del bus - esto evita el coloreo prematuro
       // await activateRegister(`cpu.${normalizedRegister}` as RegisterKey);
 
@@ -292,8 +310,9 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       // Tercero: Solo DESPUÉS de que termine la animación del bus, hacer la animación de actualización
       if (normalizedRegister === "IR") {
         await updateRegisterWithGlow(`cpu.${normalizedRegister}` as RegisterKey);
+      } else if (normalizedRegister === "IP") {
+        // No hacer animación individual, la animación conjunta se hará en cpu:register.update
       } else {
-        // Para otros registros, usar la secuencia normal
         await activateRegister(`cpu.${normalizedRegister}` as RegisterKey);
         await deactivateRegister(`cpu.${normalizedRegister}` as RegisterKey);
       }
@@ -307,11 +326,15 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       // Normalizar el nombre del registro para evitar problemas con subniveles
       const normalizedRegister = event.register.replace(/\.(l|h)$/, "");
 
-      await activateRegister("cpu.MBR" as RegisterKey);
-      await drawDataPath(normalizedRegister as DataRegister, "MBR", instructionName, mode);
-      await activateRegister("cpu.MBR");
-      store.set(MBRAtom, store.get(registerAtoms[event.register]));
-      await Promise.all([deactivateRegister("cpu.MBR"), resetDataPath()]);
+      // Si el registro destino es IP, animar ambos juntos
+      if (normalizedRegister === "IP") {
+        await animateMBRAndIP();
+      }
+      // Si no es IP, solo actualizar el valor sin animación visual
+      else {
+        store.set(MBRAtom, store.get(registerAtoms[event.register]));
+        await resetDataPath();
+      }
       return;
     }
 
@@ -324,25 +347,12 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
 
     case "cpu:register.update": {
       const [reg] = parseRegister(event.register);
-
-      // Usar la nueva función de animación con brillo
-      const animationKey: RegisterKey = reg === "ri" ? "cpu.ri" : (`cpu.${reg}` as RegisterKey);
-
-      // Special handling for IP register - trigger +1 animation synchronized with register update
-      if (reg === "IP") {
-        // Execute both animations in parallel
-        await Promise.all([
-          updateRegisterWithGlow(animationKey),
-          // Trigger the custom event for IP update animation at the same time
-          new Promise<void>(resolve => {
-            window.dispatchEvent(new CustomEvent("ip-register-update"));
-            resolve();
-          }),
-        ]);
+      // Si se actualiza MBR o IP, animar ambos juntos
+      if (reg === "IP" || event.register === "MBR") {
+        await animateMBRAndIP();
       } else {
-        await updateRegisterWithGlow(animationKey);
+        await updateRegisterWithGlow(reg === "ri" ? "cpu.ri" : (`cpu.${reg}` as RegisterKey));
       }
-
       store.set(registerAtoms[event.register], event.value);
       return;
     }
