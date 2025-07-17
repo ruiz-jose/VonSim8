@@ -6,7 +6,7 @@ import { memo, useMemo } from "react";
 import { Button } from "@/components/ui/Button";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { useTranslate } from "@/lib/i18n";
-import { getSettings } from "@/lib/settings";
+import { getSettings, useSettings } from "@/lib/settings";
 
 // Declaración de la variable global definida por Vite
 declare const __COMMIT_HASH__: string;
@@ -45,7 +45,7 @@ SocialLink.displayName = "SocialLink";
 // Componente principal del Footer
 export const Footer = memo(() => {
   const translate = useTranslate();
-  const settings = getSettings();
+  const [settings, setSettings] = useSettings();
 
   // Generar enlace para reportar issue
   const issueLink = useMemo(() => {
@@ -60,6 +60,8 @@ export const Footer = memo(() => {
         <span className="text-stone-400">
           © Copyright 2017-2025 — III-LIDI, FI, UNLP, UNER — v{__COMMIT_HASH__}
         </span>
+
+        {/* Tamaño de fuente del editor */}
 
         {/* Enlaces útiles */}
         <div className="flex items-center gap-1" data-testid="footer-links">

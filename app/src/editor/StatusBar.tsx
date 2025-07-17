@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { atom, useAtomValue, useSetAtom } from "jotai";
+import { useSettings } from "@/lib/settings";
 import { useCallback, useEffect } from "react";
 
 import { Button } from "@/components/ui/Button";
@@ -46,6 +47,8 @@ declare global {
 const supportsNativeFileSystem = "showSaveFilePicker" in window;
 
 export function StatusBar() {
+  // Tamaño de fuente del editor
+  const [settings, setSettings] = useSettings();
   const lintErrors = useAtomValue(lintErrorsAtom);
   const fileHandle = useAtomValue(fileHandleAtom);
   const setFileHandle = useSetAtom(fileHandleAtom);
@@ -227,8 +230,30 @@ export function StatusBar() {
         </div>
       </div>
 
-      {/* Sección derecha - Errores */}
-      <div className="flex items-center gap-3">
+      {/* Sección derecha - Tamaño de fuente y Errores */}
+      <div className="flex items-center gap-6">
+        {/* Tamaño de fuente del editor */}
+        <div className="flex items-center gap-1">
+          <span className="icon-[lucide--pilcrow-square] size-4 text-stone-300" />
+          <span className="text-xs text-stone-300">Tamaño de fuente</span>
+          <button
+            className="m-0.5 flex size-5 items-center justify-center rounded-lg text-white transition-colors hover:enabled:bg-stone-800 disabled:cursor-not-allowed border border-stone-600"
+            disabled={settings.editorFontSize <= 8}
+            onClick={() => setSettings(prev => ({ ...prev, editorFontSize: prev.editorFontSize - 1 }))}
+            title="Reducir tamaño de fuente"
+          >
+            <span className="icon-[lucide--minus] size-3" />
+          </button>
+          <span className="w-7 text-center text-xs font-normal">{settings.editorFontSize}</span>
+          <button
+            className="m-0.5 flex size-5 items-center justify-center rounded-lg text-white transition-colors hover:enabled:bg-stone-800 disabled:cursor-not-allowed border border-stone-600"
+            disabled={settings.editorFontSize >= 64}
+            onClick={() => setSettings(prev => ({ ...prev, editorFontSize: prev.editorFontSize + 1 }))}
+            title="Aumentar tamaño de fuente"
+          >
+            <span className="icon-[lucide--plus] size-3" />
+          </button>
+        </div>
         {/* Indicador de errores */}
         <div
           className={clsx(
