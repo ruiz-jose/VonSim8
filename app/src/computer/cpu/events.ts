@@ -49,6 +49,14 @@ let showpath1 = false;
 let showpath2 = false;
 let countersetMAR = 0;
 
+// Declarar la propiedad global para TypeScript
+// (esto puede estar ya en otro archivo, pero lo repetimos aquí por seguridad)
+declare global {
+  interface Window {
+    VONSIM_PARALLEL_ANIMATIONS?: boolean;
+  }
+}
+
 // Añadir función auxiliar para animar MBR e IP juntos
 async function animateMBRAndIP() {
   await Promise.all([
@@ -62,6 +70,10 @@ async function animateMBRAndIP() {
 }
 
 export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<void> {
+  // Trigger de animaciones paralelas (modo principiante)
+  if (window.VONSIM_PARALLEL_ANIMATIONS && event.type === "cpu:mar.set") {
+    window.dispatchEvent(new CustomEvent("vonsim:parallel-memory-read-visual"));
+  }
   switch (event.type) {
     case "cpu:alu.execute": {
       const pathsDrawConfig = { duration: 3, easing: "easeInOutSine" } as const;

@@ -44,7 +44,7 @@ function generateExternalDataPath(direction: "memory-to-mbr" | "mbr-to-memory"):
 const BUS_ANIMATION_DURATION = 5;
 
 // Función para animar el bus de datos externo (igual que el interno del CPU)
-export const drawExternalDataPath = (direction: "memory-to-mbr" | "mbr-to-memory") => {
+export const drawExternalDataPath = (direction: "memory-to-mbr" | "mbr-to-memory", duration = BUS_ANIMATION_DURATION) => {
   try {
     const path = generateExternalDataPath(direction);
     if (!path) return Promise.resolve();
@@ -55,7 +55,7 @@ export const drawExternalDataPath = (direction: "memory-to-mbr" | "mbr-to-memory
         { key: "bus.data.opacity", from: 1 },
         { key: "bus.data.strokeDashoffset", from: 1, to: 0 },
       ],
-      { duration: BUS_ANIMATION_DURATION, easing: "easeInOutSine" },
+      { duration, easing: "easeInOutSine" },
     );
   } catch (error) {
     console.warn("Error en drawExternalDataPath:", error);
@@ -78,7 +78,7 @@ function generateExternalAddressPath(): string {
 }
 
 // Función para animar el bus de direcciones externo (igual que el interno del CPU)
-export const drawExternalAddressPath = () => {
+export const drawExternalAddressPath = (duration = BUS_ANIMATION_DURATION) => {
   try {
     const path = generateExternalAddressPath();
     if (!path) return Promise.resolve();
@@ -89,7 +89,7 @@ export const drawExternalAddressPath = () => {
         { key: "bus.address.opacity", from: 1 },
         { key: "bus.address.strokeDashoffset", from: 1, to: 0 },
       ],
-      { duration: BUS_ANIMATION_DURATION, easing: "easeInOutSine" },
+      { duration, easing: "easeInOutSine" },
     );
   } catch (error) {
     console.warn("Error en drawExternalAddressPath:", error);
@@ -102,7 +102,7 @@ const resetExternalAddressPath = () =>
   anim({ key: "bus.address.opacity", to: 0 }, { duration: 1, easing: "easeInSine" });
 
 // Función para animar el bus de control RD (CPU -> dispositivos)
-const drawRDControlPath = () => {
+const drawRDControlPath = (duration = BUS_ANIMATION_DURATION) => {
   try {
     // Path desde CPU hacia memoria y otros dispositivos
     const path = "M 380 420 H 800"; // Path básico CPU -> Memory
@@ -113,7 +113,7 @@ const drawRDControlPath = () => {
         { key: "bus.rd.opacity", from: 1 },
         { key: "bus.rd.strokeDashoffset", from: 1, to: 0 },
       ],
-      { duration: BUS_ANIMATION_DURATION, easing: "easeInOutSine" },
+      { duration, easing: "easeInOutSine" },
     );
   } catch (error) {
     console.warn("Error en drawRDControlPath:", error);
@@ -150,25 +150,70 @@ const resetWRControlPath = () =>
   anim({ key: "bus.wr.opacity", to: 0 }, { duration: 1, easing: "easeInSine" });
 
 // Declarar la propiedad global para TypeScript
+// (esto puede estar ya en otro archivo, pero lo repetimos aquí por seguridad)
 declare global {
   interface Window {
-    __nextTransferMBRtoIP?: boolean;
+    VONSIM_PARALLEL_ANIMATIONS?: boolean;
   }
 }
 
+// Eliminar la función y el uso de triggerParallelMemoryReadAnimations y la comprobación de 'cpu:mar.set' en este archivo, ya que no corresponde a eventos de memoria.
+// Mantener solo el feedback inmediato y la animación en memory:read como antes, usando window.VONSIM_PARALLEL_ANIMATIONS para decidir si lanzar la animación o no.
+
 export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promise<void> {
+  // Hook para animaciones paralelas (modo principiante)
+  if (typeof window !== 'undefined' && window.VONSIM_PARALLEL_ANIMATIONS) {
+    window.addEventListener("vonsim:parallel-memory-read-visual", () => {
+      // Feedback visual inmediato: destello en el bus de direcciones y bus RD
+      store.set(showReadBusAnimationAtom, true);
+      anim([
+        { key: "bus.address.opacity", to: 0.7 },
+        { key: "bus.rd.opacity", to: 0.7 },
+      ], { duration: 0.15, easing: "easeOutQuad" }).then(() => {
+        anim([
+          { key: "bus.address.opacity", to: 1 },
+          { key: "bus.rd.opacity", to: 1 },
+        ], { duration: 0.15, easing: "easeInQuad" });
+      });
+      // Animar el bus de direcciones desde MAR hacia la memoria y el bus de control RD en simultáneo
+      Promise.all([
+        drawExternalAddressPath(),
+        (async () => {
+          showReadControlText();
+          await drawRDControlPath();
+          hideReadControlText();
+        })(),
+      ]);
+    });
+  }
   switch (event.type) {
     case "memory:read": {
-      // Animar el bus de direcciones desde MAR hacia la memoria al iniciar la lectura
-      await drawExternalAddressPath();
-      // Activar la animación del texto 'Read' en el bus de control RD
-      store.set(showReadBusAnimationAtom, true);
-      // Mostrar texto "Read" al animar el bus de control RD
-      showReadControlText();
-      // Animar el bus de control RD desde CPU hacia dispositivos
-      await drawRDControlPath();
-      // Ocultar texto "Read" al terminar la animación
-      hideReadControlText();
+      if (!window.VONSIM_PARALLEL_ANIMATIONS) {
+        // Feedback visual inmediato: destello en el bus de direcciones y bus RD
+        store.set(showReadBusAnimationAtom, true);
+        anim([
+          { key: "bus.address.opacity", to: 0.7 },
+          { key: "bus.rd.opacity", to: 0.7 },
+        ], { duration: 0.15, easing: "easeOutQuad" }).then(() => {
+          anim([
+            { key: "bus.address.opacity", to: 1 },
+            { key: "bus.rd.opacity", to: 1 },
+          ], { duration: 0.15, easing: "easeInQuad" });
+        });
+        // Animar el bus de direcciones y el bus de control RD en simultáneo
+        const duration = BUS_ANIMATION_DURATION; // Usa la duración global para coherencia
+        await Promise.all([
+          drawExternalAddressPath(duration),
+          (async () => {
+            showReadControlText();
+            await drawRDControlPath(duration);
+            hideReadControlText();
+          })(),
+        ]);
+        // Una vez terminadas ambas animaciones, ocultar el bus de direcciones antes de la animación de datos
+        await resetExternalAddressPath();
+        // Aquí NO se lanza la animación de datos, eso ocurre en memory:read.ok
+      }
       return;
     }
 
@@ -182,7 +227,7 @@ export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promi
       );
 
       // Animar el bus de datos desde la memoria hacia el MBR (igual que bus interno)
-      await drawExternalDataPath("memory-to-mbr");
+      await drawExternalDataPath("memory-to-mbr", BUS_ANIMATION_DURATION);
 
       // Actualizar el valor primero
       store.set(MBRAtom, event.value);
