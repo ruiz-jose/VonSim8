@@ -5,8 +5,6 @@ head:
     attrs: { property: og:image, content: https://vonsim.github.io/docs/og/cpu.png }
 ---
 
-
-
 # ¿Qué es la CPU de VonSim8?
 
 La CPU de VonSim8 está inspirada en el procesador Intel 8088 y fue diseñada con fines didácticos para que puedas aprender arquitectura y organización de computadoras de manera sencilla y visual.
@@ -28,8 +26,6 @@ Permite realizar operaciones de 8 y 16 bits (_little-endian_) y simula los princ
 VonSim8 no busca ser un emulador fiel del 8088, sino una herramienta educativa. Por eso, se han hecho varias simplificaciones respecto al procesador real: el set de instrucciones es más pequeño, la memoria es limitada y la codificación es más simple.
 :::
 
-
-
 ## Puertos
 
 - `MAR`: Bus de direcciones (8 bits)
@@ -41,8 +37,6 @@ VonSim8 no busca ser un emulador fiel del 8088, sino una herramienta educativa. 
 - `INTA`: Reconocimiento de interrupción
 
 Más información: [Memoria principal](/VonSim8/docs/memory/) | [Módulos de E/S](/VonSim8/docs/io/modules/)
-
-
 
 ## Registros
 
@@ -57,8 +51,6 @@ Más información: [Memoria principal](/VonSim8/docs/memory/) | [Módulos de E/S
 
 Los registros de usuario pueden ser accedidos y modificados por el programador. Los internos son gestionados por la CPU.
 
-
-
 ## ALU (Unidad aritmético-lógica)
 
 Permite realizar operaciones aritméticas y lógicas de 8 y 16 bits:
@@ -66,8 +58,6 @@ Permite realizar operaciones aritméticas y lógicas de 8 y 16 bits:
 - [`ADD`](/VonSim8/VonSim8/docs/cpu/instructions/add/), [`ADC`](/VonSim8/docs/cpu/instructions/adc/), [`INC`](/VonSim8/docs/cpu/instructions/inc/), [`SUB`](/VonSim8/docs/cpu/instructions/sub/), [`SBB`](/VonSim8/docs/cpu/instructions/sbb/), [`DEC`](/VonSim8/docs/cpu/instructions/dec/), [`NEG`](/VonSim8/docs/cpu/instructions/neg/), [`NOT`](/VonSim8/docs/cpu/instructions/not/), [`AND`](/VonSim8/docs/cpu/instructions/and/), [`OR`](/VonSim8/docs/cpu/instructions/or/)
 
 Todas estas operaciones modifican el registro `FLAGS`.
-
-
 
 ### Registro FLAGS
 
@@ -81,13 +71,9 @@ Contiene banderas que reflejan el resultado de las operaciones y el estado de la
 
 El resto de bits están reservados y no se utilizan.
 
-
-
 ## Pila
 
 Estructura LIFO (_Last In, First Out_): el último elemento en entrar es el primero en salir. Se implementa en la memoria principal, comenzando en la dirección más alta (`FFh`) y creciendo hacia abajo. El tope de la pila se guarda en el registro `SP` y todos los elementos son de 8 bits.
-
-
 
 ## Subrutinas
 
@@ -109,8 +95,6 @@ sum3: add al, bl
       ret
 ```
 
-
-
 ## Interrupciones
 
 Permiten responder a eventos externos (hardware) o internos (software, instrucción [`INT`](/VonSim8/docs/cpu/instructions/int/)). Para que una interrupción de hardware sea atendida, la flag `IF` debe estar activada (`IF=1`).
@@ -127,8 +111,6 @@ Cuando ocurre una interrupción:
 6. Se modifica el `IP` para apuntar a la rutina.
 
 Las rutinas de interrupción terminan con [`IRET`](/VonSim8/docs/cpu/instructions/iret/) (no con `RET`).
-
-
 
 ### Llamadas al sistema (_syscalls_)
 

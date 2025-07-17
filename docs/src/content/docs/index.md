@@ -5,7 +5,6 @@ head:
     attrs: { property: og:image, content: https://github.com/ruiz-jose/VonSim8/docs/og/index.png }
 ---
 
-
 ![Simulador de 8 bits](https://raw.githubusercontent.com/ruiz-jose/VonSim8/main/app/public/og.png)
 
 :::info[¿Qué es VonSim8?]

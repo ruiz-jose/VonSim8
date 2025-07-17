@@ -317,13 +317,13 @@ export function generateDataPath(
     // Path del bus de resultado: result start -> result -> ALUresult -> result mbr join -> addresses mbr join -> data mbr join -> registro destino
     path = [
       "result start",
-      "result", 
+      "result",
       "ALUresult",
       "result mbr join",
-      "addresses mbr join", 
+      "addresses mbr join",
       "data mbr join",
       `${normalizedTo} join`,
-      normalizedTo
+      normalizedTo,
     ];
   } else {
     try {
@@ -472,7 +472,7 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
         strokeDasharray={1}
         style={style}
       />
-      
+
       {/* Efecto de brillo adicional para el bus de datos interno */}
       <animated.path
         d={path}

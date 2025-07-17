@@ -76,7 +76,7 @@ export function AddressBus({ showSP, showri }: AddressBusProps) {
         strokeDasharray={1}
         style={style}
       />
-      
+
       {/* Efecto de brillo adicional para el bus de direcciones */}
       <animated.path
         d={path}

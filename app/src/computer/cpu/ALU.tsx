@@ -37,7 +37,9 @@ export function ALU() {
   };
 
   // Función para detectar los registros origen y destino basándose en la instrucción
-  const detectRegisters = (instruction: string): { left: string; right: string; destination: string } => {
+  const detectRegisters = (
+    instruction: string,
+  ): { left: string; right: string; destination: string } => {
     // Por defecto, asumimos AL y BL para la mayoría de operaciones
     let leftReg = "AL";
     let rightReg = "BL";
@@ -58,9 +60,9 @@ export function ALU() {
     for (const pattern of patterns) {
       const match = instruction.match(pattern);
       if (match) {
-        leftReg = match[1];  // Primer operando va a left
+        leftReg = match[1]; // Primer operando va a left
         rightReg = match[2]; // Segundo operando va a right
-        destReg = match[1];  // El resultado va al primer operando (destino)
+        destReg = match[1]; // El resultado va al primer operando (destino)
         break;
       }
     }
@@ -89,40 +91,54 @@ export function ALU() {
       console.log("🎯 Instrucción completa a usar:", instructionToUse);
       if (instruction) {
         setShowOperation(true);
-        
+
         // Detectar dinámicamente ambos registros origen y destino usando la función parametrizada
-        const { left: leftReg, right: rightReg, destination: destReg } = detectRegisters(instructionToUse);
-        console.log("🎯 Registros detectados:", { left: leftReg, right: rightReg, destination: destReg });
+        const {
+          left: leftReg,
+          right: rightReg,
+          destination: destReg,
+        } = detectRegisters(instructionToUse);
+        console.log("🎯 Registros detectados:", {
+          left: leftReg,
+          right: rightReg,
+          destination: destReg,
+        });
         setLeftSource(leftReg);
         setRightSource(rightReg);
         setResultDestination(destReg);
-        
+
         // Generar paths dinámicos para los buses de entrada
         console.log("🎯 Generando path izquierdo...");
         const leftPathSVG = generateDataPath(leftReg as DataRegister, "left", instruction);
         console.log("🎯 Generando path derecho...");
         const rightPathSVG = generateDataPath(rightReg as DataRegister, "right", instruction);
-        
+
         // Generar path dinámico para el bus de resultado
         console.log("🎯 Generando path de resultado...");
-        const resultPathSVG = generateDataPath("result start" as DataRegister, destReg as DataRegister, instruction);
-        
+        const resultPathSVG = generateDataPath(
+          "result start" as DataRegister,
+          destReg as DataRegister,
+          instruction,
+        );
+
         console.log("🔍 Debugging bus de resultado:");
         console.log("  - Destino:", destReg);
         console.log("  - Path dinámico:", resultPathSVG);
-        
+
         // Para debugging: usar paths hardcodeados si los dinámicos fallan
-        const fallbackLeftPath = "M 455 45 L 465 45 L 550 45 L 550 16 L 90 16 L 90 85 L 130 85 L 220 85";
-        const fallbackRightPath = "M 455 85 L 465 85 L 550 85 L 550 250 L 90 250 L 90 145 L 125 145 L 220 145";
+        const fallbackLeftPath =
+          "M 455 45 L 465 45 L 550 45 L 550 16 L 90 16 L 90 85 L 130 85 L 220 85";
+        const fallbackRightPath =
+          "M 455 85 L 465 85 L 550 85 L 550 250 L 90 250 L 90 145 L 125 145 L 220 145";
         const fallbackResultPath = "M 280 115 L 272 115 L 370 115 L 370 250 L 421 250 L 425 45";
-        
+
         console.log("  - Path fallback:", fallbackResultPath);
-        
+
         // Usar los paths dinámicos si están disponibles, sino usar los hardcodeados
         setLeftPath(leftPathSVG || fallbackLeftPath);
         setRightPath(rightPathSVG || fallbackRightPath);
         setResultPath(resultPathSVG || fallbackResultPath);
-        
+
         console.log("  - Path final usado:", resultPathSVG || fallbackResultPath);
       } else {
         setShowOperation(false);
@@ -194,7 +210,7 @@ export function ALU() {
             style={getSpring("cpu.alu.operands")}
           />
         )}
-        
+
         {/* Bus de resultado - Naranja/Ambar más brillante */}
         {resultPath && (
           <animated.path
@@ -206,7 +222,7 @@ export function ALU() {
             style={getSpring("cpu.alu.results")}
           />
         )}
-        
+
         {/* Efectos de brillo adicionales para los buses */}
         {leftPath && (
           <animated.path
@@ -241,11 +257,11 @@ export function ALU() {
 
         {/* Etiquetas de los registros fuente - solo se muestran cuando ambos buses están activos */}
         {leftSource && rightSource && showOperation && leftPath && rightPath && (
-          <animated.text 
-            x="110" 
-            y="90" 
-            fill="#34D399" 
-            fontSize="12" 
+          <animated.text
+            x="110"
+            y="90"
+            fill="#34D399"
+            fontSize="12"
             fontWeight="bold"
             style={getSpring("cpu.alu.operands")}
           >
@@ -253,25 +269,25 @@ export function ALU() {
           </animated.text>
         )}
         {leftSource && rightSource && showOperation && leftPath && rightPath && (
-          <animated.text 
-            x="110" 
-            y="150" 
-            fill="#60A5FA" 
-            fontSize="12" 
+          <animated.text
+            x="110"
+            y="150"
+            fill="#60A5FA"
+            fontSize="12"
             fontWeight="bold"
             style={getSpring("cpu.alu.operands")}
           >
             {rightSource}
           </animated.text>
         )}
-        
+
         {/* Etiqueta del registro destino - solo se muestra cuando el bus de resultado está activo */}
         {resultDestination && showOperation && resultPath && (
-          <animated.text 
-            x="290" 
-            y="115" 
-            fill="#F59E0B" 
-            fontSize="12" 
+          <animated.text
+            x="290"
+            y="115"
+            fill="#F59E0B"
+            fontSize="12"
             fontWeight="bold"
             style={getSpring("cpu.alu.results")}
           >
