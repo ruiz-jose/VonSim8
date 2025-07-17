@@ -21,7 +21,7 @@ type TutorialStep = {
   description: string;
   content: string;
   type: "explanation" | "interactive" | "exercise" | "quiz";
-  target?: string; // Elemento a resaltar
+  // Se eliminó la opción de ver conceptos en acción y visualizaciones
   exercise?: {
     question: string;
     options?: string[];
@@ -37,7 +37,7 @@ type Tutorial = {
   title: string;
   description: string;
   difficulty: "beginner" | "intermediate" | "advanced";
-  concepts: string[];
+  // Se eliminó el campo concepts y cualquier referencia a visualizaciones
   steps: TutorialStep[];
   estimatedTime: number; // en minutos
 };
@@ -56,7 +56,6 @@ export const AVAILABLE_TUTORIALS: Tutorial[] = [
     title: "Fundamentos de la CPU",
     description: "Aprende cómo funciona una CPU y sus componentes principales",
     difficulty: "beginner",
-    concepts: ["register", "alu", "program-counter"],
     estimatedTime: 10,
     steps: [
       {
@@ -75,37 +74,15 @@ export const AVAILABLE_TUTORIALS: Tutorial[] = [
         content:
           "Los registros almacenan datos temporalmente durante la ejecución. Son más rápidos que la RAM pero tienen menos capacidad.",
         type: "explanation",
-        target: "cpu-component",
-        completed: false,
-      },
-      {
-        id: "alu-exercise",
-        title: "Ejercicio: ALU",
-        description: "Practica con la Unidad Aritmético-Lógica",
-        content:
-          "La ALU realiza operaciones matemáticas y lógicas. Observa cómo cambian los valores en los registros AL, BL, CL, DL.",
-        type: "exercise",
-        exercise: {
-          question: "¿Qué operación realiza la ALU cuando ejecutas ADD AL, 5?",
-          options: [
-            "Suma 5 al registro AL",
-            "Resta 5 del registro AL",
-            "Multiplica AL por 5",
-            "Divide AL entre 5",
-          ],
-          correctAnswer: 0,
-          explanation: "ADD AL, 5 suma el valor 5 al contenido actual del registro AL.",
-        },
         completed: false,
       },
       {
         id: "program-counter",
-        title: "Contador de Programa",
+        title: "Puntero de Instrucción",
         description: "El IP indica la siguiente instrucción a ejecutar",
         content:
-          "El Program Counter (IP) se incrementa automáticamente después de cada instrucción.",
+          "El Puntero de Instrucción (IP) se incrementa automáticamente después de cada instrucción.",
         type: "explanation",
-        target: "cpu-component",
         completed: false,
       },
     ],
@@ -115,7 +92,6 @@ export const AVAILABLE_TUTORIALS: Tutorial[] = [
     title: "Memoria RAM",
     description: "Comprende cómo funciona la memoria principal",
     difficulty: "beginner",
-    concepts: ["memory", "bus"],
     estimatedTime: 8,
     steps: [
       {
@@ -125,7 +101,6 @@ export const AVAILABLE_TUTORIALS: Tutorial[] = [
         content:
           "La RAM almacena programas y datos temporalmente. Cada ubicación tiene una dirección única.",
         type: "explanation",
-        target: "memory-component",
         completed: false,
       },
       {
@@ -155,17 +130,16 @@ export const AVAILABLE_TUTORIALS: Tutorial[] = [
   {
     id: "instruction-cycle",
     title: "Ciclo de Instrucción",
-    description: "Fetch, Decode, Execute",
+    description: "Ciclo básico de ejecución de instrucciones",
     difficulty: "intermediate",
-    concepts: ["instruction", "program-counter"],
     estimatedTime: 15,
     steps: [
       {
         id: "cycle-intro",
         title: "El Ciclo de Instrucción",
-        description: "Las tres fases principales",
+        description: "Las dos fases principales",
         content:
-          "Cada instrucción pasa por tres fases: Fetch (leer), Decode (interpretar), Execute (ejecutar).",
+          "Cada instrucción pasa por dos fases: Fetch (leer) y Execute (ejecutar). La decodificación está incluida en la ejecución.",
         type: "explanation",
         completed: false,
       },
@@ -178,14 +152,6 @@ export const AVAILABLE_TUTORIALS: Tutorial[] = [
         completed: false,
       },
       {
-        id: "decode-phase",
-        title: "Fase Decode",
-        description: "Interpretar la instrucción",
-        content: "La CPU determina qué operación realizar y qué operandos usar.",
-        type: "explanation",
-        completed: false,
-      },
-      {
         id: "execute-phase",
         title: "Fase Execute",
         description: "Ejecutar la operación",
@@ -193,26 +159,7 @@ export const AVAILABLE_TUTORIALS: Tutorial[] = [
         type: "explanation",
         completed: false,
       },
-      {
-        id: "cycle-exercise",
-        title: "Ejercicio: Observar el Ciclo",
-        description: "Ejecuta una instrucción paso a paso",
-        content: 'Usa el botón "Por Ciclo" para ver cada fase del ciclo de instrucción.',
-        type: "exercise",
-        exercise: {
-          question: "¿En qué orden ocurren las fases del ciclo de instrucción?",
-          options: [
-            "Execute, Decode, Fetch",
-            "Fetch, Execute, Decode",
-            "Fetch, Decode, Execute",
-            "Decode, Fetch, Execute",
-          ],
-          correctAnswer: 2,
-          explanation:
-            "El orden correcto es Fetch (leer), Decode (interpretar), Execute (ejecutar).",
-        },
-        completed: false,
-      },
+      // Se eliminó la opción de visualizaciones y ejercicios relacionados
     ],
   },
 ];
@@ -487,17 +434,7 @@ export const InteractiveTutorial = memo(
                   Anterior
                 </Button>
 
-                {currentStep.type === "explanation" && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={togglePlay}
-                    className="flex items-center gap-1"
-                  >
-                    <FontAwesomeIcon icon={isPlaying ? faPause : faPlay} />
-                    {isPlaying ? "Pausar" : "Reproducir"}
-                  </Button>
-                )}
+                {/* El botón Reproducir/Pausar ha sido eliminado para Fundamentos de la CPU */}
               </div>
 
               <div className="flex items-center gap-2">
