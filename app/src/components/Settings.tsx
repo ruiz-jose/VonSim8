@@ -273,35 +273,6 @@ export function Settings({ className }: { className?: string }) {
       </Setting>
 
       <hr className="border-stone-600" />
-      <Setting>
-        <SettingInfo>
-          <SettingTitle>
-            <span className="icon-[lucide--languages] size-6" />
-            {translate("settings.language.label")}
-          </SettingTitle>
-        </SettingInfo>
-
-        <Select
-          value={settings.language}
-          onValueChange={value => setSettings(prev => ({ ...prev, language: value as any }))}
-        >
-          <SelectTrigger className="w-32">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="en">
-              <span className="inline-flex items-center gap-2">
-                <span className="icon-[circle-flags--uk] size-4" /> English
-              </span>
-            </SelectItem>
-            <SelectItem value="es">
-              <span className="inline-flex items-center gap-2">
-                <span className="icon-[circle-flags--ar] size-4" /> Español
-              </span>
-            </SelectItem>
-          </SelectContent>
-        </Select>
-      </Setting>
 
       <Setting>
         <SettingInfo>
