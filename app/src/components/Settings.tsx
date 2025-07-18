@@ -277,41 +277,6 @@ export function Settings({ className }: { className?: string }) {
       <Setting>
         <SettingInfo>
           <SettingTitle>
-            <span className="icon-[lucide--pilcrow-square] size-6" />
-            {translate("settings.editorFontSize.label")}
-          </SettingTitle>
-        </SettingInfo>
-
-        <div className="flex items-center rounded-lg border border-stone-600 bg-stone-900">
-          <button
-            className="m-0.5 flex size-8 items-center justify-center rounded-lg text-white transition-colors hover:enabled:bg-stone-800 disabled:cursor-not-allowed"
-            disabled={settings.editorFontSize <= 8}
-            onClick={() =>
-              setSettings(prev => ({ ...prev, editorFontSize: prev.editorFontSize - 1 }))
-            }
-            title={translate("settings.editorFontSize.decrease")}
-          >
-            <span className="icon-[lucide--minus] size-4" />
-          </button>
-          <span className="w-8 text-center text-sm font-normal">{settings.editorFontSize}</span>
-          <button
-            className="m-0.5 flex size-8 items-center justify-center rounded-lg text-white transition-colors hover:enabled:bg-stone-800 disabled:cursor-not-allowed"
-            disabled={settings.editorFontSize >= 64}
-            onClick={() =>
-              setSettings(prev => ({ ...prev, editorFontSize: prev.editorFontSize + 1 }))
-            }
-            title={translate("settings.editorFontSize.increase")}
-          >
-            <span className="icon-[lucide--plus] size-4" />
-          </button>
-        </div>
-      </Setting>
-
-      <hr className="border-stone-600" />
-
-      <Setting>
-        <SettingInfo>
-          <SettingTitle>
             <span className="icon-[lucide--contrast] size-6" />
             {translate("settings.filters.label")}
           </SettingTitle>

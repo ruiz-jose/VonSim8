@@ -6,6 +6,8 @@ import { useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { toast } from "@/lib/toast";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover";
+import { Slider } from "@/components/ui/Slider";
 
 import { getSavedProgram } from "./files";
 
@@ -232,28 +234,38 @@ export function StatusBar() {
 
       {/* Sección derecha - Tamaño de fuente y Errores */}
       <div className="flex items-center gap-6">
-        {/* Tamaño de fuente del editor */}
-        <div className="flex items-center gap-1">
-          <span className="icon-[lucide--pilcrow-square] size-4 text-stone-300" />
-          <span className="text-xs text-stone-300">Tamaño de fuente</span>
-          <button
-            className="m-0.5 flex size-5 items-center justify-center rounded-lg text-white transition-colors hover:enabled:bg-stone-800 disabled:cursor-not-allowed border border-stone-600"
-            disabled={settings.editorFontSize <= 8}
-            onClick={() => setSettings(prev => ({ ...prev, editorFontSize: prev.editorFontSize - 1 }))}
-            title="Reducir tamaño de fuente"
-          >
-            <span className="icon-[lucide--minus] size-3" />
-          </button>
-          <span className="w-7 text-center text-xs font-normal">{settings.editorFontSize}</span>
-          <button
-            className="m-0.5 flex size-5 items-center justify-center rounded-lg text-white transition-colors hover:enabled:bg-stone-800 disabled:cursor-not-allowed border border-stone-600"
-            disabled={settings.editorFontSize >= 64}
-            onClick={() => setSettings(prev => ({ ...prev, editorFontSize: prev.editorFontSize + 1 }))}
-            title="Aumentar tamaño de fuente"
-          >
-            <span className="icon-[lucide--plus] size-3" />
-          </button>
-        </div>
+        {/* Tamaño de fuente del editor - rediseñado */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <button
+              className="flex items-center justify-center rounded-lg p-1 text-stone-300 hover:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-mantis-500"
+              aria-label="Ajustar tamaño de fuente del editor"
+              title="Ajustar tamaño de fuente del editor"
+              type="button"
+            >
+              <span className="icon-[lucide--pilcrow-square] size-5" />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent align="end" className="w-56 p-4">
+            <div className="mb-2 flex items-center gap-2">
+              <span className="icon-[lucide--pilcrow-square] size-5 text-mantis-400" />
+              <span className="text-sm font-medium text-white">Tamaño de fuente del editor</span>
+              <span className="ml-auto text-xs text-stone-400">{settings.editorFontSize}px</span>
+            </div>
+            <Slider
+              value={[settings.editorFontSize]}
+              min={8}
+              max={64}
+              step={1}
+              onValueChange={([value]) => setSettings(prev => ({ ...prev, editorFontSize: value }))}
+              className="w-full"
+            />
+            <div className="mt-2 flex justify-between text-xs text-stone-500">
+              <span>8</span>
+              <span>64</span>
+            </div>
+          </PopoverContent>
+        </Popover>
         {/* Indicador de errores */}
         <div
           className={clsx(
