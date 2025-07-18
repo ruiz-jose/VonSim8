@@ -48,13 +48,13 @@ export function ALU() {
     // Detectar patrones específicos en la instrucción
     // Patrón general para instrucciones de dos operandos: INSTRUCCIÓN REG1, REG2
     const patterns = [
-      /ADD\s+([A-Z]+),\s*([A-Z]+)/,
-      /SUB\s+([A-Z]+),\s*([A-Z]+)/,
-      /CMP\s+([A-Z]+),\s*([A-Z]+)/,
-      /AND\s+([A-Z]+),\s*([A-Z]+)/,
-      /OR\s+([A-Z]+),\s*([A-Z]+)/,
-      /XOR\s+([A-Z]+),\s*([A-Z]+)/,
-      /MOV\s+([A-Z]+),\s*([A-Z]+)/,
+      /ADD\s+([A-Z]+),\s*([\[\]A-Z0-9]+)/,
+      /SUB\s+([A-Z]+),\s*([\[\]A-Z0-9]+)/,
+      /CMP\s+([A-Z]+),\s*([\[\]A-Z0-9]+)/,
+      /AND\s+([A-Z]+),\s*([\[\]A-Z0-9]+)/,
+      /OR\s+([A-Z]+),\s*([\[\]A-Z0-9]+)/,
+      /XOR\s+([A-Z]+),\s*([\[\]A-Z0-9]+)/,
+      /MOV\s+([A-Z]+),\s*([\[\]A-Z0-9]+)/,
     ];
 
     for (const pattern of patterns) {
@@ -62,13 +62,17 @@ export function ALU() {
       if (match) {
         leftReg = match[1]; // Primer operando va a left
         rightReg = match[2]; // Segundo operando va a right
+        // Si el segundo operando contiene corchetes, usar MBR como fuente
+        if (/\[.*\]/.test(rightReg)) {
+          rightReg = "MBR";
+        }
         destReg = match[1]; // El resultado va al primer operando (destino)
         break;
       }
     }
 
-    // Validar que los registros son válidos (AL, BL, CL, DL)
-    const validRegisters = ["AL", "BL", "CL", "DL"];
+    // Validar que los registros son válidos (AL, BL, CL, DL, MBR)
+    const validRegisters = ["AL", "BL", "CL", "DL", "MBR"];
     if (!validRegisters.includes(leftReg)) {
       leftReg = "AL";
     }

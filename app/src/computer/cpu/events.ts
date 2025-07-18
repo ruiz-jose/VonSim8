@@ -271,7 +271,12 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
 
     case "cpu:mar.set": {
       countersetMAR++;
-      console.log("countersetMAR", countersetMAR); // Debugging line
+      console.log("countersetMAR", countersetMAR, { instructionName, showpath2 }); // Debugging line
+      // Activar la animación del Address Bus desde MBR si la instrucción lo indica
+      if (instructionName.includes("MBR")) {
+        showpath2 = true;
+        console.log("[cpu:mar.set] Activando showpath2 para Address Bus MBR → MAR");
+      }
       if (countersetMAR === 4 && showpath2) {
         showpath1 = true;
         showpath2 = false;
@@ -298,6 +303,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
           { duration: 1, easing: "easeInSine" },
         ),
       ]);
+      // (Eliminada la animación de bus de datos MBR->MAR para dejar solo la animación original del Address Bus)
       return;
     }
 
@@ -310,11 +316,18 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         window.__nextTransferMBRtoIP = true;
       }
 
-      // NO activar el registro de destino antes del bus - esto evita el coloreo prematuro
-      // await activateRegister(`cpu.${normalizedRegister}` as RegisterKey);
-
-      // Primero: Solo dibujar la animación del bus de datos (sin colorear el registro destino)
-      await drawDataPath("MBR", normalizedRegister as DataRegister, instructionName, mode);
+      // Solo animar el bus de datos desde MBR a IR, MAR o registros de propósito general (AL, BL, CL, DL) si NO es una operación de la ALU
+      const aluOps = ["ADD", "SUB", "AND", "OR", "XOR", "CMP"]; // Puedes agregar más si tu CPU tiene más
+      const isALUOp = aluOps.some(op => instructionName.startsWith(op));
+      console.log("[cpu:mbr.get] normalizedRegister:", normalizedRegister, "instructionName:", instructionName, "mode:", mode);
+      if (normalizedRegister === "IR") {
+        await drawDataPath("MBR", "IR", instructionName, mode);
+      } else if (normalizedRegister === "MAR" || normalizedRegister.startsWith("MAR.")) {
+        console.log("Animando bus de datos: MBR → MAR", { instructionName, mode });
+        await drawDataPath("MBR", "MAR", instructionName, mode);
+      } else if (["AL", "BL", "CL", "DL"].includes(normalizedRegister) && !isALUOp) {
+        await drawDataPath("MBR", normalizedRegister as DataRegister, instructionName, mode);
+      }
 
       // Segundo: Actualizar el valor del registro después de que termine la animación del bus
       store.set(registerAtoms[event.register], store.get(MBRAtom));

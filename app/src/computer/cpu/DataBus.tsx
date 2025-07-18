@@ -76,7 +76,8 @@ dataBus.addNode("BL out", { position: [465, 85] }); // Ajustado para la salida d
 dataBus.addNode("CL out", { position: [465, 125] }); // Ajustado para la salida del registro de 8 bits
 dataBus.addNode("DL out", { position: [465, 165] }); // Ajustado para la salida del registro de 8 bits
 dataBus.addNode("id out", { position: [460, 205] }); // Ajustado para conectar con el registro id redimensionado
-
+dataBus.addNode("MBR out", { position: [630, 250] }); // Nodo de salida de MBR
+dataBus.addNode("MBR out join", { position: [550, 250] }); // Nodo de unión de salida de MBR
 dataBus.addNode("SP out", { position: [510, 309] });
 dataBus.addNode("IP out", { position: [510, 349] });
 dataBus.addNode("IP out join", { position: [550, 349] });
@@ -136,6 +137,8 @@ dataBus.addUndirectedEdge("id out join", "left");
 */
 dataBus.addUndirectedEdge("outr mbr join", "mbr reg join");
 dataBus.addUndirectedEdge("MBR", "outr mbr join");
+dataBus.addUndirectedEdge("MBR", "MBR out");
+dataBus.addUndirectedEdge("MBR out", "outr mbr join");
 
 dataBus.addUndirectedEdge("mbr reg join", "ALUresult");
 dataBus.addUndirectedEdge("ALUresult", "AL join");
@@ -278,7 +281,7 @@ export function generateDataPath(
     } else if (mode === "mem<-imd" && (instruction === "ADD" || instruction === "SUB")) {
       path = ["MBR", "mbr reg join", "ri join", "ri"];
     } else {
-      path = ["MBR", "outr mbr join", "SP out join", "MAR join2", "MAR"];
+      path = ["MBR","MBR out", "MBR out join", "outr mbr join", "SP out join", "MAR join2", "MAR"];
     }
   } else if (normalizedFrom === "MBR" && registers.includes(normalizedTo)) {
     path = ["MBR", "mbr reg join", "ALUresult", `${normalizedTo} join`, normalizedTo];
@@ -334,6 +337,29 @@ export function generateDataPath(
       `${normalizedTo} join`,
       normalizedTo,
     ];
+  } else if (normalizedFrom === "MBR" && normalizedTo === "IR") {
+    // Ruta explícita: MBR -> MBR out -> MBR out join -> outr mbr join -> mbr reg join -> IR mbr join -> IR
+    path = [
+      "MBR",
+      "MBR out",
+      "MBR out join",
+      "outr mbr join",
+      "mbr reg join",
+      "IR mbr join",
+      "IR"
+    ];
+  } else if (normalizedFrom === "MBR" && normalizedTo === "MAR") {
+    // Ruta explícita: MBR -> MBR out -> MBR out join -> outr mbr join -> SP out join -> MAR join2 -> MAR
+    path = [
+      "MBR",
+      "MBR out",
+      "MBR out join",
+      "outr mbr join",
+      "SP out join",
+      "MAR join2",
+      "MAR"
+    ];
+    console.log("[generateDataPath] Path generado para MBR → MAR:", path);
   } else {
     try {
       path = bidirectional(dataBus, normalizedFrom, normalizedTo) || [];
