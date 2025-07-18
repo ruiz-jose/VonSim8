@@ -36,7 +36,6 @@ dataBus.addNode("IP", { position: [451, 349] });
 dataBus.addNode("ri", { position: [451, 388] });
 dataBus.addNode("MAR", { position: [698, 349] });
 dataBus.addNode("result", { position: [272, 115] });
-dataBus.addNode("NodoRegIn", { position: [425, 115] });
 dataBus.addNode("ALUresult", { position: [390, 115] }); // Antes: [370, 115]
 dataBus.addNode("FLAGS", { position: [250, 225] });
 dataBus.addNode("IR", { position: [205, 272] });
@@ -139,12 +138,11 @@ dataBus.addUndirectedEdge("outr mbr join", "mbr reg join");
 dataBus.addUndirectedEdge("MBR", "outr mbr join");
 
 dataBus.addUndirectedEdge("mbr reg join", "ALUresult");
-dataBus.addUndirectedEdge("ALUresult", "NodoRegIn");
-dataBus.addUndirectedEdge("NodoRegIn", "AL join");
-dataBus.addUndirectedEdge("NodoRegIn", "BL join");
-dataBus.addUndirectedEdge("NodoRegIn", "CL join");
-dataBus.addUndirectedEdge("NodoRegIn", "DL join");
-dataBus.addUndirectedEdge("NodoRegIn", "id join");
+dataBus.addUndirectedEdge("ALUresult", "AL join");
+dataBus.addUndirectedEdge("ALUresult", "BL join");
+dataBus.addUndirectedEdge("ALUresult", "CL join");
+dataBus.addUndirectedEdge("ALUresult", "DL join");
+dataBus.addUndirectedEdge("ALUresult", "id join");
 dataBus.addUndirectedEdge("outr mbr join", "operands mbr join");
 
 // Conexión del bus de resultado desde data mbr join hasta el registro destino
@@ -257,7 +255,7 @@ export function generateDataPath(
       "right end", // Terminar en la entrada derecha de la ALU
     ];
   } else if (registers.includes(normalizedFrom) && registers.includes(normalizedTo)) {
-    // Recorrido explícito: X, X out, X out join, outr mbr join, mbr reg join, ALUresult, NodoRegIn, Y join, Y
+    // Recorrido explícito: X, X out, X out join, outr mbr join, mbr reg join, ALUresult, Y join, Y
     path = [
       normalizedFrom,
       `${normalizedFrom} out`,
@@ -265,7 +263,6 @@ export function generateDataPath(
       "outr mbr join",
       "mbr reg join",
       "ALUresult",
-      "NodoRegIn",
       `${normalizedTo} join`,
       normalizedTo,
     ];
@@ -284,7 +281,7 @@ export function generateDataPath(
       path = ["MBR", "outr mbr join", "SP out join", "MAR join2", "MAR"];
     }
   } else if (normalizedFrom === "MBR" && registers.includes(normalizedTo)) {
-    path = ["MBR", "mbr reg join", `${normalizedTo} join`, normalizedTo];
+    path = ["MBR", "mbr reg join", "ALUresult", `${normalizedTo} join`, normalizedTo];
   } else if (normalizedFrom === "IP" && normalizedTo === "id") {
     path = ["IP out", "IP out join", "outr mbr join", "mbr reg join", "id join", "id"];
   } else if (normalizedFrom === "id" && normalizedTo === "ri") {
@@ -300,7 +297,6 @@ export function generateDataPath(
       "result start",
       "result",
       "ALUresult",
-      "NodoRegIn",
       "CL join",
       "CL",
     ];
@@ -309,7 +305,6 @@ export function generateDataPath(
       "result start",
       "result",
       "ALUresult",
-      "NodoRegIn",
       "AL join",
       "AL",
     ];
@@ -318,7 +313,6 @@ export function generateDataPath(
       "result start",
       "result",
       "ALUresult",
-      "NodoRegIn",
       "BL join",
       "BL",
     ];
@@ -436,7 +430,7 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
           "M 220 145 H 90", // left
           "V 250 H 630", // Long path to MBR, here to get nice joins
           "M 90 145 H 90", // right
-          "M 272 115 H 420", // result (más a la derecha, sin bajar)
+          "M 272 115 H 390", // result (más a la derecha, sin bajar)
           "M 250 225 V 250", // flags
           // Internal ALU
           //"M 85 85 H 220", // left
@@ -454,7 +448,7 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
           showri ? "M 470 388 H 421 V 300" : "", // ri - ajustado para conectar con registro redimensionado
           // Data registers - ajustados para conectar con registros más pequeños
           "M 455 45 H 425", // AL - ajustado
-          "V 170", // Long path to MBR, here to get nice joins
+          //"V 170", // Long path to MBR, here to get nice joins
           "M 455 85 H 425", // BL - ajustado
           "M 455 125 H 425", // CL - ajustado
           "M 455 165 H 425", // DL - ajustado
@@ -475,7 +469,12 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
           "M 555 10 H 100 V 84", // CX out to left
           "M 555 10 H 100 V 84", // DX out to left*/
           //"M 510 205 H 60", // id out to left
-          "M 390 115 V 250", // línea vertical desde ALUresult hasta el bus central
+          "M 390 250 V 115", // línea vertical que conecta el bus central con ALUresult
+          "M 390 115 L 425 45 L 455 45", // línea recta de ALUresult a AL join y luego a AL
+          "M 390 115 L 425 85 L 455 85", // línea recta de ALUresult a BL join y luego a BL
+          "M 390 115 L 425 125 L 455 125", // línea recta de ALUresult a CL join y luego a CL
+          "M 390 115 L 425 165 L 455 165", // línea recta de ALUresult a DL join y luego a DL
+
         ].join(" ")}
       />
 
@@ -496,6 +495,14 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
         pathLength={1}
         strokeDasharray={1}
         style={style}
+      />
+      <circle
+        cx={390}
+        cy={115}
+        r={8}
+        fill="#292524"
+        stroke="#44403c"
+        strokeWidth={2}
       />
     </svg>
   );
