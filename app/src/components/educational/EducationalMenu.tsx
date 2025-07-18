@@ -63,28 +63,7 @@ export const EducationalMenu = memo(
         color: "text-blue-400",
         action: () => setTutorialsExpanded(!tutorialsExpanded),
       },
-      {
-        id: "visualizations",
-        title: "Visualizaciones",
-        description: "Ver conceptos en acción",
-        icon: faEye,
-        color: "text-green-400",
-        action: () => setVisualizationsExpanded(!visualizationsExpanded),
-      },
-      {
-        id: "concepts",
-        title: "Conceptos Educativos",
-        description: "Explorar tooltips informativos",
-        icon: faLightbulb,
-        color: "text-purple-400",
-        action: () => {
-          // Mostrar información sobre tooltips
-          alert(
-            "Haz hover sobre los elementos de la interfaz para ver explicaciones educativas. Los tooltips se adaptan a tu nivel de conocimiento.",
-          );
-          onClose?.();
-        },
-      },
+      // Eliminada la opción de conceptos educativos
     ];
 
     const tutorialItems = [

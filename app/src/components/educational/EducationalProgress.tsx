@@ -107,6 +107,17 @@ const ACHIEVEMENTS: Achievement[] = [
     unlocked: false,
     points: 20,
   },
+  {
+    id: "tutorial_master",
+    type: "tutorials_completed",
+    title: "Maestro de Tutoriales",
+    description: "Completa un tutorial interactivo educativo",
+    icon: faTrophy,
+    requirement: 1,
+    current: 0,
+    unlocked: false,
+    points: 40,
+  },
 ];
 
 // Niveles de aprendizaje
