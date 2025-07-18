@@ -59,15 +59,17 @@ export function AddressBus({ showSP, showri }: AddressBusProps) {
 
   return (
     <svg viewBox="0 0 650 500" className="pointer-events-none absolute inset-0">
+      {/* Primero los paths base (grises) */}
       {paths.map((d, index) => (
         <path
           key={index}
-          className={`fill-none stroke-bus ${highlight && d === "M 444 388 H 575 V 349" ? "stroke-mantis-400" : "stroke-stone-700"}`}
+          className={`fill-none stroke-stone-700 stroke-[8px]`}
           strokeLinejoin="round"
           d={d}
         />
       ))}
 
+      {/* Luego los paths animados (azules) para que queden arriba */}
       <animated.path
         d={path}
         className="fill-none stroke-[#3B82F6] stroke-[3px] drop-shadow-[0_0_8px_rgba(59,130,246,0.6)]"

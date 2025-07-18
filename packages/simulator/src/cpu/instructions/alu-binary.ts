@@ -94,6 +94,26 @@ export class ALUBinaryInstruction extends Instruction<
         // Move out operand to left register
         if (size === 8) yield* computer.cpu.copyByteRegister(out, "left.l");
         else yield* computer.cpu.copyWordRegister(out, "left");
+      } else {
+        // --- ACTIVAR ANIMACIÓN ESPECIAL DEL ADDRESS BUS SI CORRESPONDE ---
+        if (
+          typeof window !== "undefined" &&
+          (window as any).setShowPath2 &&
+          mode === "reg<-mem" &&
+          src.mode === "direct"
+        ) {
+          (window as any).setShowPath2(true);
+        }
+        yield* computer.cpu.setMAR("ri");
+        if (
+          typeof window !== "undefined" &&
+          (window as any).setShowPath2 &&
+          mode === "reg<-mem" &&
+          src.mode === "direct"
+        ) {
+          (window as any).setShowPath2(false);
+        }
+        // --- FIN ANIMACIÓN ESPECIAL ---
       }
     } else {
       // Fetch left operand, which is the memory cell

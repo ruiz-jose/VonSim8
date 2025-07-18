@@ -18,6 +18,7 @@ import { colors } from "@/lib/tailwind";
 
 import { DataRegister, generateDataPath } from "./DataBus";
 import { aluOperationAtom, cycleAtom, MARAtom, MBRAtom, registerAtoms } from "./state";
+import type { MARRegister } from "@vonsim/simulator/cpu";
 
 const BUS_ANIMATION_DURATION = 5;
 
@@ -270,23 +271,18 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
     }
 
     case "cpu:mar.set": {
-      countersetMAR++;
-      console.log("countersetMAR", countersetMAR, { instructionName, showpath2 }); // Debugging line
-      // Activar la animación del Address Bus desde MBR si la instrucción lo indica
-      if (instructionName.includes("MBR")) {
-        showpath2 = true;
-        console.log("[cpu:mar.set] Activando showpath2 para Address Bus MBR → MAR");
-      }
-      if (countersetMAR === 4 && showpath2) {
-        showpath1 = true;
-        showpath2 = false;
-      }
+      // Detectar si el registro origen es MBR o 'ri' (para animación especial)
+      const isFromMBR = event.register.toLowerCase() === "mbr" || event.register === "ri";
+      const path = isFromMBR
+        ? "M 629 250 H 550 V 349 H 659" // path especial, siempre desde el MBR
+        : generateAddressPath(event.register as MARRegister);    // path normal
+      console.log("[cpu:mar.set] event.register:", event.register, "| Animación especial:", isFromMBR);
 
       await anim(
         [
           {
             key: "cpu.internalBus.address.path",
-            from: generateAddressPath(event.register, showpath1, showpath2),
+            from: path,
           },
           { key: "cpu.internalBus.address.opacity", from: 1 },
           { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
