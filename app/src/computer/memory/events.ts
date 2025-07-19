@@ -10,7 +10,6 @@ import {
   hideWriteControlText,
   showReadControlText,
   showWriteControlText,
-  updateRegisterWithGlow,
 } from "@/computer/shared/animate";
 import type { SimulatorEvent } from "@/computer/shared/types";
 import { finishSimulation, notifyWarning } from "@/computer/simulation";
@@ -44,7 +43,10 @@ function generateExternalDataPath(direction: "memory-to-mbr" | "mbr-to-memory"):
 const BUS_ANIMATION_DURATION = 5;
 
 // Función para animar el bus de datos externo (igual que el interno del CPU)
-export const drawExternalDataPath = (direction: "memory-to-mbr" | "mbr-to-memory", duration = BUS_ANIMATION_DURATION) => {
+export const drawExternalDataPath = (
+  direction: "memory-to-mbr" | "mbr-to-memory",
+  duration = BUS_ANIMATION_DURATION,
+) => {
   try {
     const path = generateExternalDataPath(direction);
     if (!path) return Promise.resolve();
@@ -152,6 +154,7 @@ const resetWRControlPath = () =>
 // Declarar la propiedad global para TypeScript
 // (esto puede estar ya en otro archivo, pero lo repetimos aquí por seguridad)
 declare global {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
   interface Window {
     VONSIM_PARALLEL_ANIMATIONS?: boolean;
   }
@@ -162,18 +165,24 @@ declare global {
 
 export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promise<void> {
   // Hook para animaciones paralelas (modo principiante)
-  if (typeof window !== 'undefined' && window.VONSIM_PARALLEL_ANIMATIONS) {
+  if (typeof window !== "undefined" && window.VONSIM_PARALLEL_ANIMATIONS) {
     window.addEventListener("vonsim:parallel-memory-read-visual", () => {
       // Feedback visual inmediato: destello en el bus de direcciones y bus RD
       store.set(showReadBusAnimationAtom, true);
-      anim([
-        { key: "bus.address.opacity", to: 0.7 },
-        { key: "bus.rd.opacity", to: 0.7 },
-      ], { duration: 0.15, easing: "easeOutQuad" }).then(() => {
-        anim([
-          { key: "bus.address.opacity", to: 1 },
-          { key: "bus.rd.opacity", to: 1 },
-        ], { duration: 0.15, easing: "easeInQuad" });
+      anim(
+        [
+          { key: "bus.address.opacity", to: 0.7 },
+          { key: "bus.rd.opacity", to: 0.7 },
+        ],
+        { duration: 0.15, easing: "easeOutQuad" },
+      ).then(() => {
+        anim(
+          [
+            { key: "bus.address.opacity", to: 1 },
+            { key: "bus.rd.opacity", to: 1 },
+          ],
+          { duration: 0.15, easing: "easeInQuad" },
+        );
       });
       // Animar el bus de direcciones desde MAR hacia la memoria y el bus de control RD en simultáneo
       Promise.all([
@@ -191,14 +200,20 @@ export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promi
       if (!window.VONSIM_PARALLEL_ANIMATIONS) {
         // Feedback visual inmediato: destello en el bus de direcciones y bus RD
         store.set(showReadBusAnimationAtom, true);
-        anim([
-          { key: "bus.address.opacity", to: 0.7 },
-          { key: "bus.rd.opacity", to: 0.7 },
-        ], { duration: 0.15, easing: "easeOutQuad" }).then(() => {
-          anim([
-            { key: "bus.address.opacity", to: 1 },
-            { key: "bus.rd.opacity", to: 1 },
-          ], { duration: 0.15, easing: "easeInQuad" });
+        anim(
+          [
+            { key: "bus.address.opacity", to: 0.7 },
+            { key: "bus.rd.opacity", to: 0.7 },
+          ],
+          { duration: 0.15, easing: "easeOutQuad" },
+        ).then(() => {
+          anim(
+            [
+              { key: "bus.address.opacity", to: 1 },
+              { key: "bus.rd.opacity", to: 1 },
+            ],
+            { duration: 0.15, easing: "easeInQuad" },
+          );
         });
         // Animar el bus de direcciones y el bus de control RD en simultáneo
         const duration = BUS_ANIMATION_DURATION; // Usa la duración global para coherencia

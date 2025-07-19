@@ -2,8 +2,6 @@ import {
   faCheck,
   faGraduationCap,
   faLightbulb,
-  faPause,
-  faPlay,
   faRocket,
   faStepBackward,
   faStepForward,
@@ -228,10 +226,6 @@ export const InteractiveTutorial = memo(
         }, 2000);
       }
     }, [currentStep, userAnswer, completeStep, nextStep]);
-
-    const togglePlay = useCallback(() => {
-      setIsPlaying(!isPlaying);
-    }, [isPlaying]);
 
     // Auto-advance cuando está en modo reproducción
     useEffect(() => {

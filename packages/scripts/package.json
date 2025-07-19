@@ -8,8 +8,8 @@
     "lint:fix": "tsc --noEmit && eslint --ignore-path .gitignore . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "echo 'No tests for scripts package'",
-    "test:coverage": "echo 'No tests for scripts package'"
+    "test": "echo 'No tests for scripts package' && exit 0",
+    "test:coverage": "echo 'No tests for scripts package' && exit 0"
   },
   "dependencies": {
     "execa": "^8.0.1",

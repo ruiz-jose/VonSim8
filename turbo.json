@@ -5,13 +5,16 @@
       "outputs": ["dist/**"]
     },
     "test": {
-      "outputs": ["coverage/**", "test-results/**", "playwright-report/**"]
+      "outputs": [],
+      "dependsOn": ["^build"]
     },
     "test:coverage": {
-      "outputs": ["coverage/**"]
+      "outputs": ["coverage/**"],
+      "dependsOn": ["^build"]
     },
     "test:integration": {
-      "outputs": ["test-results/**"]
+      "outputs": ["test-results/**"],
+      "dependsOn": ["^build"]
     },
     "lint": {
       "outputs": []
@@ -28,5 +31,6 @@
     "audit": {
       "outputs": []
     }
-  }
+  },
+  "globalDependencies": ["**/.env.*local"]
 }

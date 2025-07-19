@@ -366,6 +366,7 @@ export async function turnLineOff(line: SimplePathKey) {
 // Declarar la propiedad global para TypeScript
 // (esto puede estar ya en otro archivo, pero lo repetimos aquí por seguridad)
 declare global {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
   interface Window {
     __nextTransferMBRtoIP?: boolean;
   }

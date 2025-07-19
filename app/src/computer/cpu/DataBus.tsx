@@ -151,8 +151,6 @@ dataBus.addUndirectedEdge("outr mbr join", "operands mbr join");
 // Conexión del bus de resultado desde data mbr join hasta el registro destino
 // Nota: Estas conexiones ya existen más abajo, no las duplicamos
 
-
-
 // These are the lines
 dataBus.addUndirectedEdge("AL join", "AL");
 dataBus.addUndirectedEdge("BL join", "BL");
@@ -161,7 +159,6 @@ dataBus.addUndirectedEdge("DL join", "DL");
 //dataBus.addUndirectedEdge("id join", "data mbr join");
 dataBus.addUndirectedEdge("MBR", "data mbr join");
 dataBus.addUndirectedEdge("data mbr join", "NodoRegIn");
-
 
 dataBus.addUndirectedEdge("IP", "IP join");
 dataBus.addUndirectedEdge("SP", "SP join");
@@ -174,9 +171,6 @@ dataBus.addUndirectedEdge("SP join", "ri join");
 
 dataBus.addUndirectedEdge("result start", "result");
 dataBus.addUndirectedEdge("result", "NodoRegIn");
-
-
-
 
 dataBus.addUndirectedEdge("FLAGS", "FLAGS mbr join");
 dataBus.addUndirectedEdge("FLAGS mbr join", "data mbr join");
@@ -215,9 +209,7 @@ export function generateDataPath(
   const normalizedTo = normalizeRegister(to);
 
   // Lista de registros válidos
-  const registers = [
-    "AL", "BL", "CL", "DL", "id", "SP", "IP", "ri", "MAR"
-  ];
+  const registers = ["AL", "BL", "CL", "DL", "id", "SP", "IP", "ri", "MAR"];
 
   let path: string[] = [];
 
@@ -231,7 +223,7 @@ export function generateDataPath(
     console.warn(`Nodo destino '${normalizedTo}' no existe en el grafo`);
     return "";
   }
-    //
+  //
   // Lógica de rutas
   if (normalizedTo === "left") {
     path = [
@@ -272,8 +264,6 @@ export function generateDataPath(
       `${normalizedTo} join`,
       normalizedTo,
     ];
-  } else if (normalizedFrom === "MBR" && normalizedTo === "left") {
-    path = ["MBR", "outr mbr join", "NodoRegOut", "bleft1", "bleft2", "bleft3", "left"];
   } else if (normalizedFrom === "MBR" && normalizedTo === "ri") {
     if (instruction === "CALL") {
       path = ["MBR", "mbr reg join", "ri join", "ri"];
@@ -284,9 +274,9 @@ export function generateDataPath(
     } else if (mode === "mem<-imd" && (instruction === "ADD" || instruction === "SUB")) {
       path = ["MBR", "mbr reg join", "ri join", "ri"];
     } else {
-      path = ["MBR","MBR out", "MBR out join", "outr mbr join", "SP out join", "MAR join2", "MAR"];
+      path = ["MBR", "MBR out", "MBR out join", "outr mbr join", "SP out join", "MAR join2", "MAR"];
     }
-  } else if (normalizedFrom === "MBR" && registers.includes(normalizedTo)) {
+  } else if (normalizedFrom === "MBR" && ["SP", "IP"].includes(normalizedTo)) {
     path = ["MBR", "mbr reg join", "NodoRegIn", `${normalizedTo} join`, normalizedTo];
   } else if (normalizedFrom === "IP" && normalizedTo === "id") {
     path = ["IP out", "IP out join", "outr mbr join", "mbr reg join", "NodoRegIn", "id join", "id"];
@@ -313,67 +303,162 @@ export function generateDataPath(
   } else if (normalizedFrom === "id" && normalizedTo === "IP" && instruction === "RET") {
     path = ["MBR", "mbr reg join", "IP join", "IP"];
   } else if (normalizedFrom === "AL" && normalizedTo === "IP") {
-    path = ["AL out", "AL out join", "NodoRegOut", "outr mbr join", "mbr reg join", "NodoRegIn", "IP join", "IP"];
+    path = [
+      "AL out",
+      "AL out join",
+      "NodoRegOut",
+      "outr mbr join",
+      "mbr reg join",
+      "NodoRegIn",
+      "IP join",
+      "IP",
+    ];
   } else if (normalizedFrom === "BL" && normalizedTo === "IP") {
-    path = ["BL out", "BL out join", "NodoRegOut", "outr mbr join", "mbr reg join", "NodoRegIn", "IP join", "IP"];
+    path = [
+      "BL out",
+      "BL out join",
+      "NodoRegOut",
+      "outr mbr join",
+      "mbr reg join",
+      "NodoRegIn",
+      "IP join",
+      "IP",
+    ];
   } else if (normalizedFrom === "CL" && normalizedTo === "IP") {
-    path = ["CL out", "CL out join", "NodoRegOut", "outr mbr join", "mbr reg join", "NodoRegIn", "IP join", "IP"];
+    path = [
+      "CL out",
+      "CL out join",
+      "NodoRegOut",
+      "outr mbr join",
+      "mbr reg join",
+      "NodoRegIn",
+      "IP join",
+      "IP",
+    ];
   } else if (normalizedFrom === "DL" && normalizedTo === "IP") {
-    path = ["DL out", "DL out join", "NodoRegOut", "outr mbr join", "mbr reg join", "NodoRegIn", "IP join", "IP"];
-  } else if (normalizedFrom === "id" && normalizedTo === "IP") {
-    path = ["id out", "id out join", "NodoRegOut", "outr mbr join", "mbr reg join", "NodoRegIn", "IP join", "IP"];
+    path = [
+      "DL out",
+      "DL out join",
+      "NodoRegOut",
+      "outr mbr join",
+      "mbr reg join",
+      "NodoRegIn",
+      "IP join",
+      "IP",
+    ];
   } else if (normalizedFrom === "AL" && normalizedTo === "SP") {
-    path = ["AL out", "AL out join", "NodoRegOut", "outr mbr join", "mbr reg join", "NodoRegIn", "SP join", "SP"];
+    path = [
+      "AL out",
+      "AL out join",
+      "NodoRegOut",
+      "outr mbr join",
+      "mbr reg join",
+      "NodoRegIn",
+      "SP join",
+      "SP",
+    ];
   } else if (normalizedFrom === "BL" && normalizedTo === "SP") {
-    path = ["BL out", "BL out join", "NodoRegOut", "outr mbr join", "mbr reg join", "NodoRegIn", "SP join", "SP"];
+    path = [
+      "BL out",
+      "BL out join",
+      "NodoRegOut",
+      "outr mbr join",
+      "mbr reg join",
+      "NodoRegIn",
+      "SP join",
+      "SP",
+    ];
   } else if (normalizedFrom === "CL" && normalizedTo === "SP") {
-    path = ["CL out", "CL out join", "NodoRegOut", "outr mbr join", "mbr reg join", "NodoRegIn", "SP join", "SP"];
+    path = [
+      "CL out",
+      "CL out join",
+      "NodoRegOut",
+      "outr mbr join",
+      "mbr reg join",
+      "NodoRegIn",
+      "SP join",
+      "SP",
+    ];
   } else if (normalizedFrom === "DL" && normalizedTo === "SP") {
-    path = ["DL out", "DL out join", "NodoRegOut", "outr mbr join", "mbr reg join", "NodoRegIn", "SP join", "SP"];
+    path = [
+      "DL out",
+      "DL out join",
+      "NodoRegOut",
+      "outr mbr join",
+      "mbr reg join",
+      "NodoRegIn",
+      "SP join",
+      "SP",
+    ];
   } else if (normalizedFrom === "id" && normalizedTo === "SP") {
-    path = ["id out", "id out join", "NodoRegOut", "outr mbr join", "mbr reg join", "NodoRegIn", "SP join", "SP"];
+    path = [
+      "id out",
+      "id out join",
+      "NodoRegOut",
+      "outr mbr join",
+      "mbr reg join",
+      "NodoRegIn",
+      "SP join",
+      "SP",
+    ];
   } else if (normalizedFrom === "AL" && normalizedTo === "MAR") {
-    path = ["AL out", "AL out join", "NodoRegOut", "outr mbr join", "SP out join", "MAR join2", "MAR"];
+    path = [
+      "AL out",
+      "AL out join",
+      "NodoRegOut",
+      "outr mbr join",
+      "SP out join",
+      "MAR join2",
+      "MAR",
+    ];
   } else if (normalizedFrom === "BL" && normalizedTo === "MAR") {
-    path = ["BL out", "BL out join", "NodoRegOut", "outr mbr join", "SP out join", "MAR join2", "MAR"];
+    path = [
+      "BL out",
+      "BL out join",
+      "NodoRegOut",
+      "outr mbr join",
+      "SP out join",
+      "MAR join2",
+      "MAR",
+    ];
   } else if (normalizedFrom === "CL" && normalizedTo === "MAR") {
-    path = ["CL out", "CL out join", "NodoRegOut", "outr mbr join", "SP out join", "MAR join2", "MAR"];
+    path = [
+      "CL out",
+      "CL out join",
+      "NodoRegOut",
+      "outr mbr join",
+      "SP out join",
+      "MAR join2",
+      "MAR",
+    ];
   } else if (normalizedFrom === "DL" && normalizedTo === "MAR") {
-    path = ["DL out", "DL out join", "NodoRegOut", "outr mbr join", "SP out join", "MAR join2", "MAR"];
+    path = [
+      "DL out",
+      "DL out join",
+      "NodoRegOut",
+      "outr mbr join",
+      "SP out join",
+      "MAR join2",
+      "MAR",
+    ];
   } else if (normalizedFrom === "id" && normalizedTo === "MAR") {
-    path = ["id out", "id out join", "NodoRegOut", "outr mbr join", "SP out join", "MAR join2", "MAR"];
+    path = [
+      "id out",
+      "id out join",
+      "NodoRegOut",
+      "outr mbr join",
+      "SP out join",
+      "MAR join2",
+      "MAR",
+    ];
   } else if (normalizedFrom === "result start" && normalizedTo === "CL") {
-    path = [
-      "result start",
-      "result",
-      "NodoRegIn",
-      "CL join",
-      "CL",
-    ];
+    path = ["result start", "result", "NodoRegIn", "CL join", "CL"];
   } else if (normalizedFrom === "result start" && normalizedTo === "AL") {
-    path = [
-      "result start",
-      "result",
-      "NodoRegIn",
-      "AL join",
-      "AL",
-    ];
+    path = ["result start", "result", "NodoRegIn", "AL join", "AL"];
   } else if (normalizedFrom === "result start" && normalizedTo === "BL") {
-    path = [
-      "result start",
-      "result",
-      "NodoRegIn",
-      "BL join",
-      "BL",
-    ];
+    path = ["result start", "result", "NodoRegIn", "BL join", "BL"];
   } else if (normalizedFrom === "result start" && normalizedTo === "DL") {
-    path = [
-      "result start",
-      "result",
-      "NodoRegIn",  
-      "DL join",
-      "DL",
-    ];
+    path = ["result start", "result", "NodoRegIn", "DL join", "DL"];
   } else if (normalizedFrom === "result start" && registers.includes(normalizedTo)) {
     // Path del bus de resultado: result start -> result -> NodoRegIn -> result mbr join -> registro destino
     path = [
@@ -386,26 +471,10 @@ export function generateDataPath(
     ];
   } else if (normalizedFrom === "MBR" && normalizedTo === "IR") {
     // Ruta explícita: MBR -> MBR out -> MBR out join -> outr mbr join -> mbr reg join -> IR mbr join -> IR
-    path = [
-      "MBR",
-      "MBR out",
-      "MBR out join",
-      "outr mbr join",
-      "mbr reg join",
-      "IR mbr join",
-      "IR"
-    ];
+    path = ["MBR", "MBR out", "MBR out join", "outr mbr join", "mbr reg join", "IR mbr join", "IR"];
   } else if (normalizedFrom === "MBR" && normalizedTo === "MAR") {
     // Ruta explícita: MBR -> MBR out -> MBR out join -> outr mbr join -> SP out join -> MAR join2 -> MAR
-    path = [
-      "MBR",
-      "MBR out",
-      "MBR out join",
-      "outr mbr join",
-      "SP out join",
-      "MAR join2",
-      "MAR"
-    ];
+    path = ["MBR", "MBR out", "MBR out join", "outr mbr join", "SP out join", "MAR join2", "MAR"];
     console.log("[generateDataPath] Path generado para MBR → MAR:", path);
   } else {
     try {
@@ -422,7 +491,16 @@ export function generateDataPath(
   }
 
   if (normalizedFrom === "ri" && normalizedTo === "IP" && instruction === "CALL") {
-    path = ["ri", "ri out join", "NodoRegOut", "outr mbr join", "mbr reg join", "NodoRegIn", "IP join", "IP"];
+    path = [
+      "ri",
+      "ri out join",
+      "NodoRegOut",
+      "outr mbr join",
+      "mbr reg join",
+      "NodoRegIn",
+      "IP join",
+      "IP",
+    ];
   }
 
   if (
@@ -478,7 +556,6 @@ export function generateDataPath(
   }
 
   return d;
-
 }
 
 type DataBusProps = {
@@ -549,7 +626,6 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
           "M 550 115 L 525 125 L 445 125", // línea recta de NodoRegOut a CL out join y luego a CL out
           "M 550 115 L 525 165 L 445 165", // línea recta de NodoRegOut a DL out join y luego a DL out
           showid ? "M 550 115 L 521 205 L 441 205" : "", // línea recta de NodoRegOut a id out join y luego a id out
-
         ].join(" ")}
       />
 
@@ -571,22 +647,8 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
         strokeDasharray={1}
         style={style}
       />
-      <circle
-        cx={390}
-        cy={115}
-        r={8}
-        fill="#292524"
-        stroke="#44403c"
-        strokeWidth={2}
-      />
-      <circle
-        cx={550}
-        cy={115}
-        r={8}
-        fill="#292524"
-        stroke="#44403c"
-        strokeWidth={2}
-      />
+      <circle cx={390} cy={115} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
+      <circle cx={550} cy={115} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
     </svg>
   );
 }

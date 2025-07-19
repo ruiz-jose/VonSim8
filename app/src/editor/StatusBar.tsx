@@ -1,13 +1,13 @@
 import clsx from "clsx";
 import { atom, useAtomValue, useSetAtom } from "jotai";
-import { useSettings } from "@/lib/settings";
 import { useCallback, useEffect } from "react";
 
 import { Button } from "@/components/ui/Button";
-import { Tooltip } from "@/components/ui/Tooltip";
-import { toast } from "@/lib/toast";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover";
 import { Slider } from "@/components/ui/Slider";
+import { Tooltip } from "@/components/ui/Tooltip";
+import { useSettings } from "@/lib/settings";
+import { toast } from "@/lib/toast";
 
 import { getSavedProgram } from "./files";
 

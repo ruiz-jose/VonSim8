@@ -1,3 +1,4 @@
+import type { MARRegister } from "@vonsim/simulator/cpu";
 import { parseRegister } from "@vonsim/simulator/cpu/utils";
 
 import { generateAddressPath } from "@/computer/cpu/AddressBus";
@@ -18,7 +19,6 @@ import { colors } from "@/lib/tailwind";
 
 import { DataRegister, generateDataPath } from "./DataBus";
 import { aluOperationAtom, cycleAtom, MARAtom, MBRAtom, registerAtoms } from "./state";
-import type { MARRegister } from "@vonsim/simulator/cpu";
 
 const BUS_ANIMATION_DURATION = 5;
 
@@ -46,13 +46,17 @@ const resetDataPath = () =>
 
 let instructionName = "";
 let mode = "";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 let showpath1 = false;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 let showpath2 = false;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 let countersetMAR = 0;
 
 // Declarar la propiedad global para TypeScript
 // (esto puede estar ya en otro archivo, pero lo repetimos aquí por seguridad)
 declare global {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
   interface Window {
     VONSIM_PARALLEL_ANIMATIONS?: boolean;
   }
@@ -275,8 +279,13 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       const isFromMBR = event.register.toLowerCase() === "mbr" || event.register === "ri";
       const path = isFromMBR
         ? "M 629 250 H 550 V 349 H 659" // path especial, siempre desde el MBR
-        : generateAddressPath(event.register as MARRegister);    // path normal
-      console.log("[cpu:mar.set] event.register:", event.register, "| Animación especial:", isFromMBR);
+        : generateAddressPath(event.register as MARRegister); // path normal
+      console.log(
+        "[cpu:mar.set] event.register:",
+        event.register,
+        "| Animación especial:",
+        isFromMBR,
+      );
 
       await anim(
         [
@@ -315,7 +324,14 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       // Solo animar el bus de datos desde MBR a IR, MAR o registros de propósito general (AL, BL, CL, DL) si NO es una operación de la ALU
       const aluOps = ["ADD", "SUB", "AND", "OR", "XOR", "CMP"]; // Puedes agregar más si tu CPU tiene más
       const isALUOp = aluOps.some(op => instructionName.startsWith(op));
-      console.log("[cpu:mbr.get] normalizedRegister:", normalizedRegister, "instructionName:", instructionName, "mode:", mode);
+      console.log(
+        "[cpu:mbr.get] normalizedRegister:",
+        normalizedRegister,
+        "instructionName:",
+        instructionName,
+        "mode:",
+        mode,
+      );
       if (normalizedRegister === "IR") {
         await drawDataPath("MBR", "IR", instructionName, mode);
       } else if (normalizedRegister === "MAR" || normalizedRegister.startsWith("MAR.")) {

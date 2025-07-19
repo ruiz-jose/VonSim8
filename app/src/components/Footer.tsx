@@ -6,7 +6,7 @@ import { memo, useMemo } from "react";
 import { Button } from "@/components/ui/Button";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { useTranslate } from "@/lib/i18n";
-import { getSettings, useSettings } from "@/lib/settings";
+import { useSettings } from "@/lib/settings";
 
 // Declaración de la variable global definida por Vite
 declare const __COMMIT_HASH__: string;
@@ -45,7 +45,7 @@ SocialLink.displayName = "SocialLink";
 // Componente principal del Footer
 export const Footer = memo(() => {
   const translate = useTranslate();
-  const [settings, setSettings] = useSettings();
+  const [settings] = useSettings();
 
   // Generar enlace para reportar issue
   const issueLink = useMemo(() => {

@@ -1,5 +1,4 @@
 import type { MARRegister } from "@vonsim/simulator/cpu";
-import { useState } from "react";
 
 import { animated, getSpring } from "@/computer/shared/springs";
 
@@ -48,7 +47,6 @@ export function generateAddressPath(
  */
 export function AddressBus({ showSP, showri }: AddressBusProps) {
   const { path, ...style } = getSpring("cpu.internalBus.address");
-  const [highlight] = useState(false);
 
   const paths = [
     showSP ? "M 451 309 H 550 V 250" : "", // SP
