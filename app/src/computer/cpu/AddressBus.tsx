@@ -63,7 +63,7 @@ export function AddressBus({ showSP, showri }: AddressBusProps) {
       {paths.map((d, index) => (
         <path
           key={index}
-          className={`fill-none stroke-stone-700 stroke-[8px]`}
+          className={`fill-none stroke-stone-700 stroke-bus`}
           strokeLinejoin="round"
           d={d}
         />

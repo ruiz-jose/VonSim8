@@ -36,7 +36,7 @@ dataBus.addNode("IP", { position: [451, 349] });
 dataBus.addNode("ri", { position: [451, 388] });
 dataBus.addNode("MAR", { position: [698, 349] });
 dataBus.addNode("result", { position: [272, 115] });
-dataBus.addNode("ALUresult", { position: [390, 115] }); // Antes: [370, 115]
+dataBus.addNode("NodoRegIn", { position: [390, 115] }); // Antes: [370, 115]
 dataBus.addNode("FLAGS", { position: [250, 225] });
 dataBus.addNode("IR", { position: [205, 272] });
 dataBus.addNode("left", { position: [130, 85] });
@@ -140,12 +140,12 @@ dataBus.addUndirectedEdge("MBR", "outr mbr join");
 dataBus.addUndirectedEdge("MBR", "MBR out");
 dataBus.addUndirectedEdge("MBR out", "outr mbr join");
 
-dataBus.addUndirectedEdge("mbr reg join", "ALUresult");
-dataBus.addUndirectedEdge("ALUresult", "AL join");
-dataBus.addUndirectedEdge("ALUresult", "BL join");
-dataBus.addUndirectedEdge("ALUresult", "CL join");
-dataBus.addUndirectedEdge("ALUresult", "DL join");
-dataBus.addUndirectedEdge("ALUresult", "id join");
+dataBus.addUndirectedEdge("mbr reg join", "NodoRegIn");
+dataBus.addUndirectedEdge("NodoRegIn", "AL join");
+dataBus.addUndirectedEdge("NodoRegIn", "BL join");
+dataBus.addUndirectedEdge("NodoRegIn", "CL join");
+dataBus.addUndirectedEdge("NodoRegIn", "DL join");
+dataBus.addUndirectedEdge("NodoRegIn", "id join");
 dataBus.addUndirectedEdge("outr mbr join", "operands mbr join");
 
 // Conexión del bus de resultado desde data mbr join hasta el registro destino
@@ -160,7 +160,7 @@ dataBus.addUndirectedEdge("CL join", "CL");
 dataBus.addUndirectedEdge("DL join", "DL");
 //dataBus.addUndirectedEdge("id join", "data mbr join");
 dataBus.addUndirectedEdge("MBR", "data mbr join");
-dataBus.addUndirectedEdge("data mbr join", "ALUresult");
+dataBus.addUndirectedEdge("data mbr join", "NodoRegIn");
 
 
 dataBus.addUndirectedEdge("IP", "IP join");
@@ -173,7 +173,7 @@ dataBus.addUndirectedEdge("IP join", "SP join");
 dataBus.addUndirectedEdge("SP join", "ri join");
 
 dataBus.addUndirectedEdge("result start", "result");
-dataBus.addUndirectedEdge("result", "ALUresult");
+dataBus.addUndirectedEdge("result", "NodoRegIn");
 
 
 
@@ -265,7 +265,7 @@ export function generateDataPath(
       `${normalizedFrom} out join`,
       "outr mbr join",
       "mbr reg join",
-      "ALUresult",
+      "NodoRegIn",
       `${normalizedTo} join`,
       normalizedTo,
     ];
@@ -284,7 +284,7 @@ export function generateDataPath(
       path = ["MBR","MBR out", "MBR out join", "outr mbr join", "SP out join", "MAR join2", "MAR"];
     }
   } else if (normalizedFrom === "MBR" && registers.includes(normalizedTo)) {
-    path = ["MBR", "mbr reg join", "ALUresult", `${normalizedTo} join`, normalizedTo];
+    path = ["MBR", "mbr reg join", "NodoRegIn", `${normalizedTo} join`, normalizedTo];
   } else if (normalizedFrom === "IP" && normalizedTo === "id") {
     path = ["IP out", "IP out join", "outr mbr join", "mbr reg join", "id join", "id"];
   } else if (normalizedFrom === "id" && normalizedTo === "ri") {
@@ -299,7 +299,7 @@ export function generateDataPath(
     path = [
       "result start",
       "result",
-      "ALUresult",
+      "NodoRegIn",
       "CL join",
       "CL",
     ];
@@ -307,7 +307,7 @@ export function generateDataPath(
     path = [
       "result start",
       "result",
-      "ALUresult",
+      "NodoRegIn",
       "AL join",
       "AL",
     ];
@@ -315,7 +315,7 @@ export function generateDataPath(
     path = [
       "result start",
       "result",
-      "ALUresult",
+      "NodoRegIn",
       "BL join",
       "BL",
     ];
@@ -323,16 +323,16 @@ export function generateDataPath(
     path = [
       "result start",
       "result",
-      "ALUresult",  
+      "NodoRegIn",  
       "DL join",
       "DL",
     ];
   } else if (normalizedFrom === "result start" && registers.includes(normalizedTo)) {
-    // Path del bus de resultado: result start -> result -> ALUresult -> result mbr join -> registro destino
+    // Path del bus de resultado: result start -> result -> NodoRegIn -> result mbr join -> registro destino
     path = [
       "result start",
       "result",
-      "ALUresult",
+      "NodoRegIn",
       "result mbr join",
       `${normalizedTo} join`,
       normalizedTo,
