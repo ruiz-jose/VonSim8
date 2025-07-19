@@ -58,7 +58,7 @@ export function AddressBus({ showSP, showri }: AddressBusProps) {
   ];
 
   return (
-    <svg viewBox="0 0 650 500" className="pointer-events-none absolute inset-0">
+    <svg viewBox="0 0 650 500" className="pointer-events-none absolute inset-0 z-30">
       {/* Primero los paths base (grises) */}
       {paths.map((d, index) => (
         <path
