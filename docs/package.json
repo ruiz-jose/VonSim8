@@ -3,33 +3,14 @@
   "license": "CC-BY-SA-4.0",
   "type": "module",
   "scripts": {
-    "dev": "astro dev",
-    "start": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "lint": "astro check && eslint --ignore-path .gitignore .",
-    "lint:fix": "astro check && eslint --ignore-path .gitignore . --fix",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "test": "echo 'No tests for docs package' && exit 0",
-    "test:coverage": "echo 'No tests for docs package' && exit 0",
-    "astro": "astro"
+    "dev": "vitepress dev .",
+    "build": "vitepress build .",
+    "preview": "vitepress preview ."
   },
   "devDependencies": {
-    "@astrojs/check": "^0.4.1",
-    "@astrojs/starlight": "^0.34.8",
-    "astro": "^5.11.1",
-    "eslint": "^8.57.1",
-    "eslint-config-vonsim": "workspace:^",
-    "eslint-plugin-astro": "^1.3.1",
-    "prettier": "^3.6.2",
-    "satori": "^0.10.14",
+    "satori": "^0.12.1",
     "satori-html": "^0.3.2",
     "sharp": "^0.33.5",
-    "typescript": "~5.3.3"
-  },
-  "dependencies": {
-    "@astrojs/mdx": "^4.3.0",
-    "astro-expressive-code": "^0.41.3"
+    "vitepress": "^1.6.3"
   }
 }
