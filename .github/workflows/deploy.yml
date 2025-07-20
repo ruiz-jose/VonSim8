@@ -36,7 +36,7 @@ jobs:
       - name: Copy docs to app/dist/docs
         run: |
           mkdir -p app/dist/docs
-          cp -r docs/dist/* app/dist/docs/
+          cp -r docs/.vitepress/dist/* app/dist/docs/
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
