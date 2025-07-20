@@ -9,6 +9,7 @@ import vonsimLang from "./vonsim.tmLanguage.json";
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
+  base: "/VonSim8/docs/",
   title: "VonSim8",
   titleTemplate: ":title | VonSim8",
   description:

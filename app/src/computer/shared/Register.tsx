@@ -89,10 +89,12 @@ export function Register({
           {isGeneralPurpose || isIP || isSP || isMBR || isMAR || isIR || isTemporal ? (
             // Formato tipo celda de memoria para registros generales, IP, SP, MBR, MAR, IR, id y ri
             <>
-              <span className={clsx(
-                isGeneralPurpose ? "mt-4" : "mt-2",
-                "font-mono text-base font-bold"
-              )}>
+              <span
+                className={clsx(
+                  isGeneralPurpose ? "mt-4" : "mt-2",
+                  "font-mono text-base font-bold",
+                )}
+              >
                 {low.toString("hex")}
               </span>
             </>
