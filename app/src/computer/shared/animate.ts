@@ -210,6 +210,10 @@ export async function activateRegister(key: RegisterKey, color?: string) {
     if (key === "cpu.MBR" && window.__nextTransferMBRtoIP) {
       return;
     }
+    // Evitar animación para cpu.right.l y cpu.left.l
+    if (key === "cpu.right.l" || key === "cpu.left.l") {
+      return;
+    }
     // Usar el color específico del registro si no se proporciona uno
     const registerColor = color || getRegisterColor(key);
 
@@ -234,6 +238,10 @@ export async function activateRegister(key: RegisterKey, color?: string) {
 
 export async function deactivateRegister(key: RegisterKey) {
   try {
+    // Evitar animación para cpu.right.l y cpu.left.l
+    if (key === "cpu.right.l" || key === "cpu.left.l") {
+      return;
+    }
     // Transición suave de vuelta al estado normal
     return await anim({ key: `${key}.backgroundColor`, to: colors.stone[800] } as SpringAnimation, {
       duration: 2,
