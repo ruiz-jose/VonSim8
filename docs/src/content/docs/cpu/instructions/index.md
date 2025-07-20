@@ -8,6 +8,8 @@ title: "Set de instrucciones"
 
 Aquí se listan todas las instrucciones que soporta el simulador. Cada instrucción tiene una breve descripción, una tabla con los flags que modifica. Si hay un "0" o un "1", significa que el flag se modifica a `0` o `1` respectivamente. Si hay una "X", significa que lo modifica según corresponda. Si no hay nada, significa que el flag no se modifica.
 
+El simulador genera métricas de rendimiento como tiempo de ciclo, tiempo de CPU y ciclos por instrucción (CPI), permitiendo analizar la eficiencia de los programas y comparar diferentes implementaciones.
+
 ### Instrucciones de transferencia de datos
 
 | Instrucción                 | Comentario                                       | `CF` | `ZF` | `SF` | `IF` | `OF` |

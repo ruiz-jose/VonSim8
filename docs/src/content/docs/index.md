@@ -96,3 +96,7 @@ Todo el contenido del mismo se encuentra bajo la licencia [GNU Affero General Pu
 &copy; 2017-presente Facundo Quiroga, Manuel Bustos Berrondo y Juan Martín Seery ([III-LIDI](https://weblidi.info.unlp.edu.ar/), [Facultad de Informática](https://info.unlp.edu.ar/), [UNLP](https://unlp.edu.ar/)).
 
 Esta documentación está bajo la licencia [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/), salvo que se indique lo contrario.
+
+---
+
+> VonSim8 está diseñado bajo principios pedagógicos validados por docentes expertos, priorizando la reducción de la carga cognitiva y el aprendizaje progresivo. La interfaz visual destaca los componentes activos en cada etapa del ciclo de ejecución, permitiendo una comprensión sistémica e integrada del funcionamiento de la computadora.

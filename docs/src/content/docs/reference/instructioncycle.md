@@ -19,6 +19,8 @@ El ciclo de la instrucción se define como la secuencia de microoperaciones que 
 
 `destino` ← `origen`
 
+La visualización del ciclo de instrucción se basa en el modelo RTL (Register Transfer Level), mostrando el desplazamiento de datos y las señales de control en cada fase. Esto facilita la comprensión de las microoperaciones internas y la interacción entre los componentes del procesador.
+
 #### Etapa de Captación:
 
 En esta etapa, común a todas las instrucciones, se realiza la lectura de la instrucción desde la memoria.

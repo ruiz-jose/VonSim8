@@ -124,6 +124,10 @@ Estas direcciones están protegidas y no pueden ser modificadas por el usuario. 
 
 ---
 
+El simulador permite la ejecución paso a paso de programas en ensamblador, con visualización interactiva de registros, memoria y buses. El editor integrado facilita la escritura y depuración de código, con resaltado de sintaxis y autocompletado.
+
+El repertorio de instrucciones se habilita progresivamente, favoreciendo la comprensión gradual del ciclo de instrucción y la visualización dinámica de registros y señales de control.
+
 ---
 
 ## Créditos
