@@ -107,6 +107,9 @@ export function Register({
               </span>
               <span className="mt-2 font-mono text-base font-bold">{low.toString("hex")}</span>
             </>
+          ) : displayName === "left" || displayName === "right" ? (
+            // Formato especial para left y right - solo mostrar el valor
+            <span className="ml-12 font-mono text-base font-bold">{low.toString("hex")}</span>
           ) : (
             // Formato original para otros registros
             <>

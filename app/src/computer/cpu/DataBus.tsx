@@ -72,10 +72,10 @@ dataBus.addNode("outr mbr join", { position: [550, 250] });
 dataBus.addNode("mbr reg join", { position: [390, 250] });
 
 // Añadir nodos de unión para los registros AL, BL, CL, DL e id
-dataBus.addNode("AL out", { position: [445, 45] }); // Lado izquierdo del registro AL
-dataBus.addNode("BL out", { position: [445, 85] }); // Lado izquierdo del registro BL
-dataBus.addNode("CL out", { position: [445, 125] }); // Lado izquierdo del registro CL
-dataBus.addNode("DL out", { position: [445, 165] }); // Lado izquierdo del registro DL
+dataBus.addNode("AL out", { position: [483, 45] }); // Lado izquierdo del registro AL
+dataBus.addNode("BL out", { position: [483, 85] }); // Lado izquierdo del registro BL
+dataBus.addNode("CL out", { position: [483, 125] }); // Lado izquierdo del registro CL
+dataBus.addNode("DL out", { position: [483, 165] }); // Lado izquierdo del registro DL
 dataBus.addNode("id out", { position: [441, 205] }); // Lado izquierdo del registro id
 dataBus.addNode("MBR out", { position: [630, 250] }); // Nodo de salida de MBR
 dataBus.addNode("MBR out join", { position: [550, 250] }); // Nodo de unión de salida de MBR
@@ -475,7 +475,6 @@ export function generateDataPath(
   } else if (normalizedFrom === "MBR" && normalizedTo === "MAR") {
     // Ruta explícita: MBR -> MBR out -> MBR out join -> outr mbr join -> SP out join -> MAR join2 -> MAR
     path = ["MBR", "MBR out", "MBR out join", "outr mbr join", "SP out join", "MAR join2", "MAR"];
-    console.log("[generateDataPath] Path generado para MBR → MAR:", path);
   } else {
     try {
       path = bidirectional(dataBus, normalizedFrom, normalizedTo) || [];

@@ -36,6 +36,12 @@ export function ALU() {
     return "";
   }, [cycle]);
 
+  // Función para determinar si una instrucción involucra la ALU
+  const involvesALU = (instruction: string): boolean => {
+    const aluInstructions = ["ADD", "SUB", "CMP", "AND", "OR", "XOR"];
+    return aluInstructions.some(aluInst => instruction.startsWith(aluInst));
+  };
+
   // Función para detectar los registros origen y destino basándose en la instrucción
   const detectRegisters = (
     instruction: string,
@@ -54,7 +60,6 @@ export function ALU() {
       /AND\s+([A-Z]+),\s*([[\]A-Z0-9]+)/,
       /OR\s+([A-Z]+),\s*([[\]A-Z0-9]+)/,
       /XOR\s+([A-Z]+),\s*([[\]A-Z0-9]+)/,
-      /MOV\s+([A-Z]+),\s*([[\]A-Z0-9]+)/,
     ];
 
     for (const pattern of patterns) {
@@ -94,56 +99,62 @@ export function ALU() {
       const instructionToUse = fullInstruction || instruction;
       console.log("🎯 Instrucción completa a usar:", instructionToUse);
       if (instruction) {
-        setShowOperation(true);
-        // Detectar dinámicamente ambos registros origen y destino usando la función parametrizada
-        const {
-          left: leftReg,
-          right: rightReg,
-          destination: destReg,
-        } = detectRegisters(instructionToUse);
-        console.log("🎯 Registros detectados:", {
-          left: leftReg,
-          right: rightReg,
-          destination: destReg,
-        });
-        setLeftSource(leftReg);
-        setRightSource(rightReg);
-        setResultDestination(destReg);
+        // Verificar si la instrucción involucra la ALU
+        const isALUInstruction = involvesALU(instructionToUse);
+        
+        if (isALUInstruction) {
+          setShowOperation(true);
+          // Detectar dinámicamente ambos registros origen y destino usando la función parametrizada
+          const {
+            left: leftReg,
+            right: rightReg,
+            destination: destReg,
+          } = detectRegisters(instructionToUse);
+          console.log("🎯 Registros detectados:", {
+            left: leftReg,
+            right: rightReg,
+            destination: destReg,
+          });
+          setLeftSource(leftReg);
+          setRightSource(rightReg);
+          setResultDestination(destReg);
+          
 
-        // Generar paths dinámicos para los buses de entrada
-        console.log("🎯 Generando path izquierdo...");
-        const leftPathSVG = generateDataPath(leftReg as DataRegister, "left", instruction);
-        console.log("🎯 Generando path derecho...");
-        const rightPathSVG = generateDataPath(rightReg as DataRegister, "right", instruction);
 
-        // Generar path dinámico para el bus de resultado
-        console.log("🎯 Generando path de resultado...");
-        const resultPathSVG = generateDataPath(
-          "result start" as DataRegister,
-          destReg as DataRegister,
-          instruction,
-        );
+          // Generar paths dinámicos para los buses de entrada
+          const leftPathSVG = generateDataPath(leftReg as DataRegister, "left", instruction);
+          const rightPathSVG = generateDataPath(rightReg as DataRegister, "right", instruction);
 
-        console.log("🔍 Debugging bus de resultado:");
-        console.log("  - Destino:", destReg);
-        console.log("  - Path dinámico:", resultPathSVG);
+          // Generar path dinámico para el bus de resultado
+          const resultPathSVG = generateDataPath(
+            "result start" as DataRegister,
+            destReg as DataRegister,
+            instruction,
+          );
 
-        // Para debugging: usar paths hardcodeados si los dinámicos fallan
-        const fallbackLeftPath =
-          "M 455 45 L 465 45 L 550 45 L 550 16 L 90 16 L 90 85 L 130 85 L 220 85";
-        const fallbackRightPath =
-          "M 455 85 L 465 85 L 550 85 L 550 250 L 90 250 L 90 145 L 125 145 L 220 145";
-        const fallbackResultPath = "M 280 115 L 272 115 L 370 115 L 370 250 L 421 250 L 425 45";
+          // Para debugging: usar paths hardcodeados si los dinámicos fallan
+          const fallbackLeftPath =
+            "M 455 45 L 465 45 L 550 45 L 550 16 L 90 16 L 90 85 L 130 85 L 220 85";
+          const fallbackRightPath =
+            "M 455 85 L 465 85 L 550 85 L 550 250 L 90 250 L 90 145 L 125 145 L 220 145";
+          const fallbackResultPath = "M 280 115 L 272 115 L 370 115 L 370 250 L 421 250 L 425 45";
 
-        console.log("  - Path fallback:", fallbackResultPath);
-
-        // Usar los paths dinámicos si están disponibles, sino usar los hardcodeados
-        setLeftPath(leftPathSVG || fallbackLeftPath);
-        setRightPath(rightPathSVG || fallbackRightPath);
-        setResultPath(resultPathSVG || fallbackResultPath);
-
-        console.log("  - Path final usado:", resultPathSVG || fallbackResultPath);
+          // Usar los paths dinámicos si están disponibles, sino usar los hardcodeados
+          setLeftPath(leftPathSVG || fallbackLeftPath);
+          setRightPath(rightPathSVG || fallbackRightPath);
+          setResultPath(resultPathSVG || fallbackResultPath);
+        } else {
+          // Si no es una instrucción de ALU, ocultar todo
+          setShowOperation(false);
+          setLeftPath("");
+          setRightPath("");
+          setResultPath("");
+          setLeftSource("");
+          setRightSource("");
+          setResultDestination("");
+        }
       } else {
+        // Si no hay instrucción, ocultar todo
         setShowOperation(false);
         setLeftPath("");
         setRightPath("");
@@ -161,7 +172,7 @@ export function ALU() {
       handleInstruction(fullInstruction || customEvent.detail.instruction);
     };
 
-    // Listener para cuando se ejecuta la ALU
+    // Listener para cuando se ejecuta la ALU (mantener por compatibilidad)
     const aluEventListener = (event: Event) => {
       const customEvent = event as CustomEvent;
       if (customEvent.detail && customEvent.detail.instruction) {
@@ -258,15 +269,15 @@ export function ALU() {
           />
         )}
 
-        {/* Etiquetas de los registros fuente - solo se muestran cuando ambos buses están activos */}
+        {/* Etiquetas de los registros fuente - sincronizadas con la animación del engranaje */}
         {leftSource && rightSource && showOperation && leftPath && rightPath && (
           <animated.text
             x="110"
-            y="90"
+            y="70"
             fill="#34D399"
             fontSize="12"
             fontWeight="bold"
-            style={getSpring("cpu.alu.operands")}
+            style={getSpring("cpu.alu.cog")}
           >
             {leftSource}
           </animated.text>
@@ -274,25 +285,25 @@ export function ALU() {
         {leftSource && rightSource && showOperation && leftPath && rightPath && (
           <animated.text
             x="110"
-            y="150"
+            y="170"
             fill="#60A5FA"
             fontSize="12"
             fontWeight="bold"
-            style={getSpring("cpu.alu.operands")}
+            style={getSpring("cpu.alu.cog")}
           >
             {rightSource}
           </animated.text>
         )}
 
-        {/* Etiqueta del registro destino - solo se muestra cuando el bus de resultado está activo */}
+        {/* Etiqueta del registro destino - sincronizada con la animación del engranaje */}
         {resultDestination && showOperation && resultPath && (
           <animated.text
-            x="290"
-            y="115"
+            x="320"
+            y="95"
             fill="#F59E0B"
             fontSize="12"
             fontWeight="bold"
-            style={getSpring("cpu.alu.results")}
+            style={getSpring("cpu.alu.cog")}
           >
             {resultDestination}
           </animated.text>
