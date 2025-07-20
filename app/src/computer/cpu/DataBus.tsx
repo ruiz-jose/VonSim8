@@ -568,6 +568,8 @@ type DataBusProps = {
  */
 export function DataBus({ showSP, showid, showri }: DataBusProps) {
   const { path, ...style } = getSpring("cpu.internalBus.data");
+  // Agrego el spring del bus de dirección (MBR→MAR)
+  const { path: addressPath, ...addressStyle } = getSpring("cpu.internalBus.address");
 
   return (
     <svg viewBox="0 0 650 500" className="pointer-events-none absolute inset-0 z-20">
@@ -628,6 +630,7 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
         ].join(" ")}
       />
 
+      {/* Path animado del bus de datos (verde) */}
       <animated.path
         d={path}
         className="fill-none stroke-mantis-400 stroke-[3px] drop-shadow-[0_0_8px_rgba(34,197,94,0.6)]"
@@ -645,6 +648,25 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
         pathLength={1}
         strokeDasharray={1}
         style={style}
+      />
+
+      {/* Path animado del bus de dirección (MBR→MAR) SIEMPRE visible y encima del gris */}
+      <animated.path
+        d={addressPath}
+        className="fill-none stroke-[#3B82F6] stroke-[3px] drop-shadow-[0_0_8px_rgba(59,130,246,0.6)]"
+        strokeLinejoin="round"
+        pathLength={1}
+        strokeDasharray={1}
+        style={addressStyle}
+      />
+      {/* Efecto de brillo adicional para el bus de dirección */}
+      <animated.path
+        d={addressPath}
+        className="fill-none stroke-[#60A5FA] stroke-1 opacity-50"
+        strokeLinejoin="round"
+        pathLength={1}
+        strokeDasharray={1}
+        style={addressStyle}
       />
       <circle cx={390} cy={115} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
       <circle cx={550} cy={115} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
