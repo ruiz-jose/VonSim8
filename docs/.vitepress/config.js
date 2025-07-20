@@ -102,13 +102,7 @@ export default defineConfig({
   vite: {
     build: {
       rollupOptions: {
-        output: {
-          manualChunks: {
-            'vue': ['vue'],
-            'highlight': ['highlight.js'],
-            // Puedes agregar aquí otras dependencias grandes si las tienes
-          }
-        }
+        // manualChunks eliminado para evitar errores con módulos externos
       },
       chunkSizeWarningLimit: 1000 // Opcional: sube el límite de advertencia a 1MB
     }
