@@ -12,7 +12,7 @@ export function sidebarInstructions() {
     .filter(f => f.endsWith(".md") && f !== "index.md")
     .map(f => {
       const name = f.slice(0, -3);
-      return { text: name.toUpperCase(), link: `instructions/${name}` };
+      return { text: name.toUpperCase(), link: `/computer/instructions/${name}` };
     });
 }
 
