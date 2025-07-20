@@ -1,6 +1,6 @@
 # Listado de dispositivos
 
-VonSim cuenta con los siguientes dispotiivos:
+VonSim8 cuenta con los siguientes dispositivos:
 
 - [Tecla F10](./f10)
 - [Reloj](./clock)
