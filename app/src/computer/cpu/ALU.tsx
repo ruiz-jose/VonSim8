@@ -126,8 +126,17 @@ export function ALU() {
 
 
           // Generar paths dinámicos para los buses de entrada
-          const leftPathSVG = generateDataPath(leftReg as DataRegister, "left", instruction);
-          const rightPathSVG = generateDataPath(rightReg as DataRegister, "right", instruction);
+          let leftPathSVG, rightPathSVG;
+          if (leftReg === "MBR" && rightReg !== "MBR") {
+            leftPathSVG = generateDataPath(leftReg as DataRegister, "left", instruction, undefined, { separateMBRPaths: true, direction: "left" });
+            rightPathSVG = generateDataPath(rightReg as DataRegister, "right", instruction);
+          } else if (rightReg === "MBR" && leftReg !== "MBR") {
+            leftPathSVG = generateDataPath(leftReg as DataRegister, "left", instruction);
+            rightPathSVG = generateDataPath(rightReg as DataRegister, "right", instruction, undefined, { separateMBRPaths: true, direction: "right" });
+          } else {
+            leftPathSVG = generateDataPath(leftReg as DataRegister, "left", instruction);
+            rightPathSVG = generateDataPath(rightReg as DataRegister, "right", instruction);
+          }
 
           // Generar path dinámico para el bus de resultado
           const resultPathSVG = generateDataPath(

@@ -185,6 +185,29 @@ dataBus.addUndirectedEdge("right join", "operands mbr join");
 dataBus.addUndirectedEdge("right", "right end"); // Conectar right con right end
 //dataBus.addUndirectedEdge("operands mbr join", "IR mbr join");
 
+// Añadir nodos virtuales para separar visualmente los caminos de left y right cuando ambos vienen del MBR
+// Estos nodos solo se usan para animación, no afectan la lógica del bus real
+// Posiciones desplazadas verticalmente para evitar superposición
+// Nodo para left (más arriba)
+dataBus.addNode("NodoRegOutLeft", { position: [550, 90] });
+dataBus.addUndirectedEdge("MBR out join", "NodoRegOutLeft");
+dataBus.addUndirectedEdge("NodoRegOutLeft", "bleft1");
+// Nodo para right (más abajo)
+dataBus.addNode("NodoRegOutRight", { position: [550, 140] });
+dataBus.addUndirectedEdge("MBR out join", "NodoRegOutRight");
+dataBus.addUndirectedEdge("NodoRegOutRight", "outr mbr join");
+
+// Nodos virtuales para separar horizontalmente el tramo NodoRegOut -> outr mbr join
+// Nodo para right (a la izquierda, 10px a la izquierda del centro)
+dataBus.addNode("NodoRegOutToRight", { position: [540, 115] });
+dataBus.addUndirectedEdge("NodoRegOut", "NodoRegOutToRight");
+dataBus.addUndirectedEdge("NodoRegOutToRight", "outr mbr join");
+// Nodo para left (a la derecha, 10px a la derecha del centro)
+dataBus.addNode("outr mbr join left", { position: [560, 250] });
+dataBus.addNode("NodoRegOutToLeft", { position: [560, 115] });
+dataBus.addUndirectedEdge("outr mbr join left", "NodoRegOutToLeft");
+dataBus.addUndirectedEdge("NodoRegOutToLeft", "NodoRegOut");
+
 export type DataRegister = PhysicalRegister | "MBR" | "result start";
 
 /**
@@ -198,6 +221,7 @@ export function generateDataPath(
   to: DataRegister,
   instruction?: string,
   mode?: string,
+  options?: { separateMBRPaths?: boolean; direction?: "left" | "right" },
 ): string {
   // Normalizar nombres de registros para evitar subniveles
   const normalizeRegister = (reg: string): string => {
@@ -225,7 +249,42 @@ export function generateDataPath(
   }
   //
   // Lógica de rutas
-  if (normalizedTo === "left") {
+  // Detectar caso especial: ambos operandos desde MBR a left y right
+  // Si options.separateMBRPaths está activo y from === "MBR" y (to === "left" o to === "right")
+  if (options?.separateMBRPaths && from === "MBR" && (to === "left" || to === "right")) {
+    if (to === "left") {
+      // Path especial para left: usa NodoRegOutLeft
+      path = [
+        normalizedFrom,
+        `${normalizedFrom} out`,
+        `${normalizedFrom} out join`,
+        "outr mbr join left",
+        "NodoRegOutToLeft",
+        "NodoRegOut",
+        "bleft1",
+        "bleft2",
+        "bleft3",
+        "left",
+        "left end",
+      ];
+    } else if (to === "right") {
+      // Path especial para right: usa NodoRegOutRight
+      path = [
+        normalizedFrom,
+        `${normalizedFrom} out`,
+        `${normalizedFrom} out join`,
+        "NodoRegOut",
+        "NodoRegOutToRight",
+        "outr mbr join",
+        "mbr reg join",
+        "IR mbr join",
+        "operands mbr join",
+        "right join",
+        "right",
+        "right end",
+      ];
+    }
+  } else if (normalizedTo === "left") {
     path = [
       normalizedFrom,
       `${normalizedFrom} out`,
@@ -627,6 +686,7 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
           "M 550 115 L 525 125 L 445 125", // línea recta de NodoRegOut a CL out join y luego a CL out
           "M 550 115 L 525 165 L 445 165", // línea recta de NodoRegOut a DL out join y luego a DL out
           showid ? "M 550 115 L 521 205 L 441 205" : "", // línea recta de NodoRegOut a id out join y luego a id out
+          // Elimino cualquier línea que conecte outr mbr join (x=540,250) y outr mbr join left (x=560,250)
         ].join(" ")}
       />
 
