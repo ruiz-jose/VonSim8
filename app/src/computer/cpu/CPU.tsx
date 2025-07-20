@@ -159,6 +159,10 @@ export function CPU() {
             name="right"
             className={clsx("left-[96px] top-[150px]", "border-transparent", "bg-transparent")}
           />
+          <Reg
+            name="result"
+            className={clsx("left-[280px] top-[79px]", "border-transparent", "bg-transparent")}
+          />
         </>
       )}
 

@@ -51,7 +51,7 @@ export function Register({
       <PopoverTrigger asChild>
         <animated.button
           title={
-            displayName !== "left" && displayName !== "right"
+            displayName !== "left" && displayName !== "right" && displayName !== "result"
               ? `Registro ${displayName}`
               : displayName
           }
@@ -81,7 +81,7 @@ export function Register({
             className,
           )}
           style={
-            displayName === "left" || displayName === "right"
+            displayName === "left" || displayName === "right" || displayName === "result"
               ? { backgroundColor: "transparent" }
               : getSpring(springs)
           }
@@ -107,9 +107,23 @@ export function Register({
               </span>
               <span className="mt-2 font-mono text-base font-bold">{low.toString("hex")}</span>
             </>
-          ) : displayName === "left" || displayName === "right" ? (
-            // Formato especial para left y right - solo mostrar el valor
-            <span className="ml-12 font-mono text-base font-bold">{low.toString("hex")}</span>
+          ) : displayName === "left" || displayName === "right" || displayName === "result" ? (
+            // Formato especial para left, right y result - estilo similar a los textos de los buses
+            <span 
+              className="ml-12 font-mono text-xs font-bold"
+              style={{
+                color: displayName === "left" ? "#34D399" : displayName === "right" ? "#60A5FA" : "#F59E0B",
+                fontSize: "12px",
+                fontWeight: "bold",
+                textShadow: displayName === "left" 
+                  ? "0 0 8px rgba(52, 211, 153, 0.6)" 
+                  : displayName === "right"
+                    ? "0 0 8px rgba(96, 165, 250, 0.6)"
+                    : "0 0 8px rgba(245, 158, 11, 0.6)"
+              }}
+            >
+              {low.toString("hex")}
+            </span>
           ) : (
             // Formato original para otros registros
             <>
@@ -172,11 +186,11 @@ export function Register({
         <div className="px-4 py-2">
           <div className="flex items-center justify-between">
             <p className="font-medium text-white">
-              {displayName !== "left" && displayName !== "right"
+              {displayName !== "left" && displayName !== "right" && displayName !== "result"
                 ? `Registro ${displayName}`
                 : displayName}
             </p>
-            {displayName !== "left" && displayName !== "right" && (
+            {displayName !== "left" && displayName !== "right" && displayName !== "result" && (
               <EducationalTooltip concept="register" level="beginner">
                 <span className="text-xs text-mantis-400">💡</span>
               </EducationalTooltip>

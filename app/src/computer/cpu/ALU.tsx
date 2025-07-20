@@ -272,40 +272,40 @@ export function ALU() {
         {/* Etiquetas de los registros fuente - sincronizadas con la animación del engranaje */}
         {leftSource && rightSource && showOperation && leftPath && rightPath && (
           <animated.text
-            x="110"
-            y="70"
+            x="125"
+            y="65"
             fill="#34D399"
             fontSize="12"
             fontWeight="bold"
             style={getSpring("cpu.alu.cog")}
           >
-            {leftSource}
+            {leftSource}=
           </animated.text>
         )}
         {leftSource && rightSource && showOperation && leftPath && rightPath && (
           <animated.text
-            x="110"
-            y="170"
+            x="125"
+            y="168"
             fill="#60A5FA"
             fontSize="12"
             fontWeight="bold"
             style={getSpring("cpu.alu.cog")}
           >
-            {rightSource}
+            {rightSource}=
           </animated.text>
         )}
 
         {/* Etiqueta del registro destino - sincronizada con la animación del engranaje */}
         {resultDestination && showOperation && resultPath && (
           <animated.text
-            x="320"
+            x="310"
             y="95"
             fill="#F59E0B"
             fontSize="12"
             fontWeight="bold"
             style={getSpring("cpu.alu.cog")}
           >
-            {resultDestination}
+            {resultDestination}=
           </animated.text>
         )}
 
