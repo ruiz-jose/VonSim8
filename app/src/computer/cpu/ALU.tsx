@@ -54,12 +54,12 @@ export function ALU() {
     // Detectar patrones específicos en la instrucción
     // Patrón general para instrucciones de dos operandos: INSTRUCCIÓN REG1, REG2
     const patterns = [
-      /ADD\s+([\[\]A-Z0-9]+),\s*([\[\]A-Z0-9]+)/,
-      /SUB\s+([\[\]A-Z0-9]+),\s*([\[\]A-Z0-9]+)/,
-      /CMP\s+([\[\]A-Z0-9]+),\s*([\[\]A-Z0-9]+)/,
-      /AND\s+([\[\]A-Z0-9]+),\s*([\[\]A-Z0-9]+)/,
-      /OR\s+([\[\]A-Z0-9]+),\s*([\[\]A-Z0-9]+)/,
-      /XOR\s+([\[\]A-Z0-9]+),\s*([\[\]A-Z0-9]+)/,
+      /ADD\s+([[\]A-Z0-9]+),\s*([[\]A-Z0-9]+)/,
+      /SUB\s+([[\]A-Z0-9]+),\s*([[\]A-Z0-9]+)/,
+      /CMP\s+([[\]A-Z0-9]+),\s*([[\]A-Z0-9]+)/,
+      /AND\s+([[\]A-Z0-9]+),\s*([[\]A-Z0-9]+)/,
+      /OR\s+([[\]A-Z0-9]+),\s*([[\]A-Z0-9]+)/,
+      /XOR\s+([[\]A-Z0-9]+),\s*([[\]A-Z0-9]+)/,
     ];
 
     for (const pattern of patterns) {
@@ -105,7 +105,7 @@ export function ALU() {
       if (instruction) {
         // Verificar si la instrucción involucra la ALU
         const isALUInstruction = involvesALU(instructionToUse);
-        
+
         if (isALUInstruction) {
           setShowOperation(true);
           // Detectar dinámicamente ambos registros origen y destino usando la función parametrizada
@@ -122,17 +122,27 @@ export function ALU() {
           setLeftSource(leftReg);
           setRightSource(rightReg);
           setResultDestination(destReg);
-          
-
 
           // Generar paths dinámicos para los buses de entrada
           let leftPathSVG, rightPathSVG;
           if (leftReg === "MBR" && rightReg !== "MBR") {
-            leftPathSVG = generateDataPath(leftReg as DataRegister, "left", instruction, undefined, { separateMBRPaths: true, direction: "left" });
+            leftPathSVG = generateDataPath(
+              leftReg as DataRegister,
+              "left",
+              instruction,
+              undefined,
+              { separateMBRPaths: true, direction: "left" },
+            );
             rightPathSVG = generateDataPath(rightReg as DataRegister, "right", instruction);
           } else if (rightReg === "MBR" && leftReg !== "MBR") {
             leftPathSVG = generateDataPath(leftReg as DataRegister, "left", instruction);
-            rightPathSVG = generateDataPath(rightReg as DataRegister, "right", instruction, undefined, { separateMBRPaths: true, direction: "right" });
+            rightPathSVG = generateDataPath(
+              rightReg as DataRegister,
+              "right",
+              instruction,
+              undefined,
+              { separateMBRPaths: true, direction: "right" },
+            );
           } else {
             leftPathSVG = generateDataPath(leftReg as DataRegister, "left", instruction);
             rightPathSVG = generateDataPath(rightReg as DataRegister, "right", instruction);

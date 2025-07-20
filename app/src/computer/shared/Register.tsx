@@ -109,17 +109,23 @@ export function Register({
             </>
           ) : displayName === "left" || displayName === "right" || displayName === "result" ? (
             // Formato especial para left, right y result - estilo similar a los textos de los buses
-            <span 
+            <span
               className="ml-12 font-mono text-xs font-bold"
               style={{
-                color: displayName === "left" ? "#34D399" : displayName === "right" ? "#60A5FA" : "#F59E0B",
+                color:
+                  displayName === "left"
+                    ? "#34D399"
+                    : displayName === "right"
+                      ? "#60A5FA"
+                      : "#F59E0B",
                 fontSize: "12px",
                 fontWeight: "bold",
-                textShadow: displayName === "left" 
-                  ? "0 0 8px rgba(52, 211, 153, 0.6)" 
-                  : displayName === "right"
-                    ? "0 0 8px rgba(96, 165, 250, 0.6)"
-                    : "0 0 8px rgba(245, 158, 11, 0.6)"
+                textShadow:
+                  displayName === "left"
+                    ? "0 0 8px rgba(52, 211, 153, 0.6)"
+                    : displayName === "right"
+                      ? "0 0 8px rgba(96, 165, 250, 0.6)"
+                      : "0 0 8px rgba(245, 158, 11, 0.6)",
               }}
             >
               {low.toString("hex")}

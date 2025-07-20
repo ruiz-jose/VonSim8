@@ -97,7 +97,14 @@ export const registerAtoms: Record<string, any> = {
 };
 
 // Tipo extendido para incluir registros de 8 bits
-export type PhysicalRegister = SimulatorPhysicalRegister | "AL" | "BL" | "CL" | "DL" | "MAR" | "result";
+export type PhysicalRegister =
+  | SimulatorPhysicalRegister
+  | "AL"
+  | "BL"
+  | "CL"
+  | "DL"
+  | "MAR"
+  | "result";
 
 export type Cycle =
   | { phase: "fetching"; metadata: InstructionMetadata }
