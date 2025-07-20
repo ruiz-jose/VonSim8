@@ -89,23 +89,12 @@ export function Register({
           {isGeneralPurpose || isIP || isSP || isMBR || isMAR || isIR || isTemporal ? (
             // Formato tipo celda de memoria para registros generales, IP, SP, MBR, MAR, IR, id y ri
             <>
-              <span
-                className={clsx(
-                  "pointer-events-none absolute left-0.5 top-0.5 rounded bg-stone-900/80 px-0.5 text-[8px] font-bold",
-                  isGeneralPurpose
-                    ? "text-mantis-400"
-                    : isIP
-                      ? "text-red-400"
-                      : isSP
-                        ? "text-yellow-400"
-                        : isTemporal
-                          ? "text-cyan-400"
-                          : "text-indigo-400",
-                )}
-              >
-                {displayName}
+              <span className={clsx(
+                isGeneralPurpose ? "mt-4" : "mt-2",
+                "font-mono text-base font-bold"
+              )}>
+                {low.toString("hex")}
               </span>
-              <span className="mt-2 font-mono text-base font-bold">{low.toString("hex")}</span>
             </>
           ) : displayName === "left" || displayName === "right" || displayName === "result" ? (
             // Formato especial para left, right y result - estilo similar a los textos de los buses

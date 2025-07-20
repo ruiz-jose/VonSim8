@@ -168,15 +168,68 @@ export function CPU() {
 
       <ALU />
 
-      <Reg name="AL" emphasis className="left-[450px] top-[30px]" />
-      <Reg name="BL" emphasis className="left-[450px] top-[70px]" />
-      <Reg name="CL" emphasis className="left-[450px] top-[110px]" />
-      <Reg name="DL" emphasis className="left-[450px] top-[150px]" />
+      <div className="absolute left-[450px] top-[30px] z-10">
+        <Reg name="AL" emphasis className="" />
+        <span
+          className="absolute left-0 top-0 px-1 py-0 rounded-full bg-emerald-800 border border-emerald-400 font-mono font-bold text-emerald-400 text-xs tracking-widest select-none z-30"
+        >
+          AL
+        </span>
+      </div>
+      <div className="absolute left-[450px] top-[70px] z-10">
+        <Reg name="BL" emphasis className="" />
+        <span
+          className="absolute left-0 top-0 px-1 py-0 rounded-full bg-emerald-800 border border-emerald-400 font-mono font-bold text-emerald-400 text-xs tracking-widest select-none z-30"
+        >
+          BL
+        </span>
+      </div>
+      <div className="absolute left-[450px] top-[110px] z-10">
+        <Reg name="CL" emphasis className="" />
+        <span
+          className="absolute left-0 top-0 px-1 py-0 rounded-full bg-emerald-800 border border-emerald-400 font-mono font-bold text-emerald-400 text-xs tracking-widest select-none z-30"
+        >
+          CL
+        </span>
+      </div>
+      <div className="absolute left-[450px] top-[150px] z-10">
+        <Reg name="DL" emphasis className="" />
+        <span
+          className="absolute left-0 top-0 px-1 py-0 rounded-full bg-emerald-800 border border-emerald-400 font-mono font-bold text-emerald-400 text-xs tracking-widest select-none z-30"
+        >
+          DL
+        </span>
+      </div>
       {showid && <Reg name="id" className={clsx("left-[450px] top-[190px]", "border-cyan-400")} />}
 
-      <Reg name="MBR" className={clsx("right-[-11px] top-[233px]", "border-indigo-400")} />
+      <div className="absolute left-[450px] top-[332px] z-10">
+        <Reg name="IP" emphasis className="border-red-500" />
+        <span
+          className="absolute right-0 top-0 px-1 py-0 rounded-full bg-red-800 border border-red-400 font-mono font-bold text-red-200 text-xs tracking-widest select-none z-[99]"
+        >
+          IP
+        </span>
+      </div>
+      <Reg name="MAR" className="right-[-11px] top-[333px] border-indigo-400 z-10" />
+      <span
+        className="absolute right-[7px] top-[325px] px-1 py-0 rounded-full bg-indigo-800 border border-indigo-400 font-mono font-bold text-indigo-200 text-xs tracking-widest select-none z-[99]"
+      >
+        MAR
+      </span>
+      <Reg name="MBR" className="right-[-11px] top-[233px] border-indigo-400" />
+      <span
+        className="absolute right-[7px] top-[225px] px-1 py-0 rounded-full bg-indigo-800/80 border border-indigo-400 font-mono font-bold text-indigo-200 text-xs shadow-[0_1px_6px_rgba(0,0,0,0.25)] tracking-widest select-none z-30"
+        style={{ textShadow: "0 1px 4px #000, 0 0px 2px #fff4" }}
+      >
+        MBR
+      </span>
 
       <Reg name="IR" className={clsx("left-[185px] top-[270px]", "border-indigo-400")} />
+      <span
+        className="absolute left-[200px] top-[260px] px-1 py-0 rounded-full bg-indigo-800 border border-indigo-400 font-mono font-bold text-indigo-200 text-xs tracking-widest select-none z-[99]"
+      >
+        IR
+      </span>
 
       <Control />
       {showSP && (
