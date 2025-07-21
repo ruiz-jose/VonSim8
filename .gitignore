@@ -29,6 +29,9 @@ dist/
 *.sln
 *.sw?
 
+# Excluir configuración local de windsurf
+.windsurf/
+
 # Ignore best-practicas instructions file
 .github/instructions/best-practicas.instructions.md
 
