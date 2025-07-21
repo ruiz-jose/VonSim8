@@ -206,17 +206,28 @@ export function CPU() {
           IP
         </span>
       </div>
-      <Reg name="MAR" className="right-[-11px] top-[333px] z-10 border-indigo-400" />
-      <span className="absolute right-[7px] top-[325px] z-[99] select-none rounded-full border border-indigo-400 bg-indigo-800 px-1 py-0 font-mono text-xs font-bold tracking-widest text-indigo-200">
-        MAR
-      </span>
-      <Reg name="MBR" className="right-[-11px] top-[233px] border-indigo-400" />
-      <span
-        className="absolute right-[7px] top-[225px] z-30 select-none rounded-full border border-indigo-400 bg-indigo-800/80 px-1 py-0 font-mono text-xs font-bold tracking-widest text-indigo-200 shadow-[0_1px_6px_rgba(0,0,0,0.25)]"
-        style={{ textShadow: "0 1px 4px #000, 0 0px 2px #fff4" }}
-      >
-        MBR
-      </span>
+      <div className="absolute left-[610px] top-[332px] z-10">
+        <Reg name="MAR" className="border-indigo-400" />
+        <span
+          className="absolute left-0 top-0 z-30 select-none border border-indigo-400 bg-indigo-800 px-1 py-0 font-mono text-[10px] font-bold tracking-widest text-indigo-200 rounded-full"
+          style={{
+            textShadow: "0 1px 4px #000, 0 0px 2px #fff4"
+          }}
+        >
+          MAR
+        </span>
+      </div>
+      <div className="absolute left-[610px] top-[233px] z-10">
+        <Reg name="MBR" className="border-indigo-400" />
+        <span
+          className="absolute left-0 top-0 z-30 select-none border border-indigo-400 bg-indigo-800 px-1 py-0 font-mono text-[10px] font-bold tracking-widest text-indigo-200 rounded-full"
+          style={{
+            textShadow: "0 1px 4px #000, 0 0px 2px #fff4"
+          }}
+        >
+          MBR
+        </span>
+      </div>
 
       <div className="absolute left-[185px] top-[270px] z-10">
         <Reg name="IR" className="border-indigo-400" />
@@ -240,7 +251,7 @@ export function CPU() {
         <Reg name="ri" emphasis className={clsx("left-[470px] top-[372px]", "border-cyan-400")} />
       )}
 
-      <Reg name="MAR" className={clsx("right-[-11px] top-[333px]", "border-indigo-400")} />
+      {/* Eliminado MAR duplicado sin título */}
 
       <IPPlusOneAnimation />
     </div>

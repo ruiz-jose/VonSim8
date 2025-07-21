@@ -101,7 +101,7 @@ export function Register({
           ) : isIP ? (
             // IP: nombre y valor juntos
             <>
-            <span className={clsx("font-mono text-base font-bold text-red-300")}>{low.toString("hex")}</span>
+            <span className={clsx("font-mono text-base font-bold text-red-300 mt-2")}>{low.toString("hex")}</span>
             </>
           ) : displayName === "left" || displayName === "right" || displayName === "result" ? (
             // Formato especial para left, right y result - estilo similar a los textos de los buses

@@ -49,10 +49,10 @@ export function AddressBus({ showSP, showri }: AddressBusProps) {
   const { path, ...style } = getSpring("cpu.internalBus.address");
 
   const paths = [
-    showSP ? "M 451 309 H 550 V 250" : "", // SP
-    "M 451 349 H 550 V 255", // IP
-    showri ? "M 470 388 H 550 V 300" : "", // ri - ajustado para conectar con registro redimensionado
-    "M 451 349 H 659", // Connection to MAR - ajustado
+    showSP ? "M 400 309 H 550 V 250" : "", // SP (ampliado desde la izquierda)
+    "M 400 349 H 550 V 255", // IP (ampliado desde la izquierda)
+    showri ? "M 420 388 H 550 V 300" : "", // ri (ampliado desde la izquierda)
+    "M 400 349 H 659", // Connection to MAR (ampliado desde la izquierda)
   ];
 
   return (
