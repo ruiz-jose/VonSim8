@@ -32,7 +32,7 @@ dataBus.addNode("CL", { position: [455, 125] }); // Ajustado para el centro del 
 dataBus.addNode("DL", { position: [455, 165] }); // Ajustado para el centro del registro de 8 bits
 dataBus.addNode("id", { position: [451, 205] });
 dataBus.addNode("SP", { position: [451, 309] });
-dataBus.addNode("IP", { position: [451, 349] });
+dataBus.addNode("IP", { position: [455, 349] }); // Más centrado visualmente respecto al registro IP
 dataBus.addNode("ri", { position: [451, 388] });
 dataBus.addNode("MAR", { position: [698, 349] });
 dataBus.addNode("result", { position: [272, 115] });
@@ -55,11 +55,11 @@ dataBus.addNode("AL join", { position: [425, 45] }); // Ajustado para conectar c
 dataBus.addNode("BL join", { position: [425, 85] }); // Ajustado para conectar con el registro de 8 bits
 dataBus.addNode("CL join", { position: [425, 125] }); // Ajustado para conectar con el registro de 8 bits
 dataBus.addNode("DL join", { position: [425, 165] }); // Ajustado para conectar con el registro de 8 bits
-dataBus.addNode("id join", { position: [421, 205] });
-dataBus.addNode("data mbr join", { position: [421, 250] });
-dataBus.addNode("SP join", { position: [421, 309] });
-dataBus.addNode("IP join", { position: [421, 349] });
-dataBus.addNode("ri join", { position: [421, 388] });
+dataBus.addNode("id join", { position: [250, 205] });
+dataBus.addNode("data mbr join", { position: [390, 250] });
+dataBus.addNode("SP join", { position: [390, 309] });
+dataBus.addNode("IP join", { position: [390, 250] }); // Alineado con data mbr join y NodoRegIn
+dataBus.addNode("ri join", { position: [390, 388] });
 dataBus.addNode("MAR join1", { position: [550, 388] });
 dataBus.addNode("MAR join2", { position: [550, 349] });
 dataBus.addNode("result mbr join", { position: [370, 250] });
@@ -80,7 +80,7 @@ dataBus.addNode("id out", { position: [441, 205] }); // Lado izquierdo del regis
 dataBus.addNode("MBR out", { position: [630, 250] }); // Nodo de salida de MBR
 dataBus.addNode("MBR out join", { position: [550, 250] }); // Nodo de unión de salida de MBR
 dataBus.addNode("SP out", { position: [510, 309] });
-dataBus.addNode("IP out", { position: [510, 349] });
+dataBus.addNode("IP out", { position: [510, 349] }); // Más a la derecha, borde derecho del registro IP
 dataBus.addNode("IP out join", { position: [550, 349] });
 dataBus.addNode("ri out join", { position: [550, 388] });
 dataBus.addNode("SP out join", { position: [550, 309] });
@@ -311,18 +311,33 @@ export function generateDataPath(
       "right end", // Terminar en la entrada derecha de la ALU
     ];
   } else if (registers.includes(normalizedFrom) && registers.includes(normalizedTo)) {
-    // Recorrido explícito: X, X out, X out join, NodoRegOut, outr mbr join, mbr reg join, NodoRegIn, Y join, Y
-    path = [
-      normalizedFrom,
-      `${normalizedFrom} out`,
-      `${normalizedFrom} out join`,
-      "NodoRegOut",
-      "outr mbr join",
-      "mbr reg join",
-      "NodoRegIn",
-      `${normalizedTo} join`,
-      normalizedTo,
-    ];
+    // Si el destino es SP, IP o ri, pasar por NodoRegDir
+    if (["SP", "IP", "ri"].includes(normalizedTo)) {
+      path = [
+        normalizedFrom,
+        `${normalizedFrom} out`,
+        `${normalizedFrom} out join`,
+        "NodoRegOut",
+        "outr mbr join",
+        "mbr reg join",
+        "NodoRegDir",
+        `${normalizedTo} join`,
+        normalizedTo,
+      ];
+    } else {
+      // Recorrido explícito: X, X out, X out join, NodoRegOut, outr mbr join, mbr reg join, NodoRegIn, Y join, Y
+      path = [
+        normalizedFrom,
+        `${normalizedFrom} out`,
+        `${normalizedFrom} out join`,
+        "NodoRegOut",
+        "outr mbr join",
+        "mbr reg join",
+        "NodoRegIn",
+        `${normalizedTo} join`,
+        normalizedTo,
+      ];
+    }
   } else if (normalizedFrom === "MBR" && normalizedTo === "ri") {
     if (instruction === "CALL") {
       path = ["MBR", "mbr reg join", "ri join", "ri"];
@@ -335,8 +350,8 @@ export function generateDataPath(
     } else {
       path = ["MBR", "MBR out", "MBR out join", "outr mbr join", "SP out join", "MAR join2", "MAR"];
     }
-  } else if (normalizedFrom === "MBR" && ["SP", "IP"].includes(normalizedTo)) {
-    path = ["MBR", "mbr reg join", "NodoRegIn", `${normalizedTo} join`, normalizedTo];
+  } else if (normalizedFrom === "MBR" && ["SP", "IP", "ri"].includes(normalizedTo)) {
+    path = ["MBR", "mbr reg join", "NodoRegDir", `${normalizedTo} join`, normalizedTo];
   } else if (normalizedFrom === "IP" && normalizedTo === "id") {
     path = ["IP out", "IP out join", "outr mbr join", "mbr reg join", "NodoRegIn", "id join", "id"];
   } else if (normalizedFrom === "id" && normalizedTo === "ri") {
@@ -368,7 +383,6 @@ export function generateDataPath(
       "NodoRegOut",
       "outr mbr join",
       "mbr reg join",
-      "NodoRegIn",
       "IP join",
       "IP",
     ];
@@ -379,7 +393,6 @@ export function generateDataPath(
       "NodoRegOut",
       "outr mbr join",
       "mbr reg join",
-      "NodoRegIn",
       "IP join",
       "IP",
     ];
@@ -534,6 +547,16 @@ export function generateDataPath(
   } else if (normalizedFrom === "MBR" && normalizedTo === "MAR") {
     // Ruta explícita: MBR -> MBR out -> MBR out join -> outr mbr join -> SP out join -> MAR join2 -> MAR
     path = ["MBR", "MBR out", "MBR out join", "outr mbr join", "SP out join", "MAR join2", "MAR"];
+  } else if (normalizedFrom === "IP" && normalizedTo === "MAR") {
+    path = [
+      "IP",
+      "IP out",
+      "IP out join",
+      "outr mbr join",
+      "SP out join",
+      "MAR join2",
+      "MAR",
+    ];
   } else {
     try {
       path = bidirectional(dataBus, normalizedFrom, normalizedTo) || [];
@@ -651,11 +674,11 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
           "M 205 250 V 272", // IP
           "M 205 300 V 320", // IP->decoder
           // Address registers
-          "M 430 349 H 421", // ri
-          "V 250", // Long path to MBR, here to get nice joins
-          "M 451 349 H 421", // IP
-          showSP ? "M 451 309 H 421" : "M 451 309", // SP
-          showri ? "M 470 388 H 421 V 300" : "", // ri - ajustado para conectar con registro redimensionado
+          // "M 430 349 H 421", // ri (eliminado)
+          // "V 250", // Long path to MBR, eliminado
+          "M 451 349 H 390 V 250", // IP alineado y vertical hasta data mbr join/NodoRegIn
+          showSP ? "M 451 309 H 390" : "M 451 309", // SP alineado
+          showri ? "M 470 388 H 390 V 300" : "", // ri alineado
           // Data registers - ajustados para conectar con registros más pequeños
           "M 455 45 H 425", // AL - ajustado
           //"V 170", // Long path to MBR, here to get nice joins
