@@ -29,10 +29,10 @@ export function generateAddressPath(
   }
   switch (from) {
     case "SP":
-      return "M 451 309 H 550 V 349 H 659";
+      return "M 460 309 H 550 V 349 H 659";
 
     case "IP":
-      return "M 451 349 H 659";
+      return "M 460 349 H 659";
 
     case "ri":
       return showpath1 || showpath2 ? path : "";

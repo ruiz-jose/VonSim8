@@ -275,8 +275,8 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
     }
 
     case "cpu:mar.set": {
-      // Detectar si el registro origen es MBR o 'ri' (para animación especial)
-      const isFromMBR = event.register.toLowerCase() === "mbr" || event.register === "ri";
+      // Detectar si el registro origen es MBR (para animación especial)
+      const isFromMBR = event.register.toLowerCase() === "mbr";
       const path = isFromMBR
         ? "M 629 250 H 550 V 349 H 659" // path especial, siempre desde el MBR
         : generateAddressPath(event.register as MARRegister); // path normal
