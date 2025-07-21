@@ -91,7 +91,7 @@ export function Register({
             <>
               <span
                 className={clsx(
-                  isGeneralPurpose ? "mt-4" : "mt-2",
+                  isGeneralPurpose ? "mt-4" : isIR || isMAR || isMBR ? "mt-4" : "mt-2",
                   "font-mono text-base font-bold",
                 )}
               >

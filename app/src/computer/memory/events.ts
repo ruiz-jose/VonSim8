@@ -76,7 +76,7 @@ const resetExternalDataPath = () =>
 function generateExternalAddressPath(): string {
   // Siempre desde MAR hacia la memoria (como indica el usuario)
   // Coordenadas que coinciden con el addressPath estático en DataLines.tsx
-  return "M 659 349 H 800";
+  return "M 610 349 H 800";
 }
 
 // Función para animar el bus de direcciones externo (igual que el interno del CPU)

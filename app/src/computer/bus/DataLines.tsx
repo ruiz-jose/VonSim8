@@ -5,7 +5,7 @@ export function DataLines() {
   const { devices } = useSimulation();
 
   const addressPath = [
-    "M 659 349 H 800", // CPU -> Memory - ajustado para conectar con el registro MAR redimensionado
+    "M 610 349 H 800", // Extendido a la izquierda para llegar al registro MAR
     devices.pic && "M 725 349 V 770 H 450",
     devices.pio && "M 725 349 V 770 H 900",
     devices.timer && "M 725 349 V 770 H 618 V 875",
