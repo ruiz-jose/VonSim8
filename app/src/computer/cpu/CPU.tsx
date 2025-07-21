@@ -142,7 +142,9 @@ export function CPU() {
       data-testid="cpu-component"
       className="absolute left-0 top-0 z-10 h-[500px] w-[650px] rounded-lg border border-stone-600 bg-stone-900 [&_*]:z-20"
     >
-      {/* Eliminado el título superior izquierdo para dejar solo el título dentro del registro IP */}
+      <span className="block w-min rounded-br-lg rounded-tl-lg border-b border-r border-stone-600 bg-mantis-500 px-2 py-1 text-3xl text-white">
+        {translate("computer.cpu.name")}
+      </span>
 
       <AddressBus showSP={showSP} showri={showri} />
       <DataBus showSP={showSP} showid={showid} showri={showri} />
@@ -216,10 +218,17 @@ export function CPU() {
         MBR
       </span>
 
-      <Reg name="IR" className={clsx("left-[185px] top-[270px]", "border-indigo-400")} />
-      <span className="absolute left-[200px] top-[260px] z-[99] select-none rounded-full border border-indigo-400 bg-indigo-800 px-1 py-0 font-mono text-xs font-bold tracking-widest text-indigo-200">
-        IR
-      </span>
+      <div className="absolute left-[185px] top-[270px] z-10">
+        <Reg name="IR" className="border-indigo-400" />
+        <span
+          className="absolute left-0 top-0 z-30 select-none border border-indigo-400 bg-indigo-800 px-1 py-0 font-mono text-[10px] font-bold tracking-widest text-indigo-200 rounded-full"
+          style={{
+            textShadow: "0 1px 4px #000, 0 0px 2px #fff4"
+          }}
+        >
+          IR
+        </span>
+      </div>
 
       <Control />
       {showSP && (
