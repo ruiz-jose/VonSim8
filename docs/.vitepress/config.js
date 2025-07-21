@@ -81,6 +81,7 @@ export default defineConfig({
         text: "Referencia",
         items: [
           { text: "Tabla ASCII", link: "/reference/ascii" },
+          { text: "Ciclo instrucción", link: "/reference/instructioncycle" },
           { text: "Codificación", link: "/reference/encoding" },
           { text: "Notas de versión", link: "/changelog" },
         ],

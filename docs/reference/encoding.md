@@ -23,13 +23,10 @@ La codificación de instrucciones en VonSim8 está simplificada para fines didá
 | 1   | `MOV Rx, [M]`      | `Rx` ← `Mem[Dirección]`                     | `0001 XX00 DDDDDDDD`          |
 | 1   | `MOV Rx, [BL]`     | `Rx` ← `Mem[BL]`                            | `0001 XX01`                   |
 | 1   | `MOV Rx, D`        | `Rx` ← `Dato`                               | `0001 XX10 DDDDDDDD`          |
-| 1   | `MOV Rx, [BL + D]` | `Rx` ← `Mem[BL + Dato]` (No implementada)   | `0001 XX11 DDDDDDDD`          |
 | 2   | `MOV [M], Ry`      | `Mem[Dirección]` ← `Rx`                     | `0010 00YY DDDDDDDD`          |
 | 2   | `MOV [BL], Ry`     | `Mem[BL]` ← `Rx`                            | `0010 01YY`                   |
-| 2   | `MOV [BL + D], Ry` | `Mem[BL + Dato]` ← `Rx` (No implementada)   | `0010 10YY DDDDDDDD`          |
 | 2   | `MOV [M], D`       | `Mem[Dirección]` ← `Dato`                   | `0010 1100 DDDDDDDD dddddddd` |
 | 2   | `MOV [BL], D`      | `Mem[BL]` ← `Dato`                          | `0010 1101 DDDDDDDD`          |
-| 2   | `MOV [BL + D], D`  | `Mem[BL + Dato]` ← `Dato` (No implementada) | `0010 1110 DDDDDDDD`          |
 | 3   | `ADD Rx, Ry`       | `Rx` ← `Rx + Ry`                            | `0011 XXYY`                   |
 | 4   | `ADD --, --`       | Mismo direccionamientos que MOV             | `0100 ---- --------`          |
 | 5   | `ADD --, --`       | Mismo direccionamientos que MOV             | `0101 ---- -------- --------` |
