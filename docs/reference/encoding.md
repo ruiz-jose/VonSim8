@@ -6,46 +6,32 @@ Aquí se denota la codificación en binario de cada una de las instrucciones del
 
 A lo largo de la codificación se usan las siguientes abreviaturas:
 
-- `w`: indica el tamaño de los operandos.
+- `rr`: referencian registros.
 
-  | `w` | Tamaño  |
-  | :-: | :------ |
-  | `0` | 8 bits  |
-  | `1` | 16 bits |
-
-- `rrr` o `RRR`: referencian registros, y dependen de `w`.
-
-  | `rrr` | `w=0` | `w=1` |
-  | :---: | :---: | :---: |
-  | `000` | `AL`  | `AX`  |
-  | `001` | `CL`  | `CX`  |
-  | `010` | `DL`  | `DX`  |
-  | `011` | `BL`  | `BX`  |
-  | `100` | `AH`  | `SP`  |
-  | `101` | `CH`  |   —   |
-  | `110` | `DH`  |   —   |
-  | `111` | `BH`  |   —   |
-
-- **dato** se refiere al byte/word de un dato inmediato. Para instrucciones con `w=0`, **dato-high** es obviado.
-- **desp** se refiere al word de un desplazamiento (siempre en Ca2).
+  | `rr` | `registro` | 
+  | :---: | :---: |
+  | `00` | `AL`  |
+  | `01` | `CL`  |
+  | `10` | `DL`  |
+  | `11` | `BL`  |
+  
+- **dato** se refiere al byte de un dato inmediato.
 - **dir** se refiere al word de una dirección.
-- **xxx-low** se refiere a la parte menos significativa (LSB) de un word o a un byte.
-- **xxx-high** se refiere a la marte más significativa (MSB) de un word.
 
 ## Instrucciones binarias de la ALU
 
 | Instrucción |    Opcode    |
 | :---------: | :----------: |
-|    `MOV`    | `100 0000 w` |
-|    `AND`    | `100 0001 w` |
-|    `OR`     | `100 0010 w` |
-|    `XOR`    | `100 0011 w` |
-|    `ADD`    | `100 0100 w` |
-|    `ADC`    | `100 0101 w` |
-|    `SUB`    | `100 0110 w` |
-|    `SBB`    | `100 0111 w` |
-|   `TEST`    | `101 0001 w` |
-|    `CMP`    | `101 0110 w` |
+|    `MOV`    | `0000 w` |
+|    `AND`    | `0001 w` |
+|    `OR`     | `0010 w` |
+|    `XOR`    | `0011 w` |
+|    `ADD`    | `0100 w` |
+|    `ADC`    | `0101 w` |
+|    `SUB`    | `0110 w` |
+|    `SBB`    | `0111 w` |
+|   `TEST`    | `0001 w` |
+|    `CMP`    | `0110 w` |
 
 Estas instrucciones reciben dos operandos y soportan varios modos de direccionamiento. Esta información está codificada en el bit `d` y el segundo byte de la instrucción según la siguiente tabla:
 
