@@ -86,8 +86,8 @@ export function Register({
               : getSpring(springs)
           }
         >
-          {isGeneralPurpose || isIP || isSP || isMBR || isMAR || isIR || isTemporal ? (
-            // Formato tipo celda de memoria para registros generales, IP, SP, MBR, MAR, IR, id y ri
+          {isGeneralPurpose || isSP || isMBR || isMAR || isIR || isTemporal ? (
+            // Formato tipo celda de memoria para registros generales, SP, MBR, MAR, IR, id y ri
             <>
               <span
                 className={clsx(
@@ -97,6 +97,11 @@ export function Register({
               >
                 {low.toString("hex")}
               </span>
+            </>
+          ) : isIP ? (
+            // IP: nombre y valor juntos
+            <>
+            <span className={clsx("font-mono text-base font-bold text-red-300")}>{low.toString("hex")}</span>
             </>
           ) : displayName === "left" || displayName === "right" || displayName === "result" ? (
             // Formato especial para left, right y result - estilo similar a los textos de los buses

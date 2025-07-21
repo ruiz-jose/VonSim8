@@ -142,9 +142,7 @@ export function CPU() {
       data-testid="cpu-component"
       className="absolute left-0 top-0 z-10 h-[500px] w-[650px] rounded-lg border border-stone-600 bg-stone-900 [&_*]:z-20"
     >
-      <span className="block w-min rounded-br-lg rounded-tl-lg border-b border-r border-stone-600 bg-mantis-500 px-2 py-1 text-3xl text-white">
-        {translate("computer.cpu.name")}
-      </span>
+      {/* Eliminado el título superior izquierdo para dejar solo el título dentro del registro IP */}
 
       <AddressBus showSP={showSP} showri={showri} />
       <DataBus showSP={showSP} showid={showid} showri={showri} />
@@ -196,7 +194,13 @@ export function CPU() {
 
       <div className="absolute left-[450px] top-[332px] z-10">
         <Reg name="IP" emphasis className="border-red-500" />
-        <span className="absolute right-0 top-0 z-[99] select-none rounded-full border border-red-400 bg-red-800 px-1 py-0 font-mono text-xs font-bold tracking-widest text-red-200">
+        <span
+          className="absolute left-1/2 top-1/2 z-30 select-none border border-red-500 bg-red-800 px-1 py-0 font-mono text-[10px] font-bold tracking-widest text-red-200 rounded-full"
+          style={{
+            transform: "translate(-50%, -50%)",
+            textShadow: "0 1px 4px #000, 0 0px 2px #fff4"
+          }}
+        >
           IP
         </span>
       </div>
@@ -221,7 +225,7 @@ export function CPU() {
       {showSP && (
         <Reg name="SP" emphasis className={clsx("left-[450px] top-[292px]", "border-yellow-400")} />
       )}
-      <Reg name="IP" emphasis className={clsx("left-[450px] top-[332px]", "border-red-500")} />
+      {/* Eliminado para evitar duplicado visual del registro IP */}
 
       {showri && (
         <Reg name="ri" emphasis className={clsx("left-[470px] top-[372px]", "border-cyan-400")} />
