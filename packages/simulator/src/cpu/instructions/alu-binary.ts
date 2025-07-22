@@ -104,7 +104,7 @@ export class ALUBinaryInstruction extends Instruction<
         ) {
           (window as any).setShowPath2(true);
         }
-        yield* computer.cpu.setMAR("ri");
+        // (REMOVED) yield* computer.cpu.setMAR("ri");
         if (
           typeof window !== "undefined" &&
           (window as any).setShowPath2 &&

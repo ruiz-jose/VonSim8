@@ -275,8 +275,9 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
     }
 
     case "cpu:mar.set": {
-      // Detectar si el registro origen es MBR (para animación especial)
-      const isFromMBR = event.register.toLowerCase() === "mbr";
+      // Detectar si el registro origen es MBR o ri (para animación especial)
+      const regLower = event.register.toLowerCase();
+      const isFromMBR = regLower === "mbr" || regLower === "ri";
       const path = isFromMBR
         ? "M 629 250 H 550 V 349 H 659" // path especial, siempre desde el MBR
         : generateAddressPath(event.register as MARRegister); // path normal
@@ -286,6 +287,8 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         "| Animación especial:",
         isFromMBR,
       );
+
+      // Si el origen es MBR o ri, solo animar el bus de dirección (azul)
 
       await anim(
         [
@@ -308,7 +311,6 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
           { duration: 1, easing: "easeInSine" },
         ),
       ]);
-      // (Eliminada la animación de bus de datos MBR->MAR para dejar solo la animación original del Address Bus)
       return;
     }
 
@@ -322,19 +324,21 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       }
 
       // Solo animar el bus de datos desde MBR a IR, MAR o registros de propósito general (AL, BL, CL, DL) si NO es una operación de la ALU
-      const aluOps = ["ADD", "SUB", "AND", "OR", "XOR", "CMP"]; // Puedes agregar más si tu CPU tiene más
+      const aluOps = ["ADD", "SUB", "AND", "OR", "XOR", "CMP"];
       const isALUOp = aluOps.some(op => instructionName.startsWith(op));
-      console.log(
-        "[cpu:mbr.get] normalizedRegister:",
-        normalizedRegister,
-        "instructionName:",
-        instructionName,
-        "mode:",
-        mode,
-      );
+      // Detectar si el siguiente cpu:mar.set será desde IP (para evitar animación verde MBR→MAR)
+      let skipMBRtoMAR = false;
+      if (normalizedRegister === "MAR" || normalizedRegister.startsWith("MAR.")) {
+        // Si el valor que se va a copiar a MAR es igual al valor de IP, omitimos la animación
+        const ipValue = store.get(registerAtoms.IP);
+        const mbrValue = store.get(MBRAtom);
+        if (ipValue === mbrValue) {
+          skipMBRtoMAR = true;
+        }
+      }
       if (normalizedRegister === "IR") {
         await drawDataPath("MBR", "IR", instructionName, mode);
-      } else if (normalizedRegister === "MAR" || normalizedRegister.startsWith("MAR.")) {
+      } else if ((normalizedRegister === "MAR" || normalizedRegister.startsWith("MAR.")) && !skipMBRtoMAR) {
         console.log("Animando bus de datos: MBR → MAR", { instructionName, mode });
         await drawDataPath("MBR", "MAR", instructionName, mode);
       } else if (["AL", "BL", "CL", "DL"].includes(normalizedRegister) && !isALUOp) {
@@ -399,8 +403,10 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       const normalize = (reg: string) => reg.replace(/\.(l|h)$/, "");
       const src = normalize(event.src);
       const dest = normalize(event.dest);
-      // Animar el bus de datos interno entre registros
-      await drawDataPath(src as DataRegister, dest as DataRegister, instructionName, mode);
+      // Evitar animación duplicada si es ri -> MAR (ya se anima en cpu:mar.set)
+      if (!(src === "ri" && dest.toLowerCase() === "mar")) {
+        await drawDataPath(src as DataRegister, dest as DataRegister, instructionName, mode);
+      }
       // Copiar el valor en el frontend (para mantener sincronía visual)
       store.set(registerAtoms[event.dest], store.get(registerAtoms[event.src]));
       await activateRegister(`cpu.${event.dest}` as RegisterKey);
