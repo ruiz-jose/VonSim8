@@ -253,7 +253,7 @@ export function generateDataPath(
   // Si options.separateMBRPaths está activo y from === "MBR" y (to === "left" o to === "right")
   if (options?.separateMBRPaths && from === "MBR" && (to === "left" || to === "right")) {
     if (to === "left") {
-      // Path especial para left: usa NodoRegOutLeft
+      // ...existing code...
       path = [
         normalizedFrom,
         `${normalizedFrom} out`,
@@ -268,13 +268,11 @@ export function generateDataPath(
         "left end",
       ];
     } else if (to === "right") {
-      // Path especial para right: usa NodoRegOutRight
+      // Path especial para right desde MBR: evitar NodoRegOut y NodoRegOutToRight
       path = [
         normalizedFrom,
         `${normalizedFrom} out`,
         `${normalizedFrom} out join`,
-        "NodoRegOut",
-        "NodoRegOutToRight",
         "outr mbr join",
         "mbr reg join",
         "IR mbr join",
@@ -297,19 +295,43 @@ export function generateDataPath(
       "left end", // Terminar en la entrada izquierda de la ALU
     ];
   } else if (normalizedTo === "right") {
-    path = [
-      normalizedFrom,
-      `${normalizedFrom} out`,
-      `${normalizedFrom} out join`,
-      "NodoRegOut",
-      "outr mbr join",
-      "mbr reg join",
-      "IR mbr join",
-      "operands mbr join",
-      "right join",
-      "right",
-      "right end", // Terminar en la entrada derecha de la ALU
-    ];
+    // Si es MBR → right, bajar primero y luego ir a la derecha, evitando la altura de salidas de registros
+    if (normalizedFrom === "MBR") {
+      // Añadimos un nodo virtual para el desvío hacia abajo (por ejemplo, x=620, y=300)
+      const downNode = "MBR_down300";
+      if (!dataBus.hasNode(downNode)) {
+        dataBus.addNode(downNode, { position: [620, 300] });
+        dataBus.addUndirectedEdge("MBR", downNode);
+      }
+      // Ahora ir a la derecha (x=125, y=300), luego subir a right
+      const rightNode = "MBR_right125_300";
+      if (!dataBus.hasNode(rightNode)) {
+        dataBus.addNode(rightNode, { position: [125, 300] });
+        dataBus.addUndirectedEdge(downNode, rightNode);
+      }
+      // Finalmente subir a right
+      path = [
+        "MBR",
+        downNode,
+        rightNode,
+        "right",
+        "right end",
+      ];
+    } else {
+      path = [
+        normalizedFrom,
+        `${normalizedFrom} out`,
+        `${normalizedFrom} out join`,
+        "NodoRegOut",
+        "outr mbr join",
+        "mbr reg join",
+        "IR mbr join",
+        "operands mbr join",
+        "right join",
+        "right",
+        "right end",
+      ];
+    }
   } else if (registers.includes(normalizedFrom) && registers.includes(normalizedTo)) {
     // Si el destino es SP, IP o ri, pasar por NodoRegDir
     if (["SP", "IP", "ri"].includes(normalizedTo)) {

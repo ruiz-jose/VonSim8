@@ -371,8 +371,11 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       if (normalizedRegister === "IP") {
         await animateMBRAndIP();
       }
-      // Si no es IP, solo actualizar el valor sin animación visual
+      // Si no es IP, mostrar animación del bus desde el registro origen hacia MBR
       else {
+        // Normalizar el nombre del registro origen para evitar error de tipo
+        const normalizedSrc = event.register.replace(/\.(l|h)$/, "") as DataRegister;
+        await drawDataPath(normalizedSrc, "MBR", instructionName, mode);
         store.set(MBRAtom, store.get(registerAtoms[event.register]));
         await resetDataPath();
       }
