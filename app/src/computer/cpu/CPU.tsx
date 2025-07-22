@@ -197,10 +197,10 @@ export function CPU() {
       <div className="absolute left-[450px] top-[332px] z-10">
         <Reg name="IP" emphasis className="border-red-500" />
         <span
-          className="absolute left-1/2 top-1/2 z-30 select-none border border-red-500 bg-red-800 px-1 py-0 font-mono text-[10px] font-bold tracking-widest text-red-200 rounded-full"
+          className="absolute left-1/2 top-1/2 z-30 select-none rounded-full border border-red-500 bg-red-800 px-1 py-0 font-mono text-[10px] font-bold tracking-widest text-red-200"
           style={{
             transform: "translate(-50%, -50%)",
-            textShadow: "0 1px 4px #000, 0 0px 2px #fff4"
+            textShadow: "0 1px 4px #000, 0 0px 2px #fff4",
           }}
         >
           IP
@@ -209,9 +209,9 @@ export function CPU() {
       <div className="absolute left-[610px] top-[332px] z-10">
         <Reg name="MAR" className="border-indigo-400" />
         <span
-          className="absolute left-0 top-0 z-30 select-none border border-indigo-400 bg-indigo-800 px-1 py-0 font-mono text-[10px] font-bold tracking-widest text-indigo-200 rounded-full"
+          className="absolute left-0 top-0 z-30 select-none rounded-full border border-indigo-400 bg-indigo-800 px-1 py-0 font-mono text-[10px] font-bold tracking-widest text-indigo-200"
           style={{
-            textShadow: "0 1px 4px #000, 0 0px 2px #fff4"
+            textShadow: "0 1px 4px #000, 0 0px 2px #fff4",
           }}
         >
           MAR
@@ -220,9 +220,9 @@ export function CPU() {
       <div className="absolute left-[610px] top-[233px] z-10">
         <Reg name="MBR" className="border-indigo-400" />
         <span
-          className="absolute left-0 top-0 z-30 select-none border border-indigo-400 bg-indigo-800 px-1 py-0 font-mono text-[10px] font-bold tracking-widest text-indigo-200 rounded-full"
+          className="absolute left-0 top-0 z-30 select-none rounded-full border border-indigo-400 bg-indigo-800 px-1 py-0 font-mono text-[10px] font-bold tracking-widest text-indigo-200"
           style={{
-            textShadow: "0 1px 4px #000, 0 0px 2px #fff4"
+            textShadow: "0 1px 4px #000, 0 0px 2px #fff4",
           }}
         >
           MBR
@@ -232,9 +232,9 @@ export function CPU() {
       <div className="absolute left-[185px] top-[270px] z-10">
         <Reg name="IR" className="border-indigo-400" />
         <span
-          className="absolute left-0 top-0 z-30 select-none border border-indigo-400 bg-indigo-800 px-1 py-0 font-mono text-[10px] font-bold tracking-widest text-indigo-200 rounded-full"
+          className="absolute left-0 top-0 z-30 select-none rounded-full border border-indigo-400 bg-indigo-800 px-1 py-0 font-mono text-[10px] font-bold tracking-widest text-indigo-200"
           style={{
-            textShadow: "0 1px 4px #000, 0 0px 2px #fff4"
+            textShadow: "0 1px 4px #000, 0 0px 2px #fff4",
           }}
         >
           IR

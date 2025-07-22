@@ -548,15 +548,7 @@ export function generateDataPath(
     // Ruta explícita: MBR -> MBR out -> MBR out join -> outr mbr join -> SP out join -> MAR join2 -> MAR
     path = ["MBR", "MBR out", "MBR out join", "outr mbr join", "SP out join", "MAR join2", "MAR"];
   } else if (normalizedFrom === "IP" && normalizedTo === "MAR") {
-    path = [
-      "IP",
-      "IP out",
-      "IP out join",
-      "outr mbr join",
-      "SP out join",
-      "MAR join2",
-      "MAR",
-    ];
+    path = ["IP", "IP out", "IP out join", "outr mbr join", "SP out join", "MAR join2", "MAR"];
   } else {
     try {
       path = bidirectional(dataBus, normalizedFrom, normalizedTo) || [];
