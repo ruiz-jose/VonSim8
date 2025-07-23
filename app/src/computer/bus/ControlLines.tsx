@@ -247,8 +247,10 @@ export function ControlLinesLegends() {
 
   return (
     <>
-      <ControlLineLegend>rd</ControlLineLegend>
-      <ControlLineLegend>wr</ControlLineLegend>
+      {/* rd al lado de la unidad de control y justo arriba del bus RD */}
+      <ControlLineLegend style={{ left: 385, top: 405 }}>rd</ControlLineLegend>
+      {/* wr al lado de la unidad de control y justo arriba del bus WR */}
+      <ControlLineLegend style={{ left: 385, top: 425 }}>wr</ControlLineLegend>
       {devices.hasIOBus && (
         <>
           <ControlLineLegend>io/m</ControlLineLegend>
@@ -287,9 +289,12 @@ export function ControlLinesLegends() {
   );
 }
 
-function ControlLineLegend({ children }: { children?: React.ReactNode }) {
+function ControlLineLegend({ children, style }: { children?: React.ReactNode; style?: React.CSSProperties }) {
   return (
-    <span className="pointer-events-none absolute z-[15] block font-mono text-xs font-bold tracking-wider text-stone-400">
+    <span
+      className="pointer-events-none absolute z-[15] block font-mono text-xs font-bold tracking-wider text-stone-400"
+      style={style}
+    >
       {children}
     </span>
   );
