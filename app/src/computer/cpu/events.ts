@@ -62,6 +62,11 @@ declare global {
   }
 }
 
+// Variable global temporal para guardar el último origen de ri
+let lastSourceForRI: string | null = null;
+// Función para normalizar nombres de registros (quita .l y .h)
+const normalize = (reg: string) => reg.replace(/\.(l|h)$/, "");
+
 // Añadir función auxiliar para animar MBR e IP juntos
 async function animateMBRAndIP() {
   await Promise.all([
@@ -231,11 +236,6 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       return;
     }
 
-    case "cpu:int.3": {
-      pauseSimulation();
-      return;
-    }
-
     case "cpu:int.6": {
       store.set(cycleAtom, { phase: "int6" });
       return;
@@ -275,12 +275,12 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
     }
 
     case "cpu:mar.set": {
-      // Detectar si el registro origen es MBR o ri (para animación especial)
-      const regLower = event.register.toLowerCase();
-      const isFromMBR = regLower === "mbr" || regLower === "ri";
+      // Detectar si el registro origen es MBR (para animación especial)
+      const regNorm = normalize(event.register); // NO toLowerCase
+      const isFromMBR = regNorm === "MBR";
       const path = isFromMBR
         ? "M 629 250 H 550 V 349 H 659" // path especial, siempre desde el MBR
-        : generateAddressPath(event.register as MARRegister); // path normal
+        : generateAddressPath(regNorm as MARRegister); // path normal
       console.log(
         "[cpu:mar.set] event.register:",
         event.register,
@@ -288,8 +288,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         isFromMBR,
       );
 
-      // Si el origen es MBR o ri, solo animar el bus de dirección (azul)
-
+      // Animación azul (bus de direcciones)
       await anim(
         [
           {
@@ -301,8 +300,16 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         ],
         { duration: 5, easing: "easeInOutSine" },
       );
-      await activateRegister("cpu.MAR", colors.blue[500]);
-      store.set(MARAtom, store.get(registerAtoms[event.register]));
+      await activateRegister(`cpu.MAR`, colors.blue[500]);
+      store.set(MARAtom, store.get(registerAtoms[regNorm]));
+
+      // --- Lógica para animar desde el origen real si MAR se actualiza desde ri ---
+      if (regNorm === "ri" && lastSourceForRI) {
+        await drawDataPath(normalize(lastSourceForRI) as DataRegister, "MAR", instructionName, mode);
+        lastSourceForRI = null;
+      } else if (!isFromMBR && regNorm !== "ri") {
+        await drawDataPath(regNorm as DataRegister, "MAR", instructionName, mode);
+      }
 
       await Promise.all([
         deactivateRegister("cpu.MAR"),
@@ -316,7 +323,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
 
     case "cpu:mbr.get": {
       // Normalizar el nombre del registro para evitar problemas con subniveles
-      const normalizedRegister = event.register.replace(/\.(l|h)$/, "");
+      const normalizedRegister = normalize(event.register);
 
       // Si la transferencia es a IP, marcar el flag global para evitar la animación individual de MBR en memoria
       if (normalizedRegister === "IP") {
@@ -365,7 +372,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
 
     case "cpu:mbr.set": {
       // Normalizar el nombre del registro para evitar problemas con subniveles
-      const normalizedRegister = event.register.replace(/\.(l|h)$/, "");
+      const normalizedRegister = normalize(event.register);
 
       // Si el registro destino es IP, animar ambos juntos
       if (normalizedRegister === "IP") {
@@ -380,38 +387,48 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
     }
 
     case "cpu:register.copy": {
-      await activateRegister(`cpu.${event.dest}` as RegisterKey);
-      store.set(registerAtoms[event.dest], store.get(registerAtoms[event.src]));
-      await deactivateRegister(`cpu.${event.dest}` as RegisterKey);
+      const src = normalize(event.src);
+      const dest = normalize(event.dest);
+      await activateRegister(`cpu.${dest}` as RegisterKey);
+      store.set(registerAtoms[dest], store.get(registerAtoms[src]));
+      await deactivateRegister(`cpu.${dest}` as RegisterKey);
       return;
     }
 
     case "cpu:register.update": {
       const [reg] = parseRegister(event.register);
+      const regNorm = normalize(reg);
       // Si se actualiza MBR o IP, animar ambos juntos
-      if (reg === "IP" || event.register === "MBR") {
+      if (regNorm === "IP" || regNorm === "MBR") {
         await animateMBRAndIP();
       } else {
-        await updateRegisterWithGlow(reg === "ri" ? "cpu.ri" : (`cpu.${reg}` as RegisterKey));
+        await updateRegisterWithGlow(regNorm === "ri" ? "cpu.ri" : (`cpu.${regNorm}` as RegisterKey));
       }
-      store.set(registerAtoms[event.register], event.value);
+      store.set(registerAtoms[regNorm], event.value);
       return;
     }
 
     case "cpu:register.buscopy": {
-      // Normalizar a DataRegister (sin sufijos .l/.h)
-      const normalize = (reg: string) => reg.replace(/\.(l|h)$/, "");
       const src = normalize(event.src);
       const dest = normalize(event.dest);
+      // Guardar el último origen de ri
+      if (dest === "ri") {
+        lastSourceForRI = src;
+      }
       // Evitar animación duplicada si es ri -> MAR (ya se anima en cpu:mar.set)
       if (!(src === "ri" && dest.toLowerCase() === "mar")) {
         await drawDataPath(src as DataRegister, dest as DataRegister, instructionName, mode);
+        // Espera un poco después de cualquier animación de bus para que se vea claramente
+        await new Promise(resolve => setTimeout(resolve, 150)); // 150 ms de retardo
       }
       // Copiar el valor en el frontend (para mantener sincronía visual)
-      store.set(registerAtoms[event.dest], store.get(registerAtoms[event.src]));
-      await activateRegister(`cpu.${event.dest}` as RegisterKey);
-      await deactivateRegister(`cpu.${event.dest}` as RegisterKey);
-      await resetDataPath();
+      store.set(registerAtoms[dest], store.get(registerAtoms[src]));
+      await activateRegister(`cpu.${dest}` as RegisterKey);
+      await deactivateRegister(`cpu.${dest}` as RegisterKey);
+      // SOLO resetea la animación si el destino NO es ri
+      if (dest !== "ri") {
+        await resetDataPath();
+      }
       return;
     }
 
