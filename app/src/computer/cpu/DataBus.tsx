@@ -506,15 +506,17 @@ export function generateDataPath(
       "MAR join2",
       "MAR",
     ];
-  } else if (normalizedFrom === "BL" && normalizedTo === "MAR") {
+  } else if (normalizedFrom === "BL" && normalizedTo === "ri.l") {
+    // Path especial: BL → ri, visual igual que MBR→MAR pero saliendo de BL
     path = [
-      "BL out",
-      "BL out join",
-      "NodoRegOut",
-      "outr mbr join",
-      "SP out join",
-      "MAR join2",
-      "MAR",
+      "BL",           // nodo de inicio
+      "BL out",       // salida de BL
+      "BL out join",  // unión de salida de BL
+      "NodoRegOut",   // nodo de unión de salidas
+      "outr mbr join",// unión de salidas hacia MBR
+      "SP out join",  // unión de salida de SP
+      "MAR join2",    // unión de MAR
+      "MAR"           // destino final
     ];
   } else if (normalizedFrom === "CL" && normalizedTo === "MAR") {
     path = [

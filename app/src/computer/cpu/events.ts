@@ -260,12 +260,9 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
     case "cpu:wr.on": {
       const line = event.type.slice(4, 6) as "rd" | "wr";
 
-      // Note: bus.address and bus.data now use path-based animations
-      // so we don't animate stroke directly anymore
-
-      // Animate control line using the correct path-based animation
+      // Animar simultáneamente el bus de control 'write' y el bus de direcciones
+      window.dispatchEvent(new CustomEvent("vonsim:parallel-memory-write-visual"));
       await turnLineOn(`bus.${line}` as SimplePathKey, 10);
-
       return;
     }
 
@@ -304,10 +301,12 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       store.set(MARAtom, store.get(registerAtoms[regNorm]));
 
       // --- Lógica para animar desde el origen real si MAR se actualiza desde ri ---
-      if (regNorm === "ri" && lastSourceForRI) {
-        await drawDataPath(normalize(lastSourceForRI) as DataRegister, "MAR", instructionName, mode);
+      if (regNorm === "ri") {
+        // Si hay un origen previo, úsalo; si no, fuerza BL→MAR
+        const source = lastSourceForRI || "BL";
+        await drawDataPath(normalize(source) as DataRegister, "MAR", instructionName, mode);
         lastSourceForRI = null;
-      } else if (!isFromMBR && regNorm !== "ri") {
+      } else if (!isFromMBR) {
         await drawDataPath(regNorm as DataRegister, "MAR", instructionName, mode);
       }
 
