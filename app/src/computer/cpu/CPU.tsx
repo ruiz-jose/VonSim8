@@ -229,7 +229,7 @@ export function CPU() {
         </span>
       </div>
 
-      <div className="absolute left-[185px] top-[270px] z-10">
+      <div className="absolute left-[230px] top-[270px] z-10">
         <Reg name="IR" className="border-indigo-400" />
         <span
           className="absolute left-0 top-0 z-30 select-none rounded-full border border-indigo-400 bg-indigo-800 px-1 py-0 font-mono text-[10px] font-bold tracking-widest text-indigo-200"

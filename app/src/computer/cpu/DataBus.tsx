@@ -39,7 +39,8 @@ dataBus.addNode("result", { position: [272, 115] });
 dataBus.addNode("NodoRegIn", { position: [390, 115] }); // Antes: [370, 115]
 dataBus.addNode("NodoRegOut", { position: [550, 115] }); // Nodo de unión para salidas de registros
 dataBus.addNode("FLAGS", { position: [250, 225] });
-dataBus.addNode("IR", { position: [205, 272] });
+// Nodo IR actualizado a la nueva posición visual (alineado con left-[230px] en el layout)
+dataBus.addNode("IR", { position: [250, 272] });
 dataBus.addNode("left", { position: [130, 85] });
 dataBus.addNode("right", { position: [125, 145] });
 dataBus.addNode("left end", { position: [220, 85] }); // Nodo final en la entrada izquierda de la ALU
@@ -63,8 +64,8 @@ dataBus.addNode("ri join", { position: [390, 388] });
 dataBus.addNode("MAR join1", { position: [550, 388] });
 dataBus.addNode("MAR join2", { position: [550, 349] });
 dataBus.addNode("result mbr join", { position: [370, 250] });
-dataBus.addNode("FLAGS mbr join", { position: [250, 250] });
-dataBus.addNode("IR mbr join", { position: [205, 250] });
+dataBus.addNode("FLAGS mbr join", { position: [155, 250] }); // FLAGS sigue a la izquierda
+dataBus.addNode("IR mbr join", { position: [250, 250] }); // IR ahora más a la derecha
 dataBus.addNode("left join", { position: [30, 85] });
 dataBus.addNode("right join", { position: [90, 145] });
 dataBus.addNode("operands mbr join", { position: [90, 250] });
@@ -663,8 +664,8 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
           //"M 272 115 h 100", // result
           "M 250 145 v 46", // flags
           // Decoder
-          "M 205 250 V 272", // IP
-          "M 205 300 V 320", // IP->decoder
+          "M 250 250 V 272", // IR (vertical junto a IR)
+          "M 250 300 V 320", // vertical bajo IR, alineado con IR
           // Address registers
           // "M 430 349 H 421", // ri (eliminado)
           // "V 250", // Long path to MBR, eliminado
