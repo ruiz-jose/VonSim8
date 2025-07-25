@@ -347,7 +347,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       } else if ((normalizedRegister === "MAR" || normalizedRegister.startsWith("MAR.")) && !skipMBRtoMAR) {
         console.log("Animando bus de datos: MBR → MAR", { instructionName, mode });
         await drawDataPath("MBR", "MAR", instructionName, mode);
-      } else if (["AL", "BL", "CL", "DL"].includes(normalizedRegister) && !isALUOp) {
+      } else if (["AL", "BL", "CL", "DL", "ri"].includes(normalizedRegister) && !isALUOp) {
         await drawDataPath("MBR", normalizedRegister as DataRegister, instructionName, mode);
       }
 
@@ -391,9 +391,11 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
     case "cpu:register.copy": {
       const src = normalize(event.src);
       const dest = normalize(event.dest);
+      await drawDataPath(src as DataRegister, dest as DataRegister, instructionName, mode);
       await activateRegister(`cpu.${dest}` as RegisterKey);
       store.set(registerAtoms[dest], store.get(registerAtoms[src]));
       await deactivateRegister(`cpu.${dest}` as RegisterKey);
+      await resetDataPath();
       return;
     }
 
