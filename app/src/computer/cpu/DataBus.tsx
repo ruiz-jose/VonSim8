@@ -248,6 +248,10 @@ export function generateDataPath(
     console.warn(`Nodo destino '${normalizedTo}' no existe en el grafo`);
     return "";
   }
+  // Si el origen o destino es MAR, no se debe mostrar animación del DataBus
+  if (normalizedFrom === "MAR" || normalizedTo === "MAR") {
+    return "";
+  }
   //
   // Lógica de rutas
   // Detectar caso especial: ambos operandos desde MBR a left y right
@@ -365,7 +369,7 @@ export function generateDataPath(
     if (instruction === "CALL") {
       path = ["MBR", "mbr reg join", "ri join", "ri"];
     } else if (["JMP", "JZ", "JC"].includes(instruction ?? "")) {
-      return "";
+      path = ["MBR", "mbr reg join", "IP join", "IP"];
     } else if ((instruction === "MOV" || instruction === "INT") && mode === "mem<-imd") {
       path = ["MBR", "mbr reg join", "ri join", "ri"];
     } else if (mode === "mem<-imd" && (instruction === "ADD" || instruction === "SUB")) {
@@ -581,6 +585,36 @@ export function generateDataPath(
       console.warn(`Error calculando ruta de ${normalizedFrom} a ${normalizedTo}:`, error);
       return "";
     }
+  }
+
+  // Path especial: MBR -> IP en instrucciones de salto (JMP, JZ, JC)
+  if (
+    normalizedFrom === "MBR" &&
+    normalizedTo === "IP" &&
+    ["JMP", "JZ", "JC"].includes(instruction ?? "")
+  ) {
+    // Path directo de MBR a IP (ajusta las coordenadas si lo deseas)
+    return "M 620 250 H 550 V 349 H 455";
+  }
+
+  // Path especial: ri -> IP en instrucciones de salto (JMP, JZ, JC)
+  if (
+    normalizedFrom === "ri" &&
+    normalizedTo === "IP" &&
+    ["JMP", "JZ", "JC"].includes(instruction ?? "")
+  ) {
+    // Path visual igual que MBR -> IP
+    return "M 451 388 H 550 V 349 H 455";
+  }
+
+  // Path especial: MBR -> ri (siempre)
+  if (normalizedFrom === "MBR" && normalizedTo === "ri") {
+    return "M 620 250 H 550 V 388 H 451";
+  }
+
+  // Path especial: ri -> IP (siempre)
+  if (normalizedFrom === "ri" && normalizedTo === "IP") {
+    return "M 451 388 H 550 V 349 H 455";
   }
 
   // Resto de la lógica específica de instrucciones usando nombres normalizados
