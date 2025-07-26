@@ -267,25 +267,28 @@ export function Settings({ className }: { className?: string }) {
         </Select>
       </Setting>
 
-      <Setting>
-        <SettingInfo>
-          <SettingTitle>
-            <span className="icon-[lucide--printer] size-6" />
-            {translate("settings.speeds.printerSpeed")}
-          </SettingTitle>
-        </SettingInfo>
+      {/* Velocidad de impresión - Solo visible si hay impresora seleccionada */}
+      {(settings.devices.pio === "printer" || settings.devices.handshake === "printer") && (
+        <Setting>
+          <SettingInfo>
+            <SettingTitle>
+              <span className="icon-[lucide--printer] size-6" />
+              {translate("settings.speeds.printerSpeed")}
+            </SettingTitle>
+          </SettingInfo>
 
-        <Slider
-          className="w-44"
-          {...logSlider({
-            value: settings.printerSpeed,
-            onValueChange: (value: number) =>
-              setSettings(prev => ({ ...prev, printerSpeed: value })),
-            min: 20000,
-            max: 500,
-          })}
-        />
-      </Setting>
+          <Slider
+            className="w-44"
+            {...logSlider({
+              value: settings.printerSpeed,
+              onValueChange: (value: number) =>
+                setSettings(prev => ({ ...prev, printerSpeed: value })),
+              min: 20000,
+              max: 500,
+            })}
+          />
+        </Setting>
+      )}
 
       <Setting>
         <SettingInfo>
