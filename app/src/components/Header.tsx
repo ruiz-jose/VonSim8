@@ -11,7 +11,9 @@ import { settingsOpenAtom } from "@/components/Settings";
 import { IconButton } from "@/components/ui/Button";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { useSimulation } from "@/computer/simulation";
+import { cycleAtom } from "@/computer/cpu/state";
 import { useTranslate } from "@/lib/i18n";
+import { useAtomValue } from "jotai";
 
 // Hook personalizado para manejar el tour
 const useTourControl = () => {
@@ -31,6 +33,8 @@ const useTourControl = () => {
 
 // Componente de estado de simulación optimizado
 const SimulationStatus = memo(({ status, isMobile }: { status: any; isMobile: boolean }) => {
+  const cycle = useAtomValue(cycleAtom);
+  
   const statusText = useMemo(
     () => (status.type === "running" ? "Ejecutando" : "Detenido"),
     [status.type],
@@ -39,8 +43,56 @@ const SimulationStatus = memo(({ status, isMobile }: { status: any; isMobile: bo
     () => (status.type === "running" ? "bg-green-600" : "bg-stone-600"),
     [status.type],
   );
+  
+  // Función para obtener el texto de la fase
+  const getPhaseText = useMemo(() => {
+    if (status.type !== "running") return "";
+    
+    switch (cycle.phase) {
+      case "fetching":
+        return "Captación";
+      case "fetching-operands":
+        return "Obtención de operandos";
+      case "executing":
+        return "Ejecución";
+      case "writeback":
+        return "Escritura";
+      case "interrupt":
+        return "Interrupción";
+      case "int6":
+      case "int7":
+        return "Interrupción";
+      default:
+        return "";
+    }
+  }, [cycle.phase, status.type]);
+
+  // Función para obtener el color de la fase (igual que en Control.tsx)
+  const getPhaseColor = useMemo(() => {
+    if (status.type !== "running") return "";
+    
+    switch (cycle.phase) {
+      case "fetching":
+        return "bg-blue-500/20 text-blue-400 border-blue-500/30";
+      case "fetching-operands":
+        return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
+      case "executing":
+        return "bg-green-500/20 text-green-400 border-green-500/30";
+      case "writeback":
+        return "bg-purple-500/20 text-purple-400 border-purple-500/30";
+      case "interrupt":
+        return "bg-red-500/20 text-red-400 border-red-500/30";
+      case "int6":
+      case "int7":
+        return "bg-orange-500/20 text-orange-400 border-orange-500/30";
+      default:
+        return "bg-stone-500/20 text-stone-400 border-stone-500/30";
+    }
+  }, [cycle.phase, status.type]);
+  
   return (
-    <div className="flex items-center gap-2 text-xs">
+    <div className="flex items-center gap-2">
+      {/* Estado de ejecución */}
       <div
         className={clsx(
           "flex items-center gap-1.5 rounded-full px-2 py-1 font-medium text-white",
@@ -56,6 +108,16 @@ const SimulationStatus = memo(({ status, isMobile }: { status: any; isMobile: bo
         />
         {!isMobile && statusText}
       </div>
+      
+      {/* Fase actual */}
+      {status.type === "running" && getPhaseText && !isMobile && (
+        <div className={clsx(
+          "px-2 py-1 rounded-xl text-[10px] font-semibold uppercase tracking-wider backdrop-blur-sm transition-all duration-200 ease-in-out border animate-pulse-glow",
+          getPhaseColor
+        )}>
+          {getPhaseText}
+        </div>
+      )}
     </div>
   );
 });
