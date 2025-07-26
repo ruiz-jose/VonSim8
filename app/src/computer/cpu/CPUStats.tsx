@@ -18,7 +18,9 @@ export const CPUStats = memo(({ className }: CPUStatsProps) => {
   const [settings] = useSettings();
   const [showDetails, setShowDetails] = useState(false);
 
-  const cycleTimeMs = settings.clockSpeed;
+  // Convertir cpuSpeed de Hz a tiempo de ciclo en milisegundos
+  const cpuSpeedHz = parseInt(settings.cpuSpeed);
+  const cycleTimeMs = 1000 / cpuSpeedHz; // Convertir Hz a milisegundos por ciclo
 
   if (!settings.showStatsCPU) return null;
 
@@ -121,7 +123,10 @@ export const CPUStats = memo(({ className }: CPUStatsProps) => {
             <div className="mb-2 text-xs font-bold text-mantis-400">Configuración Actual:</div>
             <div className="space-y-1 text-xs text-stone-300">
               <div>
-                <strong>Tiempo de ciclo:</strong> {cycleTimeSeconds.toFixed(1)} s
+                <strong>Velocidad CPU:</strong> {settings.cpuSpeed} Hz ({cycleTimeSeconds.toFixed(1)} s/ciclo)
+              </div>
+              <div>
+                <strong>Velocidad Timer:</strong> {(settings.clockSpeed / 1000).toFixed(1)} s
               </div>
             </div>
           </div>
@@ -137,9 +142,12 @@ export const CPUStats = memo(({ className }: CPUStatsProps) => {
               <div className="mb-2">
                 <strong>Tiempo de CPU:</strong> Depende de los ciclos ejecutados y la velocidad del reloj del sistema.
               </div>
+              <div className="mb-2">
+                <strong>Velocidad CPU:</strong> Determina qué tan rápido ejecuta el procesador cada ciclo. 
+                Mayor Hz = ciclos más rápidos.
+              </div>
               <div>
-                <strong>Velocidad de animaciones:</strong> Controla qué tan rápido se muestran visualmente las operaciones del CPU. 
-                Valores más altos permiten ver cada paso más claramente.
+                <strong>Velocidad Timer:</strong> Controla la frecuencia de las interrupciones del timer del sistema.
               </div>
             </div>
           </div>

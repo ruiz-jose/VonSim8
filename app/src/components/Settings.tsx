@@ -18,6 +18,12 @@ import { defaultSettings } from "@/lib/settings/schema";
 
 export const settingsOpenAtom = atom(false);
 
+// Función helper para calcular la frecuencia del timer
+function getTimerFrequency(clockSpeedMs: number): string {
+  const frequencyHz = 1000 / clockSpeedMs;
+  return frequencyHz.toFixed(1);
+}
+
 export function Settings({ className }: { className?: string }) {
   const translate = useTranslate();
   const [settings, setSettings] = useSettings();
@@ -94,29 +100,53 @@ export function Settings({ className }: { className?: string }) {
         />
       </Setting>
 
+
+
       <Setting>
         <SettingInfo>
           <SettingTitle>
-            <span className="icon-[lucide--clock] size-6" />
-            {translate("settings.speeds.clockSpeed")}
+            <span className="icon-[lucide--cpu] size-6" />
+            Velocidad CPU (Hz)
           </SettingTitle>
-          <SettingSubtitle>Velocidad del reloj del sistema. Afecta la velocidad de ejecución de las instrucciones.</SettingSubtitle>
+          <SettingSubtitle>Velocidad del procesador. Determina el tiempo de ciclo de la CPU.</SettingSubtitle>
         </SettingInfo>
 
-        {/* Select para clockSpeed con opciones específicas */}
+        {/* Select para cpuSpeed con opciones en Hz */}
         <Select
-          value={settings.clockSpeed.toString()}
-          onValueChange={(value) => setSettings(prev => ({ ...prev, clockSpeed: parseInt(value) }))}
+          value={settings.cpuSpeed}
+          onValueChange={(value: "1" | "2" | "4" | "10") => setSettings(prev => ({ ...prev, cpuSpeed: value }))}
         >
           <SelectTrigger className="w-32">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="100" title="Muy rápida - Para ver la ejecución paso a paso">0.1 s</SelectItem>
-            <SelectItem value="400" title="Rápida - Para seguimiento detallado">0.4 s</SelectItem>
-            <SelectItem value="600" title="Normal - Velocidad equilibrada">0.6 s</SelectItem>
-            <SelectItem value="800" title="Lenta - Para análisis detallado">0.8 s</SelectItem>
-            <SelectItem value="1000" title="Muy lenta - Para aprendizaje paso a paso">1.0 s</SelectItem>
+            <SelectItem value="1" title="1 Hz = 1 segundo por ciclo - Muy lenta">1 Hz (1.0s)</SelectItem>
+            <SelectItem value="2" title="2 Hz = 0.5 segundos por ciclo - Lenta">2 Hz (0.5s)</SelectItem>
+            <SelectItem value="4" title="4 Hz = 0.25 segundos por ciclo - Normal">4 Hz (0.25s)</SelectItem>
+            <SelectItem value="10" title="10 Hz = 0.1 segundos por ciclo - Rápida">10 Hz (0.1s)</SelectItem>
+          </SelectContent>
+        </Select>
+      </Setting>
+
+      <Setting>
+        <SettingInfo>
+          <SettingTitle>
+            <span className="icon-[lucide--flag] size-6" />
+            {translate("settings.flags.label")}
+          </SettingTitle>
+          <SettingSubtitle>{translate("settings.flags.description")}</SettingSubtitle>
+        </SettingInfo>
+
+        <Select
+          value={settings.flagsVisibility}
+          onValueChange={value => setSettings(prev => ({ ...prev, flagsVisibility: value as any }))}
+        >
+          <SelectTrigger className="w-32">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="CF_ZF">C Z</SelectItem>
+            <SelectItem value="SF_OF_CF_ZF">S O C Z</SelectItem>
           </SelectContent>
         </Select>
       </Setting>
@@ -256,31 +286,68 @@ export function Settings({ className }: { className?: string }) {
           })}
         />
       </Setting>
-      <hr className="border-stone-600" />
+
       <Setting>
         <SettingInfo>
           <SettingTitle>
-            <span className="icon-[lucide--flag] size-6" />
-            {translate("settings.flags.label")}
+            <span className="icon-[lucide--timer] size-6" />
+            Frecuencia del Timer
           </SettingTitle>
-          <SettingSubtitle>{translate("settings.flags.description")}</SettingSubtitle>
         </SettingInfo>
 
-        <Select
-          value={settings.flagsVisibility}
-          onValueChange={value => setSettings(prev => ({ ...prev, flagsVisibility: value as any }))}
-        >
-          <SelectTrigger className="w-32">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="CF_ZF">C Z</SelectItem>
-            <SelectItem value="SF_OF_CF_ZF">S O C Z</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex flex-col gap-2">
+          {/* Select para clockSpeed con opciones descriptivas */}
+          <Select
+            value={settings.clockSpeed.toString()}
+            onValueChange={(value) => setSettings(prev => ({ ...prev, clockSpeed: parseInt(value) }))}
+          >
+            <SelectTrigger className="w-40">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="100" title="Timer muy frecuente - Interrupciones cada 0.1 segundos">
+                <div className="flex items-center justify-between w-full">
+                  <span>Muy Frecuente</span>
+                  <span className="text-xs text-stone-400">0.1s</span>
+                </div>
+              </SelectItem>
+              <SelectItem value="400" title="Timer frecuente - Interrupciones cada 0.4 segundos">
+                <div className="flex items-center justify-between w-full">
+                  <span>Frecuente</span>
+                  <span className="text-xs text-stone-400">0.4s</span>
+                </div>
+              </SelectItem>
+              <SelectItem value="600" title="Timer normal - Interrupciones cada 0.6 segundos">
+                <div className="flex items-center justify-between w-full">
+                  <span>Normal</span>
+                  <span className="text-xs text-stone-400">0.6s</span>
+                </div>
+              </SelectItem>
+              <SelectItem value="800" title="Timer lento - Interrupciones cada 0.8 segundos">
+                <div className="flex items-center justify-between w-full">
+                  <span>Lento</span>
+                  <span className="text-xs text-stone-400">0.8s</span>
+                </div>
+              </SelectItem>
+              <SelectItem value="1000" title="Timer muy lento - Interrupciones cada 1 segundo">
+                <div className="flex items-center justify-between w-full">
+                  <span>Muy Lento</span>
+                  <span className="text-xs text-stone-400">1.0s</span>
+                </div>
+              </SelectItem>
+            </SelectContent>
+          </Select>
+
+          {/* Indicador de frecuencia */}
+          <div className="flex items-center gap-1 text-xs text-stone-400">
+            <span className="icon-[lucide--info] size-4" />
+            <span>Frecuencia: {getTimerFrequency(settings.clockSpeed)} Hz</span>
+          </div>
+        </div>
       </Setting>
 
-      <hr className="border-stone-600" />
+
+
 
       <Setting>
         <SettingInfo>
