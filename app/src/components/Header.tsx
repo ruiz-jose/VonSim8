@@ -36,11 +36,29 @@ const SimulationStatus = memo(({ status, isMobile }: { status: any; isMobile: bo
   const cycle = useAtomValue(cycleAtom);
   
   const statusText = useMemo(
-    () => (status.type === "running" ? "Ejecutando" : "Detenido"),
+    () => {
+      switch (status.type) {
+        case "running":
+          return "Ejecutando";
+        case "paused":
+          return "Pausado";
+        default:
+          return "Detenido";
+      }
+    },
     [status.type],
   );
   const statusColor = useMemo(
-    () => (status.type === "running" ? "bg-green-600" : "bg-stone-600"),
+    () => {
+      switch (status.type) {
+        case "running":
+          return "bg-green-600";
+        case "paused":
+          return "bg-yellow-600";
+        default:
+          return "bg-stone-600";
+      }
+    },
     [status.type],
   );
   
@@ -103,7 +121,11 @@ const SimulationStatus = memo(({ status, isMobile }: { status: any; isMobile: bo
         <div
           className={clsx(
             "size-2 rounded-full",
-            status.type === "running" ? "bg-green-300" : "bg-stone-300",
+            status.type === "running" 
+              ? "bg-green-300" 
+              : status.type === "paused"
+                ? "bg-yellow-300"
+                : "bg-stone-300",
           )}
         />
         {!isMobile && statusText}
