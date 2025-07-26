@@ -40,7 +40,7 @@ dataBus.addNode("NodoRegIn", { position: [390, 115] }); // Antes: [370, 115]
 dataBus.addNode("NodoRegOut", { position: [550, 115] }); // Nodo de unión para salidas de registros
 dataBus.addNode("FLAGS", { position: [250, 225] });
 // Nodo IR actualizado a la nueva posición visual (alineado debajo de FLAG)
-dataBus.addNode("IR", { position: [250, 260] }); // Ajusta el valor de y según la posición real
+dataBus.addNode("IR", { position: [250, 275] }); // Ajusta el valor de y según la posición real
 // Nodo de unión para la animación MBR→IR, alineado con el nuevo IR
 dataBus.addNode("IR mbr join", { position: [250, 245] }); // IR ahora más a la derecha
 dataBus.addNode("left", { position: [130, 85] });
@@ -393,7 +393,7 @@ export function generateDataPath(
   } else if (normalizedFrom === "MBR" && normalizedTo === "IR") {
     const start = dataBus.getNodeAttribute("MBR", "position");
     const end = dataBus.getNodeAttribute("IR", "position");
-    // Línea horizontal hasta la X de IR, luego vertical hasta IR
+    // Línea horizontal hasta la X de IR, luego vertical hasta el centro exacto de IR
     return `M ${start[0]} ${start[1]} L ${end[0]} ${start[1]} L ${end[0]} ${end[1]}`;
   } else {
     try {
