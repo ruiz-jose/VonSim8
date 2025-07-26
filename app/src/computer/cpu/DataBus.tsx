@@ -42,7 +42,7 @@ dataBus.addNode("FLAGS", { position: [250, 225] });
 // Nodo IR actualizado a la nueva posición visual (alineado debajo de FLAG)
 dataBus.addNode("IR", { position: [250, 275] }); // Ajusta el valor de y según la posición real
 // Nodo de unión para la animación MBR→IR, alineado con el nuevo IR
-dataBus.addNode("IR mbr join", { position: [250, 245] }); // IR ahora más a la derecha
+dataBus.addNode("IR mbr join", { position: [250, 250] }); // IR ahora más a la derecha
 dataBus.addNode("left", { position: [130, 85] });
 dataBus.addNode("right", { position: [125, 145] });
 dataBus.addNode("left end", { position: [220, 85] }); // Nodo final en la entrada izquierda de la ALU
