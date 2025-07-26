@@ -290,67 +290,69 @@ export function Settings({ className }: { className?: string }) {
         </Setting>
       )}
 
-      <Setting>
-        <SettingInfo>
-          <SettingTitle>
-            <span className="icon-[lucide--timer] size-6" />
-            Frecuencia del Timer
-          </SettingTitle>
-        </SettingInfo>
+      {/* Frecuencia del Timer - Solo visible si hay PIC seleccionado */}
+      {settings.devices.pic && (
+        <Setting>
+          <SettingInfo>
+            <SettingTitle>
+              <span className="icon-[lucide--timer] size-6" />
+              Frecuencia del Timer
+            </SettingTitle>
+          </SettingInfo>
 
-        <div className="flex flex-col gap-2">
-          {/* Select para clockSpeed con opciones descriptivas */}
-          <Select
-            value={settings.clockSpeed.toString()}
-            onValueChange={(value) => setSettings(prev => ({ ...prev, clockSpeed: parseInt(value) }))}
-          >
-            <SelectTrigger className="w-40">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="100" title="Timer muy frecuente - Interrupciones cada 0.1 segundos">
-                <div className="flex items-center justify-between w-full">
-                  <span>Muy Frecuente</span>
-                  <span className="text-xs text-stone-400">0.1s</span>
-                </div>
-              </SelectItem>
-              <SelectItem value="400" title="Timer frecuente - Interrupciones cada 0.4 segundos">
-                <div className="flex items-center justify-between w-full">
-                  <span>Frecuente</span>
-                  <span className="text-xs text-stone-400">0.4s</span>
-                </div>
-              </SelectItem>
-              <SelectItem value="600" title="Timer normal - Interrupciones cada 0.6 segundos">
-                <div className="flex items-center justify-between w-full">
-                  <span>Normal</span>
-                  <span className="text-xs text-stone-400">0.6s</span>
-                </div>
-              </SelectItem>
-              <SelectItem value="800" title="Timer lento - Interrupciones cada 0.8 segundos">
-                <div className="flex items-center justify-between w-full">
-                  <span>Lento</span>
-                  <span className="text-xs text-stone-400">0.8s</span>
-                </div>
-              </SelectItem>
-              <SelectItem value="1000" title="Timer muy lento - Interrupciones cada 1 segundo">
-                <div className="flex items-center justify-between w-full">
-                  <span>Muy Lento</span>
-                  <span className="text-xs text-stone-400">1.0s</span>
-                </div>
-              </SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex flex-col gap-2">
+            {/* Select para clockSpeed con opciones descriptivas */}
+            <Select
+              value={settings.clockSpeed.toString()}
+              onValueChange={(value) => setSettings(prev => ({ ...prev, clockSpeed: parseInt(value) }))}
+            >
+              <SelectTrigger className="w-40">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="100" title="Timer muy frecuente - Interrupciones cada 0.1 segundos">
+                  <div className="flex items-center justify-between w-full">
+                    <span>Muy Frecuente</span>
+                    <span className="text-xs text-stone-400">0.1s</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="400" title="Timer frecuente - Interrupciones cada 0.4 segundos">
+                  <div className="flex items-center justify-between w-full">
+                    <span>Frecuente</span>
+                    <span className="text-xs text-stone-400">0.4s</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="600" title="Timer normal - Interrupciones cada 0.6 segundos">
+                  <div className="flex items-center justify-between w-full">
+                    <span>Normal</span>
+                    <span className="text-xs text-stone-400">0.6s</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="800" title="Timer lento - Interrupciones cada 0.8 segundos">
+                  <div className="flex items-center justify-between w-full">
+                    <span>Lento</span>
+                    <span className="text-xs text-stone-400">0.8s</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="1000" title="Timer muy lento - Interrupciones cada 1 segundo">
+                  <div className="flex items-center justify-between w-full">
+                    <span>Muy Lento</span>
+                    <span className="text-xs text-stone-400">1.0s</span>
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
 
-          {/* Indicador de frecuencia */}
-          <div className="flex items-center gap-1 text-xs text-stone-400">
-            <span className="icon-[lucide--info] size-4" />
-            <span>Frecuencia: {getTimerFrequency(settings.clockSpeed)} Hz</span>
+            {/* Indicador de frecuencia */}
+            <div className="flex items-center gap-1 text-xs text-stone-400">
+              <span className="icon-[lucide--info] size-4" />
+              <span>Frecuencia: {getTimerFrequency(settings.clockSpeed)} Hz</span>
+            </div>
           </div>
-        </div>
-      </Setting>
+        </Setting>
+      )}
 
-
-
+      <hr className="border-stone-600" />
 
       <Setting>
         <SettingInfo>
