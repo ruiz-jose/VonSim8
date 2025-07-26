@@ -113,6 +113,7 @@ export type Cycle =
   | { phase: "writeback"; metadata: InstructionMetadata }
   | { phase: "interrupt"; metadata: InstructionMetadata }
   | { phase: "int6" | "int7" }
+  | { phase: "halting"; metadata: InstructionMetadata }
   | { phase: "stopped"; error?: SimulatorError<any> };
 
 export const cycleAtom = atom<Cycle>({ phase: "stopped" });

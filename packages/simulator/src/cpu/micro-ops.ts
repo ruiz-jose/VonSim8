@@ -9,7 +9,7 @@ import type { ByteRegister, InstructionMetadata, WordRegister } from "./types";
 export type CPUMicroOperation =
   | { type: "cpu:cycle.start"; instruction: InstructionMetadata } // Start of a cycle, implicit phase "fetch and decode"
   // Once there is enough information to know what an instruction will do.
-  | { type: "cpu:cycle.update"; phase: "decoded"; next: "fetch-operands" | "execute" | "writeback" }
+  | { type: "cpu:cycle.update"; phase: "decoded"; next: "fetch-operands" | "execute" | "writeback" | "halting" }
   | { type: "cpu:cycle.update"; phase: "execute" } // Start "execute" phase. Not necesary when "next" is "execute"
   | { type: "cpu:cycle.update"; phase: "writeback" } // Start "writeback" phase. Not necesary when "next" is "writeback"
   | { type: "cpu:cycle.interrupt" }

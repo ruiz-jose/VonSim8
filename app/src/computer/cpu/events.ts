@@ -190,9 +190,11 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
                   ? "fetching-operands"
                   : event.next === "execute"
                     ? "executing"
-                    : event.next === "writeback"
-                      ? "writeback"
-                      : prev.phase,
+                  : event.next === "writeback"
+                    ? "writeback"
+                  : event.next === "halting"
+                    ? "halting"
+                    : prev.phase,
         };
       });
       return;
@@ -231,6 +233,15 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
 
     case "cpu:halt":
     case "cpu:int.0": {
+      // Para HLT, mostrar "Detener CPU" antes de detener completamente
+      if (event.type === "cpu:halt") {
+        const currentCycle = store.get(cycleAtom);
+        if ("metadata" in currentCycle) {
+          store.set(cycleAtom, { phase: "halting", metadata: currentCycle.metadata });
+          // Pausa de 1 segundo para mostrar el estado
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+      }
       store.set(cycleAtom, { phase: "stopped" });
       finishSimulation();
       return;

@@ -37,6 +37,7 @@ export class MiscInstruction extends Instruction<"CLI" | "STI" | "NOP" | "HLT"> 
       yield* computer.cpu.updateFLAGS({ IF: true });
     } else if (this.name === "HLT") {
       yield { type: "cpu:cycle.update", phase: "decoded", next: "execute" };
+      yield { type: "cpu:cycle.update", phase: "halting" };
       yield { type: "cpu:halt" };
       return false;
     }

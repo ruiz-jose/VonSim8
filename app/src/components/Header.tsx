@@ -64,7 +64,7 @@ const SimulationStatus = memo(({ status, isMobile }: { status: any; isMobile: bo
   
   // Función para obtener el texto de la fase
   const getPhaseText = useMemo(() => {
-    if (status.type !== "running") return "";
+    if (status.type !== "running" && cycle.phase !== "halting") return "";
     
     switch (cycle.phase) {
       case "fetching":
@@ -80,6 +80,8 @@ const SimulationStatus = memo(({ status, isMobile }: { status: any; isMobile: bo
       case "int6":
       case "int7":
         return "Interrupción";
+      case "halting":
+        return "Detener CPU";
       default:
         return "";
     }
@@ -87,7 +89,7 @@ const SimulationStatus = memo(({ status, isMobile }: { status: any; isMobile: bo
 
   // Función para obtener el color de la fase (igual que en Control.tsx)
   const getPhaseColor = useMemo(() => {
-    if (status.type !== "running") return "";
+    if (status.type !== "running" && cycle.phase !== "halting") return "";
     
     switch (cycle.phase) {
       case "fetching":
@@ -103,6 +105,8 @@ const SimulationStatus = memo(({ status, isMobile }: { status: any; isMobile: bo
       case "int6":
       case "int7":
         return "bg-orange-500/20 text-orange-400 border-orange-500/30";
+      case "halting":
+        return "bg-red-500/20 text-red-400 border-red-500/30";
       default:
         return "bg-stone-500/20 text-stone-400 border-stone-500/30";
     }
@@ -132,7 +136,7 @@ const SimulationStatus = memo(({ status, isMobile }: { status: any; isMobile: bo
       </div>
       
       {/* Fase actual */}
-      {status.type === "running" && getPhaseText && !isMobile && (
+      {(status.type === "running" || cycle.phase === "halting") && getPhaseText && !isMobile && (
         <div className={clsx(
           "px-2 py-1 rounded-xl text-[10px] font-semibold uppercase tracking-wider backdrop-blur-sm transition-all duration-200 ease-in-out border animate-pulse-glow",
           getPhaseColor
