@@ -15,6 +15,8 @@ export function ControlLines() {
   const rdPathRef = useRef<SVGPathElement>(null);
   // Ref para el path animado del bus RD
   const rdAnimatedPathRef = useRef<SVGPathElement>(null);
+  // Ref para el path animado del bus WR
+  const wrAnimatedPathRef = useRef<SVGPathElement>(null);
 
   const rdPath = [
     "M 380 420 H 800", // CPU -> Memory (recto)
@@ -55,7 +57,7 @@ export function ControlLines() {
       {showReadAnim && (
         <ReadBusAnimation pathRef={rdAnimatedPathRef} progressSpring={rdDashoffset} />
       )}
-      {showWriteAnim && <WriteBusAnimation />}
+      {showWriteAnim && <WriteBusAnimation pathRef={wrAnimatedPathRef} progressSpring={wrDashoffset} />}
       <svg className="pointer-events-none absolute inset-0 z-[15] size-full">
         <path
           ref={rdPathRef}
@@ -111,6 +113,7 @@ export function ControlLines() {
         {/* Línea animada del bus WR - usando path dinámico del spring */}
         {showWriteAnim && (
           <animated.path
+            ref={wrAnimatedPathRef}
             d={wrPath_anim}
             className="fill-none stroke-orange-400 stroke-[3px] drop-shadow-[0_0_8px_rgba(251,146,60,0.6)]"
             strokeLinejoin="round"
@@ -386,35 +389,66 @@ function ReadBusAnimation({ pathRef, progressSpring }: ReadBusAnimationProps) {
   );
 }
 
-// Animación de texto 'Write' de izquierda a derecha sobre el bus de control WR
-function WriteBusAnimation() {
-  const [progress, setProgress] = useState(0);
+// Animación de texto 'Write' siguiendo exactamente la animación naranja del bus de control
+type WriteBusAnimationProps = {
+  pathRef: React.RefObject<SVGPathElement>;
+  progressSpring: any;
+};
+function WriteBusAnimation({ pathRef, progressSpring }: WriteBusAnimationProps) {
   const [visible, setVisible] = useState(true);
   const setShowWriteAnim = useSetAtom(showWriteBusAnimationAtom);
+  const [ready, setReady] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  // Sincroniza el progreso con el valor actual del spring (que va de 1 a 0)
   useEffect(() => {
-    let frame: number;
-    const duration = 2000;
-    const start = Date.now();
-    function animate() {
-      const elapsed = Date.now() - start;
-      const p = Math.min(elapsed / duration, 1);
-      setProgress(p);
-      if (p < 1) {
-        frame = requestAnimationFrame(animate);
-      } else {
-        setVisible(false);
-        setTimeout(() => setShowWriteAnim(false), 100);
-      }
+    if (!progressSpring || typeof progressSpring.get !== "function") return;
+    let running = true;
+    function update() {
+      if (!running) return;
+      const val = progressSpring.get();
+      setProgress(1 - val);
+      if (val > 0) requestAnimationFrame(update);
     }
-    animate();
-    return () => cancelAnimationFrame(frame);
-  }, [setShowWriteAnim]);
-  if (!visible) return null;
-  // Coordenadas del bus de control WR: de 380 440 a 800 440
-  const fromX = 380,
-    toX = 800,
+    update();
+    return () => {
+      running = false;
+    };
+  }, [progressSpring]);
+
+  useEffect(() => {
+    // Esperar a que el path esté disponible
+    if (!pathRef.current) {
+      const timeout = setTimeout(() => setReady(r => !r), 10);
+      return () => clearTimeout(timeout);
+    }
+    setReady(true);
+  }, [pathRef]);
+
+  useEffect(() => {
+    if (!ready) return;
+    // Cuando el progreso llegue a 1, ocultar el texto
+    if (progress >= 1) {
+      setVisible(false);
+      setTimeout(() => setShowWriteAnim(false), 100);
+    }
+  }, [progress, ready, setShowWriteAnim]);
+
+  if (!visible || !ready) return null;
+  // Usar getPointAtLength para seguir el path animado
+  let x = 0,
+    y = 0;
+  if (pathRef.current) {
+    const path = pathRef.current;
+    const totalLength = path.getTotalLength();
+    const point = path.getPointAtLength(progress * totalLength);
+    x = point.x + 40; // Desplazamiento extra a la derecha
+    y = point.y;
+  } else {
+    // Fallback: línea recta
+    x = 380 + (800 - 380) * progress + 40;
     y = 440;
-  const x = fromX + (toX - fromX) * progress + 40;
+  }
   return (
     <div
       className="pointer-events-none absolute z-[100] select-none text-xs font-extrabold"
