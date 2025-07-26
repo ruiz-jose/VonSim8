@@ -583,6 +583,10 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
       {/* Círculos de los nodos (antes de las animaciones para que queden detrás) */}
       <circle cx={390} cy={115} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
       <circle cx={550} cy={115} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
+      <circle cx={250} cy={250} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
+      <circle cx={390} cy={250} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
+      <circle cx={550} cy={250} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
+      <circle cx={550} cy={348} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
 
       {/* Path animado del bus de datos (verde) */}
       <animated.path
