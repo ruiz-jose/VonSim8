@@ -12,7 +12,7 @@ import {
 } from "@/computer/shared/animate";
 import type { RegisterKey, SimplePathKey } from "@/computer/shared/springs";
 import type { SimulatorEvent } from "@/computer/shared/types";
-import { finishSimulation, pauseSimulation } from "@/computer/simulation";
+import { finishSimulation } from "@/computer/simulation";
 import { highlightCurrentInstruction } from "@/editor/methods";
 import { store } from "@/lib/jotai";
 import { colors } from "@/lib/tailwind";
@@ -344,7 +344,10 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       }
       if (normalizedRegister === "IR") {
         await drawDataPath("MBR", "IR", instructionName, mode);
-      } else if ((normalizedRegister === "MAR" || normalizedRegister.startsWith("MAR.")) && !skipMBRtoMAR) {
+      } else if (
+        (normalizedRegister === "MAR" || normalizedRegister.startsWith("MAR.")) &&
+        !skipMBRtoMAR
+      ) {
         console.log("Animando bus de datos: MBR → MAR", { instructionName, mode });
         await drawDataPath("MBR", "MAR", instructionName, mode);
       } else if (["AL", "BL", "CL", "DL", "ri"].includes(normalizedRegister) && !isALUOp) {
@@ -406,7 +409,9 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       if (regNorm === "IP" || regNorm === "MBR") {
         await animateMBRAndIP();
       } else {
-        await updateRegisterWithGlow(regNorm === "ri" ? "cpu.ri" : (`cpu.${regNorm}` as RegisterKey));
+        await updateRegisterWithGlow(
+          regNorm === "ri" ? "cpu.ri" : (`cpu.${regNorm}` as RegisterKey),
+        );
       }
       store.set(registerAtoms[regNorm], event.value);
       return;

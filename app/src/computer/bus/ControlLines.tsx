@@ -289,7 +289,13 @@ export function ControlLinesLegends() {
   );
 }
 
-function ControlLineLegend({ children, style }: { children?: React.ReactNode; style?: React.CSSProperties }) {
+function ControlLineLegend({
+  children,
+  style,
+}: {
+  children?: React.ReactNode;
+  style?: React.CSSProperties;
+}) {
   return (
     <span
       className="pointer-events-none absolute z-[15] block font-mono text-xs font-bold tracking-wider text-stone-400"

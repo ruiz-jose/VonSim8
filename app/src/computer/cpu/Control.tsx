@@ -124,15 +124,19 @@ export function Control() {
         />
       </svg>
 
-      <div className="absolute bottom-[172px] left-[30px] flex w-full items-start"> {/* restaurado a la posición original */}
+      <div className="absolute bottom-[172px] left-[30px] flex w-full items-start">
+        {" "}
+        {/* restaurado a la posición original */}
         <span className="block w-min whitespace-nowrap rounded-t-lg border border-b-0 border-stone-600 bg-mantis-500 px-2 pb-3 pt-1 text-xs tracking-wide text-white">
           {translate("computer.cpu.control-unit")}
         </span>
       </div>
 
-      <div className="absolute bottom-[17px] left-[30px] flex h-[160px] w-[350px] flex-col items-center rounded-lg border border-stone-600 bg-stone-800"> {/* restaurado a la posición original */}
-        <div className="overflow-hidden rounded-b-lg border border-t-0 border-stone-600 bg-stone-900 px-3 py-0.5 min-w-[180px]">
-          <div style={{ position: 'relative', left: 0 }}>
+      <div className="absolute bottom-[17px] left-[30px] flex h-[160px] w-[350px] flex-col items-center rounded-lg border border-stone-600 bg-stone-800">
+        {" "}
+        {/* restaurado a la posición original */}
+        <div className="min-w-[180px] overflow-hidden rounded-b-lg border border-t-0 border-stone-600 bg-stone-900 px-3 py-0.5">
+          <div style={{ position: "relative", left: 0 }}>
             <span className="text-sm leading-none">{translate("computer.cpu.decoder")}</span>
             <div className="my-1 h-1 w-full overflow-hidden rounded-full bg-stone-600">
               <animated.div
@@ -145,7 +149,6 @@ export function Control() {
             </div>
           </div>
         </div>
-
         {/* Información del ciclo de instrucción - Compacta */}
         <div className="flex w-full flex-1 items-start justify-center p-0.5">
           <div className="w-[220px] max-w-[220px]">

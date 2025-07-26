@@ -316,13 +316,7 @@ export function generateDataPath(
         dataBus.addUndirectedEdge(downNode, rightNode);
       }
       // Finalmente subir a right
-      path = [
-        "MBR",
-        downNode,
-        rightNode,
-        "right",
-        "right end",
-      ];
+      path = ["MBR", downNode, rightNode, "right", "right end"];
     } else {
       path = [
         normalizedFrom,
@@ -341,15 +335,7 @@ export function generateDataPath(
   } else if (normalizedFrom === "BL" && normalizedTo === "ri") {
     // Caso específico: BL → ri (pero la animación va a MAR)
     // Ruta especial: BL → BL out → BL out join → NodoRegOut → outr mbr join → MAR join2 → MAR
-    path = [
-      "BL",
-      "BL out",
-      "BL out join",
-      "NodoRegOut",
-      "outr mbr join",
-      "MAR join2",
-      "MAR",
-    ];
+    path = ["BL", "BL out", "BL out join", "NodoRegOut", "outr mbr join", "MAR join2", "MAR"];
   } else if (registers.includes(normalizedFrom) && registers.includes(normalizedTo)) {
     // Si el destino es SP, IP o ri, pasar por NodoRegDir
     if (["SP", "IP", "ri"].includes(normalizedTo)) {
@@ -409,8 +395,7 @@ export function generateDataPath(
     const end = dataBus.getNodeAttribute("IR", "position");
     // Línea horizontal hasta la X de IR, luego vertical hasta IR
     return `M ${start[0]} ${start[1]} L ${end[0]} ${start[1]} L ${end[0]} ${end[1]}`;
-  }
-  else {
+  } else {
     try {
       path = bidirectional(dataBus, normalizedFrom, normalizedTo) || [];
     } catch (error) {
@@ -595,6 +580,10 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
         ].join(" ")}
       />
 
+      {/* Círculos de los nodos (antes de las animaciones para que queden detrás) */}
+      <circle cx={390} cy={115} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
+      <circle cx={550} cy={115} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
+
       {/* Path animado del bus de datos (verde) */}
       <animated.path
         d={path}
@@ -633,8 +622,6 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
         strokeDasharray={1}
         style={addressStyle}
       />
-      <circle cx={390} cy={115} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
-      <circle cx={550} cy={115} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
     </svg>
   );
 }
