@@ -163,18 +163,28 @@ export const Header = memo(() => {
   const logoSection = useMemo(
     () => (
       <div className="hover-scale flex select-none items-center justify-center">
-        <img
-          src={`${import.meta.env.BASE_URL}favicon.svg`}
-          className="mr-2 size-8"
-          style={{ filter: "none", opacity: 1 }}
-          draggable={false}
-          alt="VonSim8 Logo"
-        />
-        <div className="flex flex-col">
+        <div className="w-10 h-10 bg-gradient-to-br from-mantis-500 to-mantis-600 rounded-xl flex items-center justify-center shadow-soft hover-lift relative overflow-hidden group">
+          {/* Fondo con patrón de circuitos */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="w-full h-full bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.1)_1px,transparent_1px),radial-gradient(circle_at_70%_70%,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[length:8px_8px]"></div>
+          </div>
+          
+          {/* Logo principal */}
+          <div className="relative z-10 flex items-center justify-center">
+            <span className="text-white font-bold text-lg tracking-tight">V8</span>
+          </div>
+          
+          {/* Efecto de brillo */}
+          <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          
+          {/* Indicador de actividad */}
+          <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-mantis-300 rounded-full animate-pulse"></div>
+        </div>
+        <div className="flex flex-col ml-3">
           <h1 className="text-lg font-bold max-sm:hidden">
             Von<span className="text-mantis-400">Sim</span>8
           </h1>
-          <span className="text-xs text-stone-400 max-sm:hidden">Simulador de 8 bits</span>
+          <span className="text-xs text-stone-400 max-sm:hidden">Simulador CPU 8-bit</span>
         </div>
       </div>
     ),
@@ -185,19 +195,24 @@ export const Header = memo(() => {
     <>
       <header className="relative bg-black p-2 text-sm text-white" data-testid="header">
         <div className="grid grid-cols-3 items-center">
-          {/* Columna izquierda: Logo y estado */}
-          <div className="flex items-center gap-4">
+          {/* Lado izquierdo: Logo */}
+          <div className="flex items-center">
             {logoSection}
+          </div>
+
+          {/* Centro: Estado del CPU */}
+          <div className="flex justify-center">
             <SimulationStatus status={status} isMobile={isMobile} />
           </div>
 
-          {/* Columna central: Controles */}
-          <div className="flex justify-center">
-            <Controls />
-          </div>
+          {/* Lado derecho: Controles y botones de acción */}
+          <div className="flex items-center gap-6 justify-end">
+            {/* Controles */}
+            <div className="flex justify-end">
+              <Controls />
+            </div>
 
-          {/* Columna derecha: Botones de acción */}
-          <div className="flex justify-end">
+            {/* Botones de acción */}
             {!isMobile && (
               <ActionButtons
                 onShowTour={handleShowTour}
