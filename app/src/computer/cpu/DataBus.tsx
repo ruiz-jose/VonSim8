@@ -61,7 +61,7 @@ dataBus.addNode("DL join", { position: [425, 165] }); // Ajustado para conectar 
 dataBus.addNode("id join", { position: [250, 205] });
 dataBus.addNode("data mbr join", { position: [390, 250] });
 dataBus.addNode("SP join", { position: [390, 309] });
-dataBus.addNode("IP join", { position: [390, 250] }); // Alineado con data mbr join y NodoRegIn
+dataBus.addNode("IP join", { position: [390, 349] }); // Alineado con data mbr join y NodoRegIn
 dataBus.addNode("ri join", { position: [390, 388] });
 dataBus.addNode("MAR join1", { position: [550, 388] });
 dataBus.addNode("MAR join2", { position: [550, 349] });

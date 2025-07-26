@@ -394,7 +394,9 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
     case "cpu:register.copy": {
       const src = normalize(event.src);
       const dest = normalize(event.dest);
-      await drawDataPath(src as DataRegister, dest as DataRegister, instructionName, mode);
+      if (!(src === "ri" && dest === "IP")) {
+        await drawDataPath(src as DataRegister, dest as DataRegister, instructionName, mode);
+      }
       await activateRegister(`cpu.${dest}` as RegisterKey);
       store.set(registerAtoms[dest], store.get(registerAtoms[src]));
       await deactivateRegister(`cpu.${dest}` as RegisterKey);
@@ -426,9 +428,11 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       }
       // Evitar animación duplicada si es ri -> MAR (ya se anima en cpu:mar.set)
       if (!(src === "ri" && dest.toLowerCase() === "mar")) {
-        await drawDataPath(src as DataRegister, dest as DataRegister, instructionName, mode);
-        // Espera un poco después de cualquier animación de bus para que se vea claramente
-        await new Promise(resolve => setTimeout(resolve, 150)); // 150 ms de retardo
+        if (!(src === "ri" && dest === "IP")) {
+          await drawDataPath(src as DataRegister, dest as DataRegister, instructionName, mode);
+          // Espera un poco después de cualquier animación de bus para que se vea claramente
+          await new Promise(resolve => setTimeout(resolve, 150)); // 150 ms de retardo
+        }
       }
       // Copiar el valor en el frontend (para mantener sincronía visual)
       store.set(registerAtoms[dest], store.get(registerAtoms[src]));
