@@ -338,6 +338,18 @@ export function generateDataPath(
         "right end",
       ];
     }
+  } else if (normalizedFrom === "BL" && normalizedTo === "ri") {
+    // Caso específico: BL → ri (pero la animación va a MAR)
+    // Ruta especial: BL → BL out → BL out join → NodoRegOut → outr mbr join → MAR join2 → MAR
+    path = [
+      "BL",
+      "BL out",
+      "BL out join",
+      "NodoRegOut",
+      "outr mbr join",
+      "MAR join2",
+      "MAR",
+    ];
   } else if (registers.includes(normalizedFrom) && registers.includes(normalizedTo)) {
     // Si el destino es SP, IP o ri, pasar por NodoRegDir
     if (["SP", "IP", "ri"].includes(normalizedTo)) {
