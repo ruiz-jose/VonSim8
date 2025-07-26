@@ -117,6 +117,12 @@ export const english = {
         int6: "Running INT 6...",
         int7: "Running INT 7...",
       },
+      "total-cycles": "Total cycles",
+      "instruction-count": "Instruction count",
+      cpi: "Cycles per instruction (CPI)",
+      "cpi-help": "Average clock cycles per executed instruction (CPI = total cycles / total instructions)",
+      "cpu-time": "CPU time",
+      "cpu-time-help": "Total CPU time = total cycles × cycle time (current: {cycleTime} ms)",
     },
 
     memory: {

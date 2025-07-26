@@ -1,32 +1,147 @@
+import clsx from "clsx";
 import { useAtomValue } from "jotai";
+import { memo, useState } from "react";
 
 import { useTranslate } from "@/lib/i18n";
-import { useSettings } from "@/lib/settings"; // Importar useSettings
+import { useSettings } from "@/lib/settings";
 
 import { cycleCountAtom, instructionCountAtom } from "./state";
 
-export function CPUStats() {
+type CPUStatsProps = {
+  className?: string;
+};
+
+export const CPUStats = memo(({ className }: CPUStatsProps) => {
   const translate = useTranslate();
   const cycleCount = useAtomValue(cycleCountAtom);
   const instructionCount = useAtomValue(instructionCountAtom);
+  const [settings] = useSettings();
+  const [showDetails, setShowDetails] = useState(false);
 
-  const [settings] = useSettings(); // Obtener settings desde el menú de configuración
+  const cycleTimeMs = settings.clockSpeed;
 
-  // Si el usuario desactiva la visibilidad del ciclo de instrucción, no renderizar el componente
   if (!settings.showStatsCPU) return null;
 
+  const cpi = instructionCount > 0 ? (cycleCount / instructionCount).toFixed(2) : "-";
+  const cpuTimeMs = cycleCount * cycleTimeMs;
+
+  // Icono y color para el header
+  const getStatsIcon = () => {
+    if (cycleCount === 0) return "📊";
+    if (instructionCount === 0) return "⏸️";
+    return "⚡";
+  };
+  const getStatsColor = () => {
+    if (cycleCount === 0) return "text-stone-400";
+    if (instructionCount === 0) return "text-yellow-400";
+    return "text-mantis-400";
+  };
+
   return (
-    <div className="absolute left-[120px] top-[-120px] z-10 h-min w-[300px] rounded-lg border border-stone-600 bg-stone-900 [&_*]:z-20">
-      <span className="mb-2 block h-min w-full cursor-move rounded-br-lg rounded-tl-lg border-b border-r border-stone-600 bg-blue-500 px-2 py-1 text-lg text-white">
-        {translate("computer.cpu.stats")}
-      </span>
-      <hr className="border-stone-600" />
-      <div className="flex w-full flex-col items-start p-2">
-        <div className="pl-1 text-left text-sm text-white">
-          <div className="mb-1">Total de ciclos: {cycleCount}</div>
-          <div>Recuento de instrucciones: {instructionCount}</div>
+    <div
+      className={clsx(
+        "flex flex-col gap-2 rounded-lg border border-stone-600 bg-stone-900/95 p-3 shadow-lg",
+        "min-w-[300px] max-w-[350px]",
+        className,
+      )}
+    >
+      {/* Header igual que InstructionCycleInfo */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-bold uppercase tracking-wide text-mantis-400">
+            {translate("computer.cpu.stats")}
+          </span>
+          <button
+            onClick={() => setShowDetails(!showDetails)}
+            className={clsx(
+              "rounded px-2 py-1 text-xs transition-colors",
+              showDetails
+                ? "bg-mantis-400/20 text-mantis-400"
+                : "text-stone-400 hover:bg-mantis-400/10 hover:text-mantis-400",
+            )}
+          >
+            {showDetails ? "−" : "+"}
+          </button>
         </div>
       </div>
+
+      {/* Estado actual igual que InstructionCycleInfo */}
+      <div className="flex items-center gap-3 rounded border border-stone-600 bg-stone-800/80 p-2">
+        <div className={clsx("text-2xl", getStatsColor())}>{getStatsIcon()}</div>
+        <div className="flex-1">
+          <div className={clsx("text-sm font-semibold", getStatsColor())}>
+            {cycleCount > 0 ? "Ejecutando" : "En espera"}
+          </div>
+          <div className="mt-1 text-xs text-stone-400">
+            {instructionCount > 0 ? `${instructionCount} instrucciones ejecutadas` : "Sin instrucciones ejecutadas"}
+          </div>
+        </div>
+      </div>
+
+      {/* Información detallada */}
+      {showDetails && (
+        <div className="space-y-3">
+          {/* Métricas principales */}
+          <div className="rounded border border-stone-600 bg-stone-800/80 p-2">
+            <div className="mb-2 text-xs font-bold text-mantis-400">Métricas principales:</div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <div className="text-xs text-stone-300">{translate("computer.cpu.total-cycles")}</div>
+                <div className="text-lg font-mono text-white">{cycleCount}</div>
+              </div>
+              <div>
+                <div className="text-xs text-stone-300">{translate("computer.cpu.instruction-count")}</div>
+                <div className="text-lg font-mono text-white">{instructionCount}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Métricas de rendimiento */}
+          <div className="rounded border border-stone-600 bg-stone-800/80 p-2">
+            <div className="mb-2 text-xs font-bold text-mantis-400">Métricas de Rendimiento:</div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-stone-300" title={translate("computer.cpu.cpi-help")}>
+                  {translate("computer.cpu.cpi")}:
+                </span>
+                <span className="text-sm font-mono text-mantis-300">{cpi}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-stone-300" title={`${translate("computer.cpu.cpu-time-help")} (${cycleTimeMs} ms)`}>
+                  {translate("computer.cpu.cpu-time")}
+                </span>
+                <span className="text-sm font-mono text-mantis-300">{cpuTimeMs} ms</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Configuración actual */}
+          <div className="rounded border border-stone-600 bg-stone-800/80 p-2">
+            <div className="mb-2 text-xs font-bold text-mantis-400">Configuración Actual:</div>
+            <div className="space-y-1 text-xs text-stone-300">
+              <div>
+                <strong>Tiempo de ciclo:</strong> {cycleTimeMs} ms
+              </div>
+              <div>
+                <strong>Velocidad de ejecución:</strong> {settings.executionUnit} ms/unidad
+              </div>
+            </div>
+          </div>
+
+          {/* Información educativa */}
+          <div className="rounded border border-stone-600 bg-stone-800/80 p-2">
+            <div className="mb-2 text-xs font-bold text-mantis-400">💡 Concepto Educativo:</div>
+            <div className="text-xs leading-relaxed text-stone-300">
+              El CPI (Ciclos por Instrucción) es una métrica fundamental que indica la eficiencia del procesador. 
+              Un CPI más bajo significa mejor rendimiento. El tiempo de CPU total depende de los ciclos ejecutados 
+              y la velocidad del reloj del sistema.
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
-}
+});
+
+CPUStats.displayName = "CPUStats";
+

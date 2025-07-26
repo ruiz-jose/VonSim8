@@ -48,7 +48,11 @@ export function ComputerContainer() {
           <div className="relative h-[1300px] w-[1900px]">
             <SystemBus />
 
-            <CPUStats />
+            {/* CPUStats posicionado arriba a la izquierda del CPU (ubicación original) */}
+            <div className="absolute left-[120px] top-[-120px] z-20">
+              <CPUStats />
+            </div>
+
             <CPU />
             <RegisterTransferMessages />
             <Memory />
