@@ -62,7 +62,7 @@ export const settingsSchema = z.object({
   /**
    * This property states how many milliseconds takes for the clock to tick.
    */
-  clockSpeed: z.number().min(100).max(3000).catch(1000),
+  clockSpeed: z.number().min(100).max(1000).catch(1000),
 
   /**
    * This property states how many milliseconds units takes for the printer

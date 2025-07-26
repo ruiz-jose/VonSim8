@@ -94,6 +94,33 @@ export function Settings({ className }: { className?: string }) {
         />
       </Setting>
 
+      <Setting>
+        <SettingInfo>
+          <SettingTitle>
+            <span className="icon-[lucide--clock] size-6" />
+            {translate("settings.speeds.clockSpeed")}
+          </SettingTitle>
+          <SettingSubtitle>Velocidad del reloj del sistema. Afecta la velocidad de ejecución de las instrucciones.</SettingSubtitle>
+        </SettingInfo>
+
+        {/* Select para clockSpeed con opciones específicas */}
+        <Select
+          value={settings.clockSpeed.toString()}
+          onValueChange={(value) => setSettings(prev => ({ ...prev, clockSpeed: parseInt(value) }))}
+        >
+          <SelectTrigger className="w-32">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="100" title="Muy rápida - Para ver la ejecución paso a paso">0.1 s</SelectItem>
+            <SelectItem value="400" title="Rápida - Para seguimiento detallado">0.4 s</SelectItem>
+            <SelectItem value="600" title="Normal - Velocidad equilibrada">0.6 s</SelectItem>
+            <SelectItem value="800" title="Lenta - Para análisis detallado">0.8 s</SelectItem>
+            <SelectItem value="1000" title="Muy lenta - Para aprendizaje paso a paso">1.0 s</SelectItem>
+          </SelectContent>
+        </Select>
+      </Setting>
+
       <hr className="border-stone-600" />
 
       <Setting>
@@ -142,25 +169,6 @@ export function Settings({ className }: { className?: string }) {
           }
           // Comentando la línea disabled
           // disabled={status.type !== "stopped"}
-        />
-      </Setting>
-
-      <Setting>
-        <SettingInfo>
-          <SettingTitle>
-            <span className="icon-[lucide--clock] size-6" />
-            {translate("settings.speeds.clockSpeed")}
-          </SettingTitle>
-        </SettingInfo>
-
-        <Slider
-          className="w-44"
-          {...logSlider({
-            value: settings.clockSpeed,
-            onValueChange: (value: number) => setSettings(prev => ({ ...prev, clockSpeed: value })),
-            min: 3000,
-            max: 100,
-          })}
         />
       </Setting>
 

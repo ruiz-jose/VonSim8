@@ -24,6 +24,7 @@ export const CPUStats = memo(({ className }: CPUStatsProps) => {
 
   const cpi = instructionCount > 0 ? (cycleCount / instructionCount).toFixed(2) : "-";
   const cpuTimeMs = cycleCount * cycleTimeMs;
+  const cycleTimeSeconds = cycleTimeMs / 1000; // Convertir a segundos para mostrar
 
   // Icono y color para el header
   const getStatsIcon = () => {
@@ -107,10 +108,10 @@ export const CPUStats = memo(({ className }: CPUStatsProps) => {
                 <span className="text-sm font-mono text-mantis-300">{cpi}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-xs text-stone-300" title={`${translate("computer.cpu.cpu-time-help")} (${cycleTimeMs} ms)`}>
+                <span className="text-xs text-stone-300" title={`${translate("computer.cpu.cpu-time-help")} (${cycleTimeSeconds.toFixed(1)} s)`}>
                   {translate("computer.cpu.cpu-time")}
                 </span>
-                <span className="text-sm font-mono text-mantis-300">{cpuTimeMs} ms</span>
+                <span className="text-sm font-mono text-mantis-300">{(cpuTimeMs / 1000).toFixed(1)} s</span>
               </div>
             </div>
           </div>
@@ -120,10 +121,7 @@ export const CPUStats = memo(({ className }: CPUStatsProps) => {
             <div className="mb-2 text-xs font-bold text-mantis-400">Configuración Actual:</div>
             <div className="space-y-1 text-xs text-stone-300">
               <div>
-                <strong>Tiempo de ciclo:</strong> {cycleTimeMs} ms
-              </div>
-              <div>
-                <strong>Velocidad de ejecución:</strong> {settings.executionUnit} ms/unidad
+                <strong>Tiempo de ciclo:</strong> {cycleTimeSeconds.toFixed(1)} s
               </div>
             </div>
           </div>
@@ -132,9 +130,17 @@ export const CPUStats = memo(({ className }: CPUStatsProps) => {
           <div className="rounded border border-stone-600 bg-stone-800/80 p-2">
             <div className="mb-2 text-xs font-bold text-mantis-400">💡 Concepto Educativo:</div>
             <div className="text-xs leading-relaxed text-stone-300">
-              El CPI (Ciclos por Instrucción) es una métrica fundamental que indica la eficiencia del procesador. 
-              Un CPI más bajo significa mejor rendimiento. El tiempo de CPU total depende de los ciclos ejecutados 
-              y la velocidad del reloj del sistema.
+              <div className="mb-2">
+                <strong>CPI (Ciclos por Instrucción):</strong> Métrica fundamental que indica la eficiencia del procesador. 
+                Un CPI más bajo significa mejor rendimiento.
+              </div>
+              <div className="mb-2">
+                <strong>Tiempo de CPU:</strong> Depende de los ciclos ejecutados y la velocidad del reloj del sistema.
+              </div>
+              <div>
+                <strong>Velocidad de animaciones:</strong> Controla qué tan rápido se muestran visualmente las operaciones del CPU. 
+                Valores más altos permiten ver cada paso más claramente.
+              </div>
             </div>
           </div>
         </div>
