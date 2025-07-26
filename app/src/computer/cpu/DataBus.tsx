@@ -380,7 +380,8 @@ export function generateDataPath(
       // Para saltos, animar MBR -> IP pasando por IP join
       path = ["MBR", "mbr reg join", "IP join", "IP"];
     } else {
-      path = ["MBR", "mbr reg join", "ri join", "ri"];
+      // Usar la ruta del AddressBus (showpath2): MBR -> MAR
+      return "M 629 250 H 550 V 349 H 659";
     }
     // Generar el path SVG
     const start = dataBus.getNodeAttribute(path[0], "position");
@@ -423,9 +424,9 @@ export function generateDataPath(
   //   // return ...
   // }
 
-  // Path especial: MBR -> ri (siempre)
+  // Path especial: MBR -> ri (siempre) - usando ruta del AddressBus
   if (normalizedFrom === "MBR" && normalizedTo === "ri") {
-    return "M 620 250 H 550 V 388 H 451";
+    return "M 629 250 H 550 V 349 H 659";
   }
 
   // Path especial: ri -> IP (siempre)
