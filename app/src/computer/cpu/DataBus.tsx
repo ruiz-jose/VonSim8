@@ -366,6 +366,17 @@ export function generateDataPath(
         normalizedTo,
       ];
     }
+  } else if (registers.includes(normalizedFrom) && normalizedTo === "MBR") {
+    // Caso específico: registro → MBR
+    // Ruta: registro → registro out → registro out join → NodoRegOut → outr mbr join → MBR
+    path = [
+      normalizedFrom,
+      `${normalizedFrom} out`,
+      `${normalizedFrom} out join`,
+      "NodoRegOut",
+      "outr mbr join",
+      "MBR",
+    ];
   } else if (normalizedFrom === "MBR" && normalizedTo === "ri") {
     if (["JMP", "JC", "JZ"].includes(instruction ?? "")) {
       // Para saltos, animar MBR -> IP pasando por IP join
