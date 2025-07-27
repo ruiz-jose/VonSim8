@@ -180,24 +180,29 @@ export function Control() {
     let sequencerTimeout: NodeJS.Timeout | null = null;
     setSequencerProgress(0);
     setSequencerActive(false);
+    let unsub: (() => void) | undefined;
     if (showControlMem) {
-      // Cuando la barra del decodificador llega a 1, activar el secuenciador
-      const unsub = getSpring("cpu.decoder.progress.progress").to((progress: number) => {
-        if (progress >= 1) {
+      // Solo activar el secuenciador cuando el progreso de la memoria de control llegue exactamente a 1
+      unsub = getSpring("cpu.decoder.progress.progress").to((progress) => {
+        if (progress === 1) {
           sequencerTimeout = setTimeout(() => {
             setSequencerActive(true);
             setSequencerProgress(1);
-          }, 300);
+          }, 200);
+        } else {
+          if (sequencerTimeout) clearTimeout(sequencerTimeout);
+          setSequencerActive(false);
+          setSequencerProgress(0);
         }
       });
-      return () => {
-        if (sequencerTimeout) clearTimeout(sequencerTimeout);
-        if (typeof unsub === 'function') unsub();
-      };
     } else {
       setSequencerProgress(0);
       setSequencerActive(false);
     }
+    return () => {
+      if (sequencerTimeout) clearTimeout(sequencerTimeout);
+      if (typeof unsub === 'function') unsub();
+    };
   }, [showControlMem]);
 
   return (
@@ -271,38 +276,48 @@ export function Control() {
             </div>
             {/* Memoria de control: siempre visible y fuera del colapsable */}
             <div className="w-full flex justify-center">
-              <div className="flex flex-col items-center min-w-[120px]">
-                <div className="flex flex-row items-start gap-4">
-                  {/* Columna Memoria de control */}
-                  <div className="flex flex-col items-center min-w-[90px]">
-                    <span className="mb-0.5 flex items-center gap-1 text-[10px] font-bold text-fuchsia-100 drop-shadow-[0_0_6px_rgba(232,121,249,0.6)] tracking-wide text-center" style={{minHeight: '18px'}}>
-                      <span className="w-4 h-4 flex items-center justify-center bg-fuchsia-400 rounded-full animate-pulse shadow-[0_0_4px_rgba(232,121,249,0.6)] text-[10px] font-extrabold text-white" style={{fontVariantNumeric:'tabular-nums', fontFamily:'monospace'}}>1</span>
-                      Memoria de control
-                    </span>
-                    <svg width="70" height="38" viewBox="0 0 70 38" className="mb-0.5" style={{filter: 'drop-shadow(0 0 8px rgba(232,121,249,0.25))'}}>
-                      {/* Cuerpo de la memoria */}
-                      <rect x="8" y="6" width="54" height="26" rx="4" fill="#a21caf" stroke="#e879f9" strokeWidth="2" />
-                      {/* Pines laterales */}
-                      {Array.from({length: 4}).map((_, i) => (
-                        <rect key={i} x={2} y={9 + i*6} width={6} height={2} rx={1} fill="#e879f9" />
-                      ))}
-                      {Array.from({length: 4}).map((_, i) => (
-                        <rect key={i} x={62} y={9 + i*6} width={6} height={2} rx={1} fill="#e879f9" />
-                      ))}
-                      {/* Celdas de memoria animadas con efecto de lectura sincronizadas con la barra del decodificador */}
-                      <AnimatedMemoryCells key={memAnimKey} progress={getSpring("cpu.decoder.progress.progress")} phase={cycle?.phase} />
-                    </svg>
-                  </div>
-                  {/* Columna Secuenciador */}
-                  <div className="flex flex-col items-center min-w-[90px]">
-                    <span className="mb-0.5 flex items-center gap-1 text-[10px] font-bold text-sky-100 drop-shadow-[0_0_6px_rgba(56,189,248,0.6)] tracking-wide text-center" style={{minHeight: '18px'}}>
-                      <span className="w-4 h-4 flex items-center justify-center bg-sky-400 rounded-full animate-pulse shadow-[0_0_4px_rgba(56,189,248,0.6)] text-[10px] font-extrabold text-white" style={{fontVariantNumeric:'tabular-nums', fontFamily:'monospace'}}>2</span>
-                      Secuenciador
-                    </span>
-                    <AnimatedSequencerChip active={sequencerActive} />
+              {showControlMem && (
+                <div className="flex flex-col items-center min-w-[120px]">
+                  <div className="flex flex-row items-start gap-4">
+                    {/* Columna Memoria de control */}
+                    <div className="flex flex-col items-center min-w-[90px]">
+                      <span className="mb-0.5 flex items-center gap-1 text-[10px] font-bold text-fuchsia-100 drop-shadow-[0_0_6px_rgba(232,121,249,0.6)] tracking-wide text-center" style={{minHeight: '18px'}}>
+                        <span
+                          className="w-4 h-4 flex items-center justify-center bg-fuchsia-400 rounded-full animate-pulse shadow-[0_0_4px_rgba(232,121,249,0.6)] text-[10px] font-extrabold text-white"
+                          style={{fontVariantNumeric:'tabular-nums', fontFamily:'monospace'}}
+                          title="Lectura de microinstrucciones"
+                        >1</span>
+                        Memoria de control
+                      </span>
+                      <svg width="70" height="38" viewBox="0 0 70 38" className="mb-0.5" style={{filter: 'drop-shadow(0 0 8px rgba(232,121,249,0.25))'}}>
+                        {/* Cuerpo de la memoria */}
+                        <rect x="8" y="6" width="54" height="26" rx="4" fill="#a21caf" stroke="#e879f9" strokeWidth="2" />
+                        {/* Pines laterales */}
+                        {Array.from({length: 4}).map((_, i) => (
+                          <rect key={i} x={2} y={9 + i*6} width={6} height={2} rx={1} fill="#e879f9" />
+                        ))}
+                        {Array.from({length: 4}).map((_, i) => (
+                          <rect key={i} x={62} y={9 + i*6} width={6} height={2} rx={1} fill="#e879f9" />
+                        ))}
+                        {/* Celdas de memoria animadas con efecto de lectura sincronizadas con la barra del decodificador */}
+                        <AnimatedMemoryCells key={memAnimKey} progress={getSpring("cpu.decoder.progress.progress")} phase={cycle?.phase} />
+                      </svg>
+                    </div>
+                    {/* Columna Secuenciador */}
+                    <div className="flex flex-col items-center min-w-[90px]">
+                      <span className="mb-0.5 flex items-center gap-1 text-[10px] font-bold text-sky-100 drop-shadow-[0_0_6px_rgba(56,189,248,0.6)] tracking-wide text-center" style={{minHeight: '18px'}}>
+                        <span
+                          className="w-4 h-4 flex items-center justify-center bg-sky-400 rounded-full animate-pulse shadow-[0_0_4px_rgba(56,189,248,0.6)] text-[10px] font-extrabold text-white"
+                          style={{fontVariantNumeric:'tabular-nums', fontFamily:'monospace'}}
+                          title="Envío de señales de control"
+                        >2</span>
+                        Secuenciador
+                      </span>
+                      <AnimatedSequencerChip active={sequencerActive} />
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* Secuenciador y otros elementos colapsables */}
@@ -316,45 +331,7 @@ export function Control() {
                 overflow: 'hidden',
               }}
             >
-              <div className="flex flex-row items-center gap-4 mt-2 px-2">
-                {/* Secuenciador (solo visible si showControlMem) */}
-                {showControlMem && (
-                  <div 
-                    className="flex flex-col items-center rounded-md border border-sky-400 bg-gradient-to-b from-sky-900/95 to-sky-800/85 px-2 py-1 min-w-[110px] shadow-md"
-                    style={{
-                      boxShadow: '0 8px 25px rgba(56,189,248,0.3), 0 0 0 1px rgba(56,189,248,0.2)',
-                      transform: 'scale(1.03) translateX(0) translateY(0)',
-                      opacity: 1,
-                      transition: 'all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
-                      transitionDelay: '0.4s',
-                    }}
-                  >
-                    <div className="flex items-center gap-1 mb-0.5">
-                      <div className="w-1.5 h-1.5 bg-sky-400 rounded-full animate-pulse shadow-[0_0_4px_rgba(56,189,248,0.6)]"></div>
-                      <span className="text-[10px] font-bold text-sky-100 drop-shadow-[0_0_6px_rgba(56,189,248,0.6)] tracking-wide">
-                        Secuenciador
-                      </span>
-                    </div>
-                    <animated.div
-                      className="w-16 h-2 rounded-full bg-sky-800/60 overflow-hidden mb-0.5 border border-sky-600/50"
-                      style={{
-                        boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.3), 0 0 12px rgba(56,189,248,0.4)',
-                        opacity: sequencerActive ? getSpring("cpu.decoder.progress.opacity") : 0.3,
-                      }}
-                    >
-                      <animated.div
-                        className="h-full bg-gradient-to-r from-sky-400 to-sky-300 rounded-full"
-                        style={{
-                          width: `${sequencerProgress * 100}%`,
-                          boxShadow: '0 0 8px rgba(56,189,248,0.6)',
-                          transition: 'width 1.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                        }}
-                      />
-                    </animated.div>
-                    <span className="text-[9px] text-sky-200 font-semibold tracking-wide">Señales CPU</span>
-                  </div>
-                )}
-              </div>
+              {/* Eliminado el componente anterior del secuenciador */}
             </div>
           </div>
         </div>
