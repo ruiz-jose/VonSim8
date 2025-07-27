@@ -2,7 +2,7 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
-/* Animaciones personalizadas */
+/* ===== ANIMACIONES BÁSICAS ===== */
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -54,7 +54,17 @@
   }
 }
 
-@keyframes pulse-glow {
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+/* ===== ANIMACIONES DE PULSO PARA CONTROLES ===== */
+@keyframes pulse-glow-mantis {
   0%,
   100% {
     box-shadow: 0 0 5px rgba(34, 197, 94, 0.5);
@@ -66,16 +76,154 @@
   }
 }
 
-@keyframes shimmer {
-  0% {
-    background-position: -200px 0;
-  }
+@keyframes pulse-glow-blue {
+  0%,
   100% {
-    background-position: calc(200px + 100%) 0;
+    box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+  }
+  50% {
+    box-shadow:
+      0 0 20px rgba(59, 130, 246, 0.8),
+      0 0 30px rgba(59, 130, 246, 0.6);
   }
 }
 
-/* Clases de utilidad para animaciones */
+@keyframes pulse-glow-orange {
+  0%,
+  100% {
+    box-shadow: 0 0 5px rgba(249, 115, 22, 0.5);
+  }
+  50% {
+    box-shadow:
+      0 0 20px rgba(249, 115, 22, 0.8),
+      0 0 30px rgba(249, 115, 22, 0.6);
+  }
+}
+
+@keyframes pulse-glow-red {
+  0%,
+  100% {
+    box-shadow: 0 0 5px rgba(239, 68, 68, 0.5);
+  }
+  50% {
+    box-shadow:
+      0 0 20px rgba(239, 68, 68, 0.8),
+      0 0 30px rgba(239, 68, 68, 0.6);
+  }
+}
+
+@keyframes pulse-glow-purple {
+  0%,
+  100% {
+    box-shadow: 0 0 5px rgba(147, 51, 234, 0.5);
+  }
+  50% {
+    box-shadow:
+      0 0 20px rgba(147, 51, 234, 0.8),
+      0 0 30px rgba(147, 51, 234, 0.6);
+  }
+}
+
+/* ===== ANIMACIONES DE FASES DE INSTRUCCIÓN ===== */
+@keyframes phase-pulse-blue {
+  0% {
+    box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+  }
+  50% {
+    box-shadow:
+      0 0 20px rgba(59, 130, 246, 0.8),
+      0 0 30px rgba(59, 130, 246, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+  }
+}
+
+@keyframes phase-pulse-yellow {
+  0% {
+    box-shadow: 0 0 5px rgba(234, 179, 8, 0.5);
+  }
+  50% {
+    box-shadow:
+      0 0 20px rgba(234, 179, 8, 0.8),
+      0 0 30px rgba(234, 179, 8, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(234, 179, 8, 0.5);
+  }
+}
+
+@keyframes phase-pulse-green {
+  0% {
+    box-shadow: 0 0 5px rgba(34, 197, 94, 0.5);
+  }
+  50% {
+    box-shadow:
+      0 0 20px rgba(34, 197, 94, 0.8),
+      0 0 30px rgba(34, 197, 94, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(34, 197, 94, 0.5);
+  }
+}
+
+@keyframes phase-pulse-purple {
+  0% {
+    box-shadow: 0 0 5px rgba(147, 51, 234, 0.5);
+  }
+  50% {
+    box-shadow:
+      0 0 20px rgba(147, 51, 234, 0.8),
+      0 0 30px rgba(147, 51, 234, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(147, 51, 234, 0.5);
+  }
+}
+
+@keyframes phase-pulse-red {
+  0% {
+    box-shadow: 0 0 5px rgba(239, 68, 68, 0.5);
+  }
+  50% {
+    box-shadow:
+      0 0 20px rgba(239, 68, 68, 0.8),
+      0 0 30px rgba(239, 68, 68, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(239, 68, 68, 0.5);
+  }
+}
+
+@keyframes phase-pulse-orange {
+  0% {
+    box-shadow: 0 0 5px rgba(249, 115, 22, 0.5);
+  }
+  50% {
+    box-shadow:
+      0 0 20px rgba(249, 115, 22, 0.8),
+      0 0 30px rgba(249, 115, 22, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(249, 115, 22, 0.5);
+  }
+}
+
+@keyframes phase-pulse-stone {
+  0% {
+    box-shadow: 0 0 5px rgba(120, 113, 108, 0.5);
+  }
+  50% {
+    box-shadow:
+      0 0 20px rgba(120, 113, 108, 0.8),
+      0 0 30px rgba(120, 113, 108, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(120, 113, 108, 0.5);
+  }
+}
+
+/* ===== CLASES DE UTILIDAD PARA ANIMACIONES ===== */
 .animate-fade-in {
   animation: fade-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -93,7 +241,7 @@
 }
 
 .animate-pulse-glow {
-  animation: pulse-glow 2s ease-in-out infinite;
+  animation: pulse-glow-mantis 2s ease-in-out infinite;
 }
 
 .animate-shimmer {
@@ -102,7 +250,57 @@
   animation: shimmer 1.5s infinite;
 }
 
-/* Mejoras de scrollbar */
+/* ===== ANIMACIONES DE FASES (UNA SOLA VEZ) ===== */
+.animate-phase-pulse-blue {
+  animation: phase-pulse-blue 0.8s ease-in-out;
+}
+
+.animate-phase-pulse-yellow {
+  animation: phase-pulse-yellow 0.8s ease-in-out;
+}
+
+.animate-phase-pulse-green {
+  animation: phase-pulse-green 0.8s ease-in-out;
+}
+
+.animate-phase-pulse-purple {
+  animation: phase-pulse-purple 0.8s ease-in-out;
+}
+
+.animate-phase-pulse-red {
+  animation: phase-pulse-red 0.8s ease-in-out;
+}
+
+.animate-phase-pulse-orange {
+  animation: phase-pulse-orange 0.8s ease-in-out;
+}
+
+.animate-phase-pulse-stone {
+  animation: phase-pulse-stone 0.8s ease-in-out;
+}
+
+/* ===== ANIMACIONES DE PULSO PARA CONTROLES ===== */
+.animate-pulse-glow-mantis {
+  animation: pulse-glow-mantis 2s ease-in-out infinite;
+}
+
+.animate-pulse-glow-blue {
+  animation: pulse-glow-blue 2s ease-in-out infinite;
+}
+
+.animate-pulse-glow-orange {
+  animation: pulse-glow-orange 2s ease-in-out infinite;
+}
+
+.animate-pulse-glow-red {
+  animation: pulse-glow-red 2s ease-in-out infinite;
+}
+
+.animate-pulse-glow-purple {
+  animation: pulse-glow-purple 2s ease-in-out infinite;
+}
+
+/* ===== MEJORAS DE SCROLLBAR ===== */
 .scrollbar-thin {
   scrollbar-width: thin;
   scrollbar-color: rgb(68 64 60) transparent;
@@ -125,7 +323,7 @@
   background-color: rgb(87 83 78);
 }
 
-/* Efectos de hover mejorados */
+/* ===== EFECTOS DE HOVER ===== */
 .hover-lift {
   transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -142,7 +340,7 @@
   transform: scale(1.05);
 }
 
-/* Gradientes personalizados */
+/* ===== GRADIENTES PERSONALIZADOS ===== */
 .gradient-mantis {
   background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
 }
@@ -151,56 +349,141 @@
   background: linear-gradient(135deg, #78716c 0%, #57534e 100%);
 }
 
-/* Efectos de glassmorphism */
+/* ===== EFECTOS DE GLASSMORPHISM ===== */
 .glass {
   background: rgba(41, 37, 36, 0.8);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Mejoras para componentes específicos */
+/* ===== COMPONENTES ESPECÍFICOS ===== */
 .computer-background {
   background: radial-gradient(circle at 50% 50%, rgba(34, 197, 94, 0.1) 0%, transparent 70%);
 }
 
-/* Estados de carga */
 .loading-skeleton {
   background: linear-gradient(90deg, #404040 25%, #525252 50%, #404040 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
 
-/* Mejoras para botones */
+/* ===== BOTONES ===== */
 .btn-primary {
-  @apply bg-mantis-600 hover:bg-mantis-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-2 focus:ring-mantis-500 focus:ring-offset-2 focus:ring-offset-stone-900;
+  background-color: rgb(34 197 94);
+  color: white;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+  outline: none;
+}
+
+.btn-primary:hover {
+  background-color: rgb(21 128 61);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  transform: scale(1.05);
+}
+
+.btn-primary:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgb(34 197 94), 0 0 0 4px rgb(28 25 23);
 }
 
 .btn-secondary {
-  @apply bg-stone-700 hover:bg-stone-600 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-stone-500 focus:ring-offset-2 focus:ring-offset-stone-900;
+  background-color: rgb(68 64 60);
+  color: white;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+  outline: none;
+}
+
+.btn-secondary:hover {
+  background-color: rgb(87 83 78);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+
+.btn-secondary:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgb(68 64 60), 0 0 0 4px rgb(28 25 23);
 }
 
 .btn-ghost {
-  @apply bg-transparent hover:bg-stone-800 text-stone-300 hover:text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-stone-500 focus:ring-offset-2 focus:ring-offset-stone-900;
+  background-color: transparent;
+  color: rgb(168 162 158);
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+  outline: none;
 }
 
-/* Mejoras para inputs */
+.btn-ghost:hover {
+  background-color: rgb(41 37 36);
+  color: white;
+}
+
+.btn-ghost:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgb(68 64 60), 0 0 0 4px rgb(28 25 23);
+}
+
+/* ===== INPUTS ===== */
 .input-enhanced {
-  @apply bg-stone-800 border border-stone-600 text-white placeholder-stone-400 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-mantis-500 focus:border-transparent transition-all duration-200;
+  background-color: rgb(41 37 36);
+  border: 1px solid rgb(68 64 60);
+  color: white;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  transition: all 0.2s;
 }
 
-/* Mejoras para cards */
+.input-enhanced::placeholder {
+  color: rgb(168 162 158);
+}
+
+.input-enhanced:focus {
+  outline: none;
+  border-color: transparent;
+  box-shadow: 0 0 0 2px rgb(34 197 94);
+}
+
+/* ===== CARDS ===== */
 .card {
-  @apply bg-stone-800 border border-stone-600 rounded-lg p-4 shadow-lg hover:shadow-xl transition-all duration-200 hover:border-stone-500;
+  background-color: rgb(41 37 36);
+  border: 1px solid rgb(68 64 60);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  transition: all 0.2s;
+}
+
+.card:hover {
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  border-color: rgb(87 83 78);
 }
 
 .card-interactive {
-  @apply card cursor-pointer hover:bg-stone-700 hover-lift;
+  cursor: pointer;
 }
 
-/* Mejoras para tooltips */
+.card-interactive:hover {
+  background-color: rgb(68 64 60);
+  transform: translateY(-2px);
+}
 
+/* ===== TOOLTIPS ===== */
 .tooltip {
-  @apply absolute z-50 px-3 py-2 text-sm text-white bg-stone-900 rounded-lg shadow-lg border border-stone-600;
+  position: absolute;
+  z-index: 50;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: white;
+  background-color: rgb(28 25 23);
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  border: 1px solid rgb(68 64 60);
   animation: fade-in 0.2s ease-out;
   max-width: 240px;
   overflow: visible;
@@ -212,83 +495,110 @@ body.tooltip-open {
   overflow-y: hidden !important;
 }
 
-/* Mejoras para modales */
+/* ===== MODALES ===== */
 .modal-overlay {
-  @apply fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm;
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(0 0 0 / 0.5);
+  backdrop-filter: blur(4px);
   animation: fade-in 0.2s ease-out;
 }
 
 .modal-content {
-  @apply bg-stone-900 border border-stone-600 rounded-lg shadow-2xl max-w-md w-full mx-4;
+  background-color: rgb(28 25 23);
+  border: 1px solid rgb(68 64 60);
+  border-radius: 0.5rem;
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  max-width: 28rem;
+  width: 100%;
+  margin: 0 1rem;
   animation: bounce-in 0.3s ease-out;
 }
 
-/* Mejoras para notificaciones */
+/* ===== NOTIFICACIONES ===== */
 .notification {
-  @apply bg-stone-800 border border-stone-600 rounded-lg p-4 shadow-lg;
+  background-color: rgb(41 37 36);
+  border: 1px solid rgb(68 64 60);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
   animation: slide-in-right 0.3s ease-out;
 }
 
 .notification-success {
-  @apply notification border-green-500 bg-green-500/10;
+  border-color: rgb(34 197 94);
+  background-color: rgb(34 197 94 / 0.1);
 }
 
 .notification-warning {
-  @apply notification border-yellow-500 bg-yellow-500/10;
+  border-color: rgb(234 179 8);
+  background-color: rgb(234 179 8 / 0.1);
 }
 
 .notification-error {
-  @apply notification border-red-500 bg-red-500/10;
+  border-color: rgb(239 68 68);
+  background-color: rgb(239 68 68 / 0.1);
 }
 
 .notification-info {
-  @apply notification border-blue-500 bg-blue-500/10;
+  border-color: rgb(59 130 246);
+  background-color: rgb(59 130 246 / 0.1);
 }
 
-/* Mejoras para el editor */
+/* ===== EDITOR ===== */
 .editor-enhanced {
-  @apply bg-stone-900 border border-stone-600 rounded-lg overflow-hidden;
+  background-color: rgb(28 25 23);
+  border: 1px solid rgb(68 64 60);
+  border-radius: 0.5rem;
+  overflow: hidden;
 }
 
 .editor-enhanced .cm-editor {
-  @apply font-mono text-sm;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.875rem;
 }
 
 .editor-enhanced .cm-editor .cm-line {
-  @apply px-4 py-1;
+  padding: 0.25rem 1rem;
 }
 
 .editor-enhanced .cm-editor .cm-activeLine {
-  @apply bg-stone-800;
+  background-color: rgb(41 37 36);
 }
 
-/* Mejoras para la simulación */
+/* ===== SIMULACIÓN ===== */
 .simulation-running {
-  @apply animate-pulse-glow;
+  animation: pulse-glow-mantis 2s ease-in-out infinite;
 }
 
 .simulation-paused {
-  @apply opacity-75;
+  opacity: 0.75;
 }
 
-/* Mejoras para responsive */
+/* ===== RESPONSIVE ===== */
 @media (max-width: 640px) {
   .mobile-optimized {
-    @apply text-sm;
+    font-size: 0.875rem;
   }
 
   .mobile-card {
-    @apply p-3;
+    padding: 0.75rem;
   }
 
   .mobile-button {
-    @apply py-1.5 px-3 text-sm;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
   }
 }
 
-/* Mejoras para accesibilidad */
+/* ===== ACCESIBILIDAD ===== */
 .focus-visible {
-  @apply focus:outline-none focus:ring-2 focus:ring-mantis-500 focus:ring-offset-2 focus:ring-offset-stone-900;
+  outline: none;
+  box-shadow: 0 0 0 2px rgb(34 197 94), 0 0 0 4px rgb(28 25 23);
 }
 
 .sr-only {
@@ -303,7 +613,7 @@ body.tooltip-open {
   border: 0;
 }
 
-/* Mejoras para performance */
+/* ===== PERFORMANCE ===== */
 .will-change-transform {
   will-change: transform;
 }
@@ -312,21 +622,22 @@ body.tooltip-open {
   will-change: opacity;
 }
 
-/* Mejoras para dark mode (si se implementa en el futuro) */
+/* ===== DARK MODE ===== */
 @media (prefers-color-scheme: dark) {
   .dark-mode-auto {
-    @apply bg-stone-900 text-white;
+    background-color: rgb(28 25 23);
+    color: white;
   }
 }
 
-/* Mejoras para high contrast mode */
+/* ===== HIGH CONTRAST ===== */
 @media (prefers-contrast: high) {
   .high-contrast {
-    @apply border-2;
+    border-width: 2px;
   }
 }
 
-/* Mejoras para reduced motion */
+/* ===== REDUCED MOTION ===== */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

@@ -152,15 +152,15 @@ export function Controls({ className }: { className?: string }) {
           onClick={handlePause}
           title={translate("control.action.pause")}
           className={clsx(
-            "group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-red-600/20 focus-visible:ring-2 focus-visible:ring-red-400",
-            "animate-pulse-glow",
+            "group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-purple-600/20 focus-visible:ring-2 focus-visible:ring-purple-400",
+            "animate-pulse-glow-purple", // Púrpura para pausar
           )}
         >
           <span className="flex items-center justify-center">
             <FontAwesomeIcon
               icon={faPause}
               size="lg"
-              className="text-red-400 transition group-hover:scale-110"
+              className="text-purple-400 transition group-hover:scale-110"
             />
             {!isMobile && (
               <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
@@ -178,7 +178,7 @@ export function Controls({ className }: { className?: string }) {
           title={translate("control.action.run.cycle-change")}
           className={clsx(
             "group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-mantis-600/20 focus-visible:ring-2 focus-visible:ring-mantis-400 disabled:opacity-50",
-            status.type === "running" && status.until === "cycle-change" && "animate-pulse-glow",
+            status.type === "running" && status.until === "cycle-change" && "animate-pulse-glow-mantis", // Verde para ciclo
           )}
         >
           <span className="flex items-center justify-center">
@@ -205,15 +205,15 @@ export function Controls({ className }: { className?: string }) {
           onClick={handlePause}
           title={translate("control.action.pause")}
           className={clsx(
-            "group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-red-600/20 focus-visible:ring-2 focus-visible:ring-red-400",
-            "animate-pulse-glow",
+            "group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-purple-600/20 focus-visible:ring-2 focus-visible:ring-purple-400",
+            "animate-pulse-glow-purple", // Púrpura para pausar
           )}
         >
           <span className="flex items-center justify-center">
             <FontAwesomeIcon
               icon={faPause}
               size="lg"
-              className="text-red-400 transition group-hover:scale-110"
+              className="text-purple-400 transition group-hover:scale-110"
             />
             {!isMobile && (
               <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
@@ -233,7 +233,7 @@ export function Controls({ className }: { className?: string }) {
             "group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-blue-600/20 focus-visible:ring-2 focus-visible:ring-blue-400 disabled:opacity-50",
             status.type === "running" &&
               status.until === "end-of-instruction" &&
-              "animate-pulse-glow",
+              "animate-pulse-glow-blue", // Azul para instrucción
           )}
         >
           <span className="flex items-center justify-center">
@@ -262,15 +262,15 @@ export function Controls({ className }: { className?: string }) {
           onClick={handlePause}
           title={translate("control.action.pause")}
           className={clsx(
-            "group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-red-600/20 focus-visible:ring-2 focus-visible:ring-red-400",
-            "animate-pulse-glow",
+            "group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-purple-600/20 focus-visible:ring-2 focus-visible:ring-purple-400",
+            "animate-pulse-glow-purple", // Púrpura para pausar
           )}
         >
           <span className="flex items-center justify-center">
             <FontAwesomeIcon
               icon={faPause}
               size="lg"
-              className="text-red-400 transition group-hover:scale-110"
+              className="text-purple-400 transition group-hover:scale-110"
             />
             {!isMobile && (
               <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
@@ -288,7 +288,7 @@ export function Controls({ className }: { className?: string }) {
           title={translate("control.action.run.infinity")}
           className={clsx(
             "group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-orange-600/20 focus-visible:ring-2 focus-visible:ring-orange-400 disabled:opacity-50",
-            status.type === "running" && status.until === "infinity" && "animate-pulse-glow",
+            status.type === "running" && status.until === "infinity" && "animate-pulse-glow-orange", // Naranja para infinito
           )}
         >
           <span className="flex items-center justify-center">

@@ -34,6 +34,8 @@ const useTourControl = () => {
 // Componente de estado de simulación optimizado
 const SimulationStatus = memo(({ status, isMobile }: { status: any; isMobile: boolean }) => {
   const cycle = useAtomValue(cycleAtom);
+  const [previousPhase, setPreviousPhase] = useState<string | null>(null);
+  const [isAnimating, setIsAnimating] = useState(false);
   
   const statusText = useMemo(
     () => {
@@ -62,9 +64,24 @@ const SimulationStatus = memo(({ status, isMobile }: { status: any; isMobile: bo
     [status.type],
   );
   
+  // Detectar cambios de fase y activar animación
+  useEffect(() => {
+    if (cycle && cycle.phase && cycle.phase !== previousPhase) {
+      setPreviousPhase(cycle.phase);
+      setIsAnimating(true);
+      
+      // Detener la animación después de 0.8s
+      const timer = setTimeout(() => {
+        setIsAnimating(false);
+      }, 800);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [cycle?.phase, previousPhase]);
+  
   // Función para obtener el texto de la fase
   const getPhaseText = useMemo(() => {
-    if (status.type !== "running" && cycle.phase !== "halting") return "";
+    if (!cycle || (status.type !== "running" && cycle.phase !== "halting")) return "";
     
     switch (cycle.phase) {
       case "fetching":
@@ -85,11 +102,11 @@ const SimulationStatus = memo(({ status, isMobile }: { status: any; isMobile: bo
       default:
         return "";
     }
-  }, [cycle.phase, status.type]);
+  }, [cycle, status.type]);
 
   // Función para obtener el color de la fase (igual que en Control.tsx)
   const getPhaseColor = useMemo(() => {
-    if (status.type !== "running" && cycle.phase !== "halting") return "";
+    if (!cycle || (status.type !== "running" && cycle.phase !== "halting")) return "";
     
     switch (cycle.phase) {
       case "fetching":
@@ -110,7 +127,32 @@ const SimulationStatus = memo(({ status, isMobile }: { status: any; isMobile: bo
       default:
         return "bg-stone-500/20 text-stone-400 border-stone-500/30";
     }
-  }, [cycle.phase, status.type]);
+  }, [cycle, status.type]);
+
+  // Función para obtener la clase de animación según la fase
+  const getPhaseAnimation = useMemo(() => {
+    if (!isAnimating || !cycle) return "";
+    
+    switch (cycle.phase) {
+      case "fetching":
+        return "animate-phase-pulse-blue";
+      case "fetching-operands":
+        return "animate-phase-pulse-yellow";
+      case "executing":
+        return "animate-phase-pulse-green";
+      case "writeback":
+        return "animate-phase-pulse-purple";
+      case "interrupt":
+        return "animate-phase-pulse-red";
+      case "int6":
+      case "int7":
+        return "animate-phase-pulse-orange";
+      case "halting":
+        return "animate-phase-pulse-red";
+      default:
+        return "animate-phase-pulse-stone";
+    }
+  }, [isAnimating, cycle]);
   
   return (
     <div className="flex items-center gap-2">
@@ -120,6 +162,7 @@ const SimulationStatus = memo(({ status, isMobile }: { status: any; isMobile: bo
           "flex items-center gap-1.5 rounded-full px-2 py-1 font-medium text-white",
           statusColor,
           status.type === "running" && "animate-pulse-glow",
+          isMobile && "px-1.5 py-0.5" // Más compacto en móvil
         )}
       >
         <div
@@ -135,13 +178,17 @@ const SimulationStatus = memo(({ status, isMobile }: { status: any; isMobile: bo
         {!isMobile && statusText}
       </div>
       
-      {/* Fase actual */}
-      {(status.type === "running" || cycle.phase === "halting") && getPhaseText && !isMobile && (
+      {/* Fase actual - mostrar en móvil también pero más compacta */}
+      {(status.type === "running" || (cycle && cycle.phase === "halting")) && getPhaseText && (
         <div className={clsx(
-          "px-2 py-1 rounded-xl text-[10px] font-semibold uppercase tracking-wider backdrop-blur-sm transition-all duration-200 ease-in-out border animate-pulse-glow",
-          getPhaseColor
+          "rounded-xl text-[10px] font-semibold uppercase tracking-wider backdrop-blur-sm transition-all duration-200 ease-in-out border",
+          getPhaseColor,
+          getPhaseAnimation, // Aplicar animación solo cuando cambia la fase
+          isMobile 
+            ? "px-2 py-0.5 text-[8px] min-h-[20px] flex items-center justify-center whitespace-nowrap" // Compacto pero adaptable en móvil
+            : "px-2 py-1" // Tamaño normal en desktop
         )}>
-          {getPhaseText}
+          {getPhaseText} {/* Mostrar texto completo en móvil y desktop */}
         </div>
       )}
     </div>
@@ -282,16 +329,25 @@ export const Header = memo(() => {
   return (
     <>
       <header className="relative bg-black p-2 text-sm text-white" data-testid="header">
-        <div className="grid grid-cols-3 items-center">
-          {/* Lado izquierdo: Logo */}
-          <div className="flex items-center">
+        <div className={clsx(
+          "grid items-center",
+          isMobile ? "grid-cols-2" : "grid-cols-3"
+        )}>
+          {/* Lado izquierdo: Logo y estado (en móvil) */}
+          <div className="flex items-center gap-3">
             {logoSection}
+            {/* Mostrar estado en móvil a la izquierda */}
+            {isMobile && (
+              <SimulationStatus status={status} isMobile={isMobile} />
+            )}
           </div>
 
-          {/* Centro: Estado del CPU */}
-          <div className="flex justify-center">
-            <SimulationStatus status={status} isMobile={isMobile} />
-          </div>
+          {/* Centro: Estado del CPU (solo en desktop) */}
+          {!isMobile && (
+            <div className="flex justify-center">
+              <SimulationStatus status={status} isMobile={isMobile} />
+            </div>
+          )}
 
           {/* Lado derecho: Controles y botones de acción */}
           <div className="flex items-center gap-6 justify-end">
