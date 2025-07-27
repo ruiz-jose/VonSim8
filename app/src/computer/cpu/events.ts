@@ -17,10 +17,14 @@ import { highlightCurrentInstruction } from "@/editor/methods";
 import { store } from "@/lib/jotai";
 import { colors } from "@/lib/tailwind";
 
-import { DataRegister, generateDataPath } from "./DataBus";
+import { DataRegister, generateDataPath, generateSimultaneousLeftRightPath } from "./DataBus";
 import { aluOperationAtom, cycleAtom, MARAtom, MBRAtom, registerAtoms } from "./state";
 
 const BUS_ANIMATION_DURATION = 5;
+
+// Variables para rastrear transferencias simultáneas a left y right
+let pendingLeftTransfer: { from: DataRegister; instruction: string; mode: string } | null = null;
+let pendingRightTransfer: { from: DataRegister; instruction: string; mode: string } | null = null;
 
 const drawDataPath = (from: DataRegister, to: DataRegister, instruction: string, mode: string) => {
   try {
@@ -37,6 +41,26 @@ const drawDataPath = (from: DataRegister, to: DataRegister, instruction: string,
     );
   } catch (error) {
     console.warn("Error en drawDataPath:", error);
+    return Promise.resolve();
+  }
+};
+
+// Nueva función para animar transferencias simultáneas a left y right
+const drawSimultaneousLeftRightPath = (from: DataRegister, instruction: string, mode: string) => {
+  try {
+    const path = generateSimultaneousLeftRightPath(from, instruction, mode);
+    if (!path) return Promise.resolve(); // Si no hay ruta, no animar
+
+    return anim(
+      [
+        { key: "cpu.internalBus.data.path", from: path },
+        { key: "cpu.internalBus.data.opacity", from: 1 },
+        { key: "cpu.internalBus.data.strokeDashoffset", from: 1, to: 0 },
+      ],
+      { duration: BUS_ANIMATION_DURATION, easing: "easeInOutSine" },
+    );
+  } catch (error) {
+    console.warn("Error en drawSimultaneousLeftRightPath:", error);
     return Promise.resolve();
   }
 };
@@ -130,8 +154,12 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       return;
     }
 
-    case "cpu:cycle.end":
+    case "cpu:cycle.end": {
+      // Limpiar transferencias pendientes al final del ciclo
+      pendingLeftTransfer = null;
+      pendingRightTransfer = null;
       return;
+    }
 
     case "cpu:cycle.interrupt": {
       store.set(cycleAtom, prev => {
@@ -161,6 +189,10 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
           ? true
           : false;
       countersetMAR = 0;
+
+      // Limpiar transferencias pendientes al inicio de un nuevo ciclo
+      pendingLeftTransfer = null;
+      pendingRightTransfer = null;
 
       highlightCurrentInstruction(event.instruction.position.start);
       store.set(cycleAtom, { phase: "fetching", metadata: event.instruction });
@@ -405,6 +437,65 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
     case "cpu:register.copy": {
       const src = normalize(event.src);
       const dest = normalize(event.dest);
+      
+      // Detectar transferencias a left o right para animación simultánea
+      if (dest === "left" || dest === "right") {
+        const transferInfo = { from: src as DataRegister, instruction: instructionName, mode };
+        
+        if (dest === "left") {
+          pendingLeftTransfer = transferInfo;
+        } else if (dest === "right") {
+          pendingRightTransfer = transferInfo;
+        }
+        
+        // Si tenemos ambas transferencias pendientes y son del mismo origen, hacer animación simultánea
+        if (pendingLeftTransfer && pendingRightTransfer && 
+            pendingLeftTransfer.from === pendingRightTransfer.from &&
+            pendingLeftTransfer.instruction === pendingRightTransfer.instruction) {
+          
+          console.log("🎯 Animación simultánea detectada: left y right desde", src);
+          await drawSimultaneousLeftRightPath(src as DataRegister, instructionName, mode);
+          
+          // Activar ambos registros simultáneamente
+          await Promise.all([
+            activateRegister("cpu.left" as RegisterKey),
+            activateRegister("cpu.right" as RegisterKey)
+          ]);
+          
+          // Actualizar ambos registros
+          store.set(registerAtoms.left, store.get(registerAtoms[src]));
+          store.set(registerAtoms.right, store.get(registerAtoms[src]));
+          
+          // Desactivar ambos registros simultáneamente
+          await Promise.all([
+            deactivateRegister("cpu.left" as RegisterKey),
+            deactivateRegister("cpu.right" as RegisterKey)
+          ]);
+          
+          // Limpiar las transferencias pendientes
+          pendingLeftTransfer = null;
+          pendingRightTransfer = null;
+          
+          // Resetear la animación del bus para que termine la animación simultánea
+          await resetDataPath();
+          
+          // NO hacer return aquí para permitir que continúen las animaciones normales
+          // Solo actualizar los registros y continuar
+        }
+        
+        // Si solo tenemos una transferencia, esperar a la otra sin hacer animación individual
+        // Solo actualizar el registro correspondiente
+        if (dest === "left") {
+          store.set(registerAtoms.left, store.get(registerAtoms[src]));
+        } else {
+          store.set(registerAtoms.right, store.get(registerAtoms[src]));
+        }
+        
+        // NO hacer return aquí para permitir que continúen las animaciones normales
+        // La animación se hará cuando se complete la transferencia simultánea
+      }
+      
+      // Para transferencias normales (no a left/right)
       if (!(src === "ri" && dest === "IP")) {
         await drawDataPath(src as DataRegister, dest as DataRegister, instructionName, mode);
       }

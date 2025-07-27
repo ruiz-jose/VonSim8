@@ -210,7 +210,52 @@ dataBus.addNode("NodoRegOutToLeft", { position: [560, 115] });
 dataBus.addUndirectedEdge("outr mbr join left", "NodoRegOutToLeft");
 dataBus.addUndirectedEdge("NodoRegOutToLeft", "NodoRegOut");
 
-export type DataRegister = PhysicalRegister | "MBR" | "result start";
+export type DataRegister = PhysicalRegister | "MBR" | "result start" | "left end" | "right end";
+
+/**
+ * Genera una animación simultánea para left y right cuando ambos son destinos
+ * @param from Registro origen
+ * @param instruction Instrucción actual
+ * @param mode Modo de la instrucción
+ * @returns Path SVG combinado para la animación simultánea
+ */
+export function generateSimultaneousLeftRightPath(
+  from: DataRegister,
+  instruction?: string,
+  mode?: string,
+): string {
+  // Normalizar nombres de registros para evitar subniveles
+  const normalizeRegister = (reg: string): string => {
+    return reg.replace(/\.(l|h)$/, "");
+  };
+
+  const normalizedFrom = normalizeRegister(from);
+
+  // Verificar que el nodo origen existe
+  if (!dataBus.hasNode(normalizedFrom)) {
+    console.warn(`Nodo origen '${normalizedFrom}' no existe en el grafo`);
+    return "";
+  }
+
+  // Generar paths separados para left y right que terminen en la ALU
+  const leftPath = generateDataPath(from, "left end", instruction, mode, { 
+    separateMBRPaths: true, 
+    direction: "left" 
+  });
+  const rightPath = generateDataPath(from, "right end", instruction, mode, { 
+    separateMBRPaths: true, 
+    direction: "right" 
+  });
+
+  // Si ambos paths son válidos, combinarlos en una sola animación
+  if (leftPath && rightPath) {
+    // Combinar los paths usando el operador SVG "|" para múltiples paths
+    return `${leftPath} ${rightPath}`;
+  }
+
+  // Si solo uno es válido, devolver ese
+  return leftPath || rightPath || "";
+}
 
 /**
  * Given two registers, returns the shortest path between them.
@@ -235,7 +280,7 @@ export function generateDataPath(
   const normalizedTo = normalizeRegister(to);
 
   // Lista de registros válidos
-  const registers = ["AL", "BL", "CL", "DL", "id", "SP", "IP", "ri", "MAR"];
+  const registers = ["AL", "BL", "CL", "DL", "id", "SP", "IP", "ri", "MAR", "left", "right", "left end", "right end"];
 
   let path: string[] = [];
 
@@ -253,13 +298,12 @@ export function generateDataPath(
   if (normalizedFrom === "MAR" || normalizedTo === "MAR") {
     return "";
   }
-  //
+
   // Lógica de rutas
   // Detectar caso especial: ambos operandos desde MBR a left y right
   // Si options.separateMBRPaths está activo y from === "MBR" y (to === "left" o to === "right")
   if (options?.separateMBRPaths && from === "MBR" && (to === "left" || to === "right")) {
     if (to === "left") {
-      // ...existing code...
       path = [
         normalizedFrom,
         `${normalizedFrom} out`,
