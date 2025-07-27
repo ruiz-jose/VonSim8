@@ -1,6 +1,80 @@
+
+
 import clsx from "clsx";
 import { useAtomValue } from "jotai";
+
+
 import { useState, useEffect } from "react";
+// Componente auxiliar para animar las celdas de la memoria de control sincronizadas con el progreso
+import { SpringValue } from "@react-spring/web";
+function AnimatedMemoryCells({ progress }: { progress: SpringValue<number> }) {
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    progress.to((v: number) => setValue(v));
+    return () => {};
+  }, [progress]);
+  const total = 5;
+  const activeIdx = Math.floor(value * total);
+  return (
+    <>
+      {Array.from({ length: total }).map((_, i) => {
+        let fill = '#581c87';
+        let filter = 'none';
+        if (value >= (i + 1) / total) {
+          fill = '#f0abfc';
+          filter = 'drop-shadow(0 0 6px #e879f9)';
+        }
+        if (i === activeIdx && value > 0 && value < 1) {
+          fill = '#fff1fb';
+          filter = 'drop-shadow(0 0 12px #e879f9)';
+        }
+        return (
+          <rect
+            key={i}
+            x={16}
+            y={10 + i * 4}
+            width={38}
+            height={3}
+            rx={1}
+            fill={fill}
+            style={{
+              transition: 'fill 0.3s, filter 0.3s',
+              filter,
+            }}
+          />
+        );
+      })}
+      {/* Rayo de lectura animado */}
+      {value > 0 && value < 1 && (
+        <rect
+          x={15}
+          y={10 + Math.floor(value * 5) * 4 - 0.5}
+          width={40}
+          height={3.5}
+          rx={1.5}
+          fill="#e879f9"
+          style={{
+            opacity: 0.25 + 0.25 * Math.sin(value * Math.PI),
+            transition: 'y 0.3s, opacity 0.2s',
+          }}
+        />
+      )}
+      {/* Efecto de "lectura" (borde animado) */}
+      <rect
+        x="8" y="6" width="54" height="26" rx="4"
+        fill="none"
+        stroke="#f0abfc"
+        strokeWidth="2"
+        strokeDasharray="160"
+        strokeDashoffset={160 - 160 * value}
+        style={{
+          transition: 'stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1)',
+          opacity: value > 0 ? 0.7 : 0,
+        }}
+      />
+    </>
+  );
+}
 
 import { animated, getSpring } from "@/computer/shared/springs";
 import { useTranslate } from "@/lib/i18n";
@@ -14,36 +88,31 @@ export function Control() {
   const translate = useTranslate();
   const cycle = useAtomValue(cycleAtom);
   const [showControlMem, setShowControlMem] = useState(false);
-  const [controlMemoryProgress, setControlMemoryProgress] = useState(0);
+  // El progreso de la memoria de control ahora depende del progreso del decodificador
   const [sequencerProgress, setSequencerProgress] = useState(0);
   const [sequencerActive, setSequencerActive] = useState(false);
 
   // Efecto para manejar la secuencia de animación de las barras de progreso
+  // Sincronizar la animación de la memoria de control con la barra progresiva del decodificador
   useEffect(() => {
+    let sequencerTimeout: NodeJS.Timeout | null = null;
+    setSequencerProgress(0);
+    setSequencerActive(false);
     if (showControlMem) {
-      // Resetear estados
-      setControlMemoryProgress(0);
-      setSequencerProgress(0);
-      setSequencerActive(false);
-      
-      // Iniciar animación de memoria de control
-      const controlMemoryTimer = setTimeout(() => {
-        setControlMemoryProgress(1);
-      }, 100);
-      
-      // Después de que termine la memoria de control, activar el secuenciador
-      const sequencerTimer = setTimeout(() => {
-        setSequencerActive(true);
-        setSequencerProgress(1);
-      }, 1500); // 1.5 segundos para que termine la memoria de control
-      
+      // Cuando la barra del decodificador llega a 1, activar el secuenciador
+      const unsub = getSpring("cpu.decoder.progress.progress").to((progress: number) => {
+        if (progress >= 1) {
+          sequencerTimeout = setTimeout(() => {
+            setSequencerActive(true);
+            setSequencerProgress(1);
+          }, 300);
+        }
+      });
       return () => {
-        clearTimeout(controlMemoryTimer);
-        clearTimeout(sequencerTimer);
+        if (sequencerTimeout) clearTimeout(sequencerTimeout);
+        if (typeof unsub === 'function') unsub();
       };
     } else {
-      // Resetear cuando se oculta
-      setControlMemoryProgress(0);
       setSequencerProgress(0);
       setSequencerActive(false);
     }
@@ -130,16 +199,13 @@ export function Control() {
               }}
             >
               <div className="flex flex-row items-center gap-4 mt-2 px-2">
-                {/* Memoria de control */}
-                <div 
-                  className="flex flex-col items-center rounded-md border border-fuchsia-400 bg-gradient-to-b from-fuchsia-900/95 to-fuchsia-800/85 px-2 py-1 min-w-[120px] shadow-md"
+                {/* Memoria de control (siempre visible) */}
+                <div
+                  className="flex flex-col items-center min-w-[120px]"
                   style={{
-                    boxShadow: showControlMem ? '0 8px 25px rgba(232,121,249,0.3), 0 0 0 1px rgba(232,121,249,0.2)' : '0 4px 12px rgba(232,121,249,0.1)',
-                    transform: showControlMem ? 'scale(1.05) rotateY(0deg) translateY(0)' : 'scale(0.9) rotateY(-15deg) translateY(15px)',
-                    opacity: showControlMem ? 1 : 0,
+                    opacity: 1,
+                    transform: 'scale(1.05)',
                     transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                    transitionDelay: showControlMem ? '0s' : '0s',
-                    transformStyle: 'preserve-3d',
                   }}
                 >
                   <div className="flex items-center gap-1 mb-0.5">
@@ -148,60 +214,59 @@ export function Control() {
                       Memoria de control
                     </span>
                   </div>
-                  <animated.div
-                    className="w-16 h-2 rounded-full bg-fuchsia-800/60 overflow-hidden mb-0.5 border border-fuchsia-600/50"
-                    style={{
-                      boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.3), 0 0 12px rgba(232,121,249,0.4)',
-                      opacity: getSpring("cpu.decoder.progress.opacity"),
-                    }}
-                  >
-                    <animated.div
-                      className="h-full bg-gradient-to-r from-fuchsia-400 to-fuchsia-300 rounded-full"
-                      style={{
-                        width: `${controlMemoryProgress * 100}%`,
-                        boxShadow: '0 0 8px rgba(232,121,249,0.6)',
-                        transition: 'width 1.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                      }}
-                    />
-                  </animated.div>
+                  <svg width="70" height="38" viewBox="0 0 70 38" className="mb-1" style={{filter: 'drop-shadow(0 0 8px rgba(232,121,249,0.25))'}}>
+                    {/* Cuerpo de la memoria */}
+                    <rect x="8" y="6" width="54" height="26" rx="4" fill="#a21caf" stroke="#e879f9" strokeWidth="2" />
+                    {/* Pines laterales */}
+                    {Array.from({length: 4}).map((_, i) => (
+                      <rect key={i} x={2} y={9 + i*6} width={6} height={2} rx={1} fill="#e879f9" />
+                    ))}
+                    {Array.from({length: 4}).map((_, i) => (
+                      <rect key={i} x={62} y={9 + i*6} width={6} height={2} rx={1} fill="#e879f9" />
+                    ))}
+                    {/* Celdas de memoria animadas con efecto de lectura sincronizadas con la barra del decodificador */}
+                    <AnimatedMemoryCells progress={getSpring("cpu.decoder.progress.progress")} />
+                  </svg>
                   <span className="text-[9px] text-fuchsia-200 font-semibold tracking-wide">Lectura microinstrucción</span>
                 </div>
-                
-                {/* Secuenciador */}
-                <div 
-                  className="flex flex-col items-center rounded-md border border-sky-400 bg-gradient-to-b from-sky-900/95 to-sky-800/85 px-2 py-1 min-w-[110px] shadow-md"
-                  style={{
-                    boxShadow: showControlMem ? '0 8px 25px rgba(56,189,248,0.3), 0 0 0 1px rgba(56,189,248,0.2)' : '0 4px 12px rgba(56,189,248,0.1)',
-                    transform: showControlMem ? 'scale(1.03) translateX(0) translateY(0)' : 'scale(0.92) translateX(-20px) translateY(20px)',
-                    opacity: showControlMem ? 1 : 0,
-                    transition: 'all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
-                    transitionDelay: showControlMem ? '0.4s' : '0s',
-                  }}
-                >
-                  <div className="flex items-center gap-1 mb-0.5">
-                    <div className="w-1.5 h-1.5 bg-sky-400 rounded-full animate-pulse shadow-[0_0_4px_rgba(56,189,248,0.6)]"></div>
-                    <span className="text-[10px] font-bold text-sky-100 drop-shadow-[0_0_6px_rgba(56,189,248,0.6)] tracking-wide">
-                      Secuenciador
-                    </span>
-                  </div>
-                  <animated.div
-                    className="w-16 h-2 rounded-full bg-sky-800/60 overflow-hidden mb-0.5 border border-sky-600/50"
+
+                {/* Secuenciador (solo visible si showControlMem) */}
+                {showControlMem && (
+                  <div 
+                    className="flex flex-col items-center rounded-md border border-sky-400 bg-gradient-to-b from-sky-900/95 to-sky-800/85 px-2 py-1 min-w-[110px] shadow-md"
                     style={{
-                      boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.3), 0 0 12px rgba(56,189,248,0.4)',
-                      opacity: sequencerActive ? getSpring("cpu.decoder.progress.opacity") : 0.3,
+                      boxShadow: '0 8px 25px rgba(56,189,248,0.3), 0 0 0 1px rgba(56,189,248,0.2)',
+                      transform: 'scale(1.03) translateX(0) translateY(0)',
+                      opacity: 1,
+                      transition: 'all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+                      transitionDelay: '0.4s',
                     }}
                   >
+                    <div className="flex items-center gap-1 mb-0.5">
+                      <div className="w-1.5 h-1.5 bg-sky-400 rounded-full animate-pulse shadow-[0_0_4px_rgba(56,189,248,0.6)]"></div>
+                      <span className="text-[10px] font-bold text-sky-100 drop-shadow-[0_0_6px_rgba(56,189,248,0.6)] tracking-wide">
+                        Secuenciador
+                      </span>
+                    </div>
                     <animated.div
-                      className="h-full bg-gradient-to-r from-sky-400 to-sky-300 rounded-full"
+                      className="w-16 h-2 rounded-full bg-sky-800/60 overflow-hidden mb-0.5 border border-sky-600/50"
                       style={{
-                        width: `${sequencerProgress * 100}%`,
-                        boxShadow: '0 0 8px rgba(56,189,248,0.6)',
-                        transition: 'width 1.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                        boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.3), 0 0 12px rgba(56,189,248,0.4)',
+                        opacity: sequencerActive ? getSpring("cpu.decoder.progress.opacity") : 0.3,
                       }}
-                    />
-                  </animated.div>
-                  <span className="text-[9px] text-sky-200 font-semibold tracking-wide">Señales CPU</span>
-                </div>
+                    >
+                      <animated.div
+                        className="h-full bg-gradient-to-r from-sky-400 to-sky-300 rounded-full"
+                        style={{
+                          width: `${sequencerProgress * 100}%`,
+                          boxShadow: '0 0 8px rgba(56,189,248,0.6)',
+                          transition: 'width 1.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                        }}
+                      />
+                    </animated.div>
+                    <span className="text-[9px] text-sky-200 font-semibold tracking-wide">Señales CPU</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
