@@ -379,10 +379,16 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       let skipMBRtoMAR = false;
       if (normalizedRegister === "MAR" || normalizedRegister.startsWith("MAR.")) {
         // Si el valor que se va a copiar a MAR es igual al valor de IP, omitimos la animación
-        const ipValue = store.get(registerAtoms.IP);
-        const mbrValue = store.get(MBRAtom);
-        if (ipValue === mbrValue) {
-          skipMBRtoMAR = true;
+        // PERO para instrucciones ADD, SUB, CMP que usan memoria, SÍ debemos mostrar la animación
+        const aluOpsWithMemory = ["ADD", "SUB", "CMP"];
+        const isALUOpWithMemory = aluOpsWithMemory.some(op => instructionName.startsWith(op));
+        
+        if (!isALUOpWithMemory) {
+          const ipValue = store.get(registerAtoms.IP);
+          const mbrValue = store.get(MBRAtom);
+          if (ipValue === mbrValue) {
+            skipMBRtoMAR = true;
+          }
         }
       }
       if (normalizedRegister === "IR") {
