@@ -44,8 +44,8 @@ export class JumpInstruction extends Instruction<
     yield { type: "cpu:decode" };
     yield { type: "cpu:cycle.update", phase: "decoded", next: "fetch-operands" };
 
-    // Consume jump address
-    yield* super.consumeInstruction(computer, "ri.l");
+    // Consume jump address - no mostrar animación MBR→ri hasta evaluar la condición
+    yield* super.consumeInstruction(computer, "ri.l", true);
     // yield* super.consumeInstruction(computer, "ri.h");
 
     yield { type: "cpu:cycle.update", phase: "execute" };
@@ -93,9 +93,10 @@ export class JumpInstruction extends Instruction<
         if (!(yield* computer.cpu.pushToStack("IP.l"))) return false; // Stack overflow
         yield* computer.cpu.copyByteRegister("ri.l", "IP.l");
       } else {
-        //yield* computer.cpu.copyWordRegister("ri", "IP");
-        // Mostrar el valor de MBR antes de asignarlo a IP.l
-        //console.log("Valor de MBR antes de asignarlo a IP.l:", computer.cpu.getRegister("MBR"));
+        // Para saltos condicionales, mostrar la animación MBR→ri solo si la condición es verdadera
+        // Primero ejecutar getMBR para mostrar la animación MBR→ri
+        yield* computer.cpu.getMBR("ri.l");
+        // Luego copiar ri→IP
         yield* computer.cpu.copyByteRegister("ri.l", "IP.l");
       }
     }
