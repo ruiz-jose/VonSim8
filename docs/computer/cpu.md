@@ -33,6 +33,22 @@ Dentro de los registros internos que no pueden ser accedidos por el usuario, se 
 
 Hay además algunos registros internos que sirven de intermediarios para realizar ejecutar instrucciones, como pueden ser el `ri` para almacenar una dirección temporal, el `id` para almacenar un dato temporal.
 
+## Unidad de Control
+
+La unidad de control es responsable de coordinar todas las operaciones de la CPU. Se encarga de:
+
+- **Decodificación de instrucciones**: Interpreta el código de operación de cada instrucción
+- **Generación de señales de control**: Activa las señales necesarias para ejecutar microoperaciones
+- **Secuenciación**: Controla el orden de ejecución de las operaciones
+
+### Memoria de Control
+
+Para una comprensión más profunda de cómo funciona la unidad de control, puedes visualizar la [memoria de control](./control-memory) que muestra las microinstrucciones y microoperaciones de cada instrucción.
+
+### Secuenciador
+
+El [secuenciador](./sequencer) complementa la memoria de control mostrando cómo se controla la secuencia de microoperaciones y las señales de control generadas en cada fase del ciclo de instrucción.
+
 ## ALU
 
 La ALU (_Arithmetic Logic Unit_) permite realizar operaciones aritméticas y lógicas de 8 bits. Las operaciones disponibles son: [`ADD`](./instructions/add), [`ADC`](./instructions/adc), [`INC`](./instructions/inc), [`SUB`](./instructions/sub), [`SBB`](./instructions/sbb), [`DEC`](./instructions/dec), [`NEG`](./instructions/neg), [`NOT`](./instructions/not), [`AND`](./instructions/and) y [`OR`](./instructions/or). Todas estas operaciones modifican el registro `FLAGS`.

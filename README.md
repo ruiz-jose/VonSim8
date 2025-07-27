@@ -14,6 +14,14 @@
 
 VonSim8 was made entirely in [TypeScript](https://www.typescriptlang.org/), a superset of JavaScript that adds type-checking and auto-completion. Also, the project is divided in multiple packages, each one with its own `package.json` ([learn more](https://turbo.build/repo/docs/core-concepts/monorepos) about monorepos).
 
+## 🆕 Nuevas Características
+
+### Componentes de la Unidad de Control
+- **🧠 Memoria de Control**: Visualiza microinstrucciones y microoperaciones para cada instrucción
+- **⚙️ Secuenciador**: Muestra las fases del ciclo de instrucción y señales de control
+- **🎯 Interactividad**: Botones en el decodificador para activar cada componente
+- **📚 Educativo**: Explicaciones detalladas y conceptos clave de arquitectura
+
 To get started, you'll need [Node.js v20](https://nodejs.org/) and [pnpm v8](https://pnpm.io). Once you have them installed, you can run the following inside the repo:
 
 ```bash

@@ -92,6 +92,28 @@ const springs = {
     },
   },
   clock: { angle: new SpringValue(0) },
+  controlMemory: {
+    overlay: { opacity: new SpringValue(0) },
+    container: { 
+      opacity: new SpringValue(0), 
+      scale: new SpringValue(0.8) 
+    },
+    currentInstruction: { glow: new SpringValue(0) },
+    microop: {
+      0: { opacity: new SpringValue(0), translateX: new SpringValue(-20) },
+      1: { opacity: new SpringValue(0), translateX: new SpringValue(-20) },
+      2: { opacity: new SpringValue(0), translateX: new SpringValue(-20) },
+      3: { opacity: new SpringValue(0), translateX: new SpringValue(-20) },
+      4: { opacity: new SpringValue(0), translateX: new SpringValue(-20) },
+    },
+  },
+  sequencer: {
+    overlay: { opacity: new SpringValue(0) },
+    container: { 
+      opacity: new SpringValue(0), 
+      scale: new SpringValue(0.8) 
+    },
+  },
   cpu: {
     internalBus: {
       address: {
