@@ -38,8 +38,38 @@ function AnimatedSequencerChip({ active }: { active: boolean }) {
           }) }}
         />
       ))}
-      {/* Etiqueta */}
-      <text x="27" y="22" fontSize="8" fill="#e0f2fe" fontWeight="bold" textAnchor="middle" style={{ letterSpacing: 1 }}>SEQ</text>
+      {/* Animación interna: pulso/barrido dentro del chip */}
+      <a.rect
+        x={14}
+        y={12}
+        width={26}
+        height={14}
+        rx={4}
+        fill={phase.to(p => active ? `rgba(56,189,248,${0.10 + 0.18 * Math.abs(Math.sin(p * Math.PI))})` : 'rgba(56,189,248,0.10)')}
+        style={{
+          filter: phase.to(p => active ? `drop-shadow(0 0 ${6 + 8 * Math.abs(Math.sin(p * Math.PI))}px #38bdf8)` : 'none'),
+          transition: 'fill 0.5s, filter 0.5s',
+        }}
+      />
+      {/* Líneas animadas representando señales internas */}
+      {Array.from({ length: 3 }).map((_, i) => (
+        <a.line
+          key={i}
+          x1={18}
+          y1={15 + i * 4}
+          x2={34}
+          y2={15 + i * 4}
+          stroke="#7dd3fc"
+          strokeWidth={1.2}
+          opacity={0.5}
+          style={{
+            strokeDasharray: 12,
+            strokeDashoffset: phase.to(p => active ? 12 - (p * 12) : 12),
+            filter: phase.to(p => active && p > 0.2 && p < 0.9 ? 'drop-shadow(0 0 4px #7dd3fc)' : 'none'),
+            transition: 'stroke-dashoffset 0.7s',
+          }}
+        />
+      ))}
     </svg>
   );
 }
@@ -242,31 +272,36 @@ export function Control() {
             {/* Memoria de control: siempre visible y fuera del colapsable */}
             <div className="w-full flex justify-center">
               <div className="flex flex-col items-center min-w-[120px]">
-                <div className="flex items-center gap-1 mb-0.5">
-                  <div className="w-1.5 h-1.5 bg-fuchsia-400 rounded-full animate-pulse shadow-[0_0_4px_rgba(232,121,249,0.6)]"></div>
-                  <span className="text-[10px] font-bold text-fuchsia-100 drop-shadow-[0_0_6px_rgba(232,121,249,0.6)] tracking-wide">
-                    Memoria de control
-                  </span>
+                <div className="flex flex-row items-start gap-4">
+                  {/* Columna Memoria de control */}
+                  <div className="flex flex-col items-center min-w-[90px]">
+                    <span className="mb-0.5 flex items-center gap-1 text-[10px] font-bold text-fuchsia-100 drop-shadow-[0_0_6px_rgba(232,121,249,0.6)] tracking-wide text-center" style={{minHeight: '18px'}}>
+                      <span className="w-4 h-4 flex items-center justify-center bg-fuchsia-400 rounded-full animate-pulse shadow-[0_0_4px_rgba(232,121,249,0.6)] text-[10px] font-extrabold text-white" style={{fontVariantNumeric:'tabular-nums', fontFamily:'monospace'}}>1</span>
+                      Memoria de control
+                    </span>
+                    <svg width="70" height="38" viewBox="0 0 70 38" className="mb-0.5" style={{filter: 'drop-shadow(0 0 8px rgba(232,121,249,0.25))'}}>
+                      {/* Cuerpo de la memoria */}
+                      <rect x="8" y="6" width="54" height="26" rx="4" fill="#a21caf" stroke="#e879f9" strokeWidth="2" />
+                      {/* Pines laterales */}
+                      {Array.from({length: 4}).map((_, i) => (
+                        <rect key={i} x={2} y={9 + i*6} width={6} height={2} rx={1} fill="#e879f9" />
+                      ))}
+                      {Array.from({length: 4}).map((_, i) => (
+                        <rect key={i} x={62} y={9 + i*6} width={6} height={2} rx={1} fill="#e879f9" />
+                      ))}
+                      {/* Celdas de memoria animadas con efecto de lectura sincronizadas con la barra del decodificador */}
+                      <AnimatedMemoryCells key={memAnimKey} progress={getSpring("cpu.decoder.progress.progress")} phase={cycle?.phase} />
+                    </svg>
+                  </div>
+                  {/* Columna Secuenciador */}
+                  <div className="flex flex-col items-center min-w-[90px]">
+                    <span className="mb-0.5 flex items-center gap-1 text-[10px] font-bold text-sky-100 drop-shadow-[0_0_6px_rgba(56,189,248,0.6)] tracking-wide text-center" style={{minHeight: '18px'}}>
+                      <span className="w-4 h-4 flex items-center justify-center bg-sky-400 rounded-full animate-pulse shadow-[0_0_4px_rgba(56,189,248,0.6)] text-[10px] font-extrabold text-white" style={{fontVariantNumeric:'tabular-nums', fontFamily:'monospace'}}>2</span>
+                      Secuenciador
+                    </span>
+                    <AnimatedSequencerChip active={sequencerActive} />
+                  </div>
                 </div>
-                <div className="flex flex-row items-center gap-2">
-                  {/* Memoria de control */}
-                  <svg width="70" height="38" viewBox="0 0 70 38" className="mb-1" style={{filter: 'drop-shadow(0 0 8px rgba(232,121,249,0.25))'}}>
-                    {/* Cuerpo de la memoria */}
-                    <rect x="8" y="6" width="54" height="26" rx="4" fill="#a21caf" stroke="#e879f9" strokeWidth="2" />
-                    {/* Pines laterales */}
-                    {Array.from({length: 4}).map((_, i) => (
-                      <rect key={i} x={2} y={9 + i*6} width={6} height={2} rx={1} fill="#e879f9" />
-                    ))}
-                    {Array.from({length: 4}).map((_, i) => (
-                      <rect key={i} x={62} y={9 + i*6} width={6} height={2} rx={1} fill="#e879f9" />
-                    ))}
-                    {/* Celdas de memoria animadas con efecto de lectura sincronizadas con la barra del decodificador */}
-                    <AnimatedMemoryCells key={memAnimKey} progress={getSpring("cpu.decoder.progress.progress")} phase={cycle?.phase} />
-                  </svg>
-                  {/* Secuenciador animado */}
-                  <AnimatedSequencerChip active={sequencerActive} />
-                </div>
-                <span className="text-[9px] text-fuchsia-200 font-semibold tracking-wide">Lectura microinstrucción</span>
               </div>
             </div>
 
