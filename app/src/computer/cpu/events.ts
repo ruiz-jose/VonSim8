@@ -399,8 +399,14 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       ) {
         console.log("Animando bus de datos: MBR → MAR", { instructionName, mode });
         await drawDataPath("MBR", "MAR", instructionName, mode);
-      } else if (["AL", "BL", "CL", "DL", "ri"].includes(normalizedRegister) && !isALUOp) {
-        await drawDataPath("MBR", normalizedRegister as DataRegister, instructionName, mode);
+      } else if (["AL", "BL", "CL", "DL", "ri"].includes(normalizedRegister)) {
+        // Para instrucciones ADD, SUB, CMP con memoria, mostrar animación MBR → ri
+        const aluOpsWithMemory = ["ADD", "SUB", "CMP"];
+        const isALUOpWithMemory = aluOpsWithMemory.some(op => instructionName.startsWith(op));
+        
+        if (!isALUOp || isALUOpWithMemory) {
+          await drawDataPath("MBR", normalizedRegister as DataRegister, instructionName, mode);
+        }
       }
 
       // Segundo: Actualizar el valor del registro después de que termine la animación del bus
