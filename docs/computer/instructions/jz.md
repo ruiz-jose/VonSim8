@@ -1,6 +1,6 @@
 # JZ
 
-Esta instrucción salta solo sí `ZF=1`. Los [_flags_](../cpu#flags) no se modifican.
+Esta instrucción salta solo sí `Z=1`. Los [_flags_](../cpu#flags) no se modifican.
 
 De saltar, copiará la dirección de salto en `IP`.
 
@@ -15,16 +15,18 @@ _etiqueta_ debe ser una etiqueta que apunta a una instrucción.
 ### Ejemplo
 
 ```vonsim
-        org 2000h
-salto:  push ax
-        ; --- etc ---
-
-        jz salto ; Válido
-        jz 2000h ; Inválido, debe ser una etiqueta
-        hlt
-        end
+x db 2 
+y db 3
+z db 0
+                mov AL, x
+                cmp AL, y
+                jz EsIgual
+                jmp Fin
+EsIgual:        add AL, y
+                mov z, AL 
+Fin:            hlt
 ```
 
 ## Codificación
 
-`00100010`, _dir-low_, _dir-high_
+`1100 0001`  _dir_

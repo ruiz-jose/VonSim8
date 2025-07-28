@@ -13,17 +13,19 @@ El lenguaje ensamblador (o lenguaje _assembly_) utilizado por el simulador se es
 db 24     ; DB es la directiva para escribir un byte en memoria.
           ; En este caso, se escribe el byte 24.
 
-db 24h    ; Los números hexadecimales se escriben con un sufijo h.
-          ; En este caso, se escribe el byte 24h (36).
-
-db 10b    ; Los números binarios se escriben con un sufijo b.
-          ; En este caso, se escribe el byte 10b (2) .
-
-db '0'    ; Los caracteres se escriben entre comillas simples.
-          ; En este caso, se escribe el byte 30h (48).
+db 7  ; Dirección sin etiqueta 
 
 etq db 7  ; 'etq' es una etiqueta. Se utiliza para referenciar una dirección
           ; de memoria.
+
+x db 24h    ; Los números hexadecimales se escriben con un sufijo h.
+          ; En este caso, se escribe el byte 24h (36).
+
+y db 10b    ; Los números binarios se escriben con un sufijo b.
+          ; En este caso, se escribe el byte 10b (2) .
+
+z db '0'    ; Los caracteres se escriben entre comillas simples.
+          ; En este caso, se escribe el byte 30h (48).
 
 db ?      ; El símbolo ? indica que el valor del byte es desconocido. En
           ; este caso, no se escribe nada la dirección.
@@ -32,7 +34,7 @@ str db "Hola, Mundo!" ; También se pueden escribir cadenas de texto en ASCII,
                       ; (H=48h, o=6Fh, l=6Ch, a=61h, ...). En este caso, se
                       ; guardará la cadena.
 
-db 1, 2, 3, 4 ; Se pueden escribir varios bytes en una misma línea.
+v db 1, 2, 3, 4 ; Se pueden escribir varios bytes en una misma línea.
 
 cinco equ 5 ; EQU es la directiva de equivalencia. Se utiliza para definir
             ; constantes. En este caso, se define la constante 'cinco' con
@@ -45,7 +47,7 @@ mov al, bl ; Las instrucciones se escriben con mnemónicos. En este caso, se
            ; copia el contenido del registro BL en el registro AL.
            ; Los operandos van separados por coma.
 
-inst: mov ax, 5 ; Las etiquetas se pueden utilizar para referenciar una
+inst: mov al, 5 ; Las etiquetas se pueden utilizar para referenciar una
                 ; instrucción. La etiqueta 'inst' se puede utilizar para
                 ; referenciar la ubicación en memoria de este MOV.
 
@@ -79,7 +81,7 @@ En el primer caso, se accede directamente a la dirección de memoria `12h`. En e
 
 ### Valores inmediatos
 
-Los valores inmediatos son valores que se pueden determinar al momento de ensamblar el programa. Por ejemplo, en `mov al, 5` se sabe que se debe copiar el número `5` en `AL`, por lo que el número `5` es un valor inmediato que se almacena en memoria. En cambio, en `mov ax, [bl]` no se sabe qué valor se debe copiar en `AL`, ya que depende del contenido de `BL`. Por lo tanto, `[bl]` no es un valor inmediato.
+Los valores inmediatos son valores que se pueden determinar al momento de ensamblar el programa. Por ejemplo, en `mov al, 5` se sabe que se debe copiar el número `5` en `AL`, por lo que el número `5` es un valor inmediato que se almacena en memoria. En cambio, en `mov al, [bl]` no se sabe qué valor se debe copiar en `AL`, ya que depende del contenido de `BL`. Por lo tanto, `[bl]` no es un valor inmediato.
 
 Estos valores inmediatos son números, que se pueden escribir de la siguiente forma:
 
