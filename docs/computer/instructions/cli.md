@@ -1,6 +1,6 @@
 # CLI
 
-Esta instrucción inhabilita las [interrupciones](../cpu#interrupciones) por hardware, cambiando la [_flag_](../cpu#flags) `IF=0`.
+Esta instrucción inhabilita las [interrupciones](../cpu#interrupciones) por hardware, cambiando la [_flag_](../cpu#flags) `I=0`.
 
 ## Uso
 
@@ -10,4 +10,4 @@ CLI
 
 ## Codificación
 
-`00011000`
+`0001_1000`

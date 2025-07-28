@@ -44,7 +44,6 @@ El operando `dirección de memoria` puede ser directo o indirecto, directo es la
 
 `Rx` o `Ry`: Índices de registros, número entre `0` y `3`, cada índice es de 2 bits.
 
-
 | Registro | Binario | Decimal |
 |:--------:|:-------:|:-------:|
 |   AL     |   00    |    0    |

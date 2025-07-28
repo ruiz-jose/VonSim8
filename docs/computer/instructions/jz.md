@@ -29,4 +29,4 @@ Fin:            hlt
 
 ## Codificación
 
-`1100 0001`  _dir_
+`1100_0001`  _dir_

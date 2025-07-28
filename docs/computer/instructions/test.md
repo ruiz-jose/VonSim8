@@ -25,7 +25,6 @@ Las combinaciones válidas de _dest_, _fuente_ son:
 
 (Ver [tipos de operandos](../assembly#operandos))
 
-
 ## Codificación
 
 ### Carga a registro

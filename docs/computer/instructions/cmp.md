@@ -4,10 +4,10 @@ Esta instrucción le resta el operando fuente al operando destino. El ninguno de
 
 Los [_flags_](../cpu#flags) se modifican de la siguiente manera:
 
-- Si la resta no entra en el operando destino, entonces `CF=1`. De lo contrario, `CF=0`.
-- Si el resultado es cero, entonces `ZF=1`. De lo contrario, `ZF=0`.
-- Si el el bit más significativo del resultado es `1`, entonces `SF=1`. De lo contrario, `SF=0`.
-- Si la resta de un número positivo con un número negativo da un número negativo o la resta de un número negativo con un número positivo da un número positivo, entonces `OF=1`. De lo contrario, `OF=0`.
+- Si el resultado es cero, entonces `Z=1`. De lo contrario, `Z=0`.
+- Si la resta no entra en el operando destino, entonces `C=1`. De lo contrario, `C=0`.
+- Si el el bit más significativo del resultado es `1`, entonces `S=1`. De lo contrario, `S=0`.
+- Si la resta de un número positivo con un número negativo da un número negativo o la resta de un número negativo con un número positivo da un número positivo, entonces `O=1`. De lo contrario, `O=0`.
 
 ## Uso
 

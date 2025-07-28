@@ -1,6 +1,6 @@
 # JO
 
-Esta instrucción salta solo sí `OF=1`. Los [_flags_](../cpu#flags) no se modifican.
+Esta instrucción salta solo sí `O=1`. Los [_flags_](../cpu#flags) no se modifican.
 
 De saltar, copiará la dirección de salto en `IP`.
 
@@ -15,16 +15,18 @@ _etiqueta_ debe ser una etiqueta que apunta a una instrucción.
 ### Ejemplo
 
 ```vonsim
-        org 2000h
-salto:  push ax
-        ; --- etc ---
-
-        jo salto ; Válido
-        jo 2000h ; Inválido, debe ser una etiqueta
-        hlt
-        end
+x db 2 
+y db 3
+z db 0
+                mov AL, x
+                cmp AL, y
+                jo EsNeg
+                jmp Fin
+EsNeg:          add AL, y
+                mov z, AL 
+Fin:            hlt
 ```
 
 ## Codificación
 
-`00100110`, _dir-low_, _dir-high_
+`1100_0100`  _dir_
