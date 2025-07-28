@@ -2,7 +2,7 @@
 
 Esta instrucción apila un elemento en la [pila](../cpu#pila). El operando fuente no se modifica. Los [_flags_](../cpu#flags) no se modifican.
 
-Esta instrucción primero decrementa el registro `SP` en 2 y luego almacena el operando fuente en la dirección apuntada por `SP`.
+Esta instrucción primero decrementa el registro `SP` en 1 y luego almacena el operando fuente en la dirección apuntada por `SP`.
 
 ## Uso
 
@@ -14,17 +14,13 @@ _fuente_ solo puede ser un registro de 16 bits (ver [tipos de operandos](../asse
 
 ## Codificación
 
-`01100rrr`
+`011000Ry`
 
-Donde `rrr` codifica el registro fuente según esta tabla:
+`Ry`: Índices de registros, número entre `0` y `3`, cada índice es de 2 bits.
 
-| `rrr` | _fuente_ |
-| :---: | :------: |
-| `000` |   `AX`   |
-| `001` |   `CX`   |
-| `010` |   `DX`   |
-| `011` |   `BX`   |
-| `100` |   `SP`   |
-| `101` |    --    |
-| `110` |    --    |
-| `111` |    --    |
+| Registro | Binario | Decimal |
+|:--------:|:-------:|:-------:|
+|   AL     |   00    |    0    |
+|   BL     |   01    |    1    |
+|   CL     |   10    |    2    |
+|   DL     |   11    |    3    |

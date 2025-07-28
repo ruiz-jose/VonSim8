@@ -1,6 +1,6 @@
 # JNC
 
-Esta instrucción salta solo sí `CF=0`. Los [_flags_](../cpu#flags) no se modifican.
+Esta instrucción salta solo sí `C=0`. Los [_flags_](../cpu#flags) no se modifican.
 
 De saltar, copiará la dirección de salto en `IP`.
 
@@ -15,16 +15,18 @@ _etiqueta_ debe ser una etiqueta que apunta a una instrucción.
 ### Ejemplo
 
 ```vonsim
-        org 2000h
-salto:  push ax
-        ; --- etc ---
-
-        jnc salto ; Válido
-        jnc 2000h ; Inválido, debe ser una etiqueta
-        hlt
-        end
+x db 2 
+y db 3
+z db 0
+                mov AL, x
+                cmp AL, y
+                jnc NoEsMenor
+                jmp Fin
+NoEsMenor:      add AL, y
+                mov z, AL 
+Fin:            hlt
 ```
 
 ## Codificación
 
-`00100001`, _dir-low_, _dir-high_
+`1100_0101`  _dir_

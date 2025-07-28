@@ -27,40 +27,31 @@ Las combinaciones válidas de _dest_, _fuente_ son:
 
 ## Codificación
 
+### Carga a registro
 - REGISTRO a registro  
-  `1010110w`, `00RRRrrr`
+  `1001_RxRy`
 - Memoria (directo) a registro  
-  `1010110w`, `01000rrr`, _dir-low_, _dir-high_
-- Memoria (indirecto) a registro  
-  `1010110w`, `01010rrr`
-- Memoria (indirecto con desplazamiento) a registro  
-  `1010110w`, `01100rrr`, _desp-low_, _desp-high_
+  `1010_Rx00`, _dir_
+- Memoria (indirecto `BL`) a registro  
+  `1010_Rx01`
 - Inmediato a registro  
-  `1010110w`, `01001rrr`, _dato-low_, _dato-high_
+  `1010_Rx10`, _dato_
+
+### Almacenar en memoria
 - Registro a memoria (directo)  
-  `1010110w`, `11000rrr`, _dir-low_, _dir-high_
-- Registro a memoria (indirecto)  
-  `1010110w`, `11010rrr`
-- Registro a memoria (indirecto con desplazamiento)  
-  `1010110w`, `11100rrr`, _desp-low_, _desp-high_
-- Inmediato a memoria (directo)  
-  `1010110w`, `11001000`, _dir-low_, _dir-high_, _dato-low_, _dato-high_
-- Inmediato a memoria (indirecto)  
-  `1010110w`, `11011000`, _dato-low_, _dato-high_
-- Inmediato a memoria (indirecto con desplazamiento)  
-  `1010110w`, `11101000`, _desp-low_, _desp-high_, _dato-low_, _dato-high_
+  `1011_00Ry`, _dir_
+- Registro a memoria (indirecto `BL`)  
+  `1011_01Ry`
+- Inmediato a memoria (directo)
+  `1011_1100`, _dir_, _dato_
+- Inmediato a memoria (indirecto `BL`)  
+  `1011_1101`, _dato_
 
-Donde `w` es el bit de tamaño de los operandos. `w=0` indica operandos de 8 bits y `w=1` operandos de 16 bits. Cuando `w=0`, _dato-high_ es obviado (la longitud de la instrucción es de un byte menos).
+`Rx` o `Ry`: Índices de registros, número entre `0` y `3`, cada índice es de 2 bits.
 
-`rrr` o `RRR` codifica un registro según la siguiente tabla:
-
-| `rrr` | `w=0` | `w=1` |
-| :---: | :---: | :---: |
-| `000` | `AL`  | `AX`  |
-| `001` | `CL`  | `CX`  |
-| `010` | `DL`  | `DX`  |
-| `011` | `BL`  | `BX`  |
-| `100` | `AH`  | `SP`  |
-| `101` | `CH`  |  --   |
-| `110` | `DH`  |  --   |
-| `111` | `BH`  |  --   |
+| Registro | Binario | Decimal |
+|:--------:|:-------:|:-------:|
+|   AL     |   00    |    0    |
+|   BL     |   01    |    1    |
+|   CL     |   10    |    2    |
+|   DL     |   11    |    3    |

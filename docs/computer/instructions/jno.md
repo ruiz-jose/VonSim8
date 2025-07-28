@@ -15,14 +15,13 @@ _etiqueta_ debe ser una etiqueta que apunta a una instrucción.
 ### Ejemplo
 
 ```vonsim
-        org 2000h
-salto:  push ax
-        ; --- etc ---
-
-        jno salto ; Válido
-        jno 2000h ; Inválido, debe ser una etiqueta
-        hlt
-        end
+                mov AL, x
+                cmp AL, y
+                jno NoEsNeg
+                jmp Fin
+NoEsNeg:        add AL, y
+                mov z, AL 
+Fin:            hlt
 ```
 
 ## Codificación

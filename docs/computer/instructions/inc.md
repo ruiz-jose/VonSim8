@@ -4,10 +4,10 @@ Esta instrucción suma uno al operando destino y almacena el resultado en el mis
 
 Los [_flags_](../cpu#flags) se modifican de la siguiente manera:
 
-- Si la suma no entra en el operando destino, entonces `CF=1`. De lo contrario, `CF=0`.
-- Si el resultado es cero, entonces `ZF=1`. De lo contrario, `ZF=0`.
-- Si el el bit más significativo del resultado es `1`, entonces `SF=1`. De lo contrario, `SF=0`.
-- Si el operando es positivo y el resultado negativo, entonces `OF=1`. De lo contrario, `OF=0`.
+- Si el resultado es cero, entonces `Z=1`. De lo contrario, `Z=0`.
+- Si la suma no entra en el operando destino, entonces `C=1`. De lo contrario, `C=0`.
+- Si el el bit más significativo del resultado es `1`, entonces `S=1`. De lo contrario, `S=0`.
+- Si el operando es positivo y el resultado negativo, entonces `O=1`. De lo contrario, `O=0`.
 
 ## Uso
 
