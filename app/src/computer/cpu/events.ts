@@ -25,6 +25,11 @@ const BUS_ANIMATION_DURATION = 5;
 // Variables para rastrear transferencias simultáneas a left y right
 let pendingLeftTransfer: { from: DataRegister; instruction: string; mode: string } | null = null;
 let pendingRightTransfer: { from: DataRegister; instruction: string; mode: string } | null = null;
+let waitingForALUCogAnimation = false;
+let aluCogAnimationComplete = false;
+let currentPhase = "fetching";
+let waitingForFetchingOperands = false;
+let waitingForExecuting = false;
 
 const drawDataPath = (from: DataRegister, to: DataRegister, instruction: string, mode: string) => {
   try {
@@ -68,6 +73,54 @@ const drawSimultaneousLeftRightPath = (from: DataRegister, instruction: string, 
 const resetDataPath = () =>
   anim({ key: "cpu.internalBus.data.opacity", to: 0 }, { duration: 1, easing: "easeInSine" });
 
+// Función para manejar la animación simultánea de manera asíncrona
+const handleSimultaneousAnimation = async (src: DataRegister, instructionName: string, mode: string) => {
+  console.log("🎯 Animación simultánea detectada: left y right desde", src);
+  
+  // Esperar a que estemos en la fase "fetching-operands"
+  if (currentPhase !== "fetching-operands") {
+    console.log("⏳ Esperando fase fetching-operands para animación simultánea...");
+    waitingForFetchingOperands = true;
+    await new Promise<void>((resolve) => {
+      const checkPhase = () => {
+        if (currentPhase === "fetching-operands") {
+          waitingForFetchingOperands = false;
+          resolve();
+        } else {
+          setTimeout(checkPhase, 50); // Verificar cada 50ms
+        }
+      };
+      checkPhase();
+    });
+    console.log("✅ Fase fetching-operands alcanzada, procediendo con animación simultánea");
+  }
+  
+  await drawSimultaneousLeftRightPath(src as DataRegister, instructionName, mode);
+  
+  // Activar ambos registros simultáneamente
+  await Promise.all([
+    activateRegister("cpu.left" as RegisterKey),
+    activateRegister("cpu.right" as RegisterKey)
+  ]);
+  
+  // Actualizar ambos registros
+  store.set(registerAtoms.left, store.get(registerAtoms[src]));
+  store.set(registerAtoms.right, store.get(registerAtoms[src]));
+  
+  // Desactivar ambos registros simultáneamente
+  await Promise.all([
+    deactivateRegister("cpu.left" as RegisterKey),
+    deactivateRegister("cpu.right" as RegisterKey)
+  ]);
+  
+  // Limpiar las transferencias pendientes
+  pendingLeftTransfer = null;
+  pendingRightTransfer = null;
+  
+  // Resetear la animación del bus para que termine la animación simultánea
+  await resetDataPath();
+};
+
 let instructionName = "";
 let mode = "";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -110,7 +163,38 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
   }
   switch (event.type) {
     case "cpu:alu.execute": {
+      console.log("🚀 Evento cpu:alu.execute recibido, fase actual:", currentPhase);
       const pathsDrawConfig = { duration: 3, easing: "easeInOutSine" } as const;
+
+      // Esperar a que estemos en la fase "executing" o proceder si ya estamos en ella
+      if (currentPhase !== "executing") {
+        console.log("⏳ Esperando fase executing para animación de la ALU...");
+        waitingForExecuting = true;
+        await new Promise<void>((resolve) => {
+          let timeoutCount = 0;
+          const maxTimeouts = 200; // 10 segundos máximo (200 * 50ms)
+          
+          const checkPhase = () => {
+            console.log("🔍 Verificando fase actual:", currentPhase);
+            timeoutCount++;
+            
+            if (currentPhase === "executing") {
+              waitingForExecuting = false;
+              resolve();
+            } else if (timeoutCount >= maxTimeouts) {
+              console.warn("⚠️ Timeout esperando fase executing, procediendo de todas formas");
+              waitingForExecuting = false;
+              resolve();
+            } else {
+              setTimeout(checkPhase, 50); // Verificar cada 50ms
+            }
+          };
+          checkPhase();
+        });
+        console.log("✅ Fase executing alcanzada, procediendo con animación de la ALU");
+      } else {
+        console.log("✅ Ya estamos en fase executing, procediendo directamente");
+      }
 
       await anim(
         [
@@ -120,6 +204,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         pathsDrawConfig,
       );
       store.set(aluOperationAtom, event.operation);
+      console.log("⚙️ Iniciando animación del engranaje de la ALU...");
       await Promise.all([
         anim(
           { key: "cpu.alu.operation.backgroundColor", to: colors.mantis[400] },
@@ -127,28 +212,36 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         ),
         anim({ key: "cpu.alu.cog.rot", to: 6 }, { duration: 10, easing: "easeInOutCubic" }),
       ]);
-      await Promise.all([
-        anim(
-          { key: "cpu.alu.operation.backgroundColor", to: colors.stone[800] },
-          { duration: 1, easing: "easeOutQuart" },
-        ),
-        anim(
-          [
-            { key: "cpu.alu.results.opacity", from: 1 },
-            { key: "cpu.alu.results.strokeDashoffset", from: 1, to: 0 },
-          ],
-          pathsDrawConfig,
-        ),
-      ]);
+      console.log("✅ Animación del engranaje completada");
+      
+      await anim(
+        { key: "cpu.alu.operation.backgroundColor", to: colors.stone[800] },
+        { duration: 1, easing: "easeOutQuart" },
+      );
+      
+      // Animación del bus de resultado (color amarillo)
+      console.log("🟡 Iniciando animación del bus de resultado...");
+      await anim(
+        [
+          { key: "cpu.alu.results.opacity", from: 1 },
+          { key: "cpu.alu.results.strokeDashoffset", from: 1, to: 0 },
+        ],
+        pathsDrawConfig,
+      );
+      
       await Promise.all([activateRegister("cpu.result"), activateRegister("cpu.FLAGS")]);
       store.set(registerAtoms.FLAGS, event.flags);
       store.set(registerAtoms.result, event.result);
       await Promise.all([deactivateRegister("cpu.result"), deactivateRegister("cpu.FLAGS")]);
+      
+      // Ocultar el bus de resultado
       await anim(
-        [
-          { key: "cpu.alu.operands.opacity", to: 0 },
-          { key: "cpu.alu.results.opacity", to: 0 },
-        ],
+        { key: "cpu.alu.results.opacity", to: 0 },
+        { duration: 1, easing: "easeInSine" },
+      );
+      
+      await anim(
+        { key: "cpu.alu.operands.opacity", to: 0 },
         { duration: 1, easing: "easeInSine" },
       );
       return;
@@ -158,6 +251,11 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       // Limpiar transferencias pendientes al final del ciclo
       pendingLeftTransfer = null;
       pendingRightTransfer = null;
+      waitingForALUCogAnimation = false;
+      aluCogAnimationComplete = false;
+      currentPhase = "fetching";
+      waitingForFetchingOperands = false;
+      waitingForExecuting = false;
       return;
     }
 
@@ -193,6 +291,11 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       // Limpiar transferencias pendientes al inicio de un nuevo ciclo
       pendingLeftTransfer = null;
       pendingRightTransfer = null;
+      waitingForALUCogAnimation = false;
+      aluCogAnimationComplete = false;
+      currentPhase = "fetching";
+      waitingForFetchingOperands = false;
+      waitingForExecuting = false;
 
       highlightCurrentInstruction(event.instruction.position.start);
       store.set(cycleAtom, { phase: "fetching", metadata: event.instruction });
@@ -209,24 +312,30 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
     }
 
     case "cpu:cycle.update": {
+      // Determinar la nueva fase
+      const newPhase = event.phase === "execute"
+        ? "executing"
+        : event.phase === "writeback"
+          ? "writeback"
+          : event.next === "fetch-operands"
+            ? "fetching-operands"
+            : event.next === "execute"
+              ? "executing"
+            : event.next === "writeback"
+              ? "writeback"
+            : event.next === "halting"
+              ? "halting"
+              : "fetching";
+      
+      // Actualizar la variable global de fase
+      currentPhase = newPhase;
+      console.log("🔄 Fase del ciclo actualizada:", currentPhase);
+      
       store.set(cycleAtom, prev => {
         if (!("metadata" in prev)) return prev;
         return {
           ...prev,
-          phase:
-            event.phase === "execute"
-              ? "executing"
-              : event.phase === "writeback"
-                ? "writeback"
-                : event.next === "fetch-operands"
-                  ? "fetching-operands"
-                  : event.next === "execute"
-                    ? "executing"
-                  : event.next === "writeback"
-                    ? "writeback"
-                  : event.next === "halting"
-                    ? "halting"
-                    : prev.phase,
+          phase: newPhase,
         };
       });
       return;
@@ -465,34 +574,11 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
             pendingLeftTransfer.from === pendingRightTransfer.from &&
             pendingLeftTransfer.instruction === pendingRightTransfer.instruction) {
           
-          console.log("🎯 Animación simultánea detectada: left y right desde", src);
-          await drawSimultaneousLeftRightPath(src as DataRegister, instructionName, mode);
+          // Usar la nueva función de animación simultánea que espera la animación del engranaje
+          await handleSimultaneousAnimation(src as DataRegister, instructionName, mode);
           
-          // Activar ambos registros simultáneamente
-          await Promise.all([
-            activateRegister("cpu.left" as RegisterKey),
-            activateRegister("cpu.right" as RegisterKey)
-          ]);
-          
-          // Actualizar ambos registros
-          store.set(registerAtoms.left, store.get(registerAtoms[src]));
-          store.set(registerAtoms.right, store.get(registerAtoms[src]));
-          
-          // Desactivar ambos registros simultáneamente
-          await Promise.all([
-            deactivateRegister("cpu.left" as RegisterKey),
-            deactivateRegister("cpu.right" as RegisterKey)
-          ]);
-          
-          // Limpiar las transferencias pendientes
-          pendingLeftTransfer = null;
-          pendingRightTransfer = null;
-          
-          // Resetear la animación del bus para que termine la animación simultánea
-          await resetDataPath();
-          
-          // NO hacer return aquí para permitir que continúen las animaciones normales
-          // Solo actualizar los registros y continuar
+          // Hacer return aquí para evitar que se ejecute la animación individual
+          return;
         }
         
         // Si solo tenemos una transferencia, esperar a la otra sin hacer animación individual
@@ -503,8 +589,9 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
           store.set(registerAtoms.right, store.get(registerAtoms[src]));
         }
         
-        // NO hacer return aquí para permitir que continúen las animaciones normales
+        // Hacer return aquí para evitar que se ejecute la animación individual
         // La animación se hará cuando se complete la transferencia simultánea
+        return;
       }
       
       // Para transferencias normales (no a left/right)
