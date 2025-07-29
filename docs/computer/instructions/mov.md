@@ -37,7 +37,7 @@ El operando `dirección de memoria` puede ser directo o indirecto, directo es la
   `0010_00Ry`, _dir_
 - Registro a memoria (indirecto `BL`)  
   `0010_01Ry`
-- Inmediato a memoria (directo)
+- Inmediato a memoria (directo)  
   `0010_1100`, _dir_, _dato_
 - Inmediato a memoria (indirecto `BL`)  
   `0010_1101`, _dato_

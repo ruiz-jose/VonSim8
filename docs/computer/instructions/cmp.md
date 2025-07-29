@@ -42,7 +42,7 @@ Las combinaciones válidas de _dest_, _fuente_ son:
   `1011_00Ry`, _dir_
 - Registro a memoria (indirecto `BL`)  
   `1011_01Ry`
-- Inmediato a memoria (directo)
+- Inmediato a memoria (directo)  
   `1011_1100`, _dir_, _dato_
 - Inmediato a memoria (indirecto `BL`)  
   `1011_1101`, _dato_
