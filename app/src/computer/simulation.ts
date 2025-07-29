@@ -1157,6 +1157,23 @@ async function dispatch(...args: Action) {
       if (shouldReset) {
         finishSimulation();
         resetState(simulator.getComputerState(), shouldReset); // Pasar el parámetro clearRegisters
+        
+        // Limpiar todas las animaciones de bus activas
+        const { anim } = await import("@/computer/shared/animate");
+        await Promise.all([
+          anim({ key: "cpu.internalBus.data.opacity", to: 0 }, { duration: 0.1, easing: "easeInSine" }),
+          anim({ key: "cpu.internalBus.address.opacity", to: 0 }, { duration: 0.1, easing: "easeInSine" }),
+        ]);
+        
+        // Disparar evento para ocultar el registro ri cuando se presiona reset
+        const resetEvent = new CustomEvent("instructionChange", {
+          detail: {
+            instruction: "",
+            modeid: false,
+            moderi: false,
+          },
+        });
+        window.dispatchEvent(resetEvent);
       } else {
         pauseSimulation();
       }
