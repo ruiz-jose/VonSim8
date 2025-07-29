@@ -248,7 +248,12 @@ export function CPU() {
       {/* Eliminado para evitar duplicado visual del registro IP */}
 
       {showri && (
-        <Reg name="ri" emphasis className={clsx("left-[470px] top-[372px]", "border-cyan-400")} />
+        <div className="absolute left-[450px] top-[372px] z-10">
+          <Reg name="ri" emphasis className="border-cyan-400" />
+          <span className="absolute left-0 top-0 z-30 select-none rounded-full border border-cyan-400 bg-cyan-800 px-1 py-0 font-mono text-xs font-bold tracking-widest text-cyan-400">
+            ri
+          </span>
+        </div>
       )}
 
       {/* Eliminado MAR duplicado sin título */}

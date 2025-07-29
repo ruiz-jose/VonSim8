@@ -186,9 +186,9 @@ const registerColors = {
   FLAGS: "#F59E0B", // amber 500
   result: "#10B981", // emerald 500
 
-  // Registros de instrucción - usar tonos naranjas/amarillos
+  // Registros de instrucción - usar colores específicos
   id: "#F97316", // orange 500
-  ri: "#EA580C", // orange 600
+  ri: "#06B6D4", // cyan 500 - coincide con el color del registro ri
 
   // Registros ALU - usar tonos verdes
   left: "#22C55E", // green 500

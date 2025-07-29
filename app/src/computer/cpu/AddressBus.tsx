@@ -22,7 +22,7 @@ export function generateAddressPath(
 ): string {
   let path = "";
   if (showpath1) {
-    path = "M 470 388 H 550 V 349 H 659"; // ri - ajustado para conectar con MAR desde registro redimensionado
+    path = "M 455 388 H 550 V 349 H 659"; // ri - ajustado para conectar con MAR desde registro redimensionado
   }
   if (showpath2) {
     path = "M 629 250 H 550 V 349 H 659"; // mbr - ajustado para conectar con MAR

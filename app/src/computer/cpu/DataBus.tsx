@@ -33,7 +33,7 @@ dataBus.addNode("DL", { position: [455, 165] }); // Ajustado para el centro del 
 dataBus.addNode("id", { position: [451, 205] });
 dataBus.addNode("SP", { position: [451, 309] });
 dataBus.addNode("IP", { position: [455, 349] }); // Más centrado visualmente respecto al registro IP
-dataBus.addNode("ri", { position: [451, 388] });
+dataBus.addNode("ri", { position: [455, 388] });
 dataBus.addNode("MAR", { position: [698, 349] });
 dataBus.addNode("result", { position: [272, 115] });
 dataBus.addNode("NodoRegIn", { position: [390, 115] }); // Antes: [370, 115]
@@ -270,6 +270,7 @@ export function generateDataPath(
   mode?: string,
   options?: { separateMBRPaths?: boolean; direction?: "left" | "right" },
 ): string {
+  console.log("🔍 generateDataPath llamado con:", { from, to, instruction, mode, options });
   // Normalizar nombres de registros para evitar subniveles
   const normalizeRegister = (reg: string): string => {
     // Eliminar sufijos como .l, .h para usar el registro base
@@ -297,6 +298,14 @@ export function generateDataPath(
   ];
 
   let path: string[] = [];
+
+  // Path especial: ri -> MAR para modo mem<-imd (DEBE ir ANTES de la verificación de MAR)
+  console.log("🔍 Evaluando condición ri → MAR:", { normalizedFrom, normalizedTo, mode, condition: normalizedFrom === "ri" && normalizedTo === "MAR" && mode === "mem<-imd" });
+  if (normalizedFrom === "ri" && normalizedTo === "MAR" && mode === "mem<-imd") {
+    // Ruta directa desde ri hasta MAR para instrucciones con modo directo e inmediato
+    console.log("🎯 Usando ruta especial ri → MAR:", "M 455 388 H 550 V 349 H 659");
+    return "M 455 388 H 550 V 349 H 659";
+  }
 
   // Verificar que los nodos existen en el grafo antes de calcular la ruta
   if (!dataBus.hasNode(normalizedFrom)) {
@@ -434,11 +443,24 @@ export function generateDataPath(
       "MBR",
     ];
   } else if (normalizedFrom === "MBR" && normalizedTo === "ri") {
+    // Casos específicos para MBR -> ri según instrucción y modo
     if (["JMP", "JC", "JZ"].includes(instruction ?? "")) {
       // Para saltos, animar MBR -> IP pasando por IP join
       path = ["MBR", "mbr reg join", "IP join", "IP"];
+    } else if (
+      (instruction === "MOV" || instruction === "INT") &&
+      mode === "mem<-imd"
+    ) {
+      // Para instrucciones MOV/INT con modo mem<-imd, usar ruta directa MBR -> ri
+      path = ["MBR", "mbr reg join", "ri join", "ri"];
+    } else if (
+      mode === "mem<-imd" &&
+      (instruction === "ADD" || instruction === "SUB")
+    ) {
+      // Para instrucciones ADD/SUB con modo mem<-imd, usar ruta directa MBR -> ri
+      path = ["MBR", "mbr reg join", "ri join", "ri"];
     } else {
-      // Usar la ruta del AddressBus (showpath2): MBR -> MAR
+      // Para otros casos, usar la ruta del AddressBus (showpath2): MBR -> MAR
       return "M 629 250 H 550 V 349 H 659";
     }
     // Generar el path SVG
@@ -482,15 +504,14 @@ export function generateDataPath(
   //   // return ...
   // }
 
-  // Path especial: MBR -> ri (siempre) - usando ruta del AddressBus
-  if (normalizedFrom === "MBR" && normalizedTo === "ri") {
-    return "M 629 250 H 550 V 349 H 659";
-  }
+
 
   // Path especial: ri -> IP (siempre)
   if (normalizedFrom === "ri" && normalizedTo === "IP") {
-    return "M 451 388 H 550 V 349 H 455";
+    return "M 455 388 H 550 V 349 H 455";
   }
+
+
 
   // Resto de la lógica específica de instrucciones usando nombres normalizados
   if (normalizedFrom === "ri" && normalizedTo === "IP") {
@@ -523,29 +544,11 @@ export function generateDataPath(
   }
 
   if (
-    normalizedFrom === "MBR" &&
-    normalizedTo === "ri" &&
-    (instruction === "MOV" || instruction === "INT") &&
-    mode === "mem<-imd"
-  ) {
-    path = ["MBR", "mbr reg join", "NodoRegIn", "ri join", "ri"];
-  }
-
-  if (
     normalizedFrom === "IP" &&
     normalizedTo === "MBR" &&
     (instruction === "INT" || instruction === "CALL")
   ) {
     return "M 510 349 H 550 V 250 H 620";
-  }
-
-  if (
-    normalizedFrom === "MBR" &&
-    normalizedTo === "ri" &&
-    mode === "mem<-imd" &&
-    (instruction === "ADD" || instruction === "SUB")
-  ) {
-    path = ["MBR", "mbr reg join", "NodoRegIn", "ri join", "ri"];
   }
 
   if (path.length === 0) {
@@ -562,6 +565,7 @@ export function generateDataPath(
     d += ` L ${x} ${y}`;
   }
 
+  console.log("🎯 generateDataPath retornando:", d);
   return d;
 }
 
@@ -604,7 +608,7 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
           // "V 250", // Long path to MBR, eliminado
           "M 451 349 H 390 V 250", // IP alineado y vertical hasta data mbr join/NodoRegIn
           showSP ? "M 451 309 H 390" : "M 451 309", // SP alineado
-          showri ? "M 470 388 H 390 V 300" : "", // ri alineado
+          showri ? "M 455 388 H 390 V 300" : "", // ri alineado
           // Data registers - ajustados para conectar con registros más pequeños
           "M 455 45 H 425", // AL - ajustado
           //"V 170", // Long path to MBR, here to get nice joins

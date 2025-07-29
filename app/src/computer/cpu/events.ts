@@ -20,6 +20,8 @@ import { colors } from "@/lib/tailwind";
 import { DataRegister, generateDataPath, generateSimultaneousLeftRightPath } from "./DataBus";
 import { aluOperationAtom, cycleAtom, MARAtom, MBRAtom, registerAtoms } from "./state";
 
+console.log("🔧 generateDataPath importado:", typeof generateDataPath);
+
 const BUS_ANIMATION_DURATION = 5;
 
 // Variables para rastrear transferencias simultáneas a left y right
@@ -33,9 +35,17 @@ let currentPhase = "fetching";
 // let _waitingForExecuting = false;
 
 const drawDataPath = (from: DataRegister, to: DataRegister, instruction: string, mode: string) => {
+  console.log("🎨 drawDataPath llamado con:", { from, to, instruction, mode });
   try {
+    console.log("🔧 Antes de llamar generateDataPath");
+    console.log("🔧 generateDataPath es:", typeof generateDataPath);
     const path = generateDataPath(from, to, instruction, mode);
-    if (!path) return Promise.resolve(); // Si no hay ruta, no animar
+    console.log("🔧 Después de llamar generateDataPath");
+    console.log("🎯 Ruta generada en drawDataPath:", path);
+    if (!path) {
+      console.log("❌ No hay ruta, retornando Promise.resolve()");
+      return Promise.resolve(); // Si no hay ruta, no animar
+    }
 
     return anim(
       [
@@ -46,7 +56,8 @@ const drawDataPath = (from: DataRegister, to: DataRegister, instruction: string,
       { duration: BUS_ANIMATION_DURATION, easing: "easeInOutSine" },
     );
   } catch (error) {
-    console.warn("Error en drawDataPath:", error);
+    console.error("❌ Error en drawDataPath:", error);
+    console.error("❌ Stack trace:", error instanceof Error ? error.stack : "No stack trace");
     return Promise.resolve();
   }
 };
@@ -162,6 +173,9 @@ async function animateMBRAndIP() {
 }
 
 export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<void> {
+  // Log para todos los eventos CPU
+  console.log("🔍 CPU Event:", event.type, event);
+  
   // Trigger de animaciones paralelas (modo principiante)
   if (window.VONSIM_PARALLEL_ANIMATIONS && event.type === "cpu:mar.set") {
     window.dispatchEvent(new CustomEvent("vonsim:parallel-memory-read-visual"));
@@ -279,6 +293,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
     case "cpu:cycle.start": {
       instructionName = event.instruction.name; // Obtén el nombre de la instrucción en curso
       mode = event.instruction.willUse.ri ? "mem<-imd" : ""; // Verifica si willUse.ri es true y establece el modo
+      console.log("[cpu:cycle.start] instructionName:", instructionName, "willUse.ri:", event.instruction.willUse.ri, "mode:", mode, "position:", event.instruction.position);
       showpath1 = event.instruction.willUse.ri && instructionName === "MOV" ? true : false;
       showpath2 =
         event.instruction.willUse.ri &&
@@ -435,6 +450,12 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         event.register,
         "| Animación especial:",
         isFromMBR,
+        "| regNorm:",
+        regNorm,
+        "| mode:",
+        mode,
+        "| instructionName:",
+        instructionName,
       );
 
       // Animación azul (bus de direcciones)
@@ -454,12 +475,28 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
 
       // --- Lógica para animar desde el origen real si MAR se actualiza desde ri ---
       if (regNorm === "ri") {
-        // Si hay un origen previo, úsalo; si no, fuerza BL→MAR
-        const source = lastSourceForRI || "BL";
-        await drawDataPath(normalize(source) as DataRegister, "MAR", instructionName, mode);
+        console.log("[cpu:mar.set] ri detectado, mode:", mode, "instructionName:", instructionName);
+        // Para instrucciones con modo mem<-imd, mostrar animación especial ri -> MAR
+        if (mode === "mem<-imd") {
+          console.log("✅ Animando bus especial: ri → MAR (modo mem<-imd)", { instructionName, mode });
+          console.log("🔧 Llamando drawDataPath con:", { from: "ri", to: "MAR", instructionName, mode });
+          const path = await drawDataPath("ri" as DataRegister, "MAR", instructionName, mode);
+          console.log("🎯 Ruta generada para ri → MAR:", path);
+          // Resetear la animación del bus después de completarse
+          await resetDataPath();
+        } else {
+          console.log("❌ No es modo mem<-imd, usando lógica alternativa");
+          // Si hay un origen previo, úsalo; si no, fuerza BL→MAR
+          const source = lastSourceForRI || "BL";
+          await drawDataPath(normalize(source) as DataRegister, "MAR", instructionName, mode);
+          // Resetear la animación del bus después de completarse
+          await resetDataPath();
+        }
         lastSourceForRI = null;
       } else if (!isFromMBR) {
         await drawDataPath(regNorm as DataRegister, "MAR", instructionName, mode);
+        // Resetear la animación del bus después de completarse
+        await resetDataPath();
       }
 
       await Promise.all([
