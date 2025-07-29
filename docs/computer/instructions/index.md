@@ -21,9 +21,7 @@ Aquí se listan todas las instrucciones que soporta el simulador. Cada instrucci
 | Instrucción                 | Comentario                     | `Z` | `C` | `S` | `O` | `I` |
 | :-------------------------- | :----------------------------- | :-: | :-: | :-: | :-: | :-: |
 | [`ADD dest, fuente`](./add) | Suma _fuente_ a _dest_         |  X  |  X  |  X  |  X  |  -  |
-| [`ADC dest, fuente`](./adc) | Suma _fuente_ y `CF` a _dest_  |  X  |  X  |  X  |  X  |  -  |
 | [`SUB dest, fuente`](./sub) | Resta _fuente_ a _dest_        |  X  |  X  |  X  |  X  |  -  |
-| [`SBB dest, fuente`](./sbb) | Resta _fuente_ y `CF` a _dest_ |  X  |  X  |  X  |  X  |  -  |
 | [`CMP dest, fuente`](./cmp) | Compara _fuente_ con _dest_    |  X  |  X  |  X  |  X  |  -  |
 | [`NEG dest`](./neg)         | Negativo de _dest_             |  X  |  X  |  X  |  X  |  -  |
 | [`INC dest`](./inc)         | Incrementa _dest_              |  X  |  X  |  X  |  X  |  -  |
