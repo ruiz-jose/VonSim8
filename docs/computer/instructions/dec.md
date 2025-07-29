@@ -20,25 +20,18 @@ _dest_ puede ser un registro o una dirección de memoria (ver [tipos de operando
 ## Codificación
 
 - Registro  
-  `0100011w`, `00000rrr`
+  `1111_Rx11`
 - Memoria (directo)  
-  `0100011w`, `11000000`, _dir-low_, _dir-high_
-- Memoria (indirecto)  
-  `0100011w`, `11010000`
-- Memoria (indirecto con desplazamiento)  
-  `0100011w`, `11100000`, _desp-low_, _desp-high_
+  `1111_0011`, _dir_
+- Memoria (indirecto `BL`)
+  `1111_0111`
 
-Donde `w` es el bit de tamaño de los operandos. `w=0` indica operandos de 8 bits y `w=1` operandos de 16 bits.
 
-`rrr` codifica un registro según la siguiente tabla:
+`Rx`: Índices de registros, número entre `0` y `3`, cada índice es de 2 bits.
 
-| `rrr` | `w=0` | `w=1` |
-| :---: | :---: | :---: |
-| `000` | `AL`  | `AX`  |
-| `001` | `CL`  | `CX`  |
-| `010` | `DL`  | `DX`  |
-| `011` | `BL`  | `BX`  |
-| `100` | `AH`  | `SP`  |
-| `101` | `CH`  |  --   |
-| `110` | `DH`  |  --   |
-| `111` | `BH`  |  --   |
+| Registro | Binario | Decimal |
+|:--------:|:-------:|:-------:|
+|   AL     |   00    |    0    |
+|   BL     |   01    |    1    |
+|   CL     |   10    |    2    |
+|   DL     |   11    |    3    |
