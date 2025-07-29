@@ -175,7 +175,7 @@ function AnimatedMemoryCells({
           phase === "fetching" && v === 0 ? 160 : v === 0 ? 160 : 160 - 160 * v,
         )}
         style={{
-          opacity: progress.to(v => (v > 0 && v < 1 ? 0.7 : 0)),
+          opacity: progress.to(v => (v > 0 && v < 1 && phase === "fetching-operands" ? 0.7 : 0)),
           transition: "stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1)",
         }}
       />
@@ -215,12 +215,13 @@ export function Control() {
     setSequencerActive(false);
     let unsub: (() => void) | undefined;
     if (showControlMem) {
-      // Solo activar el secuenciador cuando el progreso de la memoria de control llegue exactamente a 1
+      // Activar el secuenciador solo después de que termine la animación de la memoria de control
       unsub = getSpring("cpu.decoder.progress.progress").to(progress => {
         if (progress === 1) {
+          // Esperar a que termine la animación de la memoria de control antes de activar el secuenciador
           sequencerTimeout = setTimeout(() => {
             setSequencerActive(true);
-          }, 200);
+          }, 800); // Aumentar el delay para que sea después de la animación de memoria de control
         } else {
           if (sequencerTimeout) clearTimeout(sequencerTimeout);
           setSequencerActive(false);
