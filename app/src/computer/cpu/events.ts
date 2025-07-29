@@ -175,7 +175,7 @@ async function animateMBRAndIP() {
 export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<void> {
   // Log para todos los eventos CPU
   console.log("🔍 CPU Event:", event.type, event);
-  
+
   // Trigger de animaciones paralelas (modo principiante)
   if (window.VONSIM_PARALLEL_ANIMATIONS && event.type === "cpu:mar.set") {
     window.dispatchEvent(new CustomEvent("vonsim:parallel-memory-read-visual"));
@@ -293,7 +293,16 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
     case "cpu:cycle.start": {
       instructionName = event.instruction.name; // Obtén el nombre de la instrucción en curso
       mode = event.instruction.willUse.ri ? "mem<-imd" : ""; // Verifica si willUse.ri es true y establece el modo
-      console.log("[cpu:cycle.start] instructionName:", instructionName, "willUse.ri:", event.instruction.willUse.ri, "mode:", mode, "position:", event.instruction.position);
+      console.log(
+        "[cpu:cycle.start] instructionName:",
+        instructionName,
+        "willUse.ri:",
+        event.instruction.willUse.ri,
+        "mode:",
+        mode,
+        "position:",
+        event.instruction.position,
+      );
       showpath1 = event.instruction.willUse.ri && instructionName === "MOV" ? true : false;
       showpath2 =
         event.instruction.willUse.ri &&
@@ -478,8 +487,16 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         console.log("[cpu:mar.set] ri detectado, mode:", mode, "instructionName:", instructionName);
         // Para instrucciones con modo mem<-imd, mostrar animación especial ri -> MAR
         if (mode === "mem<-imd") {
-          console.log("✅ Animando bus especial: ri → MAR (modo mem<-imd)", { instructionName, mode });
-          console.log("🔧 Llamando drawDataPath con:", { from: "ri", to: "MAR", instructionName, mode });
+          console.log("✅ Animando bus especial: ri → MAR (modo mem<-imd)", {
+            instructionName,
+            mode,
+          });
+          console.log("🔧 Llamando drawDataPath con:", {
+            from: "ri",
+            to: "MAR",
+            instructionName,
+            mode,
+          });
           const path = await drawDataPath("ri" as DataRegister, "MAR", instructionName, mode);
           console.log("🎯 Ruta generada para ri → MAR:", path);
           // Resetear la animación del bus después de completarse

@@ -300,7 +300,12 @@ export function generateDataPath(
   let path: string[] = [];
 
   // Path especial: ri -> MAR para modo mem<-imd (DEBE ir ANTES de la verificación de MAR)
-  console.log("🔍 Evaluando condición ri → MAR:", { normalizedFrom, normalizedTo, mode, condition: normalizedFrom === "ri" && normalizedTo === "MAR" && mode === "mem<-imd" });
+  console.log("🔍 Evaluando condición ri → MAR:", {
+    normalizedFrom,
+    normalizedTo,
+    mode,
+    condition: normalizedFrom === "ri" && normalizedTo === "MAR" && mode === "mem<-imd",
+  });
   if (normalizedFrom === "ri" && normalizedTo === "MAR" && mode === "mem<-imd") {
     // Ruta directa desde ri hasta MAR para instrucciones con modo directo e inmediato
     console.log("🎯 Usando ruta especial ri → MAR:", "M 455 388 H 550 V 349 H 659");
@@ -447,16 +452,10 @@ export function generateDataPath(
     if (["JMP", "JC", "JZ"].includes(instruction ?? "")) {
       // Para saltos, animar MBR -> IP pasando por IP join
       path = ["MBR", "mbr reg join", "IP join", "IP"];
-    } else if (
-      (instruction === "MOV" || instruction === "INT") &&
-      mode === "mem<-imd"
-    ) {
+    } else if ((instruction === "MOV" || instruction === "INT") && mode === "mem<-imd") {
       // Para instrucciones MOV/INT con modo mem<-imd, usar ruta directa MBR -> ri
       path = ["MBR", "mbr reg join", "ri join", "ri"];
-    } else if (
-      mode === "mem<-imd" &&
-      (instruction === "ADD" || instruction === "SUB")
-    ) {
+    } else if (mode === "mem<-imd" && (instruction === "ADD" || instruction === "SUB")) {
       // Para instrucciones ADD/SUB con modo mem<-imd, usar ruta directa MBR -> ri
       path = ["MBR", "mbr reg join", "ri join", "ri"];
     } else {
@@ -504,14 +503,10 @@ export function generateDataPath(
   //   // return ...
   // }
 
-
-
   // Path especial: ri -> IP (siempre)
   if (normalizedFrom === "ri" && normalizedTo === "IP") {
     return "M 455 388 H 550 V 349 H 455";
   }
-
-
 
   // Resto de la lógica específica de instrucciones usando nombres normalizados
   if (normalizedFrom === "ri" && normalizedTo === "IP") {

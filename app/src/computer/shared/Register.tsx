@@ -91,7 +91,11 @@ export function Register({
             <>
               <span
                 className={clsx(
-                  isGeneralPurpose || isTemporal ? "mt-4" : isIR || isMAR || isMBR ? "mt-4" : "mt-2",
+                  isGeneralPurpose || isTemporal
+                    ? "mt-4"
+                    : isIR || isMAR || isMBR
+                      ? "mt-4"
+                      : "mt-2",
                   "font-mono text-base font-bold",
                 )}
               >
@@ -101,7 +105,7 @@ export function Register({
           ) : isIP ? (
             // IP: nombre y valor juntos
             <>
-              <span className={clsx("mt-2 font-mono text-base font-bold text-red-300")}>
+              <span className={clsx("mt-4 font-mono text-base font-bold text-red-300")}>
                 {low.toString("hex")}
               </span>
             </>
