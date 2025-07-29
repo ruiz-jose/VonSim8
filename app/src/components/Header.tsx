@@ -1,7 +1,7 @@
 import { faGraduationCap, faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 
 import { Controls } from "@/components/Controls";
@@ -10,10 +10,9 @@ import { NotificationCenter } from "@/components/NotificationCenter";
 import { settingsOpenAtom } from "@/components/Settings";
 import { IconButton } from "@/components/ui/Button";
 import { Tooltip } from "@/components/ui/Tooltip";
-import { useSimulation } from "@/computer/simulation";
 import { cycleAtom } from "@/computer/cpu/state";
+import { useSimulation } from "@/computer/simulation";
 import { useTranslate } from "@/lib/i18n";
-import { useAtomValue } from "jotai";
 
 // Hook personalizado para manejar el tour
 const useTourControl = () => {
@@ -36,53 +35,47 @@ const SimulationStatus = memo(({ status, isMobile }: { status: any; isMobile: bo
   const cycle = useAtomValue(cycleAtom);
   const [previousPhase, setPreviousPhase] = useState<string | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
-  
-  const statusText = useMemo(
-    () => {
-      switch (status.type) {
-        case "running":
-          return "Ejecutando";
-        case "paused":
-          return "Pausado";
-        default:
-          return "Detenido";
-      }
-    },
-    [status.type],
-  );
-  const statusColor = useMemo(
-    () => {
-      switch (status.type) {
-        case "running":
-          return "bg-green-600";
-        case "paused":
-          return "bg-yellow-600";
-        default:
-          return "bg-stone-600";
-      }
-    },
-    [status.type],
-  );
-  
+
+  const statusText = useMemo(() => {
+    switch (status.type) {
+      case "running":
+        return "Ejecutando";
+      case "paused":
+        return "Pausado";
+      default:
+        return "Detenido";
+    }
+  }, [status.type]);
+  const statusColor = useMemo(() => {
+    switch (status.type) {
+      case "running":
+        return "bg-green-600";
+      case "paused":
+        return "bg-yellow-600";
+      default:
+        return "bg-stone-600";
+    }
+  }, [status.type]);
+
   // Detectar cambios de fase y activar animación
   useEffect(() => {
     if (cycle && cycle.phase && cycle.phase !== previousPhase) {
       setPreviousPhase(cycle.phase);
       setIsAnimating(true);
-      
+
       // Detener la animación después de 0.8s
       const timer = setTimeout(() => {
         setIsAnimating(false);
       }, 800);
-      
+
       return () => clearTimeout(timer);
     }
-  }, [cycle?.phase, previousPhase]);
-  
+  }, [cycle, previousPhase]);
+
   // Función para obtener el texto de la fase
   const getPhaseText = useMemo(() => {
     if (!cycle || (status.type !== "running" && cycle.phase !== "halting")) return "";
-    
+
     switch (cycle.phase) {
       case "fetching":
         return "Captación";
@@ -107,7 +100,7 @@ const SimulationStatus = memo(({ status, isMobile }: { status: any; isMobile: bo
   // Función para obtener el color de la fase (igual que en Control.tsx)
   const getPhaseColor = useMemo(() => {
     if (!cycle || (status.type !== "running" && cycle.phase !== "halting")) return "";
-    
+
     switch (cycle.phase) {
       case "fetching":
         return "bg-blue-500/20 text-blue-400 border-blue-500/30";
@@ -132,7 +125,7 @@ const SimulationStatus = memo(({ status, isMobile }: { status: any; isMobile: bo
   // Función para obtener la clase de animación según la fase
   const getPhaseAnimation = useMemo(() => {
     if (!isAnimating || !cycle) return "";
-    
+
     switch (cycle.phase) {
       case "fetching":
         return "animate-phase-pulse-blue";
@@ -153,7 +146,7 @@ const SimulationStatus = memo(({ status, isMobile }: { status: any; isMobile: bo
         return "animate-phase-pulse-stone";
     }
   }, [isAnimating, cycle]);
-  
+
   return (
     <div className="flex items-center gap-2">
       {/* Estado de ejecución */}
@@ -162,14 +155,14 @@ const SimulationStatus = memo(({ status, isMobile }: { status: any; isMobile: bo
           "flex items-center gap-1.5 rounded-full px-2 py-1 font-medium text-white",
           statusColor,
           status.type === "running" && "animate-pulse-glow",
-          isMobile && "px-1.5 py-0.5" // Más compacto en móvil
+          isMobile && "px-1.5 py-0.5", // Más compacto en móvil
         )}
       >
         <div
           className={clsx(
             "size-2 rounded-full",
-            status.type === "running" 
-              ? "bg-green-300" 
+            status.type === "running"
+              ? "bg-green-300"
               : status.type === "paused"
                 ? "bg-yellow-300"
                 : "bg-stone-300",
@@ -177,17 +170,19 @@ const SimulationStatus = memo(({ status, isMobile }: { status: any; isMobile: bo
         />
         {!isMobile && statusText}
       </div>
-      
+
       {/* Fase actual - mostrar en móvil también pero más compacta */}
       {(status.type === "running" || (cycle && cycle.phase === "halting")) && getPhaseText && (
-        <div className={clsx(
-          "rounded-xl text-[10px] font-semibold uppercase tracking-wider backdrop-blur-sm transition-all duration-200 ease-in-out border",
-          getPhaseColor,
-          getPhaseAnimation, // Aplicar animación solo cuando cambia la fase
-          isMobile 
-            ? "px-2 py-0.5 text-[8px] min-h-[20px] flex items-center justify-center whitespace-nowrap" // Compacto pero adaptable en móvil
-            : "px-2 py-1" // Tamaño normal en desktop
-        )}>
+        <div
+          className={clsx(
+            "rounded-xl border text-[10px] font-semibold uppercase tracking-wider backdrop-blur-sm transition-all duration-200 ease-in-out",
+            getPhaseColor,
+            getPhaseAnimation, // Aplicar animación solo cuando cambia la fase
+            isMobile
+              ? "flex min-h-[20px] items-center justify-center whitespace-nowrap px-2 py-0.5 text-[8px]" // Compacto pero adaptable en móvil
+              : "px-2 py-1", // Tamaño normal en desktop
+          )}
+        >
           {getPhaseText} {/* Mostrar texto completo en móvil y desktop */}
         </div>
       )}
@@ -298,24 +293,24 @@ export const Header = memo(() => {
   const logoSection = useMemo(
     () => (
       <div className="hover-scale flex select-none items-center justify-center">
-        <div className="w-10 h-10 bg-gradient-to-br from-mantis-500 to-mantis-600 rounded-xl flex items-center justify-center shadow-soft hover-lift relative overflow-hidden group">
+        <div className="group relative flex size-10 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-mantis-500 to-mantis-600 shadow-lg hover:scale-105">
           {/* Fondo con patrón de circuitos */}
           <div className="absolute inset-0 opacity-10">
-            <div className="w-full h-full bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.1)_1px,transparent_1px),radial-gradient(circle_at_70%_70%,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[length:8px_8px]"></div>
+            <div className="size-full bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.1)_1px,transparent_1px),radial-gradient(circle_at_70%_70%,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[length:8px_8px]"></div>
           </div>
-          
+
           {/* Logo principal */}
           <div className="relative z-10 flex items-center justify-center">
-            <span className="text-white font-bold text-lg tracking-tight">V8</span>
+            <span className="text-lg font-bold tracking-tight text-white">V8</span>
           </div>
-          
+
           {/* Efecto de brillo */}
-          <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          
+          <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+
           {/* Indicador de actividad */}
-          <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-mantis-300 rounded-full animate-pulse"></div>
+          <div className="absolute -right-0.5 -top-0.5 size-2 animate-pulse rounded-full bg-mantis-300"></div>
         </div>
-        <div className="flex flex-col ml-3">
+        <div className="ml-3 flex flex-col">
           <h1 className="text-lg font-bold max-sm:hidden">
             Von<span className="text-mantis-400">Sim</span>8
           </h1>
@@ -329,17 +324,12 @@ export const Header = memo(() => {
   return (
     <>
       <header className="relative bg-black p-2 text-sm text-white" data-testid="header">
-        <div className={clsx(
-          "grid items-center",
-          isMobile ? "grid-cols-2" : "grid-cols-3"
-        )}>
+        <div className={clsx("grid items-center", isMobile ? "grid-cols-2" : "grid-cols-3")}>
           {/* Lado izquierdo: Logo y estado (en móvil) */}
           <div className="flex items-center gap-3">
             {logoSection}
             {/* Mostrar estado en móvil a la izquierda */}
-            {isMobile && (
-              <SimulationStatus status={status} isMobile={isMobile} />
-            )}
+            {isMobile && <SimulationStatus status={status} isMobile={isMobile} />}
           </div>
 
           {/* Centro: Estado del CPU (solo en desktop) */}
@@ -350,7 +340,7 @@ export const Header = memo(() => {
           )}
 
           {/* Lado derecho: Controles y botones de acción */}
-          <div className="flex items-center gap-6 justify-end">
+          <div className="flex items-center justify-end gap-6">
             {/* Controles */}
             <div className="flex justify-end">
               <Controls />

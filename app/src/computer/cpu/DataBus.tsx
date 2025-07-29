@@ -238,13 +238,13 @@ export function generateSimultaneousLeftRightPath(
   }
 
   // Generar paths separados para left y right que terminen en la ALU
-  const leftPath = generateDataPath(from, "left end", instruction, mode, { 
-    separateMBRPaths: true, 
-    direction: "left" 
+  const leftPath = generateDataPath(from, "left end", instruction, mode, {
+    separateMBRPaths: true,
+    direction: "left",
   });
-  const rightPath = generateDataPath(from, "right end", instruction, mode, { 
-    separateMBRPaths: true, 
-    direction: "right" 
+  const rightPath = generateDataPath(from, "right end", instruction, mode, {
+    separateMBRPaths: true,
+    direction: "right",
   });
 
   // Si ambos paths son válidos, combinarlos en una sola animación
@@ -280,7 +280,21 @@ export function generateDataPath(
   const normalizedTo = normalizeRegister(to);
 
   // Lista de registros válidos
-  const registers = ["AL", "BL", "CL", "DL", "id", "SP", "IP", "ri", "MAR", "left", "right", "left end", "right end"];
+  const registers = [
+    "AL",
+    "BL",
+    "CL",
+    "DL",
+    "id",
+    "SP",
+    "IP",
+    "ri",
+    "MAR",
+    "left",
+    "right",
+    "left end",
+    "right end",
+  ];
 
   let path: string[] = [];
 

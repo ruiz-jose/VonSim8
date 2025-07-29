@@ -1,5 +1,6 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+
 import { ControlMemory } from "../computer/cpu/ControlMemory";
 
 // Mock de las dependencias
@@ -15,6 +16,16 @@ vi.mock("jotai", () => ({
       operands: ["AL", "BL"],
     },
   }),
+  createStore: () => ({
+    get: vi.fn(() => ({ type: "stopped" })),
+    set: vi.fn(),
+    sub: vi.fn(),
+  }),
+  atom: vi.fn(value => value),
+}));
+
+vi.mock("@/computer/simulation", () => ({
+  simulationAtom: { type: "stopped" },
 }));
 
 describe("ControlMemory", () => {
@@ -36,36 +47,36 @@ describe("ControlMemory", () => {
   it("llama a onClose cuando se hace clic en el botón de cerrar", () => {
     const onClose = vi.fn();
     render(<ControlMemory isVisible={true} onClose={onClose} />);
-    
+
     const closeButton = screen.getByText("✕");
     fireEvent.click(closeButton);
-    
+
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
   it("llama a onClose cuando se hace clic fuera del modal", () => {
     const onClose = vi.fn();
     render(<ControlMemory isVisible={true} onClose={onClose} />);
-    
-    const overlay = screen.getByRole("presentation");
+
+    const overlay = screen.getByTestId("modal-overlay");
     fireEvent.click(overlay);
-    
+
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
   it("no llama a onClose cuando se hace clic dentro del modal", () => {
     const onClose = vi.fn();
     render(<ControlMemory isVisible={true} onClose={onClose} />);
-    
-    const modal = screen.getByRole("dialog");
+
+    const modal = screen.getByTestId("modal-content");
     fireEvent.click(modal);
-    
+
     expect(onClose).not.toHaveBeenCalled();
   });
 
   it("muestra la tabla de memoria de control", () => {
     render(<ControlMemory isVisible={true} onClose={vi.fn()} />);
-    
+
     expect(screen.getByText("Dirección")).toBeInTheDocument();
     expect(screen.getByText("Instrucción")).toBeInTheDocument();
     expect(screen.getByText("Descripción")).toBeInTheDocument();
@@ -74,10 +85,10 @@ describe("ControlMemory", () => {
 
   it("muestra las instrucciones en la tabla", () => {
     render(<ControlMemory isVisible={true} onClose={vi.fn()} />);
-    
+
     expect(screen.getByText("MOV")).toBeInTheDocument();
     expect(screen.getByText("ADD")).toBeInTheDocument();
     expect(screen.getByText("SUB")).toBeInTheDocument();
     expect(screen.getByText("JMP")).toBeInTheDocument();
   });
-}); 
+});

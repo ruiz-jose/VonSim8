@@ -273,14 +273,11 @@ export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promi
       store.set(showWriteBusAnimationAtom, true);
       // Mostrar texto "Write" al animar el bus de control WR
       showWriteControlText();
-      
+
       // Animar el bus de direcciones y el bus de control WR en simultáneo
       const duration = BUS_ANIMATION_DURATION; // Usa la duración global para coherencia
-      await Promise.all([
-        drawExternalAddressPath(duration),
-        drawWRControlPath(),
-      ]);
-      
+      await Promise.all([drawExternalAddressPath(duration), drawWRControlPath()]);
+
       // Ocultar texto "Write" al terminar la animación
       hideWriteControlText();
       // Desactivar la animación del texto 'Write' en el bus de control WR

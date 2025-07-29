@@ -1,81 +1,82 @@
-import { useState, useEffect } from "react";
 import { useAtomValue } from "jotai";
-import { animated, getSpring } from "@/computer/shared/springs";
-import { useTranslate } from "@/lib/i18n";
-import { cycleAtom } from "./state";
-import { anim } from "@/computer/shared/animate";
+import { useEffect } from "react";
 
-interface ControlMemoryProps {
+import { anim } from "@/computer/shared/animate";
+import { animated, getSpring } from "@/computer/shared/springs";
+
+import { cycleAtom } from "./state";
+
+type ControlMemoryProps = {
   isVisible: boolean;
   onClose: () => void;
-}
+};
 
 export function ControlMemory({ isVisible, onClose }: ControlMemoryProps) {
-  const translate = useTranslate();
   const cycle = useAtomValue(cycleAtom);
 
   // Datos de ejemplo para la memoria de control (microprograma)
   const controlMemoryData = [
-    { 
-      address: "00h", 
-      instruction: "MOV", 
+    {
+      address: "00h",
+      instruction: "MOV",
       microops: ["MAR←IP", "MBR←Mem[MAR]", "IR←MBR", "Decodificar"],
-      description: "Transferencia de datos entre registros o memoria"
+      description: "Transferencia de datos entre registros o memoria",
     },
-    { 
-      address: "01h", 
-      instruction: "ADD", 
+    {
+      address: "01h",
+      instruction: "ADD",
       microops: ["MAR←IP", "MBR←Mem[MAR]", "ALU←A+B", "A←Result", "Actualizar Flags"],
-      description: "Suma aritmética con actualización de flags"
+      description: "Suma aritmética con actualización de flags",
     },
-    { 
-      address: "02h", 
-      instruction: "SUB", 
+    {
+      address: "02h",
+      instruction: "SUB",
       microops: ["MAR←IP", "MBR←Mem[MAR]", "ALU←A-B", "A←Result", "Actualizar Flags"],
-      description: "Resta aritmética con actualización de flags"
+      description: "Resta aritmética con actualización de flags",
     },
-    { 
-      address: "03h", 
-      instruction: "CMP", 
+    {
+      address: "03h",
+      instruction: "CMP",
       microops: ["MAR←IP", "MBR←Mem[MAR]", "ALU←A-B", "Actualizar Flags"],
-      description: "Comparación sin modificar operandos"
+      description: "Comparación sin modificar operandos",
     },
-    { 
-      address: "04h", 
-      instruction: "JMP", 
+    {
+      address: "04h",
+      instruction: "JMP",
       microops: ["MAR←IP", "MBR←Mem[MAR]", "IP←MBR"],
-      description: "Salto incondicional"
+      description: "Salto incondicional",
     },
-    { 
-      address: "05h", 
-      instruction: "JZ", 
+    {
+      address: "05h",
+      instruction: "JZ",
       microops: ["MAR←IP", "MBR←Mem[MAR]", "Si Z=1: IP←MBR"],
-      description: "Salto condicional si Zero=1"
+      description: "Salto condicional si Zero=1",
     },
-    { 
-      address: "06h", 
-      instruction: "CALL", 
+    {
+      address: "06h",
+      instruction: "CALL",
       microops: ["SP←SP-1", "Mem[SP]←IP", "IP←Address"],
-      description: "Llamada a subrutina"
+      description: "Llamada a subrutina",
     },
-    { 
-      address: "07h", 
-      instruction: "RET", 
+    {
+      address: "07h",
+      instruction: "RET",
       microops: ["IP←Mem[SP]", "SP←SP+1"],
-      description: "Retorno de subrutina"
+      description: "Retorno de subrutina",
     },
-    { 
-      address: "08h", 
-      instruction: "HLT", 
+    {
+      address: "08h",
+      instruction: "HLT",
       microops: ["Detener CPU"],
-      description: "Detener la ejecución"
+      description: "Detener la ejecución",
     },
   ];
 
   // Encontrar la instrucción actual
-  const currentInstruction = cycle && "metadata" in cycle && cycle.metadata 
-    ? controlMemoryData.find(item => item.instruction === cycle.metadata.name)
-    : null;
+  const currentInstruction =
+    cycle && "metadata" in cycle && cycle.metadata
+      ? controlMemoryData.find(item => item.instruction === cycle.metadata.name)
+      : null;
 
   // Efecto para animar la entrada y salida
   useEffect(() => {
@@ -87,7 +88,7 @@ export function ControlMemory({ isVisible, onClose }: ControlMemoryProps) {
           { key: "controlMemory.container.opacity", to: 1 },
           { key: "controlMemory.container.scale", to: 1 },
         ],
-        { duration: 0.4, easing: "easeOutQuart" }
+        { duration: 0.4, easing: "easeOutQuart" },
       );
     } else {
       // Animar salida
@@ -97,7 +98,7 @@ export function ControlMemory({ isVisible, onClose }: ControlMemoryProps) {
           { key: "controlMemory.container.opacity", to: 0 },
           { key: "controlMemory.container.scale", to: 0.8 },
         ],
-        { duration: 0.3, easing: "easeInQuart" }
+        { duration: 0.3, easing: "easeInQuart" },
       );
     }
   }, [isVisible]);
@@ -106,6 +107,7 @@ export function ControlMemory({ isVisible, onClose }: ControlMemoryProps) {
 
   return (
     <animated.div
+      data-testid="modal-overlay"
       className="absolute inset-0 z-30 flex items-center justify-center bg-black/50"
       style={{
         opacity: getSpring("controlMemory.overlay").opacity,
@@ -113,12 +115,13 @@ export function ControlMemory({ isVisible, onClose }: ControlMemoryProps) {
       onClick={onClose}
     >
       <animated.div
+        data-testid="modal-content"
         className="relative max-h-[80%] w-[90%] max-w-2xl overflow-hidden rounded-lg border border-mantis-500 bg-stone-900 p-4 shadow-2xl"
         style={{
           transform: getSpring("controlMemory.container").scale.to(s => `scale(${s})`),
           opacity: getSpring("controlMemory.container").opacity,
         }}
-        onClick={(e) => e.stopPropagation()}
+        onClick={e => e.stopPropagation()}
       >
         {/* Header */}
         <div className="mb-4 flex items-center justify-between border-b border-mantis-500 pb-2">
@@ -138,26 +141,26 @@ export function ControlMemory({ isVisible, onClose }: ControlMemoryProps) {
           {/* Descripción */}
           <div className="rounded border border-stone-600 bg-stone-800 p-3">
             <p className="text-sm text-stone-300">
-              La memoria de control almacena las microinstrucciones que definen cómo se ejecuta cada instrucción.
-              Cada entrada contiene la secuencia de microoperaciones necesarias.
+              La memoria de control almacena las microinstrucciones que definen cómo se ejecuta cada
+              instrucción. Cada entrada contiene la secuencia de microoperaciones necesarias.
             </p>
           </div>
 
-                     {/* Instrucción actual destacada */}
-           {currentInstruction && (
-             <div className="rounded border-2 border-mantis-400 bg-mantis-900/50 p-3 animate-pulse">
-               <h4 className="mb-2 font-bold text-mantis-300">
-                 🎯 Instrucción Actual: {currentInstruction.instruction}
-               </h4>
-               <div className="space-y-1">
-                 {currentInstruction.microops.map((microop, index) => (
-                   <div key={index} className="text-sm text-stone-200">
-                     <span className="text-mantis-400">•</span> {microop}
-                   </div>
-                 ))}
-               </div>
-             </div>
-           )}
+          {/* Instrucción actual destacada */}
+          {currentInstruction && (
+            <div className="animate-pulse rounded border-2 border-mantis-400 bg-mantis-900/50 p-3">
+              <h4 className="mb-2 font-bold text-mantis-300">
+                🎯 Instrucción Actual: {currentInstruction.instruction}
+              </h4>
+              <div className="space-y-1">
+                {currentInstruction.microops.map((microop, index) => (
+                  <div key={index} className="text-sm text-stone-200">
+                    <span className="text-mantis-400">•</span> {microop}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Tabla de memoria de control */}
           <div className="max-h-64 overflow-y-auto rounded border border-stone-600">
@@ -176,13 +179,13 @@ export function ControlMemory({ isVisible, onClose }: ControlMemoryProps) {
                     key={index}
                     className={`border-b border-stone-700 hover:bg-stone-800 ${
                       currentInstruction?.instruction === item.instruction
-                        ? "bg-mantis-900/30 border-l-4 border-mantis-400 animate-pulse"
+                        ? "animate-pulse border-l-4 border-mantis-400 bg-mantis-900/30"
                         : ""
                     }`}
                   >
                     <td className="p-2 font-mono text-stone-400">{item.address}</td>
                     <td className="p-2 font-mono text-stone-300">{item.instruction}</td>
-                    <td className="p-2 text-stone-300 text-xs">{item.description}</td>
+                    <td className="p-2 text-xs text-stone-300">{item.description}</td>
                     <td className="p-2 text-stone-300">
                       <div className="space-y-1">
                         {item.microops.map((microop, microIndex) => (
@@ -202,13 +205,22 @@ export function ControlMemory({ isVisible, onClose }: ControlMemoryProps) {
           <div className="rounded border border-stone-600 bg-stone-800 p-3">
             <h4 className="mb-2 font-bold text-mantis-400">💡 Conceptos Clave:</h4>
             <ul className="space-y-1 text-sm text-stone-300">
-              <li>• <strong>Microinstrucción:</strong> Comando elemental que controla una microoperación</li>
-              <li>• <strong>Microoperación:</strong> Operación atómica como transferir datos entre registros</li>
-              <li>• <strong>Secuencia:</strong> Orden específico de microoperaciones para cada instrucción</li>
+              <li>
+                • <strong>Microinstrucción:</strong> Comando elemental que controla una
+                microoperación
+              </li>
+              <li>
+                • <strong>Microoperación:</strong> Operación atómica como transferir datos entre
+                registros
+              </li>
+              <li>
+                • <strong>Secuencia:</strong> Orden específico de microoperaciones para cada
+                instrucción
+              </li>
             </ul>
           </div>
         </div>
       </animated.div>
     </animated.div>
   );
-} 
+}

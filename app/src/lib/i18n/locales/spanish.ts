@@ -104,9 +104,11 @@ export const spanish: Locale = {
       "total-cycles": "Total de ciclos",
       "instruction-count": "Recuento de instrucciones",
       cpi: "Ciclos por instrucción (CPI)",
-      "cpi-help": "Promedio de ciclos de reloj por instrucción ejecutada (CPI = ciclos totales / instrucciones totales)",
+      "cpi-help":
+        "Promedio de ciclos de reloj por instrucción ejecutada (CPI = ciclos totales / instrucciones totales)",
       "cpu-time": "Tiempo de CPU",
-      "cpu-time-help": "Tiempo total de CPU = ciclos totales × tiempo de ciclo (actual: {cycleTime} ms)",
+      "cpu-time-help":
+        "Tiempo total de CPU = ciclos totales × tiempo de ciclo (actual: {cycleTime} ms)",
     },
 
     memory: {

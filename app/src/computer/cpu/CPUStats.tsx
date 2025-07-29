@@ -76,7 +76,9 @@ export const CPUStats = memo(({ className }: CPUStatsProps) => {
             {cycleCount > 0 ? "Ejecutando" : "En espera"}
           </div>
           <div className="mt-1 text-xs text-stone-400">
-            {instructionCount > 0 ? `${instructionCount} instrucciones ejecutadas` : "Sin instrucciones ejecutadas"}
+            {instructionCount > 0
+              ? `${instructionCount} instrucciones ejecutadas`
+              : "Sin instrucciones ejecutadas"}
           </div>
         </div>
       </div>
@@ -89,12 +91,16 @@ export const CPUStats = memo(({ className }: CPUStatsProps) => {
             <div className="mb-2 text-xs font-bold text-mantis-400">Métricas principales:</div>
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <div className="text-xs text-stone-300">{translate("computer.cpu.total-cycles")}</div>
-                <div className="text-lg font-mono text-white">{cycleCount}</div>
+                <div className="text-xs text-stone-300">
+                  {translate("computer.cpu.total-cycles")}
+                </div>
+                <div className="font-mono text-lg text-white">{cycleCount}</div>
               </div>
               <div>
-                <div className="text-xs text-stone-300">{translate("computer.cpu.instruction-count")}</div>
-                <div className="text-lg font-mono text-white">{instructionCount}</div>
+                <div className="text-xs text-stone-300">
+                  {translate("computer.cpu.instruction-count")}
+                </div>
+                <div className="font-mono text-lg text-white">{instructionCount}</div>
               </div>
             </div>
           </div>
@@ -107,13 +113,18 @@ export const CPUStats = memo(({ className }: CPUStatsProps) => {
                 <span className="text-xs text-stone-300" title={translate("computer.cpu.cpi-help")}>
                   {translate("computer.cpu.cpi")}:
                 </span>
-                <span className="text-sm font-mono text-mantis-300">{cpi}</span>
+                <span className="font-mono text-sm text-mantis-300">{cpi}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-xs text-stone-300" title={`${translate("computer.cpu.cpu-time-help")} (${cycleTimeSeconds.toFixed(1)} s)`}>
+                <span
+                  className="text-xs text-stone-300"
+                  title={`${translate("computer.cpu.cpu-time-help")} (${cycleTimeSeconds.toFixed(1)} s)`}
+                >
                   {translate("computer.cpu.cpu-time")}
                 </span>
-                <span className="text-sm font-mono text-mantis-300">{(cpuTimeMs / 1000).toFixed(1)} s</span>
+                <span className="font-mono text-sm text-mantis-300">
+                  {(cpuTimeMs / 1000).toFixed(1)} s
+                </span>
               </div>
             </div>
           </div>
@@ -123,7 +134,8 @@ export const CPUStats = memo(({ className }: CPUStatsProps) => {
             <div className="mb-2 text-xs font-bold text-mantis-400">Configuración Actual:</div>
             <div className="space-y-1 text-xs text-stone-300">
               <div>
-                <strong>Velocidad CPU:</strong> {settings.cpuSpeed} Hz ({cycleTimeSeconds.toFixed(1)} s/ciclo)
+                <strong>Velocidad CPU:</strong> {settings.cpuSpeed} Hz (
+                {cycleTimeSeconds.toFixed(1)} s/ciclo)
               </div>
               <div>
                 <strong>Velocidad Timer:</strong> {(settings.clockSpeed / 1000).toFixed(1)} s
@@ -136,18 +148,20 @@ export const CPUStats = memo(({ className }: CPUStatsProps) => {
             <div className="mb-2 text-xs font-bold text-mantis-400">💡 Concepto Educativo:</div>
             <div className="text-xs leading-relaxed text-stone-300">
               <div className="mb-2">
-                <strong>CPI (Ciclos por Instrucción):</strong> Métrica fundamental que indica la eficiencia del procesador. 
-                Un CPI más bajo significa mejor rendimiento.
+                <strong>CPI (Ciclos por Instrucción):</strong> Métrica fundamental que indica la
+                eficiencia del procesador. Un CPI más bajo significa mejor rendimiento.
               </div>
               <div className="mb-2">
-                <strong>Tiempo de CPU:</strong> Depende de los ciclos ejecutados y la velocidad del reloj del sistema.
+                <strong>Tiempo de CPU:</strong> Depende de los ciclos ejecutados y la velocidad del
+                reloj del sistema.
               </div>
               <div className="mb-2">
-                <strong>Velocidad CPU:</strong> Determina qué tan rápido ejecuta el procesador cada ciclo. 
-                Mayor Hz = ciclos más rápidos.
+                <strong>Velocidad CPU:</strong> Determina qué tan rápido ejecuta el procesador cada
+                ciclo. Mayor Hz = ciclos más rápidos.
               </div>
               <div>
-                <strong>Velocidad Timer:</strong> Controla la frecuencia de las interrupciones del timer del sistema.
+                <strong>Velocidad Timer:</strong> Controla la frecuencia de las interrupciones del
+                timer del sistema.
               </div>
             </div>
           </div>
@@ -158,4 +172,3 @@ export const CPUStats = memo(({ className }: CPUStatsProps) => {
 });
 
 CPUStats.displayName = "CPUStats";
-

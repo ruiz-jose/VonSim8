@@ -94,9 +94,9 @@ const springs = {
   clock: { angle: new SpringValue(0) },
   controlMemory: {
     overlay: { opacity: new SpringValue(0) },
-    container: { 
-      opacity: new SpringValue(0), 
-      scale: new SpringValue(0.8) 
+    container: {
+      opacity: new SpringValue(0),
+      scale: new SpringValue(0.8),
     },
     currentInstruction: { glow: new SpringValue(0) },
     microop: {
@@ -109,9 +109,9 @@ const springs = {
   },
   sequencer: {
     overlay: { opacity: new SpringValue(0) },
-    container: { 
-      opacity: new SpringValue(0), 
-      scale: new SpringValue(0.8) 
+    container: {
+      opacity: new SpringValue(0),
+      scale: new SpringValue(0.8),
     },
   },
   cpu: {

@@ -386,7 +386,9 @@
 
 .btn-primary:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgb(34 197 94), 0 0 0 4px rgb(28 25 23);
+  box-shadow:
+    0 0 0 2px rgb(34 197 94),
+    0 0 0 4px rgb(28 25 23);
 }
 
 .btn-secondary {
@@ -406,7 +408,9 @@
 
 .btn-secondary:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgb(68 64 60), 0 0 0 4px rgb(28 25 23);
+  box-shadow:
+    0 0 0 2px rgb(68 64 60),
+    0 0 0 4px rgb(28 25 23);
 }
 
 .btn-ghost {
@@ -426,7 +430,9 @@
 
 .btn-ghost:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgb(68 64 60), 0 0 0 4px rgb(28 25 23);
+  box-shadow:
+    0 0 0 2px rgb(68 64 60),
+    0 0 0 4px rgb(28 25 23);
 }
 
 /* ===== INPUTS ===== */
@@ -558,7 +564,8 @@ body.tooltip-open {
 }
 
 .editor-enhanced .cm-editor {
-  font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+  font-family:
+    ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
   font-size: 0.875rem;
 }
 
@@ -598,7 +605,9 @@ body.tooltip-open {
 /* ===== ACCESIBILIDAD ===== */
 .focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px rgb(34 197 94), 0 0 0 4px rgb(28 25 23);
+  box-shadow:
+    0 0 0 2px rgb(34 197 94),
+    0 0 0 4px rgb(28 25 23);
 }
 
 .sr-only {

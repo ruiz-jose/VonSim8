@@ -100,30 +100,40 @@ export function Settings({ className }: { className?: string }) {
         />
       </Setting>
 
-
-
       <Setting>
         <SettingInfo>
           <SettingTitle>
             <span className="icon-[lucide--cpu] size-6" />
             Velocidad CPU (Hz)
           </SettingTitle>
-          <SettingSubtitle>Velocidad del procesador. Determina el tiempo de ciclo de la CPU.</SettingSubtitle>
+          <SettingSubtitle>
+            Velocidad del procesador. Determina el tiempo de ciclo de la CPU.
+          </SettingSubtitle>
         </SettingInfo>
 
         {/* Select para cpuSpeed con opciones en Hz */}
         <Select
           value={settings.cpuSpeed}
-          onValueChange={(value: "1" | "2" | "4" | "10") => setSettings(prev => ({ ...prev, cpuSpeed: value }))}
+          onValueChange={(value: "1" | "2" | "4" | "10") =>
+            setSettings(prev => ({ ...prev, cpuSpeed: value }))
+          }
         >
           <SelectTrigger className="w-32">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="1" title="1 Hz = 1 segundo por ciclo - Muy lenta">1 Hz (1.0s)</SelectItem>
-            <SelectItem value="2" title="2 Hz = 0.5 segundos por ciclo - Lenta">2 Hz (0.5s)</SelectItem>
-            <SelectItem value="4" title="4 Hz = 0.25 segundos por ciclo - Normal">4 Hz (0.25s)</SelectItem>
-            <SelectItem value="10" title="10 Hz = 0.1 segundos por ciclo - Rápida">10 Hz (0.1s)</SelectItem>
+            <SelectItem value="1" title="1 Hz = 1 segundo por ciclo - Muy lenta">
+              1 Hz (1.0s)
+            </SelectItem>
+            <SelectItem value="2" title="2 Hz = 0.5 segundos por ciclo - Lenta">
+              2 Hz (0.5s)
+            </SelectItem>
+            <SelectItem value="4" title="4 Hz = 0.25 segundos por ciclo - Normal">
+              4 Hz (0.25s)
+            </SelectItem>
+            <SelectItem value="10" title="10 Hz = 0.1 segundos por ciclo - Rápida">
+              10 Hz (0.1s)
+            </SelectItem>
           </SelectContent>
         </Select>
       </Setting>
@@ -304,38 +314,43 @@ export function Settings({ className }: { className?: string }) {
             {/* Select para clockSpeed con opciones descriptivas */}
             <Select
               value={settings.clockSpeed.toString()}
-              onValueChange={(value) => setSettings(prev => ({ ...prev, clockSpeed: parseInt(value) }))}
+              onValueChange={value =>
+                setSettings(prev => ({ ...prev, clockSpeed: parseInt(value) }))
+              }
             >
               <SelectTrigger className="w-40">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="100" title="Timer muy frecuente - Interrupciones cada 0.1 segundos">
-                  <div className="flex items-center justify-between w-full">
+                <SelectItem
+                  value="100"
+                  title="Timer muy frecuente - Interrupciones cada 0.1 segundos"
+                >
+                  <div className="flex w-full items-center justify-between">
                     <span>Muy Frecuente</span>
                     <span className="text-xs text-stone-400">0.1s</span>
                   </div>
                 </SelectItem>
                 <SelectItem value="400" title="Timer frecuente - Interrupciones cada 0.4 segundos">
-                  <div className="flex items-center justify-between w-full">
+                  <div className="flex w-full items-center justify-between">
                     <span>Frecuente</span>
                     <span className="text-xs text-stone-400">0.4s</span>
                   </div>
                 </SelectItem>
                 <SelectItem value="600" title="Timer normal - Interrupciones cada 0.6 segundos">
-                  <div className="flex items-center justify-between w-full">
+                  <div className="flex w-full items-center justify-between">
                     <span>Normal</span>
                     <span className="text-xs text-stone-400">0.6s</span>
                   </div>
                 </SelectItem>
                 <SelectItem value="800" title="Timer lento - Interrupciones cada 0.8 segundos">
-                  <div className="flex items-center justify-between w-full">
+                  <div className="flex w-full items-center justify-between">
                     <span>Lento</span>
                     <span className="text-xs text-stone-400">0.8s</span>
                   </div>
                 </SelectItem>
                 <SelectItem value="1000" title="Timer muy lento - Interrupciones cada 1 segundo">
-                  <div className="flex items-center justify-between w-full">
+                  <div className="flex w-full items-center justify-between">
                     <span>Muy Lento</span>
                     <span className="text-xs text-stone-400">1.0s</span>
                   </div>

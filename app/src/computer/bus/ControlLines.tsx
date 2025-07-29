@@ -57,7 +57,9 @@ export function ControlLines() {
       {showReadAnim && (
         <ReadBusAnimation pathRef={rdAnimatedPathRef} progressSpring={rdDashoffset} />
       )}
-      {showWriteAnim && <WriteBusAnimation pathRef={wrAnimatedPathRef} progressSpring={wrDashoffset} />}
+      {showWriteAnim && (
+        <WriteBusAnimation pathRef={wrAnimatedPathRef} progressSpring={wrDashoffset} />
+      )}
       <svg className="pointer-events-none absolute inset-0 z-[15] size-full">
         <path
           ref={rdPathRef}
