@@ -157,6 +157,9 @@ declare global {
 
 // Variable global temporal para guardar el último origen de ri
 let lastSourceForRI: string | null = null;
+// Variables para coordinar animaciones simultáneas en modo mem<-imd
+let pendingMBRtoRI: { instruction: string; mode: string } | null = null;
+let pendingIPtoMAR: { instruction: string; mode: string } | null = null;
 // Función para normalizar nombres de registros (quita .l y .h)
 const normalize = (reg: string) => reg.replace(/\.(l|h)$/, "");
 
@@ -170,6 +173,58 @@ async function animateMBRAndIP() {
       resolve();
     }),
   ]);
+}
+
+// Función para manejar animaciones simultáneas en modo mem<-imd
+async function handleSimultaneousMemImdAnimations() {
+  if (pendingMBRtoRI && pendingIPtoMAR) {
+    console.log("🎯 Ejecutando animaciones simultáneas para modo mem<-imd");
+    
+    // Ejecutar ambas animaciones simultáneamente
+    await Promise.all([
+      drawDataPath("MBR", "ri", pendingMBRtoRI.instruction, pendingMBRtoRI.mode),
+      anim(
+        [
+          {
+            key: "cpu.internalBus.address.path",
+            from: generateAddressPath("IP"),
+          },
+          { key: "cpu.internalBus.address.opacity", from: 1 },
+          { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
+        ],
+        { duration: 5, easing: "easeInOutSine" },
+      ),
+    ]);
+    
+    // Actualizar registros
+    store.set(registerAtoms.ri, store.get(MBRAtom));
+    store.set(MARAtom, store.get(registerAtoms.IP));
+    
+    // Activar registros
+    await Promise.all([
+      activateRegister("cpu.ri"),
+      activateRegister("cpu.MAR"),
+    ]);
+    
+    // Desactivar registros
+    await Promise.all([
+      deactivateRegister("cpu.ri"),
+      deactivateRegister("cpu.MAR"),
+    ]);
+    
+    // Resetear animaciones
+    await Promise.all([
+      resetDataPath(),
+      anim(
+        { key: "cpu.internalBus.address.opacity", to: 0 },
+        { duration: 1, easing: "easeInSine" },
+      ),
+    ]);
+    
+    // Limpiar variables pendientes
+    pendingMBRtoRI = null;
+    pendingIPtoMAR = null;
+  }
 }
 
 export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<void> {
@@ -467,20 +522,22 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         instructionName,
       );
 
-      // Animación azul (bus de direcciones)
-      await anim(
-        [
-          {
-            key: "cpu.internalBus.address.path",
-            from: path,
-          },
-          { key: "cpu.internalBus.address.opacity", from: 1 },
-          { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
-        ],
-        { duration: 5, easing: "easeInOutSine" },
-      );
-      await activateRegister(`cpu.MAR`, colors.blue[500]);
-      store.set(MARAtom, store.get(registerAtoms[regNorm]));
+      // Animación azul (bus de direcciones) - solo si no es IP en modo mem<-imd
+      if (!(regNorm === "IP" && mode === "mem<-imd")) {
+        await anim(
+          [
+            {
+              key: "cpu.internalBus.address.path",
+              from: path,
+            },
+            { key: "cpu.internalBus.address.opacity", from: 1 },
+            { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
+          ],
+          { duration: 5, easing: "easeInOutSine" },
+        );
+        await activateRegister(`cpu.MAR`, colors.blue[500]);
+        store.set(MARAtom, store.get(registerAtoms[regNorm]));
+      }
 
       // --- Lógica para animar desde el origen real si MAR se actualiza desde ri ---
       if (regNorm === "ri") {
@@ -510,19 +567,29 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
           await resetDataPath();
         }
         lastSourceForRI = null;
+      } else if (regNorm === "IP" && mode === "mem<-imd") {
+        // Marcar animación IP → MAR como pendiente para ejecución simultánea
+        pendingIPtoMAR = { instruction: instructionName, mode };
+        console.log("📝 Marcando animación IP → MAR como pendiente para modo mem<-imd");
+        
+        // Ejecutar animaciones simultáneas si ambas están pendientes
+        await handleSimultaneousMemImdAnimations();
       } else if (!isFromMBR) {
         await drawDataPath(regNorm as DataRegister, "MAR", instructionName, mode);
         // Resetear la animación del bus después de completarse
         await resetDataPath();
       }
 
-      await Promise.all([
-        deactivateRegister("cpu.MAR"),
-        anim(
-          { key: "cpu.internalBus.address.opacity", to: 0 },
-          { duration: 1, easing: "easeInSine" },
-        ),
-      ]);
+      // Solo desactivar si no es IP en modo mem<-imd (se hará en la animación simultánea)
+      if (!(regNorm === "IP" && mode === "mem<-imd")) {
+        await Promise.all([
+          deactivateRegister("cpu.MAR"),
+          anim(
+            { key: "cpu.internalBus.address.opacity", to: 0 },
+            { duration: 1, easing: "easeInSine" },
+          ),
+        ]);
+      }
       return;
     }
 
@@ -567,26 +634,36 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         const aluOpsWithMemory = ["ADD", "SUB", "CMP"];
         const isALUOpWithMemory = aluOpsWithMemory.some(op => instructionName.startsWith(op));
 
-        if (!isALUOp || isALUOpWithMemory) {
+        if (normalizedRegister === "ri" && mode === "mem<-imd") {
+          // Marcar animación MBR → ri como pendiente para ejecución simultánea
+          pendingMBRtoRI = { instruction: instructionName, mode };
+          console.log("📝 Marcando animación MBR → ri como pendiente para modo mem<-imd");
+        } else if (!isALUOp || isALUOpWithMemory) {
           await drawDataPath("MBR", normalizedRegister as DataRegister, instructionName, mode);
         }
       }
 
       // Segundo: Actualizar el valor del registro después de que termine la animación del bus
-      store.set(registerAtoms[event.register], store.get(MBRAtom));
+      // Solo actualizar si no es ri en modo mem<-imd (se actualizará en la animación simultánea)
+      if (!(normalizedRegister === "ri" && mode === "mem<-imd")) {
+        store.set(registerAtoms[event.register], store.get(MBRAtom));
+      }
 
       // Tercero: Solo DESPUÉS de que termine la animación del bus, hacer la animación de actualización
       if (normalizedRegister === "IR") {
         await updateRegisterWithGlow(`cpu.${normalizedRegister}` as RegisterKey);
       } else if (normalizedRegister === "IP") {
         // No hacer animación individual, la animación conjunta se hará en cpu:register.update
-      } else {
+      } else if (!(normalizedRegister === "ri" && mode === "mem<-imd")) {
+        // No hacer animación individual para ri en modo mem<-imd (se hará en la animación simultánea)
         await activateRegister(`cpu.${normalizedRegister}` as RegisterKey);
         await deactivateRegister(`cpu.${normalizedRegister}` as RegisterKey);
       }
 
-      // Cuarto: Resetear la animación del bus
-      await resetDataPath();
+      // Cuarto: Resetear la animación del bus (solo si no es ri en modo mem<-imd)
+      if (!(normalizedRegister === "ri" && mode === "mem<-imd")) {
+        await resetDataPath();
+      }
       return;
     }
 
