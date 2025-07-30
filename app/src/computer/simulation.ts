@@ -244,6 +244,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
         // Reiniciar el contador de ciclos para la nueva instrucción
         currentInstructionCycleCount = 0;
         store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+        console.log("🔄 Nueva instrucción iniciada:", currentInstructionName, "- Contador reiniciado a 0");
         mbridirmar = false;
         resultmbrimar = false;
         displayMessageresultmbr = "";
@@ -572,7 +573,22 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 }
               }
             }
+          } else if (event.value.type === "cpu:register.buscopy") {
+            console.log("📋 Evento cpu:register.buscopy detectado");
+            const sourceRegister = event.value.src.replace(/\.l$/, "");
+            const destRegister = event.value.dest.replace(/\.l$/, "");
+            
+            // Para instrucciones MOV entre registros, siempre contabilizar el ciclo
+            if (currentInstructionName === "MOV") {
+              const displayMessage = `Ejecución: ${destRegister} ← ${sourceRegister}`;
+              store.set(messageAtom, displayMessage);
+              cycleCount++;
+              currentInstructionCycleCount++;
+              store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+              console.log("✅ Ciclo contabilizado para MOV register.buscopy - cycleCount:", cycleCount, "currentInstructionCycleCount:", currentInstructionCycleCount);
+            }
           } else if (event.value.type === "cpu:register.copy") {
+            console.log("📋 Evento cpu:register.copy detectado");
             const sourceRegister = event.value.src.replace(/\.l$/, "");
             const destRegister = event.value.dest.replace(/\.l$/, "");
             let displaySource = "";
@@ -664,7 +680,17 @@ async function startThread(generator: EventGenerator): Promise<void> {
               //store.set(messageAtom, displayMessage);
               // pauseSimulation();
             }
-            if (
+            // Debug: mostrar información del evento register.copy
+            console.log("cpu:register.copy - sourceRegister:", sourceRegister, "destRegister:", destRegister, "currentInstructionName:", currentInstructionName);
+            
+            // Para instrucciones MOV entre registros, siempre contabilizar el ciclo
+            if (currentInstructionName === "MOV") {
+              store.set(messageAtom, displayMessage);
+              cycleCount++;
+              currentInstructionCycleCount++;
+              store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+              console.log("✅ Ciclo contabilizado para MOV register.copy - cycleCount:", cycleCount, "currentInstructionCycleCount:", currentInstructionCycleCount);
+            } else if (
               (destRegister !== "result" &&
                 destRegister !== "left" &&
                 destRegister !== "right" &&
@@ -677,6 +703,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
               cycleCount++;
               currentInstructionCycleCount++;
               store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+              console.log("✅ Ciclo contabilizado para register.copy - cycleCount:", cycleCount, "currentInstructionCycleCount:", currentInstructionCycleCount);
+            } else {
+              console.log("❌ Ciclo NO contabilizado para register.copy - condición no cumplida");
             }
           } else if (
             event.value.type === "bus:reset" &&

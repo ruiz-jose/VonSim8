@@ -162,10 +162,6 @@ export const CPUStats = memo(({ className }: CPUStatsProps) => {
                 <strong>Velocidad CPU:</strong> Determina qué tan rápido ejecuta el procesador cada
                 ciclo. Mayor Hz = ciclos más rápidos.
               </div>
-              <div>
-                <strong>Velocidad Timer:</strong> Controla la frecuencia de las interrupciones del
-                timer del sistema.
-              </div>
             </div>
           </div>
         </div>
