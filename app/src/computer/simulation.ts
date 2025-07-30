@@ -295,7 +295,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
             }
             fetchStageCounter++;
             cycleCount++;
-          } else if (event.value.type === "cpu:register.update") {
+          } else if (event.value.type === "cpu:register.update" ||
+                    event.value.type === "cpu:register.buscopy") {
             store.set(messageAtom, "Captación: MBR ← read(Memoria[MAR]); IP ← IP + 1");
             if (status.until === "cycle-change") {
               pauseSimulation();
@@ -391,7 +392,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
             executeStageCounter++;
             //if (!(currentInstructionName === "INT" && sourceRegister === "ri")) {
             cycleCount++;
-          } else if (event.value.type === "cpu:register.update") {
+          } else if (event.value.type === "cpu:register.update" ||
+                    event.value.type === "cpu:register.buscopy") {
             const sourceRegister = event.value.register;
             let displayMessage = "";
             shouldDisplayMessage = true;
