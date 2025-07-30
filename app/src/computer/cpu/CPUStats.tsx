@@ -89,10 +89,13 @@ export const CPUStats = memo(({ className }: CPUStatsProps) => {
           {/* Métricas principales */}
           <div className="rounded border border-stone-600 bg-stone-800/80 p-2">
             <div className="mb-2 text-xs font-bold text-mantis-400">Métricas principales:</div>
+            <div className="mb-2 text-xs text-stone-400">
+              Estadísticas acumuladas del programa completo
+            </div>
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <div className="text-xs text-stone-300">
-                  {translate("computer.cpu.total-cycles")}
+                  Ciclos totales del programa
                 </div>
                 <div className="font-mono text-lg text-white">{cycleCount}</div>
               </div>

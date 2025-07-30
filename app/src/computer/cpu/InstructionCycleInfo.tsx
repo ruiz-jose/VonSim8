@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { useAtomValue } from "jotai";
 import { memo, useState } from "react";
 
-import { cycleAtom } from "./state";
+import { cycleAtom, currentInstructionCycleCountAtom } from "./state";
 
 type InstructionCycleInfoProps = {
   className?: string;
@@ -10,6 +10,7 @@ type InstructionCycleInfoProps = {
 
 export const InstructionCycleInfo = memo(({ className }: InstructionCycleInfoProps) => {
   const cycle = useAtomValue(cycleAtom);
+  const currentInstructionCycleCount = useAtomValue(currentInstructionCycleCountAtom);
   const [showDetails, setShowDetails] = useState(false);
 
   // Obtener información de la instrucción actual
@@ -106,6 +107,9 @@ export const InstructionCycleInfo = memo(({ className }: InstructionCycleInfoPro
               Instrucción: <span className="font-mono text-mantis-300">{currentInstruction}</span>
             </div>
           )}
+          <div className="mt-1 text-xs text-stone-400">
+            Ciclos de instrucción: <span className="font-mono text-mantis-300">{currentInstructionCycleCount}</span>
+          </div>
         </div>
       </div>
 

@@ -28,6 +28,8 @@ export const MBRAtom = atom(Byte.zero(8)); // Memory Buffer Register
 export const messageAtom = atom<string>("");
 // Define el átomo para cycleCount
 export const cycleCountAtom = atom(0);
+// Define el átomo para el contador de ciclos por instrucción actual
+export const currentInstructionCycleCountAtom = atom(0);
 export const showSPAtom = atom(false);
 export const showriAtom = atom(false);
 export const instructionCountAtom = atom(0); // Variable global para contar las instrucciones

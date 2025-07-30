@@ -22,6 +22,7 @@ import {
   connectScreenAndKeyboardAtom,
   cycleAtom,
   cycleCountAtom,
+  currentInstructionCycleCountAtom,
   instructionCountAtom,
   messageAtom,
   messageHistoryAtom,
@@ -181,6 +182,7 @@ let shouldDisplayMessage = true;
 let currentInstructionModeid = false;
 let currentInstructionModeri = false;
 let cycleCount = 0;
+let currentInstructionCycleCount = 0; // Contador de ciclos para la instrucción actual
 let instructionCount = 0;
 let fuenteALU = "";
 let destinoALU = "";
@@ -239,6 +241,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
         currentInstructionModeid = event.value.instruction.willUse.id ? true : false;
         currentInstructionModeri = event.value.instruction.willUse.ri ? true : false;
         store.set(showriAtom, currentInstructionModeri);
+        // Reiniciar el contador de ciclos para la nueva instrucción
+        currentInstructionCycleCount = 0;
+        store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
         mbridirmar = false;
         resultmbrimar = false;
         displayMessageresultmbr = "";
@@ -295,8 +300,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
             }
             fetchStageCounter++;
             cycleCount++;
-          } else if (event.value.type === "cpu:register.update" ||
-                    event.value.type === "cpu:register.buscopy") {
+            currentInstructionCycleCount++;
+            store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+          } else if (event.value.type === "cpu:register.update") {
             store.set(messageAtom, "Captación: MBR ← read(Memoria[MAR]); IP ← IP + 1");
             if (status.until === "cycle-change") {
               pauseSimulation();
@@ -304,6 +310,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
             executeStageCounter++;
             fetchStageCounter++;
             cycleCount++;
+            currentInstructionCycleCount++;
+            store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
           } else if (event.value.type === "cpu:mbr.get") {
             store.set(messageAtom, "Captación: IR ← MBR");
             if (status.until === "cycle-change") {
@@ -311,6 +319,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
             }
             fetchStageCounter++;
             cycleCount++;
+            currentInstructionCycleCount++;
+            store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
           }
         } else {
           if (event.value.type === "cpu:rd.on" && executeStageCounter > 1) {
@@ -321,6 +331,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
             store.set(messageAtom, "Ejecución: write(PIO[MAR]) ← MBR");
             executeStageCounter++;
             cycleCount++;
+            currentInstructionCycleCount++;
+            store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
           }
 
           if (event.value.type === "cpu:mar.set") {
@@ -392,8 +404,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
             executeStageCounter++;
             //if (!(currentInstructionName === "INT" && sourceRegister === "ri")) {
             cycleCount++;
-          } else if (event.value.type === "cpu:register.update" ||
-                    event.value.type === "cpu:register.buscopy") {
+            currentInstructionCycleCount++;
+            store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+          } else if (event.value.type === "cpu:register.update") {
             const sourceRegister = event.value.register;
             let displayMessage = "";
             shouldDisplayMessage = true;
@@ -484,6 +497,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
             ) {
               store.set(messageAtom, displayMessage);
               cycleCount++;
+              currentInstructionCycleCount++;
+              store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
             }
 
             if (displayMessage !== "Interrupción: MAR ← (video)") {
@@ -507,6 +522,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 `Ejecución: ${destinoALU} ${currentInstructionName} ${fuenteALU} ; write(FLAGS)`,
               );
               cycleCount++;
+              currentInstructionCycleCount++;
+              store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
               if (status.until === "cycle-change") {
                 pauseSimulation();
               }
@@ -548,6 +565,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
               ) {
                 store.set(messageAtom, `Ejecución: ${sourceRegister} ← MBR`);
                 cycleCount++;
+                currentInstructionCycleCount++;
+                store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
                 if (status.until === "cycle-change") {
                   pauseSimulation();
                 }
@@ -656,6 +675,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
             ) {
               store.set(messageAtom, displayMessage);
               cycleCount++;
+              currentInstructionCycleCount++;
+              store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
             }
           } else if (
             event.value.type === "bus:reset" &&
@@ -703,6 +724,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
             if (!ContinuarSinGuardar) {
               store.set(messageAtom, messageReadWrite);
               cycleCount++;
+              currentInstructionCycleCount++;
+              store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
               if (status.until === "cycle-change") {
                 pauseSimulation();
               }
@@ -733,6 +756,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
               }
               executeStageCounter++;
               cycleCount++;
+              currentInstructionCycleCount++;
+              store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
             }
           }
         }

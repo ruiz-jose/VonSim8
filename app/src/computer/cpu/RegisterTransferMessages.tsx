@@ -7,7 +7,7 @@ import { store } from "@/lib/jotai";
 import { useSettings } from "@/lib/settings";
 import { toast } from "@/lib/toast";
 
-import { cycleCountAtom, messageAtom, messageHistoryAtom } from "./state";
+import { cycleCountAtom, currentInstructionCycleCountAtom, messageAtom, messageHistoryAtom } from "./state";
 
 // Función para obtener el color de la fase
 function getPhaseColor(stage: string) {
@@ -233,11 +233,22 @@ export function RegisterTransferMessages() {
   // Usar useEffect para agregar el mensaje actual al historial
   useEffect(() => {
     if (message) {
-      const currentCycleCount = store.get(cycleCountAtom);
-      const parsedMessage = parseMessage(message, currentCycleCount);
+      const currentInstructionCycleCount = store.get(currentInstructionCycleCountAtom);
+      const parsedMessage = parseMessage(message, currentInstructionCycleCount);
       store.set(messageHistoryAtom, prev => [...prev, parsedMessage]);
     }
   }, [message]);
+
+  // Limpiar el historial cuando el contador de ciclos por instrucción se reinicie (nueva instrucción)
+  useEffect(() => {
+    const unsubscribe = store.sub(currentInstructionCycleCountAtom, (newCount) => {
+      if (newCount === 0) {
+        // Si el contador se reinicia a 0, es una nueva instrucción
+        store.set(messageHistoryAtom, []);
+      }
+    });
+    return unsubscribe;
+  }, []);
 
   // Avisar al usuario si el programa en ejecución es modificado
   useEffect(() => {
@@ -401,7 +412,7 @@ export function RegisterTransferMessages() {
         {/* Footer simple */}
         <div className="border-t border-stone-600 bg-stone-800/50 px-4 py-2">
           <div className="flex items-center justify-between text-xs text-stone-400">
-            <span>Ciclos: {messageHistory.length}</span>
+            <span>Ciclos de instrucción: {store.get(currentInstructionCycleCountAtom)}</span>
             <span>Monitor en tiempo real</span>
           </div>
         </div>
