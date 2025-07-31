@@ -43,28 +43,62 @@ export const CPUStats = memo(({ className }: CPUStatsProps) => {
 
   // Contenido educativo para las métricas de rendimiento
   const performanceEducationalContent = (
-    <div className="space-y-2 text-xs">
+    <div className="space-y-3 text-xs">
       <div>
         <strong className="text-mantis-300">CPI (Ciclos por Instrucción):</strong>
         <br />
-        Métrica fundamental que indica la eficiencia del procesador. Un CPI más bajo significa mejor
-        rendimiento.
+        <span className="text-stone-300">
+          Métrica fundamental que indica la eficiencia del procesador. Calculada como el cociente entre 
+          ciclos totales e instrucciones ejecutadas. Un CPI más bajo significa mejor rendimiento.
+        </span>
       </div>
       <div>
         <strong className="text-mantis-300">Tiempo de CPU:</strong>
         <br />
-        Depende de los ciclos ejecutados y la velocidad del reloj del sistema.
+        <span className="text-stone-300">
+          Tiempo real transcurrido durante la ejecución del programa. Se calcula multiplicando 
+          los ciclos totales por el tiempo de cada ciclo según la velocidad configurada.
+        </span>
+      </div>
+      <div className="border-t border-stone-600 pt-2">
+        <strong className="text-mantis-300">Interpretación:</strong>
+        <br />
+        <span className="text-stone-300">
+          • CPI = 1: Instrucciones simples (ideal)<br/>
+          • CPI &gt; 1: Instrucciones complejas o múltiples ciclos<br/>
+          • Menor tiempo = mejor rendimiento
+        </span>
       </div>
     </div>
   );
 
   // Contenido educativo para la configuración
   const configEducationalContent = (
-    <div className="space-y-2 text-xs">
+    <div className="space-y-3 text-xs">
       <div>
-        <strong className="text-mantis-300">Velocidad CPU:</strong>
+        <strong className="text-mantis-300">Velocidad CPU (Hz):</strong>
         <br />
-        Determina qué tan rápido ejecuta el procesador cada ciclo. Mayor Hz = ciclos más rápidos.
+        <span className="text-stone-300">
+          Frecuencia del reloj del procesador que determina la velocidad de ejecución. 
+          Cada ciclo de reloj ejecuta una microoperación del procesador.
+        </span>
+      </div>
+      <div>
+        <strong className="text-mantis-300">Tiempo por Ciclo:</strong>
+        <br />
+        <span className="text-stone-300">
+          Duración de cada ciclo calculada como 1/velocidad. Por ejemplo, 
+          1 MHz = 1 microsegundo por ciclo.
+        </span>
+      </div>
+      <div className="border-t border-stone-600 pt-2">
+        <strong className="text-mantis-300">Impacto en Rendimiento:</strong>
+        <br />
+        <span className="text-stone-300">
+          • Mayor Hz = ciclos más rápidos<br/>
+          • Menor tiempo total de ejecución<br/>
+          • Mejor experiencia de simulación
+        </span>
       </div>
     </div>
   );
@@ -142,7 +176,7 @@ export const CPUStats = memo(({ className }: CPUStatsProps) => {
               <Tooltip
                 content={performanceEducationalContent}
                 position="top"
-                maxWidth={350}
+                maxWidth={400}
                 className="text-stone-400 hover:text-mantis-400 transition-colors"
               >
                 <button className="text-xs hover:scale-110 transition-transform">💡</button>
@@ -176,7 +210,7 @@ export const CPUStats = memo(({ className }: CPUStatsProps) => {
               <Tooltip
                 content={configEducationalContent}
                 position="top"
-                maxWidth={350}
+                maxWidth={400}
                 className="text-stone-400 hover:text-mantis-400 transition-colors"
               >
                 <button className="text-xs hover:scale-110 transition-transform">⚙️</button>

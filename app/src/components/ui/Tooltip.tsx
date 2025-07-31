@@ -14,7 +14,7 @@ type TooltipPosition =
   | "bottom-end";
 
 type TooltipProps = {
-  content: string;
+  content: string | React.ReactNode;
   children: React.ReactNode;
   position?: TooltipPosition;
   delay?: number;
@@ -53,7 +53,7 @@ export const Tooltip = memo(
     position = "top",
     delay = 200,
     className,
-    maxWidth = 200,
+    maxWidth = 300,
     showArrow = true,
     disabled = false,
   }: TooltipProps) => {
@@ -131,11 +131,11 @@ export const Tooltip = memo(
           <div
             ref={tooltipRef}
             className={clsx(
-              "absolute z-50 rounded-lg border border-stone-600 bg-stone-800 px-3 py-2 text-sm text-white shadow-lg",
+              "absolute z-50 rounded-lg border border-stone-600 bg-stone-800 px-4 py-3 text-sm text-white shadow-lg",
               "animate-fade-in",
               positionClasses[tooltipPosition],
             )}
-            style={{ maxWidth: `${maxWidth}px` }}
+            style={{ maxWidth: `${maxWidth}px`, minWidth: "200px" }}
             role="tooltip"
           >
             {content}
@@ -204,7 +204,7 @@ export const CustomTooltip = memo(
     position = "top",
     delay = 200,
     className,
-    maxWidth = 200,
+    maxWidth = 300,
     showArrow = true,
     disabled = false,
   }: CustomTooltipProps) => {
@@ -242,11 +242,11 @@ export const CustomTooltip = memo(
           <div
             ref={tooltipRef}
             className={clsx(
-              "absolute z-50 rounded-lg border border-stone-600 bg-stone-800 px-3 py-2 text-sm text-white shadow-lg",
+              "absolute z-50 rounded-lg border border-stone-600 bg-stone-800 px-4 py-3 text-sm text-white shadow-lg",
               "animate-fade-in",
               positionClasses[position],
             )}
-            style={{ maxWidth: `${maxWidth}px` }}
+            style={{ maxWidth: `${maxWidth}px`, minWidth: "200px" }}
             role="tooltip"
           >
             {content}
