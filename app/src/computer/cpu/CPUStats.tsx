@@ -4,6 +4,7 @@ import { memo, useState } from "react";
 
 import { useTranslate } from "@/lib/i18n";
 import { useSettings } from "@/lib/settings";
+import { Tooltip } from "@/components/ui/Tooltip";
 
 import { cycleCountAtom, instructionCountAtom } from "./state";
 
@@ -39,6 +40,33 @@ export const CPUStats = memo(({ className }: CPUStatsProps) => {
     if (instructionCount === 0) return "text-yellow-400";
     return "text-mantis-400";
   };
+
+  // Contenido educativo para las métricas de rendimiento
+  const performanceEducationalContent = (
+    <div className="space-y-2 text-xs">
+      <div>
+        <strong className="text-mantis-300">CPI (Ciclos por Instrucción):</strong>
+        <br />
+        Métrica fundamental que indica la eficiencia del procesador. Un CPI más bajo significa mejor rendimiento.
+      </div>
+      <div>
+        <strong className="text-mantis-300">Tiempo de CPU:</strong>
+        <br />
+        Depende de los ciclos ejecutados y la velocidad del reloj del sistema.
+      </div>
+    </div>
+  );
+
+  // Contenido educativo para la configuración
+  const configEducationalContent = (
+    <div className="space-y-2 text-xs">
+      <div>
+        <strong className="text-mantis-300">Velocidad CPU:</strong>
+        <br />
+        Determina qué tan rápido ejecuta el procesador cada ciclo. Mayor Hz = ciclos más rápidos.
+      </div>
+    </div>
+  );
 
   return (
     <div
@@ -110,7 +138,19 @@ export const CPUStats = memo(({ className }: CPUStatsProps) => {
 
           {/* Métricas de rendimiento */}
           <div className="rounded border border-stone-600 bg-stone-800/80 p-2">
-            <div className="mb-2 text-xs font-bold text-mantis-400">Métricas de Rendimiento:</div>
+            <div className="mb-2 flex items-center gap-2">
+              <span className="text-xs font-bold text-mantis-400">Métricas de Rendimiento:</span>
+                             <Tooltip
+                 content={performanceEducationalContent}
+                 position="top"
+                 maxWidth={350}
+                 className="text-stone-400 hover:text-mantis-400 transition-colors"
+               >
+                <button className="text-xs hover:scale-110 transition-transform">
+                  💡
+                </button>
+              </Tooltip>
+            </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs text-stone-300" title={translate("computer.cpu.cpi-help")}>
@@ -134,33 +174,27 @@ export const CPUStats = memo(({ className }: CPUStatsProps) => {
 
           {/* Configuración actual */}
           <div className="rounded border border-stone-600 bg-stone-800/80 p-2">
-            <div className="mb-2 text-xs font-bold text-mantis-400">Configuración Actual:</div>
-            <div className="space-y-1 text-xs text-stone-300">
-              <div>
-                <strong>Velocidad CPU:</strong> {settings.cpuSpeed} Hz (
-                {cycleTimeSeconds.toFixed(1)} s/ciclo)
-              </div>
-              <div>
-                <strong>Velocidad Timer:</strong> {(settings.clockSpeed / 1000).toFixed(1)} s
-              </div>
+            <div className="mb-2 flex items-center gap-2">
+              <span className="text-xs font-bold text-mantis-400">Configuración Actual:</span>
+                             <Tooltip
+                 content={configEducationalContent}
+                 position="top"
+                 maxWidth={350}
+                 className="text-stone-400 hover:text-mantis-400 transition-colors"
+               >
+                <button className="text-xs hover:scale-110 transition-transform">
+                  ⚙️
+                </button>
+              </Tooltip>
             </div>
-          </div>
-
-          {/* Información educativa */}
-          <div className="rounded border border-stone-600 bg-stone-800/80 p-2">
-            <div className="mb-2 text-xs font-bold text-mantis-400">💡 Concepto Educativo:</div>
-            <div className="text-xs leading-relaxed text-stone-300">
-              <div className="mb-2">
-                <strong>CPI (Ciclos por Instrucción):</strong> Métrica fundamental que indica la
-                eficiencia del procesador. Un CPI más bajo significa mejor rendimiento.
-              </div>
-              <div className="mb-2">
-                <strong>Tiempo de CPU:</strong> Depende de los ciclos ejecutados y la velocidad del
-                reloj del sistema.
-              </div>
-              <div className="mb-2">
-                <strong>Velocidad CPU:</strong> Determina qué tan rápido ejecuta el procesador cada
-                ciclo. Mayor Hz = ciclos más rápidos.
+            <div className="space-y-1 text-xs text-stone-300">
+              <div className="flex items-center justify-between">
+                <span className="text-stone-300">
+                  <strong>Velocidad CPU:</strong>
+                </span>
+                <span className="font-mono text-mantis-300">
+                  {settings.cpuSpeed} Hz ({cycleTimeSeconds.toFixed(1)} s/ciclo)
+                </span>
               </div>
             </div>
           </div>
