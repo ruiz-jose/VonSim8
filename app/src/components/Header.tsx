@@ -31,7 +31,7 @@ const useTourControl = () => {
 };
 
 // Componente de estado de simulación optimizado
-const SimulationStatus = memo(({ status, isMobile }: { status: any; isMobile: boolean }) => {
+const SimulationStatus = memo(({ status, isMobile, isCompact }: { status: any; isMobile: boolean; isCompact?: boolean }) => {
   const cycle = useAtomValue(cycleAtom);
   const [previousPhase, setPreviousPhase] = useState<string | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -156,6 +156,7 @@ const SimulationStatus = memo(({ status, isMobile }: { status: any; isMobile: bo
           statusColor,
           status.type === "running" && "animate-pulse-glow",
           isMobile && "px-1.5 py-0.5", // Más compacto en móvil
+          isCompact && "px-1 py-0.5", // Aún más compacto cuando el espacio es limitado
         )}
       >
         <div
@@ -168,7 +169,8 @@ const SimulationStatus = memo(({ status, isMobile }: { status: any; isMobile: bo
                 : "bg-stone-300",
           )}
         />
-        {!isMobile && statusText}
+        {/* Ocultar texto en móvil o cuando está compacto */}
+        {!isMobile && !isCompact && statusText}
       </div>
 
       {/* Fase actual - mostrar en móvil también pero más compacta */}
@@ -180,7 +182,9 @@ const SimulationStatus = memo(({ status, isMobile }: { status: any; isMobile: bo
             getPhaseAnimation, // Aplicar animación solo cuando cambia la fase
             isMobile
               ? "flex min-h-[20px] items-center justify-center whitespace-nowrap px-2 py-0.5 text-[8px]" // Compacto pero adaptable en móvil
-              : "px-2 py-1", // Tamaño normal en desktop
+              : isCompact
+                ? "flex min-h-[18px] items-center justify-center whitespace-nowrap px-1.5 py-0.5 text-[8px]" // Muy compacto
+                : "px-2 py-1", // Tamaño normal en desktop
           )}
         >
           {getPhaseText} {/* Mostrar texto completo en móvil y desktop */}
@@ -262,18 +266,26 @@ export const Header = memo(() => {
   const { status } = useSimulation();
   const { handleShowTour } = useTourControl();
 
-  // Detectar si es móvil/PWA
-  const [isMobile, setIsMobile] = useState(false);
+  // Detectar diferentes tamaños de pantalla para mejor responsividad
+  const [screenSize, setScreenSize] = useState<'mobile' | 'compact' | 'tablet' | 'desktop'>('desktop');
+  
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(
-        window.innerWidth <= 600 ||
-          (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches),
-      );
+    const checkScreenSize = () => {
+      const width = window.innerWidth;
+      if (width <= 480) {
+        setScreenSize('mobile');
+      } else if (width <= 768) {
+        setScreenSize('compact');
+      } else if (width <= 1024) {
+        setScreenSize('tablet');
+      } else {
+        setScreenSize('desktop');
+      }
     };
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+    
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
   // Callbacks optimizados
@@ -321,21 +333,84 @@ export const Header = memo(() => {
     [],
   );
 
+  // Determinar el layout según el tamaño de pantalla
+  const getLayoutConfig = () => {
+    switch (screenSize) {
+      case 'mobile':
+        return {
+          gridCols: 'grid-cols-2',
+          showStatusLeft: true,
+          showStatusCenter: false,
+          showActionButtons: false,
+          isCompact: true,
+          isMobile: true
+        };
+      case 'compact':
+        return {
+          gridCols: 'grid-cols-3',
+          showStatusLeft: false,
+          showStatusCenter: true,
+          showActionButtons: false,
+          isCompact: true,
+          isMobile: false
+        };
+      case 'tablet':
+        return {
+          gridCols: 'grid-cols-3',
+          showStatusLeft: false,
+          showStatusCenter: true,
+          showActionButtons: true,
+          isCompact: false,
+          isMobile: false
+        };
+      case 'desktop':
+        return {
+          gridCols: 'grid-cols-3',
+          showStatusLeft: false,
+          showStatusCenter: true,
+          showActionButtons: true,
+          isCompact: false,
+          isMobile: false
+        };
+    }
+  };
+
+  const layout = getLayoutConfig();
+
   return (
     <>
-      <header className="relative bg-black p-2 text-sm text-white" data-testid="header">
-        <div className={clsx("grid items-center", isMobile ? "grid-cols-2" : "grid-cols-3")}>
-          {/* Lado izquierdo: Logo y estado (en móvil) */}
+      <header 
+        className={clsx(
+          "relative bg-black text-sm text-white",
+          screenSize === 'mobile' ? "header-mobile p-2" :
+          screenSize === 'compact' ? "header-compact p-2" :
+          screenSize === 'tablet' ? "header-tablet p-2" :
+          "p-2"
+        )} 
+        data-testid="header"
+      >
+        <div className={clsx("grid items-center", layout.gridCols)}>
+          {/* Lado izquierdo: Logo y estado (cuando corresponde) */}
           <div className="flex items-center gap-3">
             {logoSection}
             {/* Mostrar estado en móvil a la izquierda */}
-            {isMobile && <SimulationStatus status={status} isMobile={isMobile} />}
+            {layout.showStatusLeft && (
+              <SimulationStatus 
+                status={status} 
+                isMobile={layout.isMobile} 
+                isCompact={layout.isCompact}
+              />
+            )}
           </div>
 
-          {/* Centro: Estado del CPU (solo en desktop) */}
-          {!isMobile && (
+          {/* Centro: Estado del CPU (cuando corresponde) */}
+          {layout.showStatusCenter && (
             <div className="flex justify-center">
-              <SimulationStatus status={status} isMobile={isMobile} />
+              <SimulationStatus 
+                status={status} 
+                isMobile={layout.isMobile} 
+                isCompact={layout.isCompact}
+              />
             </div>
           )}
 
@@ -347,7 +422,7 @@ export const Header = memo(() => {
             </div>
 
             {/* Botones de acción */}
-            {!isMobile && (
+            {layout.showActionButtons && (
               <ActionButtons
                 onShowTour={handleShowTour}
                 onToggleSettings={handleToggleSettings}
@@ -361,14 +436,14 @@ export const Header = memo(() => {
       </header>
 
       {/* Componentes educativos */}
-      {!isMobile && educationalOpen && (
+      {!layout.isMobile && educationalOpen && (
         <EducationalMenu
           isOpen={educationalOpen}
           onClose={() => setEducationalOpen(false)}
           onShowProgress={handleToggleProgress}
         />
       )}
-      {!isMobile && progressOpen && (
+      {!layout.isMobile && progressOpen && (
         <EducationalProgress isVisible={progressOpen} onClose={() => setProgressOpen(false)} />
       )}
     </>

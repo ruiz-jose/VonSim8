@@ -656,3 +656,42 @@ body.tooltip-open {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ===== MEJORAS DE RESPONSIVIDAD PARA HEADER ===== */
+@media (max-width: 480px) {
+  /* Móvil: Layout más compacto */
+  .header-mobile {
+    padding: 0.5rem;
+  }
+  
+  .header-mobile .controls {
+    gap: 0.5rem;
+    padding: 0.25rem 0.5rem;
+  }
+  
+  .header-mobile .status-compact {
+    font-size: 0.625rem;
+    padding: 0.125rem 0.375rem;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  /* Compact: Layout intermedio */
+  .header-compact {
+    padding: 0.75rem;
+  }
+  
+  .header-compact .controls {
+    gap: 0.75rem;
+    padding: 0.375rem 0.75rem;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  /* Tablet: Layout completo pero optimizado */
+  .header-tablet {
+    padding: 1rem;
+  }
+}
+
+/* ===== ANIMACIONES DE FASES (UNA SOLA VEZ) ===== */

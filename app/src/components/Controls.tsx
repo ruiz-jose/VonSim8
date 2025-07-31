@@ -23,6 +23,28 @@ export function Controls({ className }: { className?: string }) {
   // Nuevo estado para recordar el modo de ejecución activo
   const [activeRunMode, setActiveRunMode] = useState<null | RunUntil>(null);
 
+  // Detectar diferentes tamaños de pantalla para mejor responsividad
+  const [screenSize, setScreenSize] = useState<'mobile' | 'compact' | 'tablet' | 'desktop'>('desktop');
+  
+  useEffect(() => {
+    const checkScreenSize = () => {
+      const width = window.innerWidth;
+      if (width <= 480) {
+        setScreenSize('mobile');
+      } else if (width <= 768) {
+        setScreenSize('compact');
+      } else if (width <= 1024) {
+        setScreenSize('tablet');
+      } else {
+        setScreenSize('desktop');
+      }
+    };
+    
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
+
   // Cuando la simulación se detiene, limpiar el modo activo
   useEffect(() => {
     if (status.type !== "running") {
@@ -121,27 +143,19 @@ export function Controls({ className }: { className?: string }) {
     [status.type, handlePause],
   );
 
-  // Detectar si es móvil/PWA
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    const checkMobile = () => {
-      // Considera móvil si ancho de pantalla <= 600px o si es standalone PWA
-      setIsMobile(
-        window.innerWidth <= 600 ||
-          (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches),
-      );
-    };
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
+  // Determinar si mostrar texto y atajos según el tamaño de pantalla
+  const showText = screenSize === 'desktop' || screenSize === 'tablet';
+  const showShortcuts = screenSize === 'desktop';
 
   return (
     <div
       data-testid="controls"
       className={clsx(
-        // Reduce py-4 a py-1 y px-8 a px-4 para menor altura
-        "flex items-center justify-center gap-4 rounded-xl border border-stone-700 bg-stone-900/80 px-3 py-1 shadow-lg",
+        // Ajustar padding según el tamaño de pantalla
+        "flex items-center justify-center gap-4 rounded-xl border border-stone-700 bg-stone-900/80 shadow-lg",
+        screenSize === 'mobile' ? "px-2 py-0.5 gap-2" : 
+        screenSize === 'compact' ? "px-2 py-1 gap-3" : 
+        "px-3 py-1 gap-4",
         className,
       )}
     >
@@ -152,8 +166,9 @@ export function Controls({ className }: { className?: string }) {
           onClick={handlePause}
           title={translate("control.action.pause")}
           className={clsx(
-            "group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-purple-600/20 focus-visible:ring-2 focus-visible:ring-purple-400",
+            "group relative flex flex-col items-center rounded-lg transition hover:bg-purple-600/20 focus-visible:ring-2 focus-visible:ring-purple-400",
             "animate-pulse-glow-purple", // Púrpura para pausar
+            screenSize === 'mobile' ? "px-1 py-0.5" : "px-1.5 py-0.5",
           )}
         >
           <span className="flex items-center justify-center">
@@ -162,13 +177,13 @@ export function Controls({ className }: { className?: string }) {
               size="lg"
               className="text-purple-400 transition group-hover:scale-110"
             />
-            {!isMobile && (
+            {showShortcuts && (
               <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
                 Space
               </span>
             )}
           </span>
-          {!isMobile && <span className="mt-0.5 text-xs">{translate("control.action.pause")}</span>}
+          {showText && <span className="mt-0.5 text-xs">{translate("control.action.pause")}</span>}
         </button>
       ) : (
         <button
@@ -177,10 +192,11 @@ export function Controls({ className }: { className?: string }) {
           onClick={runCycle}
           title={translate("control.action.run.cycle-change")}
           className={clsx(
-            "group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-mantis-600/20 focus-visible:ring-2 focus-visible:ring-mantis-400 disabled:opacity-50",
+            "group relative flex flex-col items-center rounded-lg transition hover:bg-mantis-600/20 focus-visible:ring-2 focus-visible:ring-mantis-400 disabled:opacity-50",
             status.type === "running" &&
               status.until === "cycle-change" &&
               "animate-pulse-glow-mantis", // Verde para ciclo
+            screenSize === 'mobile' ? "px-1 py-0.5" : "px-1.5 py-0.5",
           )}
         >
           <span className="flex items-center justify-center">
@@ -189,13 +205,13 @@ export function Controls({ className }: { className?: string }) {
               size="lg"
               className="text-mantis-400 transition group-hover:scale-110"
             />
-            {!isMobile && (
+            {showShortcuts && (
               <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
                 F7
               </span>
             )}
           </span>
-          {!isMobile && (
+          {showText && (
             <span className="mt-0.5 text-xs">{translate("control.action.run.cycle-change")}</span>
           )}
         </button>
@@ -207,8 +223,9 @@ export function Controls({ className }: { className?: string }) {
           onClick={handlePause}
           title={translate("control.action.pause")}
           className={clsx(
-            "group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-purple-600/20 focus-visible:ring-2 focus-visible:ring-purple-400",
+            "group relative flex flex-col items-center rounded-lg transition hover:bg-purple-600/20 focus-visible:ring-2 focus-visible:ring-purple-400",
             "animate-pulse-glow-purple", // Púrpura para pausar
+            screenSize === 'mobile' ? "px-1 py-0.5" : "px-1.5 py-0.5",
           )}
         >
           <span className="flex items-center justify-center">
@@ -217,13 +234,13 @@ export function Controls({ className }: { className?: string }) {
               size="lg"
               className="text-purple-400 transition group-hover:scale-110"
             />
-            {!isMobile && (
+            {showShortcuts && (
               <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
                 Space
               </span>
             )}
           </span>
-          {!isMobile && <span className="mt-0.5 text-xs">{translate("control.action.pause")}</span>}
+          {showText && <span className="mt-0.5 text-xs">{translate("control.action.pause")}</span>}
         </button>
       ) : (
         <button
@@ -232,10 +249,11 @@ export function Controls({ className }: { className?: string }) {
           onClick={runInstruction}
           title={translate("control.action.run.end-of-instruction")}
           className={clsx(
-            "group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-blue-600/20 focus-visible:ring-2 focus-visible:ring-blue-400 disabled:opacity-50",
+            "group relative flex flex-col items-center rounded-lg transition hover:bg-blue-600/20 focus-visible:ring-2 focus-visible:ring-blue-400 disabled:opacity-50",
             status.type === "running" &&
               status.until === "end-of-instruction" &&
               "animate-pulse-glow-blue", // Azul para instrucción
+            screenSize === 'mobile' ? "px-1 py-0.5" : "px-1.5 py-0.5",
           )}
         >
           <span className="flex items-center justify-center">
@@ -244,13 +262,13 @@ export function Controls({ className }: { className?: string }) {
               size="lg"
               className="text-blue-400 transition group-hover:scale-110"
             />
-            {!isMobile && (
+            {showShortcuts && (
               <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
                 F8
               </span>
             )}
           </span>
-          {!isMobile && (
+          {showText && (
             <span className="mt-0.5 text-xs">
               {translate("control.action.run.end-of-instruction")}
             </span>
@@ -264,8 +282,9 @@ export function Controls({ className }: { className?: string }) {
           onClick={handlePause}
           title={translate("control.action.pause")}
           className={clsx(
-            "group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-purple-600/20 focus-visible:ring-2 focus-visible:ring-purple-400",
+            "group relative flex flex-col items-center rounded-lg transition hover:bg-purple-600/20 focus-visible:ring-2 focus-visible:ring-purple-400",
             "animate-pulse-glow-purple", // Púrpura para pausar
+            screenSize === 'mobile' ? "px-1 py-0.5" : "px-1.5 py-0.5",
           )}
         >
           <span className="flex items-center justify-center">
@@ -274,13 +293,13 @@ export function Controls({ className }: { className?: string }) {
               size="lg"
               className="text-purple-400 transition group-hover:scale-110"
             />
-            {!isMobile && (
+            {showShortcuts && (
               <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
                 Space
               </span>
             )}
           </span>
-          {!isMobile && <span className="mt-0.5 text-xs">{translate("control.action.pause")}</span>}
+          {showText && <span className="mt-0.5 text-xs">{translate("control.action.pause")}</span>}
         </button>
       ) : (
         <button
@@ -289,8 +308,9 @@ export function Controls({ className }: { className?: string }) {
           onClick={runInfinity}
           title={translate("control.action.run.infinity")}
           className={clsx(
-            "group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-orange-600/20 focus-visible:ring-2 focus-visible:ring-orange-400 disabled:opacity-50",
+            "group relative flex flex-col items-center rounded-lg transition hover:bg-orange-600/20 focus-visible:ring-2 focus-visible:ring-orange-400 disabled:opacity-50",
             status.type === "running" && status.until === "infinity" && "animate-pulse-glow-orange", // Naranja para infinito
+            screenSize === 'mobile' ? "px-1 py-0.5" : "px-1.5 py-0.5",
           )}
         >
           <span className="flex items-center justify-center">
@@ -299,13 +319,13 @@ export function Controls({ className }: { className?: string }) {
               size="lg"
               className="text-orange-400 transition group-hover:scale-110"
             />
-            {!isMobile && (
+            {showShortcuts && (
               <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
                 F4
               </span>
             )}
           </span>
-          {!isMobile && (
+          {showText && (
             <span className="mt-0.5 text-xs">{translate("control.action.run.infinity")}</span>
           )}
         </button>
@@ -316,7 +336,10 @@ export function Controls({ className }: { className?: string }) {
         onClick={handleReset}
         disabled={status.type === "stopped" || status.type === "running"}
         title={translate("control.action.reset")}
-        className="group relative flex flex-col items-center rounded-lg px-1.5 py-0.5 transition hover:bg-red-600/20 focus-visible:ring-2 focus-visible:ring-red-400 disabled:opacity-50"
+        className={clsx(
+          "group relative flex flex-col items-center rounded-lg transition hover:bg-red-600/20 focus-visible:ring-2 focus-visible:ring-red-400 disabled:opacity-50",
+          screenSize === 'mobile' ? "px-1 py-0.5" : "px-1.5 py-0.5",
+        )}
       >
         <span className="flex items-center justify-center">
           <FontAwesomeIcon
@@ -324,13 +347,13 @@ export function Controls({ className }: { className?: string }) {
             size="lg"
             className="text-red-400 transition group-hover:scale-110"
           />
-          {!isMobile && (
+          {showShortcuts && (
             <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
               F9
             </span>
           )}
         </span>
-        {!isMobile && <span className="mt-0.5 text-xs">{translate("control.action.reset")}</span>}
+        {showText && <span className="mt-0.5 text-xs">{translate("control.action.reset")}</span>}
       </button>
     </div>
   );
