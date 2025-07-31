@@ -24,25 +24,27 @@ export function Controls({ className }: { className?: string }) {
   const [activeRunMode, setActiveRunMode] = useState<null | RunUntil>(null);
 
   // Detectar diferentes tamaños de pantalla para mejor responsividad
-  const [screenSize, setScreenSize] = useState<'mobile' | 'compact' | 'tablet' | 'desktop'>('desktop');
-  
+  const [screenSize, setScreenSize] = useState<"mobile" | "compact" | "tablet" | "desktop">(
+    "desktop",
+  );
+
   useEffect(() => {
     const checkScreenSize = () => {
       const width = window.innerWidth;
       if (width <= 480) {
-        setScreenSize('mobile');
+        setScreenSize("mobile");
       } else if (width <= 768) {
-        setScreenSize('compact');
+        setScreenSize("compact");
       } else if (width <= 1024) {
-        setScreenSize('tablet');
+        setScreenSize("tablet");
       } else {
-        setScreenSize('desktop');
+        setScreenSize("desktop");
       }
     };
-    
+
     checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
-    return () => window.removeEventListener('resize', checkScreenSize);
+    window.addEventListener("resize", checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
 
   // Cuando la simulación se detiene, limpiar el modo activo
@@ -144,8 +146,8 @@ export function Controls({ className }: { className?: string }) {
   );
 
   // Determinar si mostrar texto y atajos según el tamaño de pantalla
-  const showText = screenSize === 'desktop' || screenSize === 'tablet';
-  const showShortcuts = screenSize === 'desktop';
+  const showText = screenSize === "desktop" || screenSize === "tablet";
+  const showShortcuts = screenSize === "desktop";
 
   return (
     <div
@@ -153,9 +155,11 @@ export function Controls({ className }: { className?: string }) {
       className={clsx(
         // Ajustar padding según el tamaño de pantalla
         "flex items-center justify-center gap-4 rounded-xl border border-stone-700 bg-stone-900/80 shadow-lg",
-        screenSize === 'mobile' ? "px-2 py-0.5 gap-2" : 
-        screenSize === 'compact' ? "px-2 py-1 gap-3" : 
-        "px-3 py-1 gap-4",
+        screenSize === "mobile"
+          ? "px-2 py-0.5 gap-2"
+          : screenSize === "compact"
+            ? "px-2 py-1 gap-3"
+            : "px-3 py-1 gap-4",
         className,
       )}
     >
@@ -168,7 +172,7 @@ export function Controls({ className }: { className?: string }) {
           className={clsx(
             "group relative flex flex-col items-center rounded-lg transition hover:bg-purple-600/20 focus-visible:ring-2 focus-visible:ring-purple-400",
             "animate-pulse-glow-purple", // Púrpura para pausar
-            screenSize === 'mobile' ? "px-1 py-0.5" : "px-1.5 py-0.5",
+            screenSize === "mobile" ? "px-1 py-0.5" : "px-1.5 py-0.5",
           )}
         >
           <span className="flex items-center justify-center">
@@ -196,7 +200,7 @@ export function Controls({ className }: { className?: string }) {
             status.type === "running" &&
               status.until === "cycle-change" &&
               "animate-pulse-glow-mantis", // Verde para ciclo
-            screenSize === 'mobile' ? "px-1 py-0.5" : "px-1.5 py-0.5",
+            screenSize === "mobile" ? "px-1 py-0.5" : "px-1.5 py-0.5",
           )}
         >
           <span className="flex items-center justify-center">
@@ -225,7 +229,7 @@ export function Controls({ className }: { className?: string }) {
           className={clsx(
             "group relative flex flex-col items-center rounded-lg transition hover:bg-purple-600/20 focus-visible:ring-2 focus-visible:ring-purple-400",
             "animate-pulse-glow-purple", // Púrpura para pausar
-            screenSize === 'mobile' ? "px-1 py-0.5" : "px-1.5 py-0.5",
+            screenSize === "mobile" ? "px-1 py-0.5" : "px-1.5 py-0.5",
           )}
         >
           <span className="flex items-center justify-center">
@@ -253,7 +257,7 @@ export function Controls({ className }: { className?: string }) {
             status.type === "running" &&
               status.until === "end-of-instruction" &&
               "animate-pulse-glow-blue", // Azul para instrucción
-            screenSize === 'mobile' ? "px-1 py-0.5" : "px-1.5 py-0.5",
+            screenSize === "mobile" ? "px-1 py-0.5" : "px-1.5 py-0.5",
           )}
         >
           <span className="flex items-center justify-center">
@@ -284,7 +288,7 @@ export function Controls({ className }: { className?: string }) {
           className={clsx(
             "group relative flex flex-col items-center rounded-lg transition hover:bg-purple-600/20 focus-visible:ring-2 focus-visible:ring-purple-400",
             "animate-pulse-glow-purple", // Púrpura para pausar
-            screenSize === 'mobile' ? "px-1 py-0.5" : "px-1.5 py-0.5",
+            screenSize === "mobile" ? "px-1 py-0.5" : "px-1.5 py-0.5",
           )}
         >
           <span className="flex items-center justify-center">
@@ -310,7 +314,7 @@ export function Controls({ className }: { className?: string }) {
           className={clsx(
             "group relative flex flex-col items-center rounded-lg transition hover:bg-orange-600/20 focus-visible:ring-2 focus-visible:ring-orange-400 disabled:opacity-50",
             status.type === "running" && status.until === "infinity" && "animate-pulse-glow-orange", // Naranja para infinito
-            screenSize === 'mobile' ? "px-1 py-0.5" : "px-1.5 py-0.5",
+            screenSize === "mobile" ? "px-1 py-0.5" : "px-1.5 py-0.5",
           )}
         >
           <span className="flex items-center justify-center">
@@ -338,7 +342,7 @@ export function Controls({ className }: { className?: string }) {
         title={translate("control.action.reset")}
         className={clsx(
           "group relative flex flex-col items-center rounded-lg transition hover:bg-red-600/20 focus-visible:ring-2 focus-visible:ring-red-400 disabled:opacity-50",
-          screenSize === 'mobile' ? "px-1 py-0.5" : "px-1.5 py-0.5",
+          screenSize === "mobile" ? "px-1 py-0.5" : "px-1.5 py-0.5",
         )}
       >
         <span className="flex items-center justify-center">

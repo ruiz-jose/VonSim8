@@ -663,12 +663,12 @@ body.tooltip-open {
   .header-mobile {
     padding: 0.5rem;
   }
-  
+
   .header-mobile .controls {
     gap: 0.5rem;
     padding: 0.25rem 0.5rem;
   }
-  
+
   .header-mobile .status-compact {
     font-size: 0.625rem;
     padding: 0.125rem 0.375rem;
@@ -680,7 +680,7 @@ body.tooltip-open {
   .header-compact {
     padding: 0.75rem;
   }
-  
+
   .header-compact .controls {
     gap: 0.75rem;
     padding: 0.375rem 0.75rem;

@@ -244,7 +244,11 @@ async function startThread(generator: EventGenerator): Promise<void> {
         // Reiniciar el contador de ciclos para la nueva instrucción
         currentInstructionCycleCount = 0;
         store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
-        console.log("🔄 Nueva instrucción iniciada:", currentInstructionName, "- Contador reiniciado a 0");
+        console.log(
+          "🔄 Nueva instrucción iniciada:",
+          currentInstructionName,
+          "- Contador reiniciado a 0",
+        );
         mbridirmar = false;
         resultmbrimar = false;
         displayMessageresultmbr = "";
@@ -577,7 +581,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             console.log("📋 Evento cpu:register.buscopy detectado");
             const sourceRegister = event.value.src.replace(/\.l$/, "");
             const destRegister = event.value.dest.replace(/\.l$/, "");
-            
+
             // Para instrucciones MOV entre registros, siempre contabilizar el ciclo
             if (currentInstructionName === "MOV") {
               const displayMessage = `Ejecución: ${destRegister} ← ${sourceRegister}`;
@@ -585,7 +589,12 @@ async function startThread(generator: EventGenerator): Promise<void> {
               cycleCount++;
               currentInstructionCycleCount++;
               store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
-              console.log("✅ Ciclo contabilizado para MOV register.buscopy - cycleCount:", cycleCount, "currentInstructionCycleCount:", currentInstructionCycleCount);
+              console.log(
+                "✅ Ciclo contabilizado para MOV register.buscopy - cycleCount:",
+                cycleCount,
+                "currentInstructionCycleCount:",
+                currentInstructionCycleCount,
+              );
             }
           } else if (event.value.type === "cpu:register.copy") {
             console.log("📋 Evento cpu:register.copy detectado");
@@ -681,15 +690,27 @@ async function startThread(generator: EventGenerator): Promise<void> {
               // pauseSimulation();
             }
             // Debug: mostrar información del evento register.copy
-            console.log("cpu:register.copy - sourceRegister:", sourceRegister, "destRegister:", destRegister, "currentInstructionName:", currentInstructionName);
-            
+            console.log(
+              "cpu:register.copy - sourceRegister:",
+              sourceRegister,
+              "destRegister:",
+              destRegister,
+              "currentInstructionName:",
+              currentInstructionName,
+            );
+
             // Para instrucciones MOV entre registros, siempre contabilizar el ciclo
             if (currentInstructionName === "MOV") {
               store.set(messageAtom, displayMessage);
               cycleCount++;
               currentInstructionCycleCount++;
               store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
-              console.log("✅ Ciclo contabilizado para MOV register.copy - cycleCount:", cycleCount, "currentInstructionCycleCount:", currentInstructionCycleCount);
+              console.log(
+                "✅ Ciclo contabilizado para MOV register.copy - cycleCount:",
+                cycleCount,
+                "currentInstructionCycleCount:",
+                currentInstructionCycleCount,
+              );
             } else if (
               (destRegister !== "result" &&
                 destRegister !== "left" &&
@@ -703,7 +724,12 @@ async function startThread(generator: EventGenerator): Promise<void> {
               cycleCount++;
               currentInstructionCycleCount++;
               store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
-              console.log("✅ Ciclo contabilizado para register.copy - cycleCount:", cycleCount, "currentInstructionCycleCount:", currentInstructionCycleCount);
+              console.log(
+                "✅ Ciclo contabilizado para register.copy - cycleCount:",
+                cycleCount,
+                "currentInstructionCycleCount:",
+                currentInstructionCycleCount,
+              );
             } else {
               console.log("❌ Ciclo NO contabilizado para register.copy - condición no cumplida");
             }
@@ -1213,14 +1239,20 @@ async function dispatch(...args: Action) {
       if (shouldReset) {
         finishSimulation();
         resetState(simulator.getComputerState(), shouldReset); // Pasar el parámetro clearRegisters
-        
+
         // Limpiar todas las animaciones de bus activas
         const { anim } = await import("@/computer/shared/animate");
         await Promise.all([
-          anim({ key: "cpu.internalBus.data.opacity", to: 0 }, { duration: 0.1, easing: "easeInSine" }),
-          anim({ key: "cpu.internalBus.address.opacity", to: 0 }, { duration: 0.1, easing: "easeInSine" }),
+          anim(
+            { key: "cpu.internalBus.data.opacity", to: 0 },
+            { duration: 0.1, easing: "easeInSine" },
+          ),
+          anim(
+            { key: "cpu.internalBus.address.opacity", to: 0 },
+            { duration: 0.1, easing: "easeInSine" },
+          ),
         ]);
-        
+
         // Disparar evento para ocultar el registro ri cuando se presiona reset
         const resetEvent = new CustomEvent("instructionChange", {
           detail: {

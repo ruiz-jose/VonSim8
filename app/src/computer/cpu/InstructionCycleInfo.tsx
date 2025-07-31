@@ -108,7 +108,8 @@ export const InstructionCycleInfo = memo(({ className }: InstructionCycleInfoPro
             </div>
           )}
           <div className="mt-1 text-xs text-stone-400">
-            Ciclos de instrucción: <span className="font-mono text-mantis-300">{currentInstructionCycleCount}</span>
+            Ciclos de instrucción:{" "}
+            <span className="font-mono text-mantis-300">{currentInstructionCycleCount}</span>
           </div>
         </div>
       </div>

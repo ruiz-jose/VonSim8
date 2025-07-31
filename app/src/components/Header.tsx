@@ -31,168 +31,170 @@ const useTourControl = () => {
 };
 
 // Componente de estado de simulación optimizado
-const SimulationStatus = memo(({ status, isMobile, isCompact }: { status: any; isMobile: boolean; isCompact?: boolean }) => {
-  const cycle = useAtomValue(cycleAtom);
-  const [previousPhase, setPreviousPhase] = useState<string | null>(null);
-  const [isAnimating, setIsAnimating] = useState(false);
+const SimulationStatus = memo(
+  ({ status, isMobile, isCompact }: { status: any; isMobile: boolean; isCompact?: boolean }) => {
+    const cycle = useAtomValue(cycleAtom);
+    const [previousPhase, setPreviousPhase] = useState<string | null>(null);
+    const [isAnimating, setIsAnimating] = useState(false);
 
-  const statusText = useMemo(() => {
-    switch (status.type) {
-      case "running":
-        return "Ejecutando";
-      case "paused":
-        return "Pausado";
-      default:
-        return "Detenido";
-    }
-  }, [status.type]);
-  const statusColor = useMemo(() => {
-    switch (status.type) {
-      case "running":
-        return "bg-green-600";
-      case "paused":
-        return "bg-yellow-600";
-      default:
-        return "bg-stone-600";
-    }
-  }, [status.type]);
+    const statusText = useMemo(() => {
+      switch (status.type) {
+        case "running":
+          return "Ejecutando";
+        case "paused":
+          return "Pausado";
+        default:
+          return "Detenido";
+      }
+    }, [status.type]);
+    const statusColor = useMemo(() => {
+      switch (status.type) {
+        case "running":
+          return "bg-green-600";
+        case "paused":
+          return "bg-yellow-600";
+        default:
+          return "bg-stone-600";
+      }
+    }, [status.type]);
 
-  // Detectar cambios de fase y activar animación
-  useEffect(() => {
-    if (cycle && cycle.phase && cycle.phase !== previousPhase) {
-      setPreviousPhase(cycle.phase);
-      setIsAnimating(true);
+    // Detectar cambios de fase y activar animación
+    useEffect(() => {
+      if (cycle && cycle.phase && cycle.phase !== previousPhase) {
+        setPreviousPhase(cycle.phase);
+        setIsAnimating(true);
 
-      // Detener la animación después de 0.8s
-      const timer = setTimeout(() => {
-        setIsAnimating(false);
-      }, 800);
+        // Detener la animación después de 0.8s
+        const timer = setTimeout(() => {
+          setIsAnimating(false);
+        }, 800);
 
-      return () => clearTimeout(timer);
-    }
-  }, [cycle, previousPhase]);
+        return () => clearTimeout(timer);
+      }
+    }, [cycle, previousPhase]);
 
-  // Función para obtener el texto de la fase
-  const getPhaseText = useMemo(() => {
-    if (!cycle || (status.type !== "running" && cycle.phase !== "halting")) return "";
+    // Función para obtener el texto de la fase
+    const getPhaseText = useMemo(() => {
+      if (!cycle || (status.type !== "running" && cycle.phase !== "halting")) return "";
 
-    switch (cycle.phase) {
-      case "fetching":
-        return "Captación";
-      case "fetching-operands":
-        return "Obtención de operandos";
-      case "executing":
-        return "Ejecución";
-      case "writeback":
-        return "Escritura";
-      case "interrupt":
-        return "Interrupción";
-      case "int6":
-      case "int7":
-        return "Interrupción";
-      case "halting":
-        return "Detener CPU";
-      default:
-        return "";
-    }
-  }, [cycle, status.type]);
+      switch (cycle.phase) {
+        case "fetching":
+          return "Captación";
+        case "fetching-operands":
+          return "Obtención de operandos";
+        case "executing":
+          return "Ejecución";
+        case "writeback":
+          return "Escritura";
+        case "interrupt":
+          return "Interrupción";
+        case "int6":
+        case "int7":
+          return "Interrupción";
+        case "halting":
+          return "Detener CPU";
+        default:
+          return "";
+      }
+    }, [cycle, status.type]);
 
-  // Función para obtener el color de la fase (igual que en Control.tsx)
-  const getPhaseColor = useMemo(() => {
-    if (!cycle || (status.type !== "running" && cycle.phase !== "halting")) return "";
+    // Función para obtener el color de la fase (igual que en Control.tsx)
+    const getPhaseColor = useMemo(() => {
+      if (!cycle || (status.type !== "running" && cycle.phase !== "halting")) return "";
 
-    switch (cycle.phase) {
-      case "fetching":
-        return "bg-blue-500/20 text-blue-400 border-blue-500/30";
-      case "fetching-operands":
-        return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
-      case "executing":
-        return "bg-green-500/20 text-green-400 border-green-500/30";
-      case "writeback":
-        return "bg-purple-500/20 text-purple-400 border-purple-500/30";
-      case "interrupt":
-        return "bg-red-500/20 text-red-400 border-red-500/30";
-      case "int6":
-      case "int7":
-        return "bg-orange-500/20 text-orange-400 border-orange-500/30";
-      case "halting":
-        return "bg-red-500/20 text-red-400 border-red-500/30";
-      default:
-        return "bg-stone-500/20 text-stone-400 border-stone-500/30";
-    }
-  }, [cycle, status.type]);
+      switch (cycle.phase) {
+        case "fetching":
+          return "bg-blue-500/20 text-blue-400 border-blue-500/30";
+        case "fetching-operands":
+          return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
+        case "executing":
+          return "bg-green-500/20 text-green-400 border-green-500/30";
+        case "writeback":
+          return "bg-purple-500/20 text-purple-400 border-purple-500/30";
+        case "interrupt":
+          return "bg-red-500/20 text-red-400 border-red-500/30";
+        case "int6":
+        case "int7":
+          return "bg-orange-500/20 text-orange-400 border-orange-500/30";
+        case "halting":
+          return "bg-red-500/20 text-red-400 border-red-500/30";
+        default:
+          return "bg-stone-500/20 text-stone-400 border-stone-500/30";
+      }
+    }, [cycle, status.type]);
 
-  // Función para obtener la clase de animación según la fase
-  const getPhaseAnimation = useMemo(() => {
-    if (!isAnimating || !cycle) return "";
+    // Función para obtener la clase de animación según la fase
+    const getPhaseAnimation = useMemo(() => {
+      if (!isAnimating || !cycle) return "";
 
-    switch (cycle.phase) {
-      case "fetching":
-        return "animate-phase-pulse-blue";
-      case "fetching-operands":
-        return "animate-phase-pulse-yellow";
-      case "executing":
-        return "animate-phase-pulse-green";
-      case "writeback":
-        return "animate-phase-pulse-purple";
-      case "interrupt":
-        return "animate-phase-pulse-red";
-      case "int6":
-      case "int7":
-        return "animate-phase-pulse-orange";
-      case "halting":
-        return "animate-phase-pulse-red";
-      default:
-        return "animate-phase-pulse-stone";
-    }
-  }, [isAnimating, cycle]);
+      switch (cycle.phase) {
+        case "fetching":
+          return "animate-phase-pulse-blue";
+        case "fetching-operands":
+          return "animate-phase-pulse-yellow";
+        case "executing":
+          return "animate-phase-pulse-green";
+        case "writeback":
+          return "animate-phase-pulse-purple";
+        case "interrupt":
+          return "animate-phase-pulse-red";
+        case "int6":
+        case "int7":
+          return "animate-phase-pulse-orange";
+        case "halting":
+          return "animate-phase-pulse-red";
+        default:
+          return "animate-phase-pulse-stone";
+      }
+    }, [isAnimating, cycle]);
 
-  return (
-    <div className="flex items-center gap-2">
-      {/* Estado de ejecución */}
-      <div
-        className={clsx(
-          "flex items-center gap-1.5 rounded-full px-2 py-1 font-medium text-white",
-          statusColor,
-          status.type === "running" && "animate-pulse-glow",
-          isMobile && "px-1.5 py-0.5", // Más compacto en móvil
-          isCompact && "px-1 py-0.5", // Aún más compacto cuando el espacio es limitado
-        )}
-      >
+    return (
+      <div className="flex items-center gap-2">
+        {/* Estado de ejecución */}
         <div
           className={clsx(
-            "size-2 rounded-full",
-            status.type === "running"
-              ? "bg-green-300"
-              : status.type === "paused"
-                ? "bg-yellow-300"
-                : "bg-stone-300",
-          )}
-        />
-        {/* Ocultar texto en móvil o cuando está compacto */}
-        {!isMobile && !isCompact && statusText}
-      </div>
-
-      {/* Fase actual - mostrar en móvil también pero más compacta */}
-      {(status.type === "running" || (cycle && cycle.phase === "halting")) && getPhaseText && (
-        <div
-          className={clsx(
-            "rounded-xl border text-[10px] font-semibold uppercase tracking-wider backdrop-blur-sm transition-all duration-200 ease-in-out",
-            getPhaseColor,
-            getPhaseAnimation, // Aplicar animación solo cuando cambia la fase
-            isMobile
-              ? "flex min-h-[20px] items-center justify-center whitespace-nowrap px-2 py-0.5 text-[8px]" // Compacto pero adaptable en móvil
-              : isCompact
-                ? "flex min-h-[18px] items-center justify-center whitespace-nowrap px-1.5 py-0.5 text-[8px]" // Muy compacto
-                : "px-2 py-1", // Tamaño normal en desktop
+            "flex items-center gap-1.5 rounded-full px-2 py-1 font-medium text-white",
+            statusColor,
+            status.type === "running" && "animate-pulse-glow",
+            isMobile && "px-1.5 py-0.5", // Más compacto en móvil
+            isCompact && "px-1 py-0.5", // Aún más compacto cuando el espacio es limitado
           )}
         >
-          {getPhaseText} {/* Mostrar texto completo en móvil y desktop */}
+          <div
+            className={clsx(
+              "size-2 rounded-full",
+              status.type === "running"
+                ? "bg-green-300"
+                : status.type === "paused"
+                  ? "bg-yellow-300"
+                  : "bg-stone-300",
+            )}
+          />
+          {/* Ocultar texto en móvil o cuando está compacto */}
+          {!isMobile && !isCompact && statusText}
         </div>
-      )}
-    </div>
-  );
-});
+
+        {/* Fase actual - mostrar en móvil también pero más compacta */}
+        {(status.type === "running" || (cycle && cycle.phase === "halting")) && getPhaseText && (
+          <div
+            className={clsx(
+              "rounded-xl border text-[10px] font-semibold uppercase tracking-wider backdrop-blur-sm transition-all duration-200 ease-in-out",
+              getPhaseColor,
+              getPhaseAnimation, // Aplicar animación solo cuando cambia la fase
+              isMobile
+                ? "flex min-h-[20px] items-center justify-center whitespace-nowrap px-2 py-0.5 text-[8px]" // Compacto pero adaptable en móvil
+                : isCompact
+                  ? "flex min-h-[18px] items-center justify-center whitespace-nowrap px-1.5 py-0.5 text-[8px]" // Muy compacto
+                  : "px-2 py-1", // Tamaño normal en desktop
+            )}
+          >
+            {getPhaseText} {/* Mostrar texto completo en móvil y desktop */}
+          </div>
+        )}
+      </div>
+    );
+  },
+);
 
 SimulationStatus.displayName = "SimulationStatus";
 
@@ -267,25 +269,27 @@ export const Header = memo(() => {
   const { handleShowTour } = useTourControl();
 
   // Detectar diferentes tamaños de pantalla para mejor responsividad
-  const [screenSize, setScreenSize] = useState<'mobile' | 'compact' | 'tablet' | 'desktop'>('desktop');
-  
+  const [screenSize, setScreenSize] = useState<"mobile" | "compact" | "tablet" | "desktop">(
+    "desktop",
+  );
+
   useEffect(() => {
     const checkScreenSize = () => {
       const width = window.innerWidth;
       if (width <= 480) {
-        setScreenSize('mobile');
+        setScreenSize("mobile");
       } else if (width <= 768) {
-        setScreenSize('compact');
+        setScreenSize("compact");
       } else if (width <= 1024) {
-        setScreenSize('tablet');
+        setScreenSize("tablet");
       } else {
-        setScreenSize('desktop');
+        setScreenSize("desktop");
       }
     };
-    
+
     checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
-    return () => window.removeEventListener('resize', checkScreenSize);
+    window.addEventListener("resize", checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
 
   // Callbacks optimizados
@@ -336,41 +340,41 @@ export const Header = memo(() => {
   // Determinar el layout según el tamaño de pantalla
   const getLayoutConfig = () => {
     switch (screenSize) {
-      case 'mobile':
+      case "mobile":
         return {
-          gridCols: 'grid-cols-2',
+          gridCols: "grid-cols-2",
           showStatusLeft: true,
           showStatusCenter: false,
           showActionButtons: false,
           isCompact: true,
-          isMobile: true
+          isMobile: true,
         };
-      case 'compact':
+      case "compact":
         return {
-          gridCols: 'grid-cols-3',
+          gridCols: "grid-cols-3",
           showStatusLeft: false,
           showStatusCenter: true,
           showActionButtons: false,
           isCompact: true,
-          isMobile: false
+          isMobile: false,
         };
-      case 'tablet':
+      case "tablet":
         return {
-          gridCols: 'grid-cols-3',
+          gridCols: "grid-cols-3",
           showStatusLeft: false,
           showStatusCenter: true,
           showActionButtons: true,
           isCompact: false,
-          isMobile: false
+          isMobile: false,
         };
-      case 'desktop':
+      case "desktop":
         return {
-          gridCols: 'grid-cols-3',
+          gridCols: "grid-cols-3",
           showStatusLeft: false,
           showStatusCenter: true,
           showActionButtons: true,
           isCompact: false,
-          isMobile: false
+          isMobile: false,
         };
     }
   };
@@ -379,14 +383,17 @@ export const Header = memo(() => {
 
   return (
     <>
-      <header 
+      <header
         className={clsx(
           "relative bg-black text-sm text-white",
-          screenSize === 'mobile' ? "header-mobile p-2" :
-          screenSize === 'compact' ? "header-compact p-2" :
-          screenSize === 'tablet' ? "header-tablet p-2" :
-          "p-2"
-        )} 
+          screenSize === "mobile"
+            ? "header-mobile p-2"
+            : screenSize === "compact"
+              ? "header-compact p-2"
+              : screenSize === "tablet"
+                ? "header-tablet p-2"
+                : "p-2",
+        )}
         data-testid="header"
       >
         <div className={clsx("grid items-center", layout.gridCols)}>
@@ -395,9 +402,9 @@ export const Header = memo(() => {
             {logoSection}
             {/* Mostrar estado en móvil a la izquierda */}
             {layout.showStatusLeft && (
-              <SimulationStatus 
-                status={status} 
-                isMobile={layout.isMobile} 
+              <SimulationStatus
+                status={status}
+                isMobile={layout.isMobile}
                 isCompact={layout.isCompact}
               />
             )}
@@ -406,9 +413,9 @@ export const Header = memo(() => {
           {/* Centro: Estado del CPU (cuando corresponde) */}
           {layout.showStatusCenter && (
             <div className="flex justify-center">
-              <SimulationStatus 
-                status={status} 
-                isMobile={layout.isMobile} 
+              <SimulationStatus
+                status={status}
+                isMobile={layout.isMobile}
                 isCompact={layout.isCompact}
               />
             </div>

@@ -47,7 +47,8 @@ export const CPUStats = memo(({ className }: CPUStatsProps) => {
       <div>
         <strong className="text-mantis-300">CPI (Ciclos por Instrucción):</strong>
         <br />
-        Métrica fundamental que indica la eficiencia del procesador. Un CPI más bajo significa mejor rendimiento.
+        Métrica fundamental que indica la eficiencia del procesador. Un CPI más bajo significa mejor
+        rendimiento.
       </div>
       <div>
         <strong className="text-mantis-300">Tiempo de CPU:</strong>
@@ -122,9 +123,7 @@ export const CPUStats = memo(({ className }: CPUStatsProps) => {
             </div>
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <div className="text-xs text-stone-300">
-                  Ciclos totales del programa
-                </div>
+                <div className="text-xs text-stone-300">Ciclos totales del programa</div>
                 <div className="font-mono text-lg text-white">{cycleCount}</div>
               </div>
               <div>
@@ -140,15 +139,13 @@ export const CPUStats = memo(({ className }: CPUStatsProps) => {
           <div className="rounded border border-stone-600 bg-stone-800/80 p-2">
             <div className="mb-2 flex items-center gap-2">
               <span className="text-xs font-bold text-mantis-400">Métricas de Rendimiento:</span>
-                             <Tooltip
-                 content={performanceEducationalContent}
-                 position="top"
-                 maxWidth={350}
-                 className="text-stone-400 hover:text-mantis-400 transition-colors"
-               >
-                <button className="text-xs hover:scale-110 transition-transform">
-                  💡
-                </button>
+              <Tooltip
+                content={performanceEducationalContent}
+                position="top"
+                maxWidth={350}
+                className="text-stone-400 hover:text-mantis-400 transition-colors"
+              >
+                <button className="text-xs hover:scale-110 transition-transform">💡</button>
               </Tooltip>
             </div>
             <div className="space-y-2">
@@ -176,15 +173,13 @@ export const CPUStats = memo(({ className }: CPUStatsProps) => {
           <div className="rounded border border-stone-600 bg-stone-800/80 p-2">
             <div className="mb-2 flex items-center gap-2">
               <span className="text-xs font-bold text-mantis-400">Configuración Actual:</span>
-                             <Tooltip
-                 content={configEducationalContent}
-                 position="top"
-                 maxWidth={350}
-                 className="text-stone-400 hover:text-mantis-400 transition-colors"
-               >
-                <button className="text-xs hover:scale-110 transition-transform">
-                  ⚙️
-                </button>
+              <Tooltip
+                content={configEducationalContent}
+                position="top"
+                maxWidth={350}
+                className="text-stone-400 hover:text-mantis-400 transition-colors"
+              >
+                <button className="text-xs hover:scale-110 transition-transform">⚙️</button>
               </Tooltip>
             </div>
             <div className="space-y-1 text-xs text-stone-300">

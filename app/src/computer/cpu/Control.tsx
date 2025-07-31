@@ -8,106 +8,147 @@ import { useTranslate } from "@/lib/i18n";
 
 import { cycleAtom } from "./state";
 
-function AnimatedSequencerChip({ active }: { active: boolean }) {
+function AnimatedSequencerChip({ 
+  progress, 
+  phase: cyclePhase, 
+  memAnimKey 
+}: { 
+  progress: SpringValue<number>; 
+  phase?: string;
+  memAnimKey: number;
+}) {
   // Número de pines de salida
   const outputs = 8;
-  // Animación: avanza un "barrido" de encendido por los pines
-  const { phase } = useSpring({
-    phase: active ? 1 : 0,
-    config: { duration: 1200 },
-    reset: !active,
-    loop: active,
+  
+  // Animación de opacidad basada en el progreso (misma lógica que memoria de control)
+  const { opacity, filterIntensity } = useSpring({
+    opacity: progress.to(p => {
+      // Por defecto semi-transparente (0.4), durante animación completamente visible (1.0)
+      if (p === 0) return 0.4;
+      if (p === 1) return 1.0; // Solo activo cuando memoria de control termina
+      // Durante la animación de memoria de control, mantener semi-transparente
+      return 0.4;
+    }),
+    filterIntensity: progress.to(p => {
+      // Intensidad del filtro de sombra basada en el progreso
+      if (p === 0) return 0.25;
+      if (p === 1) return 0.6; // Solo activo cuando memoria de control termina
+      return 0.25;
+    }),
+    config: { 
+      tension: 280, 
+      friction: 60,
+      duration: 300 
+    }
   });
+
+  // Variable para determinar si el secuenciador está activo
+  const isSequencerActive = progress.to(p => p === 1);
+
   return (
-    <svg
-      width="70"
-      height="38"
-      viewBox="0 0 70 38"
-      style={{ filter: "drop-shadow(0 0 8px rgba(56,189,248,0.25))" }}
+    <animated.div
+      style={{
+        opacity,
+        filter: filterIntensity.to(intensity => 
+          `drop-shadow(0 0 ${8 * intensity}px rgba(56,189,248,${intensity}))`
+        ),
+        transition: "opacity 0.3s ease-out, filter 0.3s ease-out",
+      }}
     >
-      {/* Cuerpo del chip */}
-      <rect
-        x="8"
-        y="6"
-        width="38"
-        height="26"
-        rx="6"
-        fill="#0369a1"
-        stroke="#38bdf8"
-        strokeWidth="2"
-      />
-      {/* Pines de entrada (izquierda) */}
-      {Array.from({ length: 3 }).map((_, i) => (
-        <rect key={i} x={2} y={12 + i * 6} width={6} height={2} rx={1} fill="#38bdf8" />
-      ))}
-      {/* Pines de salida (derecha) */}
-      {Array.from({ length: outputs }).map((_, i) => (
-        <animated.rect
-          key={i}
-          x={46}
-          y={7 + i * 3}
-          width={20}
-          height={2}
-          rx={1}
-          fill={phase.to(p => {
-            // Efecto: barrido de encendido
-            const pos = i / outputs;
-            return active && p > pos && p < pos + 0.15 ? "#7dd3fc" : "#0ea5e9";
-          })}
-          style={{
-            filter: phase.to(p => {
+      <svg
+        width="90"
+        height="42"
+        viewBox="0 0 90 42"
+      >
+        {/* Cuerpo del chip - más ancho y profesional */}
+        <rect
+          x="10"
+          y="8"
+          width="50"
+          height="26"
+          rx="8"
+          fill="#0369a1"
+          stroke="#38bdf8"
+          strokeWidth="2.5"
+        />
+        
+        {/* Pines de entrada (izquierda) - más espaciados */}
+        {Array.from({ length: 4 }).map((_, i) => (
+          <rect key={i} x={2} y={10 + i * 5} width={8} height={2.5} rx={1.2} fill="#38bdf8" />
+        ))}
+        
+        {/* Pines de salida (derecha) - más espaciados y organizados */}
+        {Array.from({ length: outputs }).map((_, i) => (
+          <animated.rect
+            key={i}
+            x={60}
+            y={8 + i * 3.2}
+            width={24}
+            height={2.5}
+            rx={1.2}
+            fill={progress.to(p => {
+              // Efecto: barrido de encendido - solo cuando progreso es 1
               const pos = i / outputs;
-              return active && p > pos && p < pos + 0.15 ? "drop-shadow(0 0 8px #38bdf8)" : "none";
-            }),
-          }}
-        />
-      ))}
-      {/* Animación interna: pulso/barrido dentro del chip */}
-      <animated.rect
-        x={14}
-        y={12}
-        width={26}
-        height={14}
-        rx={4}
-        fill={phase.to(p =>
-          active
-            ? `rgba(56,189,248,${0.1 + 0.18 * Math.abs(Math.sin(p * Math.PI))})`
-            : "rgba(56,189,248,0.10)",
-        )}
-        style={{
-          filter: phase.to(p =>
-            active
-              ? `drop-shadow(0 0 ${6 + 8 * Math.abs(Math.sin(p * Math.PI))}px #38bdf8)`
-              : "none",
-          ),
-          transition: "fill 0.5s, filter 0.5s",
-        }}
-      />
-      {/* Líneas animadas representando señales internas */}
-      {Array.from({ length: 3 }).map((_, i) => (
-        <animated.line
-          key={i}
-          x1={18}
-          y1={15 + i * 4}
-          x2={34}
-          y2={15 + i * 4}
+              return p === 1 ? "#7dd3fc" : "#0ea5e9";
+            })}
+            style={{
+              filter: progress.to(p => {
+                const pos = i / outputs;
+                return p === 1 ? "drop-shadow(0 0 8px #38bdf8)" : "none";
+              }),
+            }}
+          />
+        ))}
+        
+        {/* Celdas internas del secuenciador animadas - más anchas */}
+        {Array.from({ length: 5 }).map((_, i) => (
+          <animated.rect
+            key={i}
+            x={15}
+            y={progress.to(() => 12 + i * 3.5)}
+            width={40}
+            height={2.8}
+            rx={1.4}
+            fill={progress.to(p => {
+              if (p !== 1) return "#0c4a6e";
+              if (p === 1) return "#7dd3fc";
+              return "#0c4a6e";
+            })}
+            style={{
+              filter: progress.to(p => {
+                if (p !== 1) return "none";
+                if (p === 1) return "drop-shadow(0 0 6px #38bdf8)";
+                return "none";
+              }),
+              transition: "fill 0.7s, filter 0.7s",
+            }}
+          />
+        ))}
+        
+        {/* Efecto de "secuenciación" (borde animado) - ajustado al nuevo tamaño */}
+        <animated.rect
+          x="10"
+          y="8"
+          width="50"
+          height="26"
+          rx="8"
+          fill="none"
           stroke="#7dd3fc"
-          strokeWidth={1.2}
-          opacity={0.5}
+          strokeWidth="2.5"
+          strokeDasharray="160"
+          strokeDashoffset={progress.to(p =>
+            p === 1 ? 0 : 160
+          )}
           style={{
-            strokeDasharray: 12,
-            strokeDashoffset: phase.to(p => (active ? 12 - p * 12 : 12)),
-            filter: phase.to(p =>
-              active && p > 0.2 && p < 0.9 ? "drop-shadow(0 0 4px #7dd3fc)" : "none",
-            ),
-            transition: "stroke-dashoffset 0.7s",
+            opacity: progress.to(p => (p === 1 ? 0.8 : 0)),
+            transition: "stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1)",
           }}
         />
-      ))}
-    </svg>
+      </svg>
+    </animated.div>
   );
 }
-// ...existing code...
+
 function AnimatedMemoryCells({
   progress,
   phase,
@@ -183,6 +224,99 @@ function AnimatedMemoryCells({
   );
 }
 
+// Componente para la memoria de control con animación de opacidad
+function AnimatedControlMemory({ 
+  progress, 
+  phase, 
+  memAnimKey 
+}: { 
+  progress: SpringValue<number>; 
+  phase?: string;
+  memAnimKey: number;
+}) {
+  // Animación de opacidad basada en el progreso
+  const { opacity, filterIntensity } = useSpring({
+    opacity: progress.to(p => {
+      // Por defecto semi-transparente (0.4), durante animación completamente visible (1.0)
+      if (p === 0) return 0.4;
+      if (p > 0 && p < 1) return 1.0;
+      // Al finalizar, mantener visible pero con opacidad ligeramente reducida (0.8)
+      return 0.8;
+    }),
+    filterIntensity: progress.to(p => {
+      // Intensidad del filtro de sombra basada en el progreso
+      if (p === 0) return 0.25;
+      if (p > 0 && p < 1) return 0.6;
+      return 0.4;
+    }),
+    config: { 
+      tension: 280, 
+      friction: 60,
+      duration: 300 
+    }
+  });
+
+  return (
+    <animated.div
+      style={{
+        opacity,
+        filter: filterIntensity.to(intensity => 
+          `drop-shadow(0 0 ${8 * intensity}px rgba(232,121,249,${intensity}))`
+        ),
+        transition: "opacity 0.3s ease-out, filter 0.3s ease-out",
+      }}
+    >
+      <svg
+        width="70"
+        height="38"
+        viewBox="0 0 70 38"
+        className="mb-0.5"
+      >
+        {/* Cuerpo de la memoria */}
+        <rect
+          x="8"
+          y="6"
+          width="54"
+          height="26"
+          rx="4"
+          fill="#a21caf"
+          stroke="#e879f9"
+          strokeWidth="2"
+        />
+        {/* Pines laterales */}
+        {Array.from({ length: 4 }).map((_, i) => (
+          <rect
+            key={i}
+            x={2}
+            y={9 + i * 6}
+            width={6}
+            height={2}
+            rx={1}
+            fill="#e879f9"
+          />
+        ))}
+        {Array.from({ length: 4 }).map((_, i) => (
+          <rect
+            key={i}
+            x={62}
+            y={9 + i * 6}
+            width={6}
+            height={2}
+            rx={1}
+            fill="#e879f9"
+          />
+        ))}
+        {/* Celdas de memoria animadas con efecto de lectura sincronizadas con la barra del decodificador */}
+        <AnimatedMemoryCells
+          key={memAnimKey}
+          progress={progress}
+          phase={phase}
+        />
+      </svg>
+    </animated.div>
+  );
+}
+
 /**
  * Control component, to be used inside <CPU />
  */
@@ -218,10 +352,11 @@ export function Control() {
       // Activar el secuenciador solo después de que termine la animación de la memoria de control
       unsub = getSpring("cpu.decoder.progress.progress").to(progress => {
         if (progress === 1) {
-          // Esperar a que termine la animación de la memoria de control antes de activar el secuenciador
+          // Esperar a que termine completamente la animación de la memoria de control antes de activar el secuenciador
+          // La memoria de control tiene una duración de animación de ~1.2s, así que esperamos un poco más
           sequencerTimeout = setTimeout(() => {
             setSequencerActive(true);
-          }, 800); // Aumentar el delay para que sea después de la animación de memoria de control
+          }, 1500); // Aumentar el delay para asegurar que la memoria de control termine completamente
         } else {
           if (sequencerTimeout) clearTimeout(sequencerTimeout);
           setSequencerActive(false);
@@ -333,54 +468,11 @@ export function Control() {
                         </span>
                         Memoria de control
                       </span>
-                      <svg
-                        width="70"
-                        height="38"
-                        viewBox="0 0 70 38"
-                        className="mb-0.5"
-                        style={{ filter: "drop-shadow(0 0 8px rgba(232,121,249,0.25))" }}
-                      >
-                        {/* Cuerpo de la memoria */}
-                        <rect
-                          x="8"
-                          y="6"
-                          width="54"
-                          height="26"
-                          rx="4"
-                          fill="#a21caf"
-                          stroke="#e879f9"
-                          strokeWidth="2"
-                        />
-                        {/* Pines laterales */}
-                        {Array.from({ length: 4 }).map((_, i) => (
-                          <rect
-                            key={i}
-                            x={2}
-                            y={9 + i * 6}
-                            width={6}
-                            height={2}
-                            rx={1}
-                            fill="#e879f9"
-                          />
-                        ))}
-                        {Array.from({ length: 4 }).map((_, i) => (
-                          <rect
-                            key={i}
-                            x={62}
-                            y={9 + i * 6}
-                            width={6}
-                            height={2}
-                            rx={1}
-                            fill="#e879f9"
-                          />
-                        ))}
-                        {/* Celdas de memoria animadas con efecto de lectura sincronizadas con la barra del decodificador */}
-                        <AnimatedMemoryCells
-                          key={memAnimKey}
-                          progress={getSpring("cpu.decoder.progress.progress")}
-                          phase={cycle?.phase}
-                        />
-                      </svg>
+                      <AnimatedControlMemory 
+                        progress={getSpring("cpu.decoder.progress.progress")}
+                        phase={cycle?.phase}
+                        memAnimKey={memAnimKey}
+                      />
                     </div>
                     {/* Columna Secuenciador */}
                     <div className="flex min-w-[90px] flex-col items-center">
@@ -397,7 +489,11 @@ export function Control() {
                         </span>
                         Secuenciador
                       </span>
-                      <AnimatedSequencerChip active={sequencerActive} />
+                      <AnimatedSequencerChip 
+                        progress={getSpring("cpu.decoder.progress.progress")}
+                        phase={cycle?.phase}
+                        memAnimKey={memAnimKey}
+                      />
                     </div>
                   </div>
                 </div>

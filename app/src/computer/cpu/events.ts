@@ -179,7 +179,7 @@ async function animateMBRAndIP() {
 async function handleSimultaneousMemImdAnimations() {
   if (pendingMBRtoRI && pendingIPtoMAR) {
     console.log("🎯 Ejecutando animaciones simultáneas para modo mem<-imd");
-    
+
     // Ejecutar ambas animaciones simultáneamente
     await Promise.all([
       drawDataPath("MBR", "ri", pendingMBRtoRI.instruction, pendingMBRtoRI.mode),
@@ -195,23 +195,17 @@ async function handleSimultaneousMemImdAnimations() {
         { duration: 5, easing: "easeInOutSine" },
       ),
     ]);
-    
+
     // Actualizar registros
     store.set(registerAtoms.ri, store.get(MBRAtom));
     store.set(MARAtom, store.get(registerAtoms.IP));
-    
+
     // Activar registros
-    await Promise.all([
-      activateRegister("cpu.ri"),
-      activateRegister("cpu.MAR"),
-    ]);
-    
+    await Promise.all([activateRegister("cpu.ri"), activateRegister("cpu.MAR")]);
+
     // Desactivar registros
-    await Promise.all([
-      deactivateRegister("cpu.ri"),
-      deactivateRegister("cpu.MAR"),
-    ]);
-    
+    await Promise.all([deactivateRegister("cpu.ri"), deactivateRegister("cpu.MAR")]);
+
     // Resetear animaciones
     await Promise.all([
       resetDataPath(),
@@ -220,7 +214,7 @@ async function handleSimultaneousMemImdAnimations() {
         { duration: 1, easing: "easeInSine" },
       ),
     ]);
-    
+
     // Limpiar variables pendientes
     pendingMBRtoRI = null;
     pendingIPtoMAR = null;
@@ -571,7 +565,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         // Marcar animación IP → MAR como pendiente para ejecución simultánea
         pendingIPtoMAR = { instruction: instructionName, mode };
         console.log("📝 Marcando animación IP → MAR como pendiente para modo mem<-imd");
-        
+
         // Ejecutar animaciones simultáneas si ambas están pendientes
         await handleSimultaneousMemImdAnimations();
       } else if (!isFromMBR) {
