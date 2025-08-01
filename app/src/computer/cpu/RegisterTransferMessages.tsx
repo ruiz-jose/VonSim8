@@ -9,44 +9,45 @@ import { toast } from "@/lib/toast";
 
 import { currentInstructionCycleCountAtom, messageAtom, messageHistoryAtom } from "./state";
 
-// Función para obtener el color de la fase
+// Función para obtener el color de la fase con gradientes mejorados
 function getPhaseColor(stage: string) {
   switch (stage) {
     case "Captación":
-      return "text-blue-400";
+      return "text-blue-300 bg-gradient-to-r from-blue-500/10 to-cyan-500/10";
     case "Obtención de operandos":
-      return "text-yellow-400";
+      return "text-yellow-300 bg-gradient-to-r from-yellow-500/10 to-orange-500/10";
     case "Ejecución":
-      return "text-green-400";
+      return "text-green-300 bg-gradient-to-r from-green-500/10 to-emerald-500/10";
     case "Escritura":
-      return "text-purple-400";
+      return "text-purple-300 bg-gradient-to-r from-purple-500/10 to-violet-500/10";
     default:
-      return "text-stone-400";
+      return "text-stone-300 bg-gradient-to-r from-stone-500/10 to-gray-500/10";
   }
 }
 
+// Función mejorada para obtener colores de acción con efectos visuales
 function getActionColor(stage: string, action: string) {
   // Si la fase es Ejecución, detectar las subfases específicas
   if (stage === "Ejecución") {
-    // Subfase: Obtener operando (amarillo)
+    // Subfase: Obtener operando (amarillo con efecto de búsqueda)
     if (
       /obten/i.test(action) ||
       /operando/i.test(action) ||
       /leer/i.test(action) ||
       /cargar/i.test(action)
     ) {
-      return "text-yellow-400";
+      return "text-yellow-300 bg-yellow-500/5 border-yellow-400/30 shadow-yellow-400/20";
     }
-    // Subfase: Escribir resultado (violeta)
+    // Subfase: Escribir resultado (violeta con efecto de guardado)
     if (
       /escrib/i.test(action) ||
       /guardar/i.test(action) ||
       /almacenar/i.test(action) ||
       /resultado/i.test(action)
     ) {
-      return "text-purple-400";
+      return "text-purple-300 bg-purple-500/5 border-purple-400/30 shadow-purple-400/20";
     }
-    // Subfase: Procesar en ALU (verde)
+    // Subfase: Procesar en ALU (verde con efecto de procesamiento)
     if (
       /procesar/i.test(action) ||
       /alu/i.test(action) ||
@@ -54,44 +55,57 @@ function getActionColor(stage: string, action: string) {
       /operar/i.test(action) ||
       /ejecut/i.test(action)
     ) {
-      return "text-green-400";
+      return "text-green-300 bg-green-500/5 border-green-400/30 shadow-green-400/20";
     }
     // Si no se detecta subtipo específico, usar verde por defecto para ejecución
-    return "text-green-400";
+    return "text-green-300 bg-green-500/5 border-green-400/30 shadow-green-400/20";
   }
 
   // Fases normales (no ejecución)
   switch (stage) {
     case "Captación":
-      return "text-blue-400";
+      return "text-blue-300 bg-blue-500/5 border-blue-400/30 shadow-blue-400/20";
     case "Obtención de operandos":
-      return "text-yellow-400";
-    case "Ejecución":
-      return "text-green-400";
+      return "text-yellow-300 bg-yellow-500/5 border-yellow-400/30 shadow-yellow-400/20";
     case "Escritura":
-      return "text-purple-400";
+      return "text-purple-300 bg-purple-500/5 border-purple-400/30 shadow-purple-400/20";
     default:
-      return "text-stone-400";
+      return "text-stone-300 bg-stone-500/5 border-stone-400/30 shadow-stone-400/20";
   }
 }
 
-// Función para obtener el icono de la fase
-function getPhaseIcon(stage: string) {
-  switch (stage) {
-    case "Captación":
-      return "📥";
-    case "Obtención de operandos":
-      return "🔍";
-    case "Ejecución":
-      return "⚡";
-    case "Escritura":
-      return "💾";
-    case "Interrupción":
-      return "🚨";
-    default:
-      return "⚙️";
+// Función mejorada para obtener íconos con animaciones
+function getPhaseIcon(stage: string, isActive: boolean = false) {
+  const baseIcon = (() => {
+    switch (stage) {
+      case "Captación":
+        return "📥";
+      case "Obtención de operandos":
+        return "🔍";
+      case "Ejecución":
+        return "⚡";
+      case "Escritura":
+        return "💾";
+      case "Interrupción":
+        return "🚨";
+      default:
+        return "⚙️";
+    }
+  })();
+
+  // Aplicar animación si está activo
+  if (isActive) {
+    return (
+      <span className="inline-block animate-bounce">
+        {baseIcon}
+      </span>
+    );
   }
+
+  return baseIcon;
 }
+
+
 
 // Función para obtener el color de fondo específico de las subfases de ejecución
 function getExecutionSubphaseBgColor(action: string) {
@@ -102,7 +116,7 @@ function getExecutionSubphaseBgColor(action: string) {
     /leer/i.test(action) ||
     /cargar/i.test(action)
   ) {
-    return "bg-yellow-500/5 border-yellow-400/20";
+    return "bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border-yellow-400/30 shadow-lg shadow-yellow-400/10";
   }
   // Subfase: Escribir resultado (violeta)
   if (
@@ -111,7 +125,7 @@ function getExecutionSubphaseBgColor(action: string) {
     /almacenar/i.test(action) ||
     /resultado/i.test(action)
   ) {
-    return "bg-purple-500/5 border-purple-400/20";
+    return "bg-gradient-to-r from-purple-500/10 to-violet-500/10 border-purple-400/30 shadow-lg shadow-purple-400/10";
   }
   // Subfase: Procesar en ALU (verde)
   if (
@@ -121,10 +135,28 @@ function getExecutionSubphaseBgColor(action: string) {
     /operar/i.test(action) ||
     /ejecut/i.test(action)
   ) {
-    return "bg-green-500/5 border-green-400/20";
+    return "bg-gradient-to-r from-green-500/10 to-emerald-500/10 border-green-400/30 shadow-lg shadow-green-400/10";
   }
   // Por defecto, usar el color de ejecución
-  return "bg-green-500/5 border-green-400/20";
+  return "bg-gradient-to-r from-green-500/10 to-emerald-500/10 border-green-400/30 shadow-lg shadow-green-400/10";
+}
+
+// Función para obtener efectos de borde animado
+function getBorderAnimation(isLatest: boolean, stage: string) {
+  if (!isLatest) return "";
+  
+  switch (stage) {
+    case "Captación":
+      return "ring-2 ring-blue-400/50 ring-offset-2 ring-offset-stone-800";
+    case "Obtención de operandos":
+      return "ring-2 ring-yellow-400/50 ring-offset-2 ring-offset-stone-800";
+    case "Ejecución":
+      return "ring-2 ring-green-400/50 ring-offset-2 ring-offset-stone-800";
+    case "Escritura":
+      return "ring-2 ring-purple-400/50 ring-offset-2 ring-offset-stone-800";
+    default:
+      return "ring-2 ring-stone-400/50 ring-offset-2 ring-offset-stone-800";
+  }
 }
 
 // Definición de fases y subfases unificadas
@@ -287,42 +319,52 @@ export function RegisterTransferMessages() {
   if (!settings.showInstructionCycle) return null;
 
   return (
-    <div className="absolute left-[120px] top-[520px] z-10 h-min w-[360px]">
-      {/* Contenedor principal simplificado */}
-      <div className="rounded-lg border-2 border-stone-400 bg-stone-800 shadow-lg">
-        {/* Header simple y claro */}
-        <div className="border-b-2 border-stone-600 bg-stone-700 px-4 py-3">
+    <div className="absolute left-[120px] top-[520px] z-10 h-min w-[420px]">
+      {/* Contenedor principal con efectos visuales mejorados */}
+      <div className="rounded-xl border-2 border-stone-400/50 bg-gradient-to-br from-stone-800 to-stone-900 shadow-2xl backdrop-blur-sm">
+        {/* Header con efectos visuales */}
+        <div className="border-b-2 border-stone-600/50 bg-gradient-to-r from-stone-700 to-stone-800 px-4 py-3 rounded-t-xl">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-lg">🔄</span>
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <span className="text-xl animate-spin-slow">🔄</span>
+                <div className="absolute -top-1 -right-1 size-2 bg-green-400 rounded-full"></div>
+              </div>
               <div>
-                <h3 className="text-sm font-bold text-stone-200">Ciclo de Instrucción</h3>
+                <h3 className="text-sm font-bold text-stone-200 bg-gradient-to-r from-stone-200 to-stone-300 bg-clip-text text-transparent">
+                  Ciclo de Instrucción
+                </h3>
                 <p className="text-xs text-stone-400">Seguimiento paso a paso</p>
               </div>
             </div>
-            <div className="flex items-center gap-1 rounded-full bg-green-500/20 px-2 py-1">
-              <div className="size-2 animate-pulse rounded-full bg-green-400"></div>
+            <div className="flex items-center gap-2 rounded-full bg-gradient-to-r from-green-500/20 to-emerald-500/20 px-3 py-1.5 border border-green-400/30">
+              <div className="size-2 rounded-full bg-green-400 shadow-lg shadow-green-400/50"></div>
               <span className="text-xs font-medium text-green-300">Activo</span>
             </div>
           </div>
         </div>
 
-        {/* Contenido principal simplificado */}
-        <div ref={containerRef} className="max-h-80 overflow-y-auto p-3">
-          {/* Renderizar mensajes de forma más simple */}
+        {/* Contenido principal con scroll mejorado */}
+        <div ref={containerRef} className="max-h-80 overflow-y-auto p-4 scrollbar-thin scrollbar-thumb-stone-600 scrollbar-track-stone-800">
+          {/* Renderizar mensajes con efectos visuales mejorados */}
           {messageHistory.map((msg, index) => {
             const isNewStage = index === 0 || messageHistory[index - 1].stage !== msg.stage;
             const isLatest = index === messageHistory.length - 1;
 
             return (
-              <div key={index} className="mb-3">
-                {/* Título de fase simplificado */}
+              <div key={index} className="mb-3 transition-all duration-300 ease-in-out">
+                {/* Título de fase con efectos visuales */}
                 {isNewStage && (
-                  <div className="mb-3">
-                    <div className="flex items-center gap-2 rounded-lg bg-stone-700/50 p-2">
-                      <span className="text-lg">{getPhaseIcon(msg.stage)}</span>
-                      <div>
-                        <h4 className={`text-sm font-bold ${getPhaseColor(msg.stage)}`}>
+                  <div className="mb-3 animate-fade-in">
+                    <div className={`flex items-center gap-3 rounded-xl p-4 bg-gradient-to-r from-stone-700/80 to-stone-800/80 border border-stone-600/50 shadow-lg ${getPhaseColor(msg.stage)}`}>
+                      <div className="relative">
+                        <span className="text-xl">{getPhaseIcon(msg.stage, isLatest)}</span>
+                        {isLatest && (
+                          <div className="absolute -top-1 -right-1 size-3 bg-green-400 rounded-full"></div>
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <h4 className={`text-sm font-bold ${getPhaseColor(msg.stage).split(' ')[0]}`}>
                           {msg.stage}
                         </h4>
                         <p className="text-xs text-stone-400">
@@ -330,7 +372,7 @@ export function RegisterTransferMessages() {
                             <>
                               Leer instrucción
                               <button
-                                className="ml-2 rounded bg-mantis-400/20 px-1 py-0.5 text-xs text-mantis-400 transition-colors hover:bg-mantis-400/40"
+                                className="ml-2 rounded-lg bg-blue-500/20 px-2 py-1 text-xs text-blue-300 transition-all duration-200 hover:bg-blue-500/40 hover:scale-105 active:scale-95 border border-blue-400/30"
                                 onClick={() => setShowCaptacionSteps(v => !v)}
                               >
                                 {showCaptacionSteps ? "− Ocultar pasos" : "+ Ver pasos"}
@@ -342,32 +384,36 @@ export function RegisterTransferMessages() {
                           {msg.stage === "Escritura" && "Guardar resultado"}
                           {msg.stage === "Interrupción" && "Manejar interrupción"}
                         </p>
-                        {/* Pasos de captación expandibles */}
+                        {/* Pasos de captación expandibles con animación */}
                         {msg.stage === "Captación" && showCaptacionSteps && (
-                          <ul className="ml-2 mt-2 list-decimal text-xs text-blue-300">
-                            {fases
-                              .find(f => f.id === "captacion")
-                              ?.pasos.map((paso, i) => (
-                                <li key={i}>{paso}</li>
-                              ))}
-                          </ul>
+                          <div className="mt-3 animate-slide-down">
+                            <ul className="ml-2 list-decimal text-xs text-blue-300 space-y-1">
+                              {fases
+                                .find(f => f.id === "captacion")
+                                ?.pasos.map((paso, i) => (
+                                  <li key={i} className="transition-all duration-200 hover:text-blue-200">
+                                    {paso}
+                                  </li>
+                                ))}
+                            </ul>
+                          </div>
                         )}
                       </div>
                     </div>
                   </div>
                 )}
 
-                {/* Mensaje individual simplificado */}
+                {/* Mensaje individual con efectos visuales mejorados */}
                 {msg.stage === "Interrupción" ? (
                   <div
-                    className={`rounded-lg border-l-4 border-red-400 bg-red-900/20 p-3 ${
-                      isLatest ? "ring-2 ring-red-400/30" : ""
+                    className={`rounded-xl border-l-4 border-red-400 bg-gradient-to-r from-red-900/30 to-red-800/20 p-4 shadow-lg transition-all duration-300 ${
+                      isLatest ? "ring-2 ring-red-400/50 ring-offset-2 ring-offset-stone-800" : ""
                     }`}
                   >
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm">🚨</span>
+                    <div className="flex items-center gap-3">
+                      <span className="text-lg">🚨</span>
                       <span
-                        className={`text-sm font-medium ${getActionColor(msg.stage, msg.action)}`}
+                        className={`text-sm font-medium text-red-300`}
                       >
                         {msg.action}
                       </span>
@@ -375,35 +421,41 @@ export function RegisterTransferMessages() {
                   </div>
                 ) : (
                   <div
-                    className={`flex items-center gap-3 rounded-lg border p-3 ${
+                    className={`flex items-center gap-3 rounded-xl border p-4 transition-all duration-300 hover:scale-[1.02] ${
                       msg.stage === "Ejecución"
                         ? `${getExecutionSubphaseBgColor(msg.action)} ${
-                            isLatest ? "ring-2 ring-stone-400/30" : ""
+                            isLatest ? getBorderAnimation(isLatest, msg.stage) : ""
                           }`
-                        : `border-stone-600 bg-stone-800/50 ${
-                            isLatest ? "bg-stone-700/50 ring-2 ring-stone-400/30" : ""
+                        : `border-stone-600/50 bg-gradient-to-r from-stone-800/80 to-stone-900/80 ${
+                            isLatest ? "bg-stone-700/80 " + getBorderAnimation(isLatest, msg.stage) : ""
                           }`
                     }`}
                   >
-                    {/* Número de ciclo */}
+                    {/* Número de ciclo con efectos visuales */}
                     <div
-                      className={`flex size-8 items-center justify-center rounded-full bg-stone-700 text-sm font-bold ${getStageColor(msg.stage, msg.action)}`}
+                      className={`flex size-8 items-center justify-center rounded-full text-sm font-bold transition-all duration-300 ${
+                        isLatest 
+                          ? "bg-gradient-to-r from-green-600 to-emerald-700 shadow-lg shadow-green-400/30 scale-110 ring-2 ring-green-400/50" 
+                          : "bg-stone-700"
+                      } ${isLatest ? "text-white" : getStageColor(msg.stage, msg.action)}`}
                     >
                       {msg.cycle}
                     </div>
 
-                    {/* Acción */}
+                    {/* Acción con efectos visuales */}
                     <div className="flex-1">
                       <span
-                        className={`text-sm font-medium ${getActionColor(msg.stage, msg.action)}`}
+                        className={`text-sm font-medium transition-all duration-200 ${getActionColor(msg.stage, msg.action).split(' ')[0]}`}
                       >
                         {msg.action}
                       </span>
                     </div>
 
-                    {/* Indicador de último mensaje */}
+                    {/* Indicador de último mensaje con efectos mejorados */}
                     {isLatest && (
-                      <div className="flex size-2 animate-pulse rounded-full bg-stone-400"></div>
+                      <div className="flex items-center gap-1">
+                        <div className="size-2 rounded-full bg-green-400 shadow-lg shadow-green-400/50"></div>
+                      </div>
                     )}
                   </div>
                 )}
@@ -411,23 +463,31 @@ export function RegisterTransferMessages() {
             );
           })}
 
-          {/* Estado vacío simplificado */}
+          {/* Estado vacío con efectos visuales */}
           {messageHistory.length === 0 && (
-            <div className="flex items-center justify-center py-8">
+            <div className="flex items-center justify-center py-12 animate-fade-in">
               <div className="text-center">
-                <div className="mb-3 text-4xl">⏳</div>
-                <h4 className="mb-1 text-sm font-bold text-stone-300">Esperando instrucciones</h4>
+                <div className="mb-4 text-5xl">⏳</div>
+                <h4 className="mb-2 text-sm font-bold text-stone-300 bg-gradient-to-r from-stone-300 to-stone-400 bg-clip-text text-transparent">
+                  Esperando instrucciones
+                </h4>
                 <p className="text-xs text-stone-500">Ejecuta un programa para ver el ciclo</p>
               </div>
             </div>
           )}
         </div>
 
-        {/* Footer simple */}
-        <div className="border-t border-stone-600 bg-stone-800/50 px-4 py-2">
+        {/* Footer con efectos visuales */}
+        <div className="border-t border-stone-600/50 bg-gradient-to-r from-stone-800/80 to-stone-900/80 px-4 py-3 rounded-b-xl">
           <div className="flex items-center justify-between text-xs text-stone-400">
-            <span>Ciclos de instrucción: {store.get(currentInstructionCycleCountAtom)}</span>
-            <span>Monitor en tiempo real</span>
+            <span className="flex items-center gap-2">
+              <span className="size-2 bg-blue-400 rounded-full"></span>
+              Ciclos: {store.get(currentInstructionCycleCountAtom)}
+            </span>
+            <span className="flex items-center gap-2">
+              <span className="size-2 bg-green-400 rounded-full"></span>
+              Monitor en tiempo real
+            </span>
           </div>
         </div>
       </div>
