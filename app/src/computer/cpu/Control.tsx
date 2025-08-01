@@ -10,10 +10,12 @@ import { cycleAtom } from "./state";
 
 function AnimatedSequencerChip({
   progress,
+  resetAnimations,
 }: {
   progress: SpringValue<number>;
   phase?: string;
   memAnimKey: number;
+  resetAnimations?: boolean;
 }) {
   // Número de pines de salida
   const outputs = 8;
@@ -22,6 +24,7 @@ function AnimatedSequencerChip({
   const { opacity, filterIntensity } = useSpring({
     opacity: progress.to(p => {
       // Por defecto semi-transparente (0.4), durante animación completamente visible (1.0)
+      if (resetAnimations) return 0.4; // Forzar opaco cuando resetAnimations es true
       if (p === 0) return 0.4;
       if (p === 1) return 1.0; // Solo activo cuando memoria de control termina
       // Durante la animación de memoria de control, mantener semi-transparente
@@ -29,6 +32,7 @@ function AnimatedSequencerChip({
     }),
     filterIntensity: progress.to(p => {
       // Intensidad del filtro de sombra basada en el progreso
+      if (resetAnimations) return 0.25; // Forzar intensidad baja cuando resetAnimations es true
       if (p === 0) return 0.25;
       if (p === 1) return 0.6; // Solo activo cuando memoria de control termina
       return 0.25;
@@ -79,10 +83,12 @@ function AnimatedSequencerChip({
             rx={1.2}
             fill={progress.to(p => {
               // Efecto: barrido de encendido - solo cuando progreso es 1
+              if (resetAnimations) return "#0ea5e9"; // Forzar color oscuro cuando resetAnimations es true
               return p === 1 ? "#7dd3fc" : "#0ea5e9";
             })}
             style={{
               filter: progress.to(p => {
+                if (resetAnimations) return "none"; // Forzar sin filtro cuando resetAnimations es true
                 return p === 1 ? "drop-shadow(0 0 8px #38bdf8)" : "none";
               }),
             }}
@@ -99,12 +105,14 @@ function AnimatedSequencerChip({
             height={2.8}
             rx={1.4}
             fill={progress.to(p => {
+              if (resetAnimations) return "#0c4a6e"; // Forzar color oscuro cuando resetAnimations es true
               if (p !== 1) return "#0c4a6e";
               if (p === 1) return "#7dd3fc";
               return "#0c4a6e";
             })}
             style={{
               filter: progress.to(p => {
+                if (resetAnimations) return "none"; // Forzar sin filtro cuando resetAnimations es true
                 if (p !== 1) return "none";
                 if (p === 1) return "drop-shadow(0 0 6px #38bdf8)";
                 return "none";
@@ -125,9 +133,17 @@ function AnimatedSequencerChip({
           stroke="#7dd3fc"
           strokeWidth="2.5"
           strokeDasharray="160"
-          strokeDashoffset={progress.to(p => (p === 1 ? 0 : 160))}
+          strokeDashoffset={progress.to(p => {
+            // Forzar strokeDashoffset completo cuando resetAnimations es true
+            if (resetAnimations) return 160;
+            return p === 1 ? 0 : 160;
+          })}
           style={{
-            opacity: progress.to(p => (p === 1 ? 0.8 : 0)),
+            opacity: progress.to(p => {
+              // Forzar opacidad 0 cuando resetAnimations es true
+              if (resetAnimations) return 0;
+              return p === 1 ? 0.8 : 0;
+            }),
             transition: "stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1)",
           }}
         />
@@ -139,9 +155,11 @@ function AnimatedSequencerChip({
 function AnimatedMemoryCells({
   progress,
   phase,
+  resetAnimations,
 }: {
   progress: SpringValue<number>;
   phase?: string;
+  resetAnimations?: boolean;
 }) {
   const total = 5;
   // Si está en fetching y progreso es 0, forzar todas las líneas oscuras
@@ -156,6 +174,8 @@ function AnimatedMemoryCells({
           height={3}
           rx={1}
           fill={progress.to(v => {
+            // Forzar color negro cuando resetAnimations es true
+            if (resetAnimations) return "#581c87";
             if (phase === "fetching" && v === 0) return "#581c87";
             if (v === 0) return "#581c87";
             if (v >= (i + 1) / total) return "#f0abfc";
@@ -164,6 +184,8 @@ function AnimatedMemoryCells({
           })}
           style={{
             filter: progress.to(v => {
+              // Forzar sin filtro cuando resetAnimations es true
+              if (resetAnimations) return "none";
               if (phase === "fetching" && v === 0) return "none";
               if (v === 0) return "none";
               if (v >= (i + 1) / total) return "drop-shadow(0 0 6px #e879f9)";
@@ -184,7 +206,11 @@ function AnimatedMemoryCells({
         rx={1.5}
         fill="#e879f9"
         style={{
-          opacity: progress.to(v => (v > 0 && v < 1 ? 0.25 + 0.25 * Math.sin(v * Math.PI) : 0)),
+          opacity: progress.to(v => {
+            // Forzar opacidad 0 cuando resetAnimations es true
+            if (resetAnimations) return 0;
+            return v > 0 && v < 1 ? 0.25 + 0.25 * Math.sin(v * Math.PI) : 0;
+          }),
           transition: "y 0.3s, opacity 0.2s",
         }}
       />
@@ -199,11 +225,17 @@ function AnimatedMemoryCells({
         stroke="#f0abfc"
         strokeWidth="2"
         strokeDasharray="160"
-        strokeDashoffset={progress.to(v =>
-          phase === "fetching" && v === 0 ? 160 : v === 0 ? 160 : 160 - 160 * v,
-        )}
+        strokeDashoffset={progress.to(v => {
+          // Forzar strokeDashoffset completo cuando resetAnimations es true
+          if (resetAnimations) return 160;
+          return phase === "fetching" && v === 0 ? 160 : v === 0 ? 160 : 160 - 160 * v;
+        })}
         style={{
-          opacity: progress.to(v => (v > 0 && v < 1 && phase === "fetching-operands" ? 0.7 : 0)),
+          opacity: progress.to(v => {
+            // Forzar opacidad 0 cuando resetAnimations es true
+            if (resetAnimations) return 0;
+            return v > 0 && v < 1 && phase === "fetching-operands" ? 0.7 : 0;
+          }),
           transition: "stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1)",
         }}
       />
@@ -212,14 +244,116 @@ function AnimatedMemoryCells({
 }
 
 // Componente para la memoria de control con animación de opacidad
+function AnimatedControlMemoryBadge({
+  progress,
+  showControlMem,
+}: {
+  progress: SpringValue<number>;
+  showControlMem: boolean;
+}) {
+  // Animación de opacidad y pulso basada en el progreso
+  const { opacity, pulseActive } = useSpring({
+    opacity: progress.to(p => {
+      // Por defecto semi-transparente (0.4), durante animación completamente visible (1.0)
+      if (p === 0) return 0.4;
+      if (p > 0 && p < 1) return 1.0;
+      // Al finalizar, volver a opaco para resaltar la próxima animación
+      return 0.4;
+    }),
+    pulseActive: progress.to(p => {
+      // Activar el pulso solo durante la animación (cuando progreso está entre 0 y 1)
+      // y cuando la memoria de control está visible
+      return showControlMem && p > 0 && p < 1;
+    }),
+    config: {
+      tension: 280,
+      friction: 60,
+      duration: 300,
+    },
+  });
+
+  return (
+    <animated.span
+      className="flex size-4 items-center justify-center rounded-full bg-fuchsia-400 text-[10px] font-extrabold text-white shadow-[0_0_4px_rgba(232,121,249,0.6)]"
+      style={{
+        opacity,
+        fontVariantNumeric: "tabular-nums",
+        fontFamily: "monospace",
+        transition: "opacity 0.3s ease-out",
+      }}
+      title="Lectura de microinstrucciones"
+    >
+      <animated.span
+        style={{
+          animation: pulseActive.to(active => active ? "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite" : "none"),
+        }}
+      >
+        1
+      </animated.span>
+    </animated.span>
+  );
+}
+
+function AnimatedSequencerBadge({
+  progress,
+  showControlMem,
+}: {
+  progress: SpringValue<number>;
+  showControlMem: boolean;
+}) {
+  // Animación de opacidad y pulso basada en el progreso
+  const { opacity, pulseActive } = useSpring({
+    opacity: progress.to(p => {
+      // Por defecto semi-transparente (0.4), durante animación del secuenciador completamente visible (1.0)
+      if (p === 0) return 0.4;
+      if (p === 1) return 1.0; // Solo activo cuando memoria de control termina
+      // Durante la animación de memoria de control y al finalizar, mantener semi-transparente
+      return 0.4;
+    }),
+    pulseActive: progress.to(p => {
+      // Activar el pulso solo cuando el progreso es 1 (secuenciador activo)
+      // y cuando la memoria de control está visible
+      return showControlMem && p === 1;
+    }),
+    config: {
+      tension: 280,
+      friction: 60,
+      duration: 300,
+    },
+  });
+
+  return (
+    <animated.span
+      className="flex size-4 items-center justify-center rounded-full bg-sky-400 text-[10px] font-extrabold text-white shadow-[0_0_4px_rgba(56,189,248,0.6)]"
+      style={{
+        opacity,
+        fontVariantNumeric: "tabular-nums",
+        fontFamily: "monospace",
+        transition: "opacity 0.3s ease-out",
+      }}
+      title="Envío de señales de control"
+    >
+      <animated.span
+        style={{
+          animation: pulseActive.to(active => active ? "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite" : "none"),
+        }}
+      >
+        2
+      </animated.span>
+    </animated.span>
+  );
+}
+
 function AnimatedControlMemory({
   progress,
   phase,
   memAnimKey,
+  resetAnimations,
 }: {
   progress: SpringValue<number>;
   phase?: string;
   memAnimKey: number;
+  resetAnimations?: boolean;
 }) {
   // Animación de opacidad basada en el progreso
   const { opacity, filterIntensity } = useSpring({
@@ -227,14 +361,15 @@ function AnimatedControlMemory({
       // Por defecto semi-transparente (0.4), durante animación completamente visible (1.0)
       if (p === 0) return 0.4;
       if (p > 0 && p < 1) return 1.0;
-      // Al finalizar, mantener visible pero con opacidad ligeramente reducida (0.8)
-      return 0.8;
+      // Al finalizar, volver a opaco para resaltar la próxima animación
+      return 0.4;
     }),
     filterIntensity: progress.to(p => {
       // Intensidad del filtro de sombra basada en el progreso
       if (p === 0) return 0.25;
       if (p > 0 && p < 1) return 0.6;
-      return 0.4;
+      // Al finalizar, volver a intensidad baja para resaltar la próxima animación
+      return 0.25;
     }),
     config: {
       tension: 280,
@@ -273,7 +408,7 @@ function AnimatedControlMemory({
           <rect key={i} x={62} y={9 + i * 6} width={6} height={2} rx={1} fill="#e879f9" />
         ))}
         {/* Celdas de memoria animadas con efecto de lectura sincronizadas con la barra del decodificador */}
-        <AnimatedMemoryCells key={memAnimKey} progress={progress} phase={phase} />
+        <AnimatedMemoryCells key={memAnimKey} progress={progress} phase={phase} resetAnimations={resetAnimations} />
       </svg>
     </animated.div>
   );
@@ -285,12 +420,24 @@ function AnimatedControlMemory({
 export function Control() {
   // Estado para forzar el remount de la animación de memoria de control
   const [memAnimKey, setMemAnimKey] = useState(0);
+  // Estado para controlar el reset de animaciones
+  const [resetAnimations, setResetAnimations] = useState(false);
+
 
   useEffect(() => {
     let last = 0;
     const unsub = getSpring("cpu.decoder.progress.progress").to((v: number) => {
+      // Incrementar memAnimKey cuando comienza una nueva animación (0 -> >0)
       if (last === 0 && v > 0) {
         setMemAnimKey(k => k + 1);
+        setResetAnimations(false);
+      }
+      // También incrementar cuando termina una animación y vuelve a 0 para resetear
+      if (last > 0 && v === 0) {
+        setMemAnimKey(k => k + 1);
+        setResetAnimations(true);
+        // Resetear después de un breve delay para asegurar que se aplique
+        setTimeout(() => setResetAnimations(false), 100);
       }
       last = v;
     });
@@ -298,9 +445,12 @@ export function Control() {
       if (typeof unsub === "function") unsub();
     };
   }, []);
+
   const translate = useTranslate();
   const cycle = useAtomValue(cycleAtom);
   const [showControlMem, setShowControlMem] = useState(false);
+  
+
   // El progreso de la memoria de control ahora depende del progreso del decodificador
   const [, setSequencerActive] = useState(false);
 
@@ -421,19 +571,17 @@ export function Control() {
                         className="mb-0.5 flex items-center gap-1 text-center text-[10px] font-bold tracking-wide text-fuchsia-100 drop-shadow-[0_0_6px_rgba(232,121,249,0.6)]"
                         style={{ minHeight: "18px" }}
                       >
-                        <span
-                          className="flex size-4 animate-pulse items-center justify-center rounded-full bg-fuchsia-400 text-[10px] font-extrabold text-white shadow-[0_0_4px_rgba(232,121,249,0.6)]"
-                          style={{ fontVariantNumeric: "tabular-nums", fontFamily: "monospace" }}
-                          title="Lectura de microinstrucciones"
-                        >
-                          1
-                        </span>
+                        <AnimatedControlMemoryBadge
+                          progress={getSpring("cpu.decoder.progress.progress")}
+                          showControlMem={showControlMem}
+                        />
                         Memoria de control
                       </span>
                       <AnimatedControlMemory
                         progress={getSpring("cpu.decoder.progress.progress")}
                         phase={cycle?.phase}
                         memAnimKey={memAnimKey}
+                        resetAnimations={resetAnimations}
                       />
                     </div>
                     {/* Columna Secuenciador */}
@@ -442,19 +590,17 @@ export function Control() {
                         className="mb-0.5 flex items-center gap-1 text-center text-[10px] font-bold tracking-wide text-sky-100 drop-shadow-[0_0_6px_rgba(56,189,248,0.6)]"
                         style={{ minHeight: "18px" }}
                       >
-                        <span
-                          className="flex size-4 animate-pulse items-center justify-center rounded-full bg-sky-400 text-[10px] font-extrabold text-white shadow-[0_0_4px_rgba(56,189,248,0.6)]"
-                          style={{ fontVariantNumeric: "tabular-nums", fontFamily: "monospace" }}
-                          title="Envío de señales de control"
-                        >
-                          2
-                        </span>
+                        <AnimatedSequencerBadge
+                          progress={getSpring("cpu.decoder.progress.progress")}
+                          showControlMem={showControlMem}
+                        />
                         Secuenciador
                       </span>
                       <AnimatedSequencerChip
                         progress={getSpring("cpu.decoder.progress.progress")}
                         phase={cycle?.phase}
                         memAnimKey={memAnimKey}
+                        resetAnimations={resetAnimations}
                       />
                     </div>
                   </div>
