@@ -15,9 +15,11 @@
 
 import { UndirectedGraph } from "graphology";
 import { bidirectional } from "graphology-shortest-path/unweighted";
+import { useAtomValue } from "jotai";
 
 import { animated, getSpring } from "@/computer/shared/springs";
 
+import { cycleAtom } from "./state";
 import type { PhysicalRegister } from "./state";
 
 type Node = { position: [x: number, y: number] };
@@ -577,6 +579,27 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
   const { path, ...style } = getSpring("cpu.internalBus.data");
   // Agrego el spring del bus de dirección (MBR→MAR)
   const { path: addressPath, ...addressStyle } = getSpring("cpu.internalBus.address");
+  
+  // Obtener el estado del ciclo para determinar la fase actual
+  const cycle = useAtomValue(cycleAtom);
+  
+  // Determinar si estamos en la fase de escritura
+  const isWritebackPhase = cycle?.phase === "writeback";
+  
+  // Determinar el color del bus de datos según la fase
+  const getDataBusColor = () => {
+    if (isWritebackPhase) {
+      return "stroke-purple-400 drop-shadow-[0_0_8px_rgba(168,85,247,0.6)]";
+    }
+    return "stroke-mantis-400 drop-shadow-[0_0_8px_rgba(34,197,94,0.6)]";
+  };
+  
+  const getDataBusGlowColor = () => {
+    if (isWritebackPhase) {
+      return "stroke-purple-300";
+    }
+    return "stroke-mantis-300";
+  };
 
   return (
     <svg viewBox="0 0 650 500" className="pointer-events-none absolute inset-0 z-20">
@@ -646,10 +669,10 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
       <circle cx={550} cy={250} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
       <circle cx={550} cy={348} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
 
-      {/* Path animado del bus de datos (verde) */}
+      {/* Path animado del bus de datos (verde/violeta según fase) */}
       <animated.path
         d={path}
-        className="fill-none stroke-mantis-400 stroke-[3px] drop-shadow-[0_0_8px_rgba(34,197,94,0.6)]"
+        className={`fill-none stroke-[3px] ${getDataBusColor()}`}
         strokeLinejoin="round"
         pathLength={1}
         strokeDasharray={1}
@@ -659,7 +682,7 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
       {/* Efecto de brillo adicional para el bus de datos interno */}
       <animated.path
         d={path}
-        className="fill-none stroke-mantis-300 stroke-1 opacity-50"
+        className={`fill-none stroke-1 opacity-50 ${getDataBusGlowColor()}`}
         strokeLinejoin="round"
         pathLength={1}
         strokeDasharray={1}
