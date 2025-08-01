@@ -17,10 +17,33 @@ import { handleScreenEvent } from "./screen/events";
 import type { SimulatorEvent } from "./shared/types";
 import { handleSwitchesEvent } from "./switches/events";
 import { handleTimerEvent } from "./timer/events";
+import { store } from "@/lib/jotai";
+import { animationSyncAtom } from "./cpu/state";
 
 type EventType = SimulatorEvent["type"];
 
 const runningEvents = new Set<EventType>();
+
+// Función para manejar animaciones de manera sincronizada
+async function handleSynchronizedAnimation(animationFunction: () => Promise<void>): Promise<void> {
+  const syncState = store.get(animationSyncAtom);
+  
+  if (!syncState.canAnimate) {
+    // Esperar hasta que las animaciones estén permitidas
+    await new Promise<void>((resolve) => {
+      const unsubscribe = store.sub(animationSyncAtom, () => {
+        const newSyncState = store.get(animationSyncAtom);
+        if (newSyncState.canAnimate) {
+          unsubscribe();
+          resolve();
+        }
+      });
+    });
+  }
+  
+  // Ejecutar la animación
+  await animationFunction();
+}
 
 export async function handleEvent(event: SimulatorEvent) {
   // NOTE: import.meta.env.DEV can be checked to automatically
@@ -32,84 +55,112 @@ export async function handleEvent(event: SimulatorEvent) {
 
   runningEvents.add(event.type);
 
-  switch (ns) {
-    case "bus": {
-      await handleBusEvent(event as SimulatorEvent<"bus:">);
-      break;
-    }
+  // Eventos que requieren sincronización con mensajes
+  const eventsRequiringSync = [
+    "cpu:mar.set",
+    "cpu:register.update", 
+    "cpu:mbr.get",
+    "cpu:mbr.set",
+    "cpu:register.buscopy",
+    "cpu:register.copy",
+    "memory:read",
+    "memory:write"
+  ];
 
-    case "clock": {
-      await handleClockEvent(event as SimulatorEvent<"clock:">);
-      break;
-    }
+  const needsSync = eventsRequiringSync.includes(event.type);
 
-    case "cpu": {
-      await handleCPUEvent(event as SimulatorEvent<"cpu:">);
-      break;
-    }
+  try {
+    switch (ns) {
+      case "bus": {
+        if (needsSync) {
+          await handleSynchronizedAnimation(() => handleBusEvent(event as SimulatorEvent<"bus:">));
+        } else {
+          await handleBusEvent(event as SimulatorEvent<"bus:">);
+        }
+        break;
+      }
 
-    case "f10": {
-      await handleF10Event(event as SimulatorEvent<"f10:">);
-      break;
-    }
+      case "clock": {
+        await handleClockEvent(event as SimulatorEvent<"clock:">);
+        break;
+      }
 
-    case "handshake": {
-      await handleHandshakeEvent(event as SimulatorEvent<"handshake:">);
-      break;
-    }
+      case "cpu": {
+        if (needsSync) {
+          await handleSynchronizedAnimation(() => handleCPUEvent(event as SimulatorEvent<"cpu:">));
+        } else {
+          await handleCPUEvent(event as SimulatorEvent<"cpu:">);
+        }
+        break;
+      }
 
-    case "keyboard": {
-      await handleKeyboardEvent(event as SimulatorEvent<"keyboard:">);
-      break;
-    }
+      case "f10": {
+        await handleF10Event(event as SimulatorEvent<"f10:">);
+        break;
+      }
 
-    case "leds": {
-      await handleLedsEvent(event as SimulatorEvent<"leds:">);
-      break;
-    }
+      case "handshake": {
+        await handleHandshakeEvent(event as SimulatorEvent<"handshake:">);
+        break;
+      }
 
-    case "memory": {
-      await handleMemoryEvent(event as SimulatorEvent<"memory:">);
-      break;
-    }
+      case "keyboard": {
+        await handleKeyboardEvent(event as SimulatorEvent<"keyboard:">);
+        break;
+      }
 
-    case "pic": {
-      await handlePICEvent(event as SimulatorEvent<"pic:">);
-      break;
-    }
+      case "leds": {
+        await handleLedsEvent(event as SimulatorEvent<"leds:">);
+        break;
+      }
 
-    case "pio": {
-      await handlePIOEvent(event as SimulatorEvent<"pio:">);
-      break;
-    }
+      case "memory": {
+        if (needsSync) {
+          await handleSynchronizedAnimation(() => handleMemoryEvent(event as SimulatorEvent<"memory:">));
+        } else {
+          await handleMemoryEvent(event as SimulatorEvent<"memory:">);
+        }
+        break;
+      }
 
-    case "printer": {
-      await handlePrinterEvent(event as SimulatorEvent<"printer:">);
-      break;
-    }
+      case "pic": {
+        await handlePICEvent(event as SimulatorEvent<"pic:">);
+        break;
+      }
 
-    case "screen": {
-      await handleScreenEvent(event as SimulatorEvent<"screen:">);
-      break;
-    }
+      case "pio": {
+        await handlePIOEvent(event as SimulatorEvent<"pio:">);
+        break;
+      }
 
-    case "switches": {
-      await handleSwitchesEvent(event as SimulatorEvent<"switches:">);
-      break;
-    }
+      case "printer": {
+        await handlePrinterEvent(event as SimulatorEvent<"printer:">);
+        break;
+      }
 
-    case "timer": {
-      await handleTimerEvent(event as SimulatorEvent<"timer:">);
-      break;
-    }
+      case "screen": {
+        await handleScreenEvent(event as SimulatorEvent<"screen:">);
+        break;
+      }
 
-    default: {
-      const _exhaustiveCheck: never = ns;
-      return _exhaustiveCheck;
+      case "switches": {
+        await handleSwitchesEvent(event as SimulatorEvent<"switches:">);
+        break;
+      }
+
+      case "timer": {
+        await handleTimerEvent(event as SimulatorEvent<"timer:">);
+        break;
+      }
+
+      default: {
+        const _exhaustiveCheck: never = ns;
+        return _exhaustiveCheck;
+      }
     }
+  } finally {
+    runningEvents.delete(event.type);
   }
-
-  runningEvents.delete(event.type);
 }
 
 /**

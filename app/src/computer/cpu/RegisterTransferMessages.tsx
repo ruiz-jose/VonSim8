@@ -7,7 +7,7 @@ import { store } from "@/lib/jotai";
 import { useSettings } from "@/lib/settings";
 import { toast } from "@/lib/toast";
 
-import { currentInstructionCycleCountAtom, messageAtom, messageHistoryAtom } from "./state";
+import { currentInstructionCycleCountAtom, messageAtom, messageHistoryAtom, animationSyncAtom } from "./state";
 
 // Función para obtener el color de la fase con gradientes mejorados
 function getPhaseColor(stage: string) {
@@ -262,36 +262,88 @@ export function RegisterTransferMessages() {
     return { cycle, stage: stage.trim(), action };
   };
 
-  // Usar useEffect para agregar el mensaje actual al historial
+  // Usar useEffect para agregar el mensaje actual al historial (solo como respaldo)
   useEffect(() => {
     if (message) {
       const currentInstructionCycleCount = store.get(currentInstructionCycleCountAtom);
       const parsedMessage = parseMessage(message, currentInstructionCycleCount);
-      store.set(messageHistoryAtom, prev => [...prev, parsedMessage]);
+      
+      // Solo agregar si no existe ya un mensaje con el mismo ciclo y acción
+      store.set(messageHistoryAtom, prev => {
+        const lastMessage = prev[prev.length - 1];
+        if (lastMessage && lastMessage.cycle === currentInstructionCycleCount && lastMessage.action === parsedMessage.action) {
+          return prev;
+        }
+        return [...prev, parsedMessage];
+      });
     }
   }, [message]);
 
-  // Limpiar el historial cuando el contador de ciclos por instrucción se reinicie (nueva instrucción)
-  // o cuando se reinicie la simulación
+  // Detectar cambios en el contador de ciclos para mostrar mensajes anticipadamente
   useEffect(() => {
     const unsubscribeCycleCount = store.sub(currentInstructionCycleCountAtom, () => {
       const newCount = store.get(currentInstructionCycleCountAtom);
-      if (newCount === 0) {
-        // Si el contador se reinicia a 0, es una nueva instrucción
-        store.set(messageHistoryAtom, []);
+      const currentMessage = store.get(messageAtom);
+      
+      // Si hay un mensaje actual y el contador cambió, agregarlo al historial inmediatamente
+      if (currentMessage && newCount > 0) {
+        const parsedMessage = parseMessage(currentMessage, newCount);
+        
+        // Pausar las animaciones hasta que el mensaje se muestre
+        store.set(animationSyncAtom, {
+          canAnimate: false,
+          pendingMessage: currentMessage
+        });
+        
+        store.set(messageHistoryAtom, prev => {
+          // Evitar duplicados
+          const lastMessage = prev[prev.length - 1];
+          if (lastMessage && lastMessage.cycle === newCount && lastMessage.action === parsedMessage.action) {
+            return prev;
+          }
+          return [...prev, parsedMessage];
+        });
+        
+        // Permitir animaciones después de un breve delay para que el mensaje se muestre
+        setTimeout(() => {
+          store.set(animationSyncAtom, {
+            canAnimate: true,
+            pendingMessage: null
+          });
+        }, 100); // 100ms de delay para que el mensaje aparezca primero
       }
-    });
-
-    const unsubscribeSimulation = store.sub(simulationAtom, () => {
-      const simulationStatus = store.get(simulationAtom);
-      // Si la simulación se detiene o se reinicia, limpiar el historial
-      if (simulationStatus.type === "stopped") {
+      
+      // Si el contador se reinicia a 0, es una nueva instrucción
+      if (newCount === 0) {
         store.set(messageHistoryAtom, []);
+        store.set(animationSyncAtom, {
+          canAnimate: true,
+          pendingMessage: null
+        });
       }
     });
 
     return () => {
       unsubscribeCycleCount();
+    };
+  }, []);
+
+  // Limpiar el historial cuando el contador de ciclos por instrucción se reinicie (nueva instrucción)
+  // o cuando se reinicie la simulación
+  useEffect(() => {
+    const unsubscribeSimulation = store.sub(simulationAtom, () => {
+      const simulationStatus = store.get(simulationAtom);
+      // Si la simulación se detiene o se reinicia, limpiar el historial
+      if (simulationStatus.type === "stopped") {
+        store.set(messageHistoryAtom, []);
+        store.set(animationSyncAtom, {
+          canAnimate: true,
+          pendingMessage: null
+        });
+      }
+    });
+
+    return () => {
       unsubscribeSimulation();
     };
   }, []);

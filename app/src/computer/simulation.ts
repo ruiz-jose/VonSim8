@@ -26,6 +26,7 @@ import {
   instructionCountAtom,
   messageAtom,
   messageHistoryAtom,
+  animationSyncAtom,
   resetCPUState,
   showriAtom,
   showSPAtom,
@@ -581,6 +582,27 @@ function validateInstructionContext(context: InstructionContext): boolean {
   return true;
 }
 
+// Función para manejar animaciones de manera sincronizada
+async function handleSynchronizedAnimation(animationFunction: () => Promise<void>): Promise<void> {
+  const syncState = store.get(animationSyncAtom);
+  
+  if (!syncState.canAnimate) {
+    // Esperar hasta que las animaciones estén permitidas
+    await new Promise<void>((resolve) => {
+      const unsubscribe = store.sub(animationSyncAtom, () => {
+        const newSyncState = store.get(animationSyncAtom);
+        if (newSyncState.canAnimate) {
+          unsubscribe();
+          resolve();
+        }
+      });
+    });
+  }
+  
+  // Ejecutar la animación
+  await animationFunction();
+}
+
 /**
  * Starts an execution thread for the given generator. This is, run all the
  * events until the generator is done or the simulation is stopped.
@@ -694,34 +716,34 @@ async function startThread(generator: EventGenerator): Promise<void> {
               store.set(messageAtom, "Ejecución: MAR ← SP");
             } else {
               store.set(messageAtom, "Captación: MAR ← IP");
+              cycleCount++;
+              currentInstructionCycleCount++;
+              store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
               executeStageCounter++;
             }
             if (status.until === "cycle-change") {
               pauseSimulation();
             }
             fetchStageCounter++;
+          } else if (event.value.type === "cpu:register.update") {
+            store.set(messageAtom, "Captación: MBR ← read(Memoria[MAR]); IP ← IP + 1");
             cycleCount++;
             currentInstructionCycleCount++;
             store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
-          } else if (event.value.type === "cpu:register.update") {
-            store.set(messageAtom, "Captación: MBR ← read(Memoria[MAR]); IP ← IP + 1");
             if (status.until === "cycle-change") {
               pauseSimulation();
             }
             executeStageCounter++;
             fetchStageCounter++;
+          } else if (event.value.type === "cpu:mbr.get") {
+            store.set(messageAtom, "Captación: IR ← MBR");
             cycleCount++;
             currentInstructionCycleCount++;
             store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
-          } else if (event.value.type === "cpu:mbr.get") {
-            store.set(messageAtom, "Captación: IR ← MBR");
             if (status.until === "cycle-change") {
               pauseSimulation();
             }
             fetchStageCounter++;
-            cycleCount++;
-            currentInstructionCycleCount++;
-            store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
           }
         } else {
           if (event.value.type === "cpu:rd.on" && executeStageCounter > 1) {
@@ -730,10 +752,10 @@ async function startThread(generator: EventGenerator): Promise<void> {
             messageReadWrite = "Ejecución: write(Memoria[MAR]) ← MBR";
           } else if (event.value.type === "pio:write.ok") {
             store.set(messageAtom, "Ejecución: write(PIO[MAR]) ← MBR");
-            executeStageCounter++;
             cycleCount++;
             currentInstructionCycleCount++;
             store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+            executeStageCounter++;
           }
 
           if (event.value.type === "cpu:mar.set") {
@@ -794,15 +816,15 @@ async function startThread(generator: EventGenerator): Promise<void> {
               }
             }
 
+            cycleCount++;
+            currentInstructionCycleCount++;
+            store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+
             if (status.until === "cycle-change") {
               pauseSimulation();
             }
 
             executeStageCounter++;
-            //if (!(currentInstructionName === "INT" && sourceRegister === "ri")) {
-            cycleCount++;
-            currentInstructionCycleCount++;
-            store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
           } else if (event.value.type === "cpu:register.update") {
             const sourceRegister = event.value.register;
             
@@ -839,7 +861,6 @@ async function startThread(generator: EventGenerator): Promise<void> {
             console.log("currentInstructionModeri:", currentInstructionModeri);
             console.log("executeStageCounter:", executeStageCounter);
             console.log("pause:", pause);
-            executeStageCounter++;
             if (
               currentInstructionName !== "DEC" &&
               currentInstructionName !== "INC" &&
@@ -853,6 +874,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
               store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
             }
 
+            executeStageCounter++;
             if (displayMessage !== "Interrupción: MAR ← (video)") {
               if (status.until === "cycle-change") {
                 if (

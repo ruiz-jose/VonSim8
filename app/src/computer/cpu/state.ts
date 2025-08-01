@@ -39,6 +39,11 @@ export const connectScreenAndKeyboardAtom = atom(false);
 export const showInstructionCycleAtom = atom(true); // Por defecto, visible
 export const showCPUStatsAtom = atom(true); // Por defecto, visible
 export const hasINTInstructionAtom = atom(false);
+// Átomo para controlar la sincronización de animaciones con mensajes
+export const animationSyncAtom = atom<{ canAnimate: boolean; pendingMessage: string | null }>({
+  canAnimate: true,
+  pendingMessage: null
+});
 
 const lowAtom = (
   primitive: PrimitiveAtom<Byte<16>>,
