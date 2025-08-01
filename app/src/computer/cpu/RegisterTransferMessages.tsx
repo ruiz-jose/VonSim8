@@ -1,5 +1,5 @@
 import { useAtomValue } from "jotai";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 import { simulationAtom } from "@/computer/simulation";
 import { programModifiedAtom } from "@/editor/state";
@@ -7,7 +7,12 @@ import { store } from "@/lib/jotai";
 import { useSettings } from "@/lib/settings";
 import { toast } from "@/lib/toast";
 
-import { currentInstructionCycleCountAtom, messageAtom, messageHistoryAtom, animationSyncAtom } from "./state";
+import {
+  animationSyncAtom,
+  currentInstructionCycleCountAtom,
+  messageAtom,
+  messageHistoryAtom,
+} from "./state";
 
 // Función para obtener el color de la fase con gradientes mejorados
 function getPhaseColor(stage: string) {
@@ -75,7 +80,7 @@ function getActionColor(stage: string, action: string) {
 }
 
 // Función mejorada para obtener íconos con animaciones
-function getPhaseIcon(stage: string, isActive: boolean = false) {
+function getPhaseIcon(stage: string, isActive = false) {
   const baseIcon = (() => {
     switch (stage) {
       case "Captación":
@@ -95,17 +100,11 @@ function getPhaseIcon(stage: string, isActive: boolean = false) {
 
   // Aplicar animación si está activo
   if (isActive) {
-    return (
-      <span className="inline-block animate-bounce">
-        {baseIcon}
-      </span>
-    );
+    return <span className="inline-block animate-bounce">{baseIcon}</span>;
   }
 
   return baseIcon;
 }
-
-
 
 // Función para obtener el color de fondo específico de las subfases de ejecución
 function getExecutionSubphaseBgColor(action: string) {
@@ -144,7 +143,7 @@ function getExecutionSubphaseBgColor(action: string) {
 // Función para obtener efectos de borde animado
 function getBorderAnimation(isLatest: boolean, stage: string) {
   if (!isLatest) return "";
-  
+
   switch (stage) {
     case "Captación":
       return "ring-2 ring-blue-400/50 ring-offset-2 ring-offset-stone-800";
@@ -217,11 +216,15 @@ export function RegisterTransferMessages() {
     if (message) {
       const currentInstructionCycleCount = store.get(currentInstructionCycleCountAtom);
       const parsedMessage = parseMessage(message, currentInstructionCycleCount);
-      
+
       // Solo agregar si no existe ya un mensaje con el mismo ciclo y acción
       store.set(messageHistoryAtom, prev => {
         const lastMessage = prev[prev.length - 1];
-        if (lastMessage && lastMessage.cycle === currentInstructionCycleCount && lastMessage.action === parsedMessage.action) {
+        if (
+          lastMessage &&
+          lastMessage.cycle === currentInstructionCycleCount &&
+          lastMessage.action === parsedMessage.action
+        ) {
           return prev;
         }
         return [...prev, parsedMessage];
@@ -234,41 +237,45 @@ export function RegisterTransferMessages() {
     const unsubscribeCycleCount = store.sub(currentInstructionCycleCountAtom, () => {
       const newCount = store.get(currentInstructionCycleCountAtom);
       const currentMessage = store.get(messageAtom);
-      
+
       // Si hay un mensaje actual y el contador cambió, agregarlo al historial inmediatamente
       if (currentMessage && newCount > 0) {
         const parsedMessage = parseMessage(currentMessage, newCount);
-        
+
         // Pausar las animaciones hasta que el mensaje se muestre
         store.set(animationSyncAtom, {
           canAnimate: false,
-          pendingMessage: currentMessage
+          pendingMessage: currentMessage,
         });
-        
+
         store.set(messageHistoryAtom, prev => {
           // Evitar duplicados
           const lastMessage = prev[prev.length - 1];
-          if (lastMessage && lastMessage.cycle === newCount && lastMessage.action === parsedMessage.action) {
+          if (
+            lastMessage &&
+            lastMessage.cycle === newCount &&
+            lastMessage.action === parsedMessage.action
+          ) {
             return prev;
           }
           return [...prev, parsedMessage];
         });
-        
+
         // Permitir animaciones después de un breve delay para que el mensaje se muestre
         setTimeout(() => {
           store.set(animationSyncAtom, {
             canAnimate: true,
-            pendingMessage: null
+            pendingMessage: null,
           });
         }, 100); // 100ms de delay para que el mensaje aparezca primero
       }
-      
+
       // Si el contador se reinicia a 0, es una nueva instrucción
       if (newCount === 0) {
         store.set(messageHistoryAtom, []);
         store.set(animationSyncAtom, {
           canAnimate: true,
-          pendingMessage: null
+          pendingMessage: null,
         });
       }
     });
@@ -288,7 +295,7 @@ export function RegisterTransferMessages() {
         store.set(messageHistoryAtom, []);
         store.set(animationSyncAtom, {
           canAnimate: true,
-          pendingMessage: null
+          pendingMessage: null,
         });
       }
     });
@@ -325,21 +332,21 @@ export function RegisterTransferMessages() {
       {/* Contenedor principal con efectos visuales mejorados */}
       <div className="rounded-xl border-2 border-stone-400/50 bg-gradient-to-br from-stone-800 to-stone-900 shadow-2xl backdrop-blur-sm">
         {/* Header con efectos visuales */}
-        <div className="border-b-2 border-stone-600/50 bg-gradient-to-r from-stone-700 to-stone-800 px-4 py-3 rounded-t-xl">
+        <div className="rounded-t-xl border-b-2 border-stone-600/50 bg-gradient-to-r from-stone-700 to-stone-800 px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="relative">
-                <span className="text-xl animate-spin-slow">🔄</span>
-                <div className="absolute -top-1 -right-1 size-2 bg-green-400 rounded-full"></div>
+                <span className="animate-spin-slow text-xl">🔄</span>
+                <div className="absolute -right-1 -top-1 size-2 rounded-full bg-green-400"></div>
               </div>
               <div>
-                <h3 className="text-sm font-bold text-stone-200 bg-gradient-to-r from-stone-200 to-stone-300 bg-clip-text text-transparent">
+                <h3 className="bg-gradient-to-r from-stone-200 to-stone-300 bg-clip-text text-sm font-bold text-transparent">
                   Ciclo de Instrucción
                 </h3>
                 <p className="text-xs text-stone-400">Seguimiento paso a paso</p>
               </div>
             </div>
-            <div className="flex items-center gap-2 rounded-full bg-gradient-to-r from-green-500/20 to-emerald-500/20 px-3 py-1.5 border border-green-400/30">
+            <div className="flex items-center gap-2 rounded-full border border-green-400/30 bg-gradient-to-r from-green-500/20 to-emerald-500/20 px-3 py-1.5">
               <div className="size-2 rounded-full bg-green-400 shadow-lg shadow-green-400/50"></div>
               <span className="text-xs font-medium text-green-300">Activo</span>
             </div>
@@ -347,7 +354,7 @@ export function RegisterTransferMessages() {
         </div>
 
         {/* Contenido principal con scroll mejorado */}
-        <div ref={containerRef} className="max-h-80 overflow-y-auto p-4 scrollbar-thin scrollbar-thumb-stone-600 scrollbar-track-stone-800">
+        <div ref={containerRef} className="scrollbar-thin max-h-80 overflow-y-auto p-4">
           {/* Renderizar mensajes con efectos visuales mejorados */}
           {messageHistory.map((msg, index) => {
             const isNewStage = index === 0 || messageHistory[index - 1].stage !== msg.stage;
@@ -357,16 +364,20 @@ export function RegisterTransferMessages() {
               <div key={index} className="mb-3 transition-all duration-300 ease-in-out">
                 {/* Título de fase con efectos visuales */}
                 {isNewStage && (
-                  <div className="mb-3 animate-fade-in">
-                    <div className={`flex items-center gap-3 rounded-xl p-4 bg-gradient-to-r from-stone-700/80 to-stone-800/80 border border-stone-600/50 shadow-lg ${getPhaseColor(msg.stage)}`}>
+                  <div className="animate-fade-in mb-3">
+                    <div
+                      className={`flex items-center gap-3 rounded-xl border border-stone-600/50 bg-gradient-to-r from-stone-700/80 to-stone-800/80 p-4 shadow-lg ${getPhaseColor(msg.stage)}`}
+                    >
                       <div className="relative">
                         <span className="text-xl">{getPhaseIcon(msg.stage, isLatest)}</span>
                         {isLatest && (
-                          <div className="absolute -top-1 -right-1 size-3 bg-green-400 rounded-full"></div>
+                          <div className="absolute -right-1 -top-1 size-3 rounded-full bg-green-400"></div>
                         )}
                       </div>
                       <div className="flex-1">
-                        <h4 className={`text-sm font-bold ${getPhaseColor(msg.stage).split(' ')[0]}`}>
+                        <h4
+                          className={`text-sm font-bold ${getPhaseColor(msg.stage).split(" ")[0]}`}
+                        >
                           {msg.stage}
                         </h4>
                         <p className="text-xs text-stone-400">
@@ -390,11 +401,7 @@ export function RegisterTransferMessages() {
                   >
                     <div className="flex items-center gap-3">
                       <span className="text-lg">🚨</span>
-                      <span
-                        className={`text-sm font-medium text-red-300`}
-                      >
-                        {msg.action}
-                      </span>
+                      <span className={`text-sm font-medium text-red-300`}>{msg.action}</span>
                     </div>
                   </div>
                 ) : (
@@ -405,15 +412,17 @@ export function RegisterTransferMessages() {
                             isLatest ? getBorderAnimation(isLatest, msg.stage) : ""
                           }`
                         : `border-stone-600/50 bg-gradient-to-r from-stone-800/80 to-stone-900/80 ${
-                            isLatest ? "bg-stone-700/80 " + getBorderAnimation(isLatest, msg.stage) : ""
+                            isLatest
+                              ? "bg-stone-700/80 " + getBorderAnimation(isLatest, msg.stage)
+                              : ""
                           }`
                     }`}
                   >
                     {/* Número de ciclo con efectos visuales */}
                     <div
                       className={`flex size-8 items-center justify-center rounded-full text-sm font-bold transition-all duration-300 ${
-                        isLatest 
-                          ? "bg-gradient-to-r from-green-600 to-emerald-700 shadow-lg shadow-green-400/30 scale-110 ring-2 ring-green-400/50" 
+                        isLatest
+                          ? "scale-110 bg-gradient-to-r from-green-600 to-emerald-700 shadow-lg shadow-green-400/30 ring-2 ring-green-400/50"
                           : "bg-stone-700"
                       } ${isLatest ? "text-white" : getStageColor(msg.stage, msg.action)}`}
                     >
@@ -423,7 +432,7 @@ export function RegisterTransferMessages() {
                     {/* Acción con efectos visuales */}
                     <div className="flex-1">
                       <span
-                        className={`text-sm font-medium transition-all duration-200 ${getActionColor(msg.stage, msg.action).split(' ')[0]}`}
+                        className={`text-sm font-medium transition-all duration-200 ${getActionColor(msg.stage, msg.action).split(" ")[0]}`}
                       >
                         {msg.action}
                       </span>
@@ -443,10 +452,10 @@ export function RegisterTransferMessages() {
 
           {/* Estado vacío con efectos visuales */}
           {messageHistory.length === 0 && (
-            <div className="flex items-center justify-center py-12 animate-fade-in">
+            <div className="animate-fade-in flex items-center justify-center py-12">
               <div className="text-center">
                 <div className="mb-4 text-5xl">⏳</div>
-                <h4 className="mb-2 text-sm font-bold text-stone-300 bg-gradient-to-r from-stone-300 to-stone-400 bg-clip-text text-transparent">
+                <h4 className="mb-2 bg-gradient-to-r from-stone-300 to-stone-400 bg-clip-text text-sm font-bold text-transparent">
                   Esperando instrucciones
                 </h4>
                 <p className="text-xs text-stone-500">Ejecuta un programa para ver el ciclo</p>
@@ -456,14 +465,14 @@ export function RegisterTransferMessages() {
         </div>
 
         {/* Footer con efectos visuales */}
-        <div className="border-t border-stone-600/50 bg-gradient-to-r from-stone-800/80 to-stone-900/80 px-4 py-3 rounded-b-xl">
+        <div className="rounded-b-xl border-t border-stone-600/50 bg-gradient-to-r from-stone-800/80 to-stone-900/80 px-4 py-3">
           <div className="flex items-center justify-between text-xs text-stone-400">
             <span className="flex items-center gap-2">
-              <span className="size-2 bg-blue-400 rounded-full"></span>
+              <span className="size-2 rounded-full bg-blue-400"></span>
               Ciclos: {store.get(currentInstructionCycleCountAtom)}
             </span>
             <span className="flex items-center gap-2">
-              <span className="size-2 bg-green-400 rounded-full"></span>
+              <span className="size-2 rounded-full bg-green-400"></span>
               Monitor en tiempo real
             </span>
           </div>

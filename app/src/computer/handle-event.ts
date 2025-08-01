@@ -2,9 +2,12 @@ import { IOAddress, MemoryAddress } from "@vonsim/common/address";
 import { Byte } from "@vonsim/common/byte";
 import type { Split } from "type-fest";
 
+import { store } from "@/lib/jotai";
+
 import { handleBusEvent } from "./bus/events";
 import { handleClockEvent } from "./clock/events";
 import { handleCPUEvent } from "./cpu/events";
+import { animationSyncAtom } from "./cpu/state";
 import { handleF10Event } from "./f10/events";
 import { handleHandshakeEvent } from "./handshake/events";
 import { handleKeyboardEvent } from "./keyboard/events";
@@ -17,8 +20,6 @@ import { handleScreenEvent } from "./screen/events";
 import type { SimulatorEvent } from "./shared/types";
 import { handleSwitchesEvent } from "./switches/events";
 import { handleTimerEvent } from "./timer/events";
-import { store } from "@/lib/jotai";
-import { animationSyncAtom } from "./cpu/state";
 
 type EventType = SimulatorEvent["type"];
 
@@ -27,10 +28,10 @@ const runningEvents = new Set<EventType>();
 // Función para manejar animaciones de manera sincronizada
 async function handleSynchronizedAnimation(animationFunction: () => Promise<void>): Promise<void> {
   const syncState = store.get(animationSyncAtom);
-  
+
   if (!syncState.canAnimate) {
     // Esperar hasta que las animaciones estén permitidas
-    await new Promise<void>((resolve) => {
+    await new Promise<void>(resolve => {
       const unsubscribe = store.sub(animationSyncAtom, () => {
         const newSyncState = store.get(animationSyncAtom);
         if (newSyncState.canAnimate) {
@@ -40,7 +41,7 @@ async function handleSynchronizedAnimation(animationFunction: () => Promise<void
       });
     });
   }
-  
+
   // Ejecutar la animación
   await animationFunction();
 }
@@ -58,13 +59,13 @@ export async function handleEvent(event: SimulatorEvent) {
   // Eventos que requieren sincronización con mensajes
   const eventsRequiringSync = [
     "cpu:mar.set",
-    "cpu:register.update", 
+    "cpu:register.update",
     "cpu:mbr.get",
     "cpu:mbr.set",
     "cpu:register.buscopy",
     "cpu:register.copy",
     "memory:read",
-    "memory:write"
+    "memory:write",
   ];
 
   const needsSync = eventsRequiringSync.includes(event.type);
@@ -116,7 +117,9 @@ export async function handleEvent(event: SimulatorEvent) {
 
       case "memory": {
         if (needsSync) {
-          await handleSynchronizedAnimation(() => handleMemoryEvent(event as SimulatorEvent<"memory:">));
+          await handleSynchronizedAnimation(() =>
+            handleMemoryEvent(event as SimulatorEvent<"memory:">),
+          );
         } else {
           await handleMemoryEvent(event as SimulatorEvent<"memory:">);
         }

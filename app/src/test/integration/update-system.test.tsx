@@ -1,5 +1,5 @@
 // Mock de los hooks - debe estar antes de las importaciones
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { NotificationProvider } from "@/components/NotificationCenter";
@@ -115,7 +115,7 @@ describe("Sistema de Actualizaciones", () => {
       expect(screen.getByText("Nueva versión disponible")).toBeInTheDocument();
     });
 
-    it("debería permitir descartar el banner", () => {
+    it("debería permitir descartar el banner", async () => {
       (usePWAUpdate as any).mockReturnValue({
         updateInfo: { available: true, updating: false, lastUpdate: null },
         updateApp: vi.fn(),
@@ -128,11 +128,16 @@ describe("Sistema de Actualizaciones", () => {
         </NotificationProvider>,
       );
 
-      // Buscar el botón de cerrar por su contenido (el ícono X)
-      const dismissButton = screen.getByRole("button", { name: "" });
+      expect(screen.getByText("Nueva versión disponible")).toBeInTheDocument();
+
+      // Buscar el botón de cerrar por su aria-label
+      const dismissButton = screen.getByRole("button", { name: "Cerrar banner de actualización" });
       fireEvent.click(dismissButton);
 
-      expect(screen.queryByText("Nueva versión disponible")).not.toBeInTheDocument();
+      // Esperar a que la animación termine y verificar que el banner se oculte
+      await waitFor(() => {
+        expect(screen.queryByText("Nueva versión disponible")).not.toBeInTheDocument();
+      }, { timeout: 1000 });
     });
   });
 });

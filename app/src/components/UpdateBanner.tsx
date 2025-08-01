@@ -1,4 +1,10 @@
-import { faDownload, faSync, faTimes, faRocket, faCheckCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCheckCircle,
+  faDownload,
+  faRocket,
+  faSync,
+  faTimes,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
 import { memo, useCallback, useState } from "react";
@@ -52,42 +58,40 @@ export const UpdateBanner = memo(() => {
     <div
       className={clsx(
         "fixed inset-x-0 top-0 z-50 transition-all duration-300 ease-out",
-        isDismissed 
-          ? "transform -translate-y-full opacity-0" 
-          : "transform translate-y-0 opacity-100"
+        isDismissed ? "-translate-y-full opacity-0" : "translate-y-0 opacity-100",
       )}
     >
       {/* Fondo con gradiente profesional y efecto glass */}
-      <div className="bg-gradient-to-r from-stone-900/95 via-stone-800/95 to-stone-900/95 backdrop-blur-md border-b border-stone-700/50 shadow-2xl">
-        <div className="mx-auto max-w-7xl px-4 py-4">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+      <div className="border-b border-stone-700/50 bg-gradient-to-r from-stone-900/95 via-stone-800/95 to-stone-900/95 shadow-2xl backdrop-blur-md">
+        <div className="mx-auto max-w-7xl p-4">
+          <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
             {/* Contenido principal */}
             <div className="flex items-center space-x-4">
               {/* Icono animado */}
-              <div className="relative flex-shrink-0">
-                <div className="absolute inset-0 bg-mantis-500/20 rounded-full animate-ping"></div>
-                <div className="relative bg-gradient-to-br from-mantis-500 to-mantis-600 p-2 sm:p-3 rounded-full shadow-lg">
-                  <FontAwesomeIcon 
-                    icon={faRocket} 
-                    className="size-4 sm:size-5 text-white animate-bounce" 
+              <div className="relative shrink-0">
+                <div className="absolute inset-0 animate-ping rounded-full bg-mantis-500/20"></div>
+                <div className="relative rounded-full bg-gradient-to-br from-mantis-500 to-mantis-600 p-2 shadow-lg sm:p-3">
+                  <FontAwesomeIcon
+                    icon={faRocket}
+                    className="size-4 animate-bounce text-white sm:size-5"
                   />
                 </div>
               </div>
 
               {/* Texto informativo */}
-              <div className="flex-1 min-w-0">
-                <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-2 mb-1">
-                  <h3 className="font-bold text-base sm:text-lg text-white">
+              <div className="min-w-0 flex-1">
+                <div className="mb-1 flex flex-col space-y-1 sm:flex-row sm:items-center sm:space-x-2 sm:space-y-0">
+                  <h3 className="text-base font-bold text-white sm:text-lg">
                     Nueva versión disponible
                   </h3>
-                  <div className="flex items-center space-x-1 bg-mantis-500/20 px-2 py-1 rounded-full w-fit">
+                  <div className="flex w-fit items-center space-x-1 rounded-full bg-mantis-500/20 px-2 py-1">
                     <FontAwesomeIcon icon={faCheckCircle} className="size-3 text-mantis-400" />
                     <span className="text-xs font-medium text-mantis-300">Actualización</span>
                   </div>
                 </div>
-                <p className="text-stone-300 text-xs sm:text-sm leading-relaxed">
-                  Hay una nueva versión de VonSim8 con mejoras y correcciones. 
-                  Te recomendamos actualizar para obtener la mejor experiencia.
+                <p className="text-xs leading-relaxed text-stone-300 sm:text-sm">
+                  Hay una nueva versión de VonSim8 con mejoras y correcciones. Te recomendamos
+                  actualizar para obtener la mejor experiencia.
                 </p>
               </div>
             </div>
@@ -107,14 +111,14 @@ export const UpdateBanner = memo(() => {
                   "shadow-lg hover:shadow-xl",
                   "border border-mantis-500/30",
                   "text-xs sm:text-sm",
-                  isUpdating && "animate-pulse"
+                  isUpdating && "animate-pulse",
                 )}
                 leftIcon={
                   <FontAwesomeIcon
                     icon={isUpdating ? faSync : faDownload}
                     className={clsx(
-                      "transition-transform duration-200 size-3 sm:size-4",
-                      isUpdating && "animate-spin"
+                      "size-3 transition-transform duration-200 sm:size-4",
+                      isUpdating && "animate-spin",
                     )}
                   />
                 }
@@ -127,7 +131,7 @@ export const UpdateBanner = memo(() => {
                 onClick={handleDismiss}
                 variant="ghost"
                 size="sm"
-                className="text-stone-400 hover:text-white hover:bg-stone-700/50 transition-all duration-200 flex-shrink-0"
+                className="shrink-0 text-stone-400 transition-all duration-200 hover:bg-stone-700/50 hover:text-white"
                 aria-label="Cerrar banner de actualización"
               >
                 <FontAwesomeIcon icon={faTimes} className="size-3 sm:size-4" />
@@ -139,8 +143,8 @@ export const UpdateBanner = memo(() => {
 
       {/* Indicador de progreso sutil */}
       {isUpdating && (
-        <div className="h-1 bg-gradient-to-r from-mantis-500 to-mantis-600 animate-pulse">
-          <div className="h-full bg-white/30 animate-shimmer"></div>
+        <div className="h-1 animate-pulse bg-gradient-to-r from-mantis-500 to-mantis-600">
+          <div className="animate-shimmer h-full bg-white/30"></div>
         </div>
       )}
     </div>

@@ -26,7 +26,6 @@ import {
   instructionCountAtom,
   messageAtom,
   messageHistoryAtom,
-  animationSyncAtom,
   resetCPUState,
   showriAtom,
   showSPAtom,
@@ -194,19 +193,19 @@ let displayMessageresultmbr = "";
 let displayMessagepop = "";
 
 // Tipos para mejorar la legibilidad y mantenibilidad
-interface InstructionContext {
+type InstructionContext = {
   name: string;
-  modeId: boolean;  // Direccionamiento inmediato
-  modeRi: boolean;  // Direccionamiento directo
+  modeId: boolean; // Direccionamiento inmediato
+  modeRi: boolean; // Direccionamiento directo
   executeStage: number;
   cycleCount: number;
-}
+};
 
-interface MessageConfig {
+type MessageConfig = {
   message: string;
   shouldDisplay: boolean;
   shouldPause: boolean;
-}
+};
 
 // Función auxiliar para determinar el tipo de direccionamiento
 function getAddressingMode(instruction: InstructionContext): string {
@@ -224,39 +223,38 @@ function getAddressingMode(instruction: InstructionContext): string {
 function generateRegisterTransferMessage(
   sourceRegister: string,
   instruction: InstructionContext,
-  additionalContext?: { showRI?: boolean; showRI2?: boolean; mbridirmar?: boolean }
 ): MessageConfig {
   const { name, modeId, modeRi, executeStage } = instruction;
-  
+
   // Casos especiales para instrucciones MOV con direccionamiento directo e inmediato
   if (name === "MOV" && modeId && modeRi) {
     return handleDirectImmediateMOV(sourceRegister, executeStage);
   }
-  
+
   // Casos especiales para instrucciones MOV con solo direccionamiento directo
   if (name === "MOV" && modeRi && !modeId) {
     return handleDirectMOV(sourceRegister, executeStage);
   }
-  
+
   // Casos especiales para instrucciones MOV con solo direccionamiento inmediato
   if (name === "MOV" && modeId && !modeRi) {
-    return handleImmediateMOV(sourceRegister, executeStage);
+    return handleImmediateMOV(sourceRegister);
   }
-  
+
   // Casos especiales para otras instrucciones
   if (name === "INT") {
     return handleINTInstruction(sourceRegister, executeStage, modeRi);
   }
-  
+
   if (name === "CALL") {
-    return handleCALLInstruction(sourceRegister, executeStage);
+    return handleCALLInstruction(sourceRegister);
   }
-  
+
   // Caso general
   return {
     message: `Ejecución: MAR ← ${sourceRegister}`,
     shouldDisplay: true,
-    shouldPause: true
+    shouldPause: true,
   };
 }
 
@@ -267,19 +265,19 @@ function handleDirectImmediateMOV(sourceRegister: string, executeStage: number):
       return {
         message: "Ejecución: MAR ← IP",
         shouldDisplay: true,
-        shouldPause: true
+        shouldPause: true,
       };
     case 4:
       return {
         message: "Ejecución: ri ← MBR; MAR ← IP",
         shouldDisplay: true,
-        shouldPause: true
+        shouldPause: true,
       };
     default:
       return {
         message: `Ejecución: MAR ← ${sourceRegister}`,
         shouldDisplay: true,
-        shouldPause: true
+        shouldPause: true,
       };
   }
 }
@@ -290,249 +288,253 @@ function handleDirectMOV(sourceRegister: string, executeStage: number): MessageC
     return {
       message: "Ejecución: MAR ← IP",
       shouldDisplay: true,
-      shouldPause: true
+      shouldPause: true,
     };
   }
-  
+
   // En la etapa 4 hay una animación simultánea: MAR ← IP y ri ← MBR
   if (executeStage === 4) {
     return {
       message: "Ejecución: MAR ← IP ; ri ← MBR",
       shouldDisplay: true,
-      shouldPause: true
+      shouldPause: true,
     };
   }
-  
+
   return {
     message: `Ejecución: MAR ← ${sourceRegister}`,
     shouldDisplay: true,
-    shouldPause: true
+    shouldPause: true,
   };
 }
 
 // Función específica para MOV con solo direccionamiento inmediato
-function handleImmediateMOV(sourceRegister: string, executeStage: number): MessageConfig {
+function handleImmediateMOV(sourceRegister: string): MessageConfig {
   if (sourceRegister === "ri") {
     return {
       message: "Ejecución: MAR ← ri",
       shouldDisplay: true,
-      shouldPause: true
+      shouldPause: true,
     };
   }
-  
+
   if (sourceRegister === "IP") {
     return {
       message: "Ejecución: MAR ← IP",
       shouldDisplay: true,
-      shouldPause: true
+      shouldPause: true,
     };
   }
-  
+
   return {
     message: `Ejecución: MAR ← ${sourceRegister}`,
     shouldDisplay: true,
-    shouldPause: true
+    shouldPause: true,
   };
 }
 
 // Función específica para instrucciones INT
-function handleINTInstruction(sourceRegister: string, executeStage: number, modeRi: boolean): MessageConfig {
-  if (executeStage === 2 && modeRi) {
+function handleINTInstruction(
+  sourceRegister: string,
+  executeStage: number,
+  _modeRi: boolean,
+): MessageConfig {
+  if (executeStage === 2 && _modeRi) {
     return {
       message: "Ejecución: ri ← MBR; MAR ← SP",
       shouldDisplay: true,
-      shouldPause: true
+      shouldPause: true,
     };
   }
-  
+
   return {
     message: `Ejecución: MAR ← ${sourceRegister}`,
     shouldDisplay: true,
-    shouldPause: true
+    shouldPause: true,
   };
 }
 
 // Función específica para instrucciones CALL
-function handleCALLInstruction(sourceRegister: string, executeStage: number): MessageConfig {
+function handleCALLInstruction(_sourceRegister: string): MessageConfig {
   return {
-    message: `Ejecución: MAR ← ${sourceRegister}`,
+    message: `Ejecución: MAR ← ${_sourceRegister}`,
     shouldDisplay: true,
-    shouldPause: true
+    shouldPause: true,
   };
 }
 
 // Función auxiliar para generar mensajes de actualización de registros
 function generateRegisterUpdateMessage(
   sourceRegister: string,
-  instruction: InstructionContext
+  instruction: InstructionContext,
 ): MessageConfig {
   const { name, modeId, modeRi, executeStage } = instruction;
-  
+
   // Casos especiales para SP
   if (sourceRegister === "SP") {
     return handleSPRegisterUpdate(name, executeStage, modeRi);
   }
-  
+
   // Casos especiales para FLAGS
   if (sourceRegister === "FLAGS") {
     return handleFLAGSRegisterUpdate(name, executeStage, modeRi);
   }
-  
+
   // Casos especiales para instrucciones INT
   if (name === "INT") {
-    return handleINTRegisterUpdate(sourceRegister, executeStage);
+    return handleINTRegisterUpdate(sourceRegister);
   }
-  
+
   // Casos especiales para instrucciones MOV con direccionamiento directo e inmediato
   if (name === "MOV" && modeId && modeRi) {
-    return handleDirectImmediateMOVUpdate(sourceRegister, executeStage);
+    return handleDirectImmediateMOVUpdate();
   }
-  
+
   // Casos especiales para instrucciones MOV con solo direccionamiento directo
   if (name === "MOV" && modeRi && !modeId) {
-    return handleDirectMOVUpdate(sourceRegister, executeStage);
+    return handleDirectMOVUpdate();
   }
-  
+
   // Casos especiales para instrucciones CALL
   if (name === "CALL") {
-    return handleCALLRegisterUpdate(sourceRegister, executeStage);
+    return handleCALLRegisterUpdate(sourceRegister);
   }
-  
+
   // Caso general
   return {
     message: `Ejecución: MBR ← ${sourceRegister}`,
     shouldDisplay: true,
-    shouldPause: true
+    shouldPause: true,
   };
 }
 
 // Función específica para actualizaciones de SP
-function handleSPRegisterUpdate(instructionName: string, executeStage: number, modeRi: boolean): MessageConfig {
+function handleSPRegisterUpdate(
+  instructionName: string,
+  executeStage: number,
+  modeRi: boolean,
+): MessageConfig {
   if (modeRi && executeStage === 4 && instructionName === "INT") {
     return {
       message: "",
       shouldDisplay: false,
-      shouldPause: false
+      shouldPause: false,
     };
   }
-  
+
   switch (instructionName) {
     case "PUSH":
       return {
         message: "Ejecución: SP = SP - 1",
         shouldDisplay: true,
-        shouldPause: true
+        shouldPause: true,
       };
     case "RET":
     case "IRET":
       return {
         message: "Ejecución: SP = SP + 1",
         shouldDisplay: true,
-        shouldPause: true
+        shouldPause: true,
       };
     case "POP":
       if (executeStage === 3) {
         return {
           message: `${displayMessagepop}; SP = SP + 1`,
           shouldDisplay: true,
-          shouldPause: true
+          shouldPause: true,
         };
       }
       break;
   }
-  
+
   return {
     message: "",
     shouldDisplay: false,
-    shouldPause: false
+    shouldPause: false,
   };
 }
 
 // Función específica para actualizaciones de FLAGS
-function handleFLAGSRegisterUpdate(instructionName: string, executeStage: number, modeRi: boolean): MessageConfig {
+function handleFLAGSRegisterUpdate(
+  instructionName: string,
+  executeStage: number,
+  modeRi: boolean,
+): MessageConfig {
   if (modeRi && executeStage === 5 && instructionName === "INT") {
     return {
       message: "Ejecución: write(Memoria[MAR]) ← MBR; SP ← SP - 1; IF = 0",
       shouldDisplay: true,
-      shouldPause: true
+      shouldPause: true,
     };
   }
-  
+
   return {
     message: "Ejecución: IF = 0",
     shouldDisplay: true,
-    shouldPause: true
+    shouldPause: true,
   };
 }
 
 // Función específica para actualizaciones de registros en instrucciones INT
-function handleINTRegisterUpdate(sourceRegister: string, executeStage: number): MessageConfig {
+function handleINTRegisterUpdate(sourceRegister: string): MessageConfig {
   switch (sourceRegister) {
     case "DL":
       return {
         message: "Interrupción: AL ← ASCII",
         shouldDisplay: true,
-        shouldPause: true
+        shouldPause: true,
       };
     case "right.l":
       return {
         message: "Interrupción: SUB AL, 1",
         shouldDisplay: true,
-        shouldPause: true
+        shouldPause: true,
       };
     case "right":
       return {
         message: "Interrupción: ADD BL, 1",
         shouldDisplay: true,
-        shouldPause: true
+        shouldPause: true,
       };
     case "ri.l":
       return {
         message: "Interrupción: MAR ← (video)",
         shouldDisplay: false,
-        shouldPause: true
+        shouldPause: true,
       };
   }
-  
+
   return {
     message: `Ejecución: MBR ← ${sourceRegister}`,
     shouldDisplay: true,
-    shouldPause: true
+    shouldPause: true,
   };
 }
 
 // Función específica para actualizaciones de registros en MOV con direccionamiento directo e inmediato
-function handleDirectImmediateMOVUpdate(sourceRegister: string, executeStage: number): MessageConfig {
+function handleDirectImmediateMOVUpdate(): MessageConfig {
   return {
     message: "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1",
     shouldDisplay: true,
-    shouldPause: true
+    shouldPause: true,
   };
 }
 
 // Función específica para actualizaciones de registros en MOV con solo direccionamiento directo
-function handleDirectMOVUpdate(sourceRegister: string, executeStage: number): MessageConfig {
+function handleDirectMOVUpdate(): MessageConfig {
   return {
     message: "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1",
     shouldDisplay: true,
-    shouldPause: true
+    shouldPause: true,
   };
 }
 
 // Función específica para actualizaciones de registros en CALL
-function handleCALLRegisterUpdate(sourceRegister: string, executeStage: number): MessageConfig {
-  if (executeStage === 4) {
-    return {
-      message: "",
-      shouldDisplay: false,
-      shouldPause: false
-    };
-  }
-  
+function handleCALLRegisterUpdate(_sourceRegister: string): MessageConfig {
   return {
-    message: `Ejecución: MBR ← ${sourceRegister}`,
+    message: `Ejecución: MBR ← ${_sourceRegister}`,
     shouldDisplay: true,
-    shouldPause: true
+    shouldPause: true,
   };
 }
 
@@ -543,7 +545,7 @@ function createInstructionContext(): InstructionContext {
     modeId: currentInstructionModeid,
     modeRi: currentInstructionModeri,
     executeStage: executeStageCounter,
-    cycleCount: currentInstructionCycleCount
+    cycleCount: currentInstructionCycleCount,
   };
 }
 
@@ -552,10 +554,10 @@ function logInstructionExecution(
   eventType: string,
   sourceRegister: string,
   instructionContext: InstructionContext,
-  messageConfig: MessageConfig
+  messageConfig: MessageConfig,
 ): void {
   const addressingMode = getAddressingMode(instructionContext);
-  
+
   console.log(`🔍 [${eventType}] Registro: ${sourceRegister}`);
   console.log(`   Instrucción: ${instructionContext.name}`);
   console.log(`   Modo de direccionamiento: ${addressingMode}`);
@@ -573,35 +575,35 @@ function validateInstructionContext(context: InstructionContext): boolean {
     console.warn("⚠️ Contexto de instrucción sin nombre");
     return false;
   }
-  
+
   if (context.executeStage < 0) {
     console.warn("⚠️ Etapa de ejecución inválida:", context.executeStage);
     return false;
   }
-  
+
   return true;
 }
 
 // Función para manejar animaciones de manera sincronizada
-async function handleSynchronizedAnimation(animationFunction: () => Promise<void>): Promise<void> {
-  const syncState = store.get(animationSyncAtom);
-  
-  if (!syncState.canAnimate) {
-    // Esperar hasta que las animaciones estén permitidas
-    await new Promise<void>((resolve) => {
-      const unsubscribe = store.sub(animationSyncAtom, () => {
-        const newSyncState = store.get(animationSyncAtom);
-        if (newSyncState.canAnimate) {
-          unsubscribe();
-          resolve();
-        }
-      });
-    });
-  }
-  
-  // Ejecutar la animación
-  await animationFunction();
-}
+// async function handleSynchronizedAnimation(animationFunction: () => Promise<void>): Promise<void> {
+//   const syncState = store.get(animationSyncAtom);
+
+//   if (!syncState.canAnimate) {
+//     // Esperar hasta que las animaciones estén permitidas
+//     await new Promise<void>(resolve => {
+//       const unsubscribe = store.sub(animationSyncAtom, () => {
+//         const newSyncState = store.get(animationSyncAtom);
+//         if (newSyncState.canAnimate) {
+//           unsubscribe();
+//           resolve();
+//         }
+//       });
+//     });
+//   }
+
+//   // Ejecutar la animación
+//   await animationFunction();
+// }
 
 /**
  * Starts an execution thread for the given generator. This is, run all the
@@ -662,10 +664,14 @@ async function startThread(generator: EventGenerator): Promise<void> {
         );
         console.log(
           "🔍 Detalles de la instrucción:",
-          "willUse.id:", event.value.instruction.willUse.id,
-          "willUse.ri:", event.value.instruction.willUse.ri,
-          "modeId:", currentInstructionModeid,
-          "modeRi:", currentInstructionModeri
+          "willUse.id:",
+          event.value.instruction.willUse.id,
+          "willUse.ri:",
+          event.value.instruction.willUse.ri,
+          "modeId:",
+          currentInstructionModeid,
+          "modeRi:",
+          currentInstructionModeri,
         );
         mbridirmar = false;
         resultmbrimar = false;
@@ -760,27 +766,27 @@ async function startThread(generator: EventGenerator): Promise<void> {
 
           if (event.value.type === "cpu:mar.set") {
             const sourceRegister = event.value.register;
-            let showRI = false;
-            let showRI2 = false;
+            // let showRI = false;
+            // const showRI2 = false;
 
-            if (
-              currentInstructionModeri &&
-              executeStageCounter === 5 &&
-              (currentInstructionName === "ADD" || currentInstructionName === "SUB")
-            ) {
-              showRI = true;
-            }
-            if (currentInstructionModeri && executeStageCounter === 9 && "INT") {
-              showRI = true;
-            }
+            // if (
+            //   currentInstructionModeri &&
+            //   executeStageCounter === 5 &&
+            //   (currentInstructionName === "ADD" || currentInstructionName === "SUB")
+            // ) {
+            //   showRI = true;
+            // }
+            // if (currentInstructionModeri && executeStageCounter === 9 && "INT") {
+            //   showRI = true;
+            // }
 
-            if (
-              currentInstructionModeri &&
-              executeStageCounter === 2 &&
-              (currentInstructionName === "ADD" || currentInstructionName === "SUB")
-            ) {
-              showRI2 = true;
-            }
+            // if (
+            //   currentInstructionModeri &&
+            //   executeStageCounter === 2 &&
+            //   (currentInstructionName === "ADD" || currentInstructionName === "SUB")
+            // ) {
+            //   showRI2 = true;
+            // }
             console.log("executeStageCounter:", executeStageCounter);
             console.log("mbridirmar:", mbridirmar);
             console.log("resultmbrimar:", resultmbrimar);
@@ -789,13 +795,12 @@ async function startThread(generator: EventGenerator): Promise<void> {
 
             // Usar las nuevas funciones auxiliares para generar mensajes
             const instructionContext = createInstructionContext();
-            
+
             // Validar el contexto antes de procesar
             if (validateInstructionContext(instructionContext)) {
               const messageConfig = generateRegisterTransferMessage(
-                sourceRegister, 
+                sourceRegister,
                 instructionContext,
-                { showRI, showRI2, mbridirmar }
               );
 
               // Logging para debugging
@@ -827,68 +832,76 @@ async function startThread(generator: EventGenerator): Promise<void> {
             executeStageCounter++;
           } else if (event.value.type === "cpu:register.update") {
             const sourceRegister = event.value.register;
-            
+
             // Usar las nuevas funciones auxiliares para generar mensajes de actualización
             const instructionContext = createInstructionContext();
-            
+
             // Validar el contexto antes de procesar
             if (validateInstructionContext(instructionContext)) {
-              const messageConfig = generateRegisterUpdateMessage(sourceRegister, instructionContext);
-              
+              const messageConfig = generateRegisterUpdateMessage(
+                sourceRegister,
+                instructionContext,
+              );
+
               // Logging para debugging
-              logInstructionExecution("register.update", sourceRegister, instructionContext, messageConfig);
-              
+              logInstructionExecution(
+                "register.update",
+                sourceRegister,
+                instructionContext,
+                messageConfig,
+              );
+
               let displayMessage = messageConfig.message;
               shouldDisplayMessage = messageConfig.shouldDisplay;
-              let pause = messageConfig.shouldPause;
+              const pause = messageConfig.shouldPause;
 
-            // Manejar casos especiales adicionales que requieren lógica específica
-            if (
-              currentInstructionModeri &&
-              executeStageCounter === 8 &&
-              currentInstructionName === "INT"
-            ) {
-              displayMessage = "Ejecución: write(Memoria[MAR]) ← MBR; SP ← SP - 1";
-            }
-            if (executeStageCounter === 2 && currentInstructionName === "CALL") {
-              displayMessage = "Ejecución: ri ← MBR; SP ← SP - 1";
-            }
-            if (executeStageCounter === 4 && currentInstructionName === "CALL") {
-              displayMessage = "Ejecución: write(Memoria[MAR]) ← MBR; SP ← SP - 1";
-            }
-            console.log("displayMessage:", displayMessage);
-            console.log("currentInstructionName:", currentInstructionName);
-            console.log("currentInstructionModeri:", currentInstructionModeri);
-            console.log("executeStageCounter:", executeStageCounter);
-            console.log("pause:", pause);
-            if (
-              currentInstructionName !== "DEC" &&
-              currentInstructionName !== "INC" &&
-              currentInstructionName !== "NOT" &&
-              currentInstructionName !== "NEG" &&
-              !(currentInstructionName === "INT" && executeStageCounter === 5)
-            ) {
-              store.set(messageAtom, displayMessage);
-              cycleCount++;
-              currentInstructionCycleCount++;
-              store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
-            }
+              // Manejar casos especiales adicionales que requieren lógica específica
+              if (
+                currentInstructionModeri &&
+                executeStageCounter === 8 &&
+                currentInstructionName === "INT"
+              ) {
+                displayMessage = "Ejecución: write(Memoria[MAR]) ← MBR; SP ← SP - 1";
+              }
+              if (executeStageCounter === 2 && currentInstructionName === "CALL") {
+                displayMessage = "Ejecución: ri ← MBR; SP ← SP - 1";
+              }
+              if (executeStageCounter === 4 && currentInstructionName === "CALL") {
+                displayMessage = "Ejecución: write(Memoria[MAR]) ← MBR; SP ← SP - 1";
+              }
+              console.log("displayMessage:", displayMessage);
+              console.log("currentInstructionName:", currentInstructionName);
+              console.log("currentInstructionModeri:", currentInstructionModeri);
+              console.log("executeStageCounter:", executeStageCounter);
+              console.log("pause:", pause);
+              if (
+                currentInstructionName !== "DEC" &&
+                currentInstructionName !== "INC" &&
+                currentInstructionName !== "NOT" &&
+                currentInstructionName !== "NEG" &&
+                !(currentInstructionName === "INT" && executeStageCounter === 5)
+              ) {
+                store.set(messageAtom, displayMessage);
+                cycleCount++;
+                currentInstructionCycleCount++;
+                store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+              }
 
-            executeStageCounter++;
-            if (displayMessage !== "Interrupción: MAR ← (video)") {
-              if (status.until === "cycle-change") {
-                if (
-                  currentInstructionName !== "DEC" &&
-                  currentInstructionName !== "INC" &&
-                  currentInstructionName !== "NOT" &&
-                  currentInstructionName !== "NEG"
-                ) {
-                  if (pause) {
-                    pauseSimulation();
+              executeStageCounter++;
+              if (displayMessage !== "Interrupción: MAR ← (video)") {
+                if (status.until === "cycle-change") {
+                  if (
+                    currentInstructionName !== "DEC" &&
+                    currentInstructionName !== "INC" &&
+                    currentInstructionName !== "NOT" &&
+                    currentInstructionName !== "NEG"
+                  ) {
+                    if (pause) {
+                      pauseSimulation();
+                    }
                   }
                 }
               }
-            }
             } // Cerrar el bloque if de validateInstructionContext
           } else if (event.value.type === "cpu:alu.execute") {
             if (currentInstructionName === "CMP") {
