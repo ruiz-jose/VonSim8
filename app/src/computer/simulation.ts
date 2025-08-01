@@ -342,7 +342,6 @@ async function startThread(generator: EventGenerator): Promise<void> {
 
           if (event.value.type === "cpu:mar.set") {
             const sourceRegister = event.value.register;
-            const displayRegister = sourceRegister === "ri" ? "MBR" : sourceRegister;
             let showRI = false;
             let showRI2 = false;
 
@@ -370,7 +369,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             console.log("displayMessageresultmbr:", displayMessageresultmbr);
             console.log("shouldDisplayMessage:", shouldDisplayMessage);
 
-            if (shouldDisplayMessage || sourceRegister === "SP") {
+            if (shouldDisplayMessage || sourceRegister === "SP" || (currentInstructionModeid && sourceRegister === "IP")) {
               if (resultmbrimar) {
                 store.set(messageAtom, displayMessageresultmbr);
               } else if (showRI) {
@@ -378,17 +377,25 @@ async function startThread(generator: EventGenerator): Promise<void> {
               } else if (showRI2) {
                 store.set(messageAtom, `Ejecución: ri ← MBR; MAR ← MBR`);
               } else if (
-                executeStageCounter === 2 &&
+                executeStageCounter === 4 &&
                 currentInstructionModeri &&
                 currentInstructionName === "MOV"
               ) {
                 store.set(messageAtom, `Ejecución: ri ← MBR; MAR ← IP`);
               } else if (
-                executeStageCounter === 4 &&
-                currentInstructionModeri &&
+                sourceRegister === "ri" &&
+                currentInstructionName === "MOV" &&
+                currentInstructionModeid
+              ) {
+                // Para instrucciones MOV con direccionamiento inmediato cuando se usa ri como fuente para MAR
+                store.set(messageAtom, `Ejecución: MAR ← ri`);
+              } else if (
+                currentInstructionModeid &&
+                sourceRegister === "IP" &&
                 currentInstructionName === "MOV"
               ) {
-                store.set(messageAtom, `Ejecución: MAR ← ${sourceRegister}`);
+                // Para instrucciones MOV con direccionamiento inmediato, mostrar cuando se lee el valor inmediato
+                store.set(messageAtom, `Ejecución: MAR ← IP`);
               } else if (mbridirmar) {
                 store.set(messageAtom, `Ejecución: id ← MBR; MAR ← IP`);
               } else if (
@@ -398,7 +405,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
               ) {
                 store.set(messageAtom, `Ejecución: ri ← MBR; MAR ← SP`);
               } else {
-                store.set(messageAtom, `Ejecución: MAR ← ${displayRegister}`);
+                store.set(messageAtom, `Ejecución: MAR ← ${sourceRegister}`);
               }
             }
 
