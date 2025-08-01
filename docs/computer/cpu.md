@@ -59,11 +59,12 @@ El registro `FLAGS` es un registro de 8 bits que contiene las _flags_ mostradas 
 
 | Bit # | Abreviatura | Descripción            |
 | :---: | :---------: | :--------------------- |
-|   0   |    `CF`     | _Flag_ de acarreo      |
-|   6   |    `ZF`     | _Flag_ de cero         |
-|   7   |    `SF`     | _Flag_ de signo        |
-|   9   |    `IF`     | _Flag_ de interrupción |
-|  11   |    `OF`     | _Flag_ de overflow     |
+|   0   |    `Z`     | _Flag_ de cero         |
+|   1   |    `C`     | _Flag_ de acarreo      |
+|   2   |    `O`     | _Flag_ de overflow     |
+|   3   |    `S`     | _Flag_ de signo        |
+|   4   |    `I`     | _Flag_ de interrupción |
+
 
 El resto de bits están reservados / no se utilizan.
 

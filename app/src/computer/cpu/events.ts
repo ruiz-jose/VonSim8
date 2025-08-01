@@ -701,21 +701,40 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         await resetDataPath();
       }
 
-      // Quinto: Marcar el fin de la fase "fetch-operands" cuando se escribe en MBR
+      // Quinto: Marcar el fin de la fase "fetch-operands" cuando se escribe en el registro destino
       // Solo si estamos actualmente en la fase "fetching-operands" y no es una transferencia a IR (que es parte de la captación)
+      // Para instrucciones que obtienen operandos de memoria, la fase debe terminar cuando el valor real se copia al registro destino
       if (currentPhase === "fetching-operands" && normalizedRegister !== "IR") {
-        // Actualizar la fase para indicar que "fetch-operands" ha terminado
-        currentPhase = "fetching-operands-completed";
-        console.log("✅ Fase 'fetch-operands' completada al escribir en MBR");
+        // Verificar si es una instrucción que obtiene operandos de memoria
+        const isMemoryOperandInstruction = instructionName && (
+          instructionName === "MOV" || 
+          instructionName === "ADD" || 
+          instructionName === "SUB" || 
+          instructionName === "CMP" || 
+          instructionName === "AND" || 
+          instructionName === "OR" || 
+          instructionName === "XOR"
+        );
+        
+        // Para instrucciones con operandos de memoria, solo terminar la fase cuando se copia al registro destino
+        // Para otras instrucciones, terminar cuando se escribe en MBR
+        const shouldCompletePhase = !isMemoryOperandInstruction || 
+          (isMemoryOperandInstruction && normalizedRegister !== "MBR");
+        
+        if (shouldCompletePhase) {
+          // Actualizar la fase para indicar que "fetch-operands" ha terminado
+          currentPhase = "fetching-operands-completed";
+          console.log("✅ Fase 'fetch-operands' completada al escribir en", normalizedRegister);
 
-        // Actualizar el estado del ciclo para reflejar que la fase de obtención de operandos ha terminado
-        store.set(cycleAtom, prev => {
-          if (!("metadata" in prev)) return prev;
-          return {
-            ...prev,
-            phase: "fetching-operands-completed",
-          };
-        });
+          // Actualizar el estado del ciclo para reflejar que la fase de obtención de operandos ha terminado
+          store.set(cycleAtom, prev => {
+            if (!("metadata" in prev)) return prev;
+            return {
+              ...prev,
+              phase: "fetching-operands-completed",
+            };
+          });
+        }
       }
       return;
     }

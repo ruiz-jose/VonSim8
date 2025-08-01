@@ -668,6 +668,9 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
       <circle cx={390} cy={250} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
       <circle cx={550} cy={250} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
       <circle cx={550} cy={348} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
+      
+      {/* Círculo del nodo IP join - solo visible cuando showri es true */}
+      {showri && <circle cx={390} cy={349} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />}
 
       {/* Path animado del bus de datos (verde/violeta según fase) */}
       <animated.path
