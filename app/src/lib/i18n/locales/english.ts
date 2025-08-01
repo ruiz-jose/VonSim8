@@ -108,6 +108,7 @@ export const english = {
       status: {
         fetching: "Fetching instruction...",
         "fetching-operands": "Fetching operands...",
+        "fetching-operands-completed": "Operands fetched",
         executing: "Executing...",
         writeback: "Saving results...",
         interrupt: "Handling interrupt...",

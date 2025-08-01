@@ -109,6 +109,7 @@ export function Sequencer({ isVisible, onClose }: SequencerProps) {
         state =>
           (cycle.phase === "fetching" && state.phase === "fetch") ||
           (cycle.phase === "fetching-operands" && state.phase === "decode") ||
+          (cycle.phase === "fetching-operands-completed" && state.phase === "decode") ||
           (cycle.phase === "executing" && state.phase === "execute") ||
           (cycle.phase === "writeback" && state.phase === "writeback"),
       )

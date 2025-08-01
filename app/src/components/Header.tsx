@@ -82,6 +82,8 @@ const SimulationStatus = memo(
           return "Captación";
         case "fetching-operands":
           return "Obtención de operandos";
+        case "fetching-operands-completed":
+          return "Operandos obtenidos";
         case "executing":
           return "Ejecución";
         case "writeback":
@@ -107,6 +109,8 @@ const SimulationStatus = memo(
           return "bg-blue-500/20 text-blue-400 border-blue-500/30";
         case "fetching-operands":
           return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
+        case "fetching-operands-completed":
+          return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
         case "executing":
           return "bg-green-500/20 text-green-400 border-green-500/30";
         case "writeback":
@@ -131,6 +135,8 @@ const SimulationStatus = memo(
         case "fetching":
           return "animate-phase-pulse-blue";
         case "fetching-operands":
+          return "animate-phase-pulse-yellow";
+        case "fetching-operands-completed":
           return "animate-phase-pulse-yellow";
         case "executing":
           return "animate-phase-pulse-green";

@@ -92,6 +92,7 @@ export const spanish: Locale = {
       status: {
         fetching: "Captación instrucción...",
         "fetching-operands": "Leyendo operandos...",
+        "fetching-operands-completed": "Operandos obtenidos",
         executing: "Ejecutando...",
         writeback: "Escribiendo resultados...",
         interrupt: "Manejando interrupción...",

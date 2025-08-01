@@ -111,6 +111,7 @@ export type PhysicalRegister =
 export type Cycle =
   | { phase: "fetching"; metadata: InstructionMetadata }
   | { phase: "fetching-operands"; metadata: InstructionMetadata }
+  | { phase: "fetching-operands-completed"; metadata: InstructionMetadata }
   | { phase: "executing"; metadata: InstructionMetadata }
   | { phase: "writeback"; metadata: InstructionMetadata }
   | { phase: "interrupt"; metadata: InstructionMetadata }

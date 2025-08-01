@@ -28,6 +28,8 @@ export const InstructionCycleInfo = memo(({ className }: InstructionCycleInfoPro
         return "📥";
       case "fetching-operands":
         return "🔍";
+      case "fetching-operands-completed":
+        return "✅";
       case "executing":
         return "⚡";
       case "writeback":
@@ -52,6 +54,8 @@ export const InstructionCycleInfo = memo(({ className }: InstructionCycleInfoPro
       case "fetching":
         return "text-blue-400";
       case "fetching-operands":
+        return "text-yellow-400";
+      case "fetching-operands-completed":
         return "text-yellow-400";
       case "executing":
         return "text-green-400";

@@ -30,7 +30,18 @@ let pendingRightTransfer: { from: DataRegister; instruction: string; mode: strin
 // Variables para control de animaciones (comentadas para evitar errores de linting)
 // let _waitingForALUCogAnimation = false;
 // let _aluCogAnimationComplete = false;
-let currentPhase = "fetching";
+
+// Tipo para las fases del ciclo de instrucción
+type CyclePhase = 
+  | "fetching" 
+  | "fetching-operands" 
+  | "fetching-operands-completed"
+  | "executing" 
+  | "writeback" 
+  | "halting" 
+  | "stopped";
+
+let currentPhase: CyclePhase = "fetching";
 // let _waitingForFetchingOperands = false;
 // let _waitingForExecuting = false;
 
@@ -401,7 +412,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
                     : "fetching";
 
       // Actualizar la variable global de fase
-      currentPhase = newPhase;
+      currentPhase = newPhase as CyclePhase;
       console.log("🔄 Fase del ciclo actualizada:", currentPhase);
 
       store.set(cycleAtom, prev => {
@@ -657,6 +668,23 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       // Cuarto: Resetear la animación del bus (solo si no es ri en modo mem<-imd)
       if (!(normalizedRegister === "ri" && mode === "mem<-imd")) {
         await resetDataPath();
+      }
+
+      // Quinto: Marcar el fin de la fase "fetch-operands" cuando se escribe en MBR
+      // Solo si estamos actualmente en la fase "fetching-operands" y no es una transferencia a IR (que es parte de la captación)
+      if (currentPhase === "fetching-operands" && normalizedRegister !== "IR") {
+        // Actualizar la fase para indicar que "fetch-operands" ha terminado
+        currentPhase = "fetching-operands-completed";
+        console.log("✅ Fase 'fetch-operands' completada al escribir en MBR");
+        
+        // Actualizar el estado del ciclo para reflejar que la fase de obtención de operandos ha terminado
+        store.set(cycleAtom, prev => {
+          if (!("metadata" in prev)) return prev;
+          return {
+            ...prev,
+            phase: "fetching-operands-completed",
+          };
+        });
       }
       return;
     }
