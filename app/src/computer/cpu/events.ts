@@ -189,7 +189,7 @@ async function animateMBRAndIP() {
 // Función para manejar animaciones simultáneas en modo mem<-imd
 async function handleSimultaneousMemImdAnimations() {
   if (pendingMBRtoRI && pendingIPtoMAR) {
-    console.log("🎯 Ejecutando animaciones simultáneas para modo mem<-imd");
+    console.log("🎯 Ejecutando animaciones simultáneas para modo mem<-imd (MBR→ri + IP→MAR)");
 
     // Ejecutar ambas animaciones simultáneamente
     await Promise.all([
@@ -228,6 +228,37 @@ async function handleSimultaneousMemImdAnimations() {
 
     // Limpiar variables pendientes
     pendingMBRtoRI = null;
+    pendingIPtoMAR = null;
+  } else if (pendingIPtoMAR) {
+    console.log("🎯 Ejecutando animación individual IP→MAR para modo mem<-imd");
+
+    // Solo ejecutar animación IP→MAR
+    await anim(
+      [
+        {
+          key: "cpu.internalBus.address.path",
+          from: generateAddressPath("IP"),
+        },
+        { key: "cpu.internalBus.address.opacity", from: 1 },
+        { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
+      ],
+      { duration: 5, easing: "easeInOutSine" },
+    );
+
+    // Actualizar registro MAR
+    store.set(MARAtom, store.get(registerAtoms.IP));
+
+    // Activar y desactivar registro MAR
+    await activateRegister("cpu.MAR");
+    await deactivateRegister("cpu.MAR");
+
+    // Resetear animación del bus de direcciones
+    await anim(
+      { key: "cpu.internalBus.address.opacity", to: 0 },
+      { duration: 1, easing: "easeInSine" },
+    );
+
+    // Limpiar variable pendiente
     pendingIPtoMAR = null;
   }
 }
