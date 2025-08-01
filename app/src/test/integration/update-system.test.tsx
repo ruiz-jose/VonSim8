@@ -41,14 +41,14 @@ describe("Sistema de Actualizaciones", () => {
     localStorageMock.setItem.mockImplementation(() => {
       // Mock implementation
     });
-    
+
     // Configurar mocks por defecto
     (usePWAUpdate as any).mockReturnValue({
       updateInfo: { available: false, updating: false, lastUpdate: null },
       updateApp: vi.fn(),
       checkForUpdates: vi.fn(),
     });
-    
+
     (useVersionCheck as any).mockReturnValue({
       versionInfo: {
         currentHash: "test-hash-123",
@@ -71,7 +71,7 @@ describe("Sistema de Actualizaciones", () => {
       render(
         <NotificationProvider>
           <UpdateBanner />
-        </NotificationProvider>
+        </NotificationProvider>,
       );
 
       expect(screen.queryByText("Nueva versión disponible")).not.toBeInTheDocument();
@@ -87,7 +87,7 @@ describe("Sistema de Actualizaciones", () => {
       render(
         <NotificationProvider>
           <UpdateBanner />
-        </NotificationProvider>
+        </NotificationProvider>,
       );
 
       expect(screen.getByText("Nueva versión disponible")).toBeInTheDocument();
@@ -109,7 +109,7 @@ describe("Sistema de Actualizaciones", () => {
       render(
         <NotificationProvider>
           <UpdateBanner />
-        </NotificationProvider>
+        </NotificationProvider>,
       );
 
       expect(screen.getByText("Nueva versión disponible")).toBeInTheDocument();
@@ -125,7 +125,7 @@ describe("Sistema de Actualizaciones", () => {
       render(
         <NotificationProvider>
           <UpdateBanner />
-        </NotificationProvider>
+        </NotificationProvider>,
       );
 
       // Buscar el botón de cerrar por su contenido (el ícono X)

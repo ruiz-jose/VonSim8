@@ -4,6 +4,9 @@ import { render, screen } from "@testing-library/react";
 import { useMedia } from "react-use";
 import { describe, expect, it, vi } from "vitest";
 
+import { NotificationProvider } from "./components/NotificationCenter";
+import { Provider as JotaiProvider } from "jotai/react";
+import { createStore } from "jotai";
 import App from "./App";
 
 (globalThis as any).ResizeObserver = class {
@@ -15,6 +18,15 @@ import App from "./App";
   disconnect() {}
 };
 (globalThis as any).__COMMIT_HASH__ = "test-hash";
+
+// Mock para usePWAUpdate
+vi.mock("@/hooks/usePWAUpdate", () => ({
+  usePWAUpdate: () => ({
+    updateInfo: { available: false },
+    updateApp: vi.fn(),
+  }),
+}));
+
 vi.mock("virtual:pwa-register/react", () => ({
   useRegisterSW: () => ({}),
 }));
@@ -25,11 +37,23 @@ vi.mock("react-use", async importOriginal => {
   });
 });
 
+// Wrapper con providers necesarios
+const TestWrapper = ({ children }: { children: React.ReactNode }) => {
+  const store = createStore();
+  return (
+    <JotaiProvider store={store}>
+      <NotificationProvider>
+        {children}
+      </NotificationProvider>
+    </JotaiProvider>
+  );
+};
+
 describe("App layout", () => {
   it("renders DesktopLayout on large screens", () => {
     const useMediaMock = vi.mocked(useMedia);
     useMediaMock.mockReturnValue(false); // no es móvil
-    render(<App />);
+    render(<App />, { wrapper: TestWrapper });
     expect(screen.getByTestId("header")).toBeInTheDocument();
     // Puedes agregar más asserts para DesktopLayout
   });
@@ -37,7 +61,7 @@ describe("App layout", () => {
   it("renders MobileLayout on small screens", () => {
     const useMediaMock = vi.mocked(useMedia);
     useMediaMock.mockReturnValue(true); // es móvil
-    render(<App />);
+    render(<App />, { wrapper: TestWrapper });
     expect(screen.getByTestId("header")).toBeInTheDocument();
     expect(screen.getByTestId("footer")).toBeInTheDocument();
     // Puedes agregar más asserts para MobileLayout

@@ -32,13 +32,13 @@ let pendingRightTransfer: { from: DataRegister; instruction: string; mode: strin
 // let _aluCogAnimationComplete = false;
 
 // Tipo para las fases del ciclo de instrucción
-type CyclePhase = 
-  | "fetching" 
-  | "fetching-operands" 
+type CyclePhase =
+  | "fetching"
+  | "fetching-operands"
   | "fetching-operands-completed"
-  | "executing" 
-  | "writeback" 
-  | "halting" 
+  | "executing"
+  | "writeback"
+  | "halting"
   | "stopped";
 
 let currentPhase: CyclePhase = "fetching";
@@ -676,7 +676,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         // Actualizar la fase para indicar que "fetch-operands" ha terminado
         currentPhase = "fetching-operands-completed";
         console.log("✅ Fase 'fetch-operands' completada al escribir en MBR");
-        
+
         // Actualizar el estado del ciclo para reflejar que la fase de obtención de operandos ha terminado
         store.set(cycleAtom, prev => {
           if (!("metadata" in prev)) return prev;

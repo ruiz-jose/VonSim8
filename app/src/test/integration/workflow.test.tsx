@@ -1,5 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { NotificationProvider } from "../../components/NotificationCenter";
+import { Provider as JotaiProvider } from "jotai/react";
+import { createStore } from "jotai";
 
 // Mock de las dependencias básicas
 vi.mock("@/lib/posthog", () => ({
@@ -9,6 +12,14 @@ vi.mock("@/lib/posthog", () => ({
     identify: vi.fn(),
     track: vi.fn(),
   },
+}));
+
+// Mock para usePWAUpdate
+vi.mock("@/hooks/usePWAUpdate", () => ({
+  usePWAUpdate: () => ({
+    updateInfo: { available: false },
+    updateApp: vi.fn(),
+  }),
 }));
 
 vi.mock("@/components/Header", () => ({
@@ -53,6 +64,18 @@ vi.mock("jotai/react", () => ({
   Provider: ({ children }: any) => children,
 }));
 
+// Wrapper con providers necesarios
+const TestWrapper = ({ children }: { children: React.ReactNode }) => {
+  const store = createStore();
+  return (
+    <JotaiProvider store={store}>
+      <NotificationProvider>
+        {children}
+      </NotificationProvider>
+    </JotaiProvider>
+  );
+};
+
 describe("Application Integration", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -62,7 +85,7 @@ describe("Application Integration", () => {
     // Importar App dinámicamente para evitar problemas de import
     const { default: App } = await import("../../App");
 
-    render(<App />);
+    render(<App />, { wrapper: TestWrapper });
 
     // Verificar que todos los componentes principales se renderizan
     expect(screen.getByTestId("header")).toBeInTheDocument();
@@ -75,7 +98,7 @@ describe("Application Integration", () => {
   it("should maintain proper component hierarchy", async () => {
     const { default: App } = await import("../../App");
 
-    render(<App />);
+    render(<App />, { wrapper: TestWrapper });
 
     // Verificar jerarquía de componentes
     expect(document.querySelector("header")).toBeInTheDocument();
@@ -85,7 +108,7 @@ describe("Application Integration", () => {
   it("should handle component interactions", async () => {
     const { default: App } = await import("../../App");
 
-    render(<App />);
+    render(<App />, { wrapper: TestWrapper });
 
     // Verificar que los componentes están presentes para interacción
     expect(screen.getByTestId("computer-container")).toBeInTheDocument();
