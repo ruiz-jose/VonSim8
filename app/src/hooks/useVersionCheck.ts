@@ -1,22 +1,30 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { useNotifications } from "@/components/NotificationCenter";
 
 // Declaración de la variable global definida por Vite
 declare const __COMMIT_HASH__: string;
 
-interface VersionInfo {
+type VersionInfo = {
   currentHash: string;
   lastKnownHash: string | null;
   hasUpdate: boolean;
   lastCheck: Date | null;
-}
+};
 
 const STORAGE_KEY = "vonsim8-commit-hash";
-const VERSION_CHECK_INTERVAL = 5 * 60 * 1000; // 5 minutos
+const VERSION_CHECK_INTERVAL = 5 * 60 * 1000; // 5 minutos por defecto
 
 export const useVersionCheck = () => {
-  const { addNotification } = useNotifications();
+  const notifications = useNotifications();
+  const addNotification = useMemo(() => {
+    return (
+      notifications?.addNotification ||
+      (() => {
+        // Función vacía para evitar errores cuando no hay provider
+      })
+    );
+  }, [notifications?.addNotification]);
   const [versionInfo, setVersionInfo] = useState<VersionInfo>({
     currentHash: __COMMIT_HASH__,
     lastKnownHash: null,
@@ -25,36 +33,45 @@ export const useVersionCheck = () => {
   });
 
   const checkForVersionUpdate = useCallback(() => {
-    const lastHash = localStorage.getItem(STORAGE_KEY);
-    const currentHash = __COMMIT_HASH__;
-    
-    setVersionInfo(prev => ({
-      ...prev,
-      currentHash,
-      lastKnownHash: lastHash,
-      lastCheck: new Date(),
-    }));
+    try {
+      const lastHash = localStorage.getItem(STORAGE_KEY);
+      const currentHash = __COMMIT_HASH__;
 
-    // Si hay un hash anterior y es diferente al actual, hay una actualización
-    if (lastHash && lastHash !== currentHash) {
-      setVersionInfo(prev => ({ ...prev, hasUpdate: true }));
-      
-      addNotification({
-        type: "info",
-        title: "Nueva versión detectada",
-        message: `Se ha detectado una nueva versión de VonSim8 (${currentHash.substring(0, 7)}). Recarga la página para actualizar.`,
-      });
+      setVersionInfo(prev => ({
+        ...prev,
+        currentHash,
+        lastKnownHash: lastHash,
+        lastCheck: new Date(),
+      }));
 
-      return true;
+      // Si hay un hash anterior y es diferente al actual, hay una actualización
+      if (lastHash && lastHash !== currentHash) {
+        setVersionInfo(prev => ({ ...prev, hasUpdate: true }));
+
+        addNotification({
+          type: "info",
+          title: "Nueva versión detectada",
+          message: `Se ha detectado una nueva versión de VonSim8 (${currentHash.substring(0, 7)}). Recarga la página para actualizar.`,
+        });
+
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.warn("Error checking version update:", error);
+      return false;
     }
-
-    return false;
   }, [addNotification]);
 
   const updateToNewVersion = useCallback(() => {
-    // Guardar el hash actual antes de recargar
-    localStorage.setItem(STORAGE_KEY, __COMMIT_HASH__);
-    
+    try {
+      // Guardar el hash actual antes de recargar
+      localStorage.setItem(STORAGE_KEY, __COMMIT_HASH__);
+    } catch (error) {
+      console.warn("Error saving version hash before reload:", error);
+    }
+
     // Recargar la página
     window.location.reload();
   }, []);
@@ -71,7 +88,7 @@ export const useVersionCheck = () => {
   // Verificación periódica
   useEffect(() => {
     const interval = setInterval(checkForVersionUpdate, VERSION_CHECK_INTERVAL);
-    
+
     return () => clearInterval(interval);
   }, [checkForVersionUpdate]);
 
@@ -84,7 +101,7 @@ export const useVersionCheck = () => {
     };
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
-    
+
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
@@ -97,7 +114,7 @@ export const useVersionCheck = () => {
     };
 
     window.addEventListener("online", handleOnline);
-    
+
     return () => {
       window.removeEventListener("online", handleOnline);
     };
@@ -109,4 +126,4 @@ export const useVersionCheck = () => {
     updateToNewVersion,
     dismissUpdate,
   };
-}; 
+};

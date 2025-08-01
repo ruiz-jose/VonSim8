@@ -17,7 +17,6 @@ import { Toaster } from "@/lib/toast/toaster";
 function VonSimNotificationBridge() {
   // Exponer el método addNotification globalmente
   const { addNotification } = useNotifications();
-  // @ts-expect-error: Exponemos addNotification globalmente para módulos no React
   window.VonSimAddNotification = addNotification;
   return null;
 }

@@ -24,6 +24,16 @@ declare global {
   // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
   interface Window {
     codemirror?: CodemirrorType;
+    // Funciones globales para el sistema de actualizaciones
+    updateVonSim8?: () => void;
+    checkVonSim8Updates?: () => void;
+    VonSimAddNotification?: (notification: {
+      type: "info" | "success" | "warning" | "error";
+      title: string;
+      message: string;
+    }) => void;
+    // Función para el tour de bienvenida
+    startWelcomeTour?: () => void;
   }
 }
 

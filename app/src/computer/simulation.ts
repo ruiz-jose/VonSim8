@@ -20,9 +20,9 @@ import { toast } from "@/lib/toast";
 
 import {
   connectScreenAndKeyboardAtom,
+  currentInstructionCycleCountAtom,
   cycleAtom,
   cycleCountAtom,
-  currentInstructionCycleCountAtom,
   instructionCountAtom,
   messageAtom,
   messageHistoryAtom,

@@ -8,18 +8,16 @@ import { useTranslate } from "@/lib/i18n";
 
 import { cycleAtom } from "./state";
 
-function AnimatedSequencerChip({ 
-  progress, 
-  phase: cyclePhase, 
-  memAnimKey 
-}: { 
-  progress: SpringValue<number>; 
+function AnimatedSequencerChip({
+  progress,
+}: {
+  progress: SpringValue<number>;
   phase?: string;
   memAnimKey: number;
 }) {
   // Número de pines de salida
   const outputs = 8;
-  
+
   // Animación de opacidad basada en el progreso (misma lógica que memoria de control)
   const { opacity, filterIntensity } = useSpring({
     opacity: progress.to(p => {
@@ -35,31 +33,24 @@ function AnimatedSequencerChip({
       if (p === 1) return 0.6; // Solo activo cuando memoria de control termina
       return 0.25;
     }),
-    config: { 
-      tension: 280, 
+    config: {
+      tension: 280,
       friction: 60,
-      duration: 300 
-    }
+      duration: 300,
+    },
   });
-
-  // Variable para determinar si el secuenciador está activo
-  const isSequencerActive = progress.to(p => p === 1);
 
   return (
     <animated.div
       style={{
         opacity,
-        filter: filterIntensity.to(intensity => 
-          `drop-shadow(0 0 ${8 * intensity}px rgba(56,189,248,${intensity}))`
+        filter: filterIntensity.to(
+          intensity => `drop-shadow(0 0 ${8 * intensity}px rgba(56,189,248,${intensity}))`,
         ),
         transition: "opacity 0.3s ease-out, filter 0.3s ease-out",
       }}
     >
-      <svg
-        width="90"
-        height="42"
-        viewBox="0 0 90 42"
-      >
+      <svg width="90" height="42" viewBox="0 0 90 42">
         {/* Cuerpo del chip - más ancho y profesional */}
         <rect
           x="10"
@@ -71,12 +62,12 @@ function AnimatedSequencerChip({
           stroke="#38bdf8"
           strokeWidth="2.5"
         />
-        
+
         {/* Pines de entrada (izquierda) - más espaciados */}
         {Array.from({ length: 4 }).map((_, i) => (
           <rect key={i} x={2} y={10 + i * 5} width={8} height={2.5} rx={1.2} fill="#38bdf8" />
         ))}
-        
+
         {/* Pines de salida (derecha) - más espaciados y organizados */}
         {Array.from({ length: outputs }).map((_, i) => (
           <animated.rect
@@ -88,18 +79,16 @@ function AnimatedSequencerChip({
             rx={1.2}
             fill={progress.to(p => {
               // Efecto: barrido de encendido - solo cuando progreso es 1
-              const pos = i / outputs;
               return p === 1 ? "#7dd3fc" : "#0ea5e9";
             })}
             style={{
               filter: progress.to(p => {
-                const pos = i / outputs;
                 return p === 1 ? "drop-shadow(0 0 8px #38bdf8)" : "none";
               }),
             }}
           />
         ))}
-        
+
         {/* Celdas internas del secuenciador animadas - más anchas */}
         {Array.from({ length: 5 }).map((_, i) => (
           <animated.rect
@@ -124,7 +113,7 @@ function AnimatedSequencerChip({
             }}
           />
         ))}
-        
+
         {/* Efecto de "secuenciación" (borde animado) - ajustado al nuevo tamaño */}
         <animated.rect
           x="10"
@@ -136,9 +125,7 @@ function AnimatedSequencerChip({
           stroke="#7dd3fc"
           strokeWidth="2.5"
           strokeDasharray="160"
-          strokeDashoffset={progress.to(p =>
-            p === 1 ? 0 : 160
-          )}
+          strokeDashoffset={progress.to(p => (p === 1 ? 0 : 160))}
           style={{
             opacity: progress.to(p => (p === 1 ? 0.8 : 0)),
             transition: "stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1)",
@@ -225,12 +212,12 @@ function AnimatedMemoryCells({
 }
 
 // Componente para la memoria de control con animación de opacidad
-function AnimatedControlMemory({ 
-  progress, 
-  phase, 
-  memAnimKey 
-}: { 
-  progress: SpringValue<number>; 
+function AnimatedControlMemory({
+  progress,
+  phase,
+  memAnimKey,
+}: {
+  progress: SpringValue<number>;
   phase?: string;
   memAnimKey: number;
 }) {
@@ -249,29 +236,24 @@ function AnimatedControlMemory({
       if (p > 0 && p < 1) return 0.6;
       return 0.4;
     }),
-    config: { 
-      tension: 280, 
+    config: {
+      tension: 280,
       friction: 60,
-      duration: 300 
-    }
+      duration: 300,
+    },
   });
 
   return (
     <animated.div
       style={{
         opacity,
-        filter: filterIntensity.to(intensity => 
-          `drop-shadow(0 0 ${8 * intensity}px rgba(232,121,249,${intensity}))`
+        filter: filterIntensity.to(
+          intensity => `drop-shadow(0 0 ${8 * intensity}px rgba(232,121,249,${intensity}))`,
         ),
         transition: "opacity 0.3s ease-out, filter 0.3s ease-out",
       }}
     >
-      <svg
-        width="70"
-        height="38"
-        viewBox="0 0 70 38"
-        className="mb-0.5"
-      >
+      <svg width="70" height="38" viewBox="0 0 70 38" className="mb-0.5">
         {/* Cuerpo de la memoria */}
         <rect
           x="8"
@@ -285,33 +267,13 @@ function AnimatedControlMemory({
         />
         {/* Pines laterales */}
         {Array.from({ length: 4 }).map((_, i) => (
-          <rect
-            key={i}
-            x={2}
-            y={9 + i * 6}
-            width={6}
-            height={2}
-            rx={1}
-            fill="#e879f9"
-          />
+          <rect key={i} x={2} y={9 + i * 6} width={6} height={2} rx={1} fill="#e879f9" />
         ))}
         {Array.from({ length: 4 }).map((_, i) => (
-          <rect
-            key={i}
-            x={62}
-            y={9 + i * 6}
-            width={6}
-            height={2}
-            rx={1}
-            fill="#e879f9"
-          />
+          <rect key={i} x={62} y={9 + i * 6} width={6} height={2} rx={1} fill="#e879f9" />
         ))}
         {/* Celdas de memoria animadas con efecto de lectura sincronizadas con la barra del decodificador */}
-        <AnimatedMemoryCells
-          key={memAnimKey}
-          progress={progress}
-          phase={phase}
-        />
+        <AnimatedMemoryCells key={memAnimKey} progress={progress} phase={phase} />
       </svg>
     </animated.div>
   );
@@ -340,7 +302,7 @@ export function Control() {
   const cycle = useAtomValue(cycleAtom);
   const [showControlMem, setShowControlMem] = useState(false);
   // El progreso de la memoria de control ahora depende del progreso del decodificador
-  const [sequencerActive, setSequencerActive] = useState(false);
+  const [, setSequencerActive] = useState(false);
 
   // Efecto para manejar la secuencia de animación de las barras de progreso
   // Sincronizar la animación de la memoria de control con la barra progresiva del decodificador
@@ -468,7 +430,7 @@ export function Control() {
                         </span>
                         Memoria de control
                       </span>
-                      <AnimatedControlMemory 
+                      <AnimatedControlMemory
                         progress={getSpring("cpu.decoder.progress.progress")}
                         phase={cycle?.phase}
                         memAnimKey={memAnimKey}
@@ -489,7 +451,7 @@ export function Control() {
                         </span>
                         Secuenciador
                       </span>
-                      <AnimatedSequencerChip 
+                      <AnimatedSequencerChip
                         progress={getSpring("cpu.decoder.progress.progress")}
                         phase={cycle?.phase}
                         memAnimKey={memAnimKey}

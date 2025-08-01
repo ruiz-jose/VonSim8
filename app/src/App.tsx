@@ -1,6 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
 import { useAtom, useAtomValue } from "jotai";
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useMedia } from "react-use";
 
@@ -8,7 +8,6 @@ import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { KeyboardShortcuts } from "@/components/KeyboardShortcuts";
 import { Settings, settingsOpenAtom } from "@/components/Settings";
-import { ToastAction } from "@/components/ui/Toast";
 import { UpdateBanner } from "@/components/UpdateBanner";
 import { WelcomeTour } from "@/components/WelcomeTour";
 import { ComputerContainer } from "@/computer";
@@ -17,26 +16,19 @@ import { Editor } from "@/editor";
 import { usePWAUpdate } from "@/hooks/usePWAUpdate";
 import { useVersionCheck } from "@/hooks/useVersionCheck";
 import { useTranslate } from "@/lib/i18n";
-import { useFilters, useLanguage } from "@/lib/settings";
-import { toast } from "@/lib/toast";
-
-// Declaración de la variable global definida por Vite
-// eslint-disable-next-line no-var
-declare const __COMMIT_HASH__: string;
+import { useLanguage } from "@/lib/settings";
 
 // Componente principal optimizado con memo
 const App = memo(() => {
   const lang = useLanguage();
-  const filter = useFilters();
   const isMobile = useMedia("(max-width: 640px)");
-  const translate = useTranslate();
 
   // Inicializar los hooks de actualización
   usePWAUpdate();
   useVersionCheck();
 
   // Memoizar el estilo para evitar re-renders innecesarios
-  const containerStyle = useMemo(() => ({ filter }), [filter]);
+  const containerStyle = useMemo(() => ({}), []);
 
   return (
     <div

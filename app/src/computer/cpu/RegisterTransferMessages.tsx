@@ -7,12 +7,7 @@ import { store } from "@/lib/jotai";
 import { useSettings } from "@/lib/settings";
 import { toast } from "@/lib/toast";
 
-import {
-  cycleCountAtom,
-  currentInstructionCycleCountAtom,
-  messageAtom,
-  messageHistoryAtom,
-} from "./state";
+import { currentInstructionCycleCountAtom, messageAtom, messageHistoryAtom } from "./state";
 
 // Función para obtener el color de la fase
 function getPhaseColor(stage: string) {
@@ -246,7 +241,8 @@ export function RegisterTransferMessages() {
 
   // Limpiar el historial cuando el contador de ciclos por instrucción se reinicie (nueva instrucción)
   useEffect(() => {
-    const unsubscribe = store.sub(currentInstructionCycleCountAtom, newCount => {
+    const unsubscribe = store.sub(currentInstructionCycleCountAtom, () => {
+      const newCount = store.get(currentInstructionCycleCountAtom);
       if (newCount === 0) {
         // Si el contador se reinicia a 0, es una nueva instrucción
         store.set(messageHistoryAtom, []);

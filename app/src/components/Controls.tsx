@@ -156,10 +156,10 @@ export function Controls({ className }: { className?: string }) {
         // Ajustar padding según el tamaño de pantalla
         "flex items-center justify-center gap-4 rounded-xl border border-stone-700 bg-stone-900/80 shadow-lg",
         screenSize === "mobile"
-          ? "px-2 py-0.5 gap-2"
+          ? "gap-2 px-2 py-0.5"
           : screenSize === "compact"
-            ? "px-2 py-1 gap-3"
-            : "px-3 py-1 gap-4",
+            ? "gap-3 px-2 py-1"
+            : "gap-4 px-3 py-1",
         className,
       )}
     >

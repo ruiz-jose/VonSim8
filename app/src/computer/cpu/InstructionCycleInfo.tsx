@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { useAtomValue } from "jotai";
 import { memo, useState } from "react";
 
-import { cycleAtom, currentInstructionCycleCountAtom } from "./state";
+import { currentInstructionCycleCountAtom, cycleAtom } from "./state";
 
 type InstructionCycleInfoProps = {
   className?: string;

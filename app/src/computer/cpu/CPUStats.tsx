@@ -2,9 +2,9 @@ import clsx from "clsx";
 import { useAtomValue } from "jotai";
 import { memo, useState } from "react";
 
+import { Tooltip } from "@/components/ui/Tooltip";
 import { useTranslate } from "@/lib/i18n";
 import { useSettings } from "@/lib/settings";
-import { Tooltip } from "@/components/ui/Tooltip";
 
 import { cycleCountAtom, instructionCountAtom } from "./state";
 
@@ -48,25 +48,27 @@ export const CPUStats = memo(({ className }: CPUStatsProps) => {
         <strong className="text-mantis-300">CPI (Ciclos por Instrucción):</strong>
         <br />
         <span className="text-stone-300">
-          Métrica fundamental que indica la eficiencia del procesador. Calculada como el cociente entre 
-          ciclos totales e instrucciones ejecutadas. Un CPI más bajo significa mejor rendimiento.
+          Métrica fundamental que indica la eficiencia del procesador. Calculada como el cociente
+          entre ciclos totales e instrucciones ejecutadas. Un CPI más bajo significa mejor
+          rendimiento.
         </span>
       </div>
       <div>
         <strong className="text-mantis-300">Tiempo de CPU:</strong>
         <br />
         <span className="text-stone-300">
-          Tiempo real transcurrido durante la ejecución del programa. Se calcula multiplicando 
-          los ciclos totales por el tiempo de cada ciclo según la velocidad configurada.
+          Tiempo real transcurrido durante la ejecución del programa. Se calcula multiplicando los
+          ciclos totales por el tiempo de cada ciclo según la velocidad configurada.
         </span>
       </div>
       <div className="border-t border-stone-600 pt-2">
         <strong className="text-mantis-300">Interpretación:</strong>
         <br />
         <span className="text-stone-300">
-          • CPI = 1: Instrucciones simples (ideal)<br/>
-          • CPI &gt; 1: Instrucciones complejas o múltiples ciclos<br/>
-          • Menor tiempo = mejor rendimiento
+          • CPI = 1: Instrucciones simples (ideal)
+          <br />
+          • CPI &gt; 1: Instrucciones complejas o múltiples ciclos
+          <br />• Menor tiempo = mejor rendimiento
         </span>
       </div>
     </div>
@@ -79,25 +81,26 @@ export const CPUStats = memo(({ className }: CPUStatsProps) => {
         <strong className="text-mantis-300">Velocidad CPU (Hz):</strong>
         <br />
         <span className="text-stone-300">
-          Frecuencia del reloj del procesador que determina la velocidad de ejecución. 
-          Cada ciclo de reloj ejecuta una microoperación del procesador.
+          Frecuencia del reloj del procesador que determina la velocidad de ejecución. Cada ciclo de
+          reloj ejecuta una microoperación del procesador.
         </span>
       </div>
       <div>
         <strong className="text-mantis-300">Tiempo por Ciclo:</strong>
         <br />
         <span className="text-stone-300">
-          Duración de cada ciclo calculada como 1/velocidad. Por ejemplo, 
-          1 MHz = 1 microsegundo por ciclo.
+          Duración de cada ciclo calculada como 1/velocidad. Por ejemplo, 1 MHz = 1 microsegundo por
+          ciclo.
         </span>
       </div>
       <div className="border-t border-stone-600 pt-2">
         <strong className="text-mantis-300">Impacto en Rendimiento:</strong>
         <br />
         <span className="text-stone-300">
-          • Mayor Hz = ciclos más rápidos<br/>
-          • Menor tiempo total de ejecución<br/>
-          • Mejor experiencia de simulación
+          • Mayor Hz = ciclos más rápidos
+          <br />
+          • Menor tiempo total de ejecución
+          <br />• Mejor experiencia de simulación
         </span>
       </div>
     </div>
@@ -177,9 +180,9 @@ export const CPUStats = memo(({ className }: CPUStatsProps) => {
                 content={performanceEducationalContent}
                 position="top"
                 maxWidth={400}
-                className="text-stone-400 hover:text-mantis-400 transition-colors"
+                className="text-stone-400 transition-colors hover:text-mantis-400"
               >
-                <button className="text-xs hover:scale-110 transition-transform">💡</button>
+                <button className="text-xs transition-transform hover:scale-110">💡</button>
               </Tooltip>
             </div>
             <div className="space-y-2">
@@ -211,9 +214,9 @@ export const CPUStats = memo(({ className }: CPUStatsProps) => {
                 content={configEducationalContent}
                 position="top"
                 maxWidth={400}
-                className="text-stone-400 hover:text-mantis-400 transition-colors"
+                className="text-stone-400 transition-colors hover:text-mantis-400"
               >
-                <button className="text-xs hover:scale-110 transition-transform">⚙️</button>
+                <button className="text-xs transition-transform hover:scale-110">⚙️</button>
               </Tooltip>
             </div>
             <div className="space-y-1 text-xs text-stone-300">

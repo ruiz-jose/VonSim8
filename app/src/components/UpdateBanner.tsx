@@ -1,4 +1,4 @@
-import { faDownload, faTimes, faSync } from "@fortawesome/free-solid-svg-icons";
+import { faDownload, faSync, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
 import { memo, useCallback, useState } from "react";
@@ -44,14 +44,11 @@ export const UpdateBanner = memo(() => {
   }
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg">
+    <div className="fixed inset-x-0 top-0 z-50 bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg">
       <div className="mx-auto max-w-7xl px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <FontAwesomeIcon 
-              icon={faDownload} 
-              className="size-5 animate-pulse" 
-            />
+            <FontAwesomeIcon icon={faDownload} className="size-5 animate-pulse" />
             <div>
               <h3 className="font-semibold">Nueva versión disponible</h3>
               <p className="text-sm opacity-90">
@@ -59,7 +56,7 @@ export const UpdateBanner = memo(() => {
               </p>
             </div>
           </div>
-          
+
           <div className="flex items-center space-x-2">
             <Button
               onClick={handleUpdate}
@@ -67,13 +64,13 @@ export const UpdateBanner = memo(() => {
               className="bg-white text-blue-600 hover:bg-gray-100 disabled:opacity-50"
               size="sm"
             >
-              <FontAwesomeIcon 
-                icon={isUpdating ? faSync : faDownload} 
-                className={clsx("mr-2", isUpdating && "animate-spin")} 
+              <FontAwesomeIcon
+                icon={isUpdating ? faSync : faDownload}
+                className={clsx("mr-2", isUpdating && "animate-spin")}
               />
               {isUpdating ? "Actualizando..." : "Actualizar ahora"}
             </Button>
-            
+
             <Button
               onClick={handleDismiss}
               variant="ghost"
@@ -89,4 +86,4 @@ export const UpdateBanner = memo(() => {
   );
 });
 
-UpdateBanner.displayName = "UpdateBanner"; 
+UpdateBanner.displayName = "UpdateBanner";

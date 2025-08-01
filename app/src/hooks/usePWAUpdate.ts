@@ -1,16 +1,24 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { registerSW } from "virtual:pwa-register";
 
 import { useNotifications } from "@/components/NotificationCenter";
 
-interface UpdateInfo {
+type UpdateInfo = {
   available: boolean;
   updating: boolean;
   lastUpdate: Date | null;
-}
+};
 
 export const usePWAUpdate = () => {
-  const { addNotification } = useNotifications();
+  const notifications = useNotifications();
+  const addNotification = useMemo(() => {
+    return (
+      notifications?.addNotification ||
+      (() => {
+        // Función vacía para evitar errores cuando no hay provider
+      })
+    );
+  }, [notifications?.addNotification]);
   const [updateInfo, setUpdateInfo] = useState<UpdateInfo>({
     available: false,
     updating: false,
@@ -22,7 +30,7 @@ export const usePWAUpdate = () => {
     const updateSW = registerSW({
       onNeedRefresh() {
         setUpdateInfo(prev => ({ ...prev, available: true }));
-        
+
         // Agregar notificación de actualización disponible
         addNotification({
           type: "info",
@@ -50,7 +58,7 @@ export const usePWAUpdate = () => {
       },
       onRegistered(swRegistration) {
         console.log("Service Worker registrado:", swRegistration);
-        
+
         // Verificar si hay actualizaciones pendientes
         if (swRegistration.waiting) {
           setUpdateInfo(prev => ({ ...prev, available: true }));
@@ -74,16 +82,16 @@ export const usePWAUpdate = () => {
     const handleUpdate = async () => {
       if (updateSWRef.current) {
         setUpdateInfo(prev => ({ ...prev, updating: true }));
-        
+
         try {
           updateSWRef.current();
-          setUpdateInfo(prev => ({ 
-            ...prev, 
-            available: false, 
+          setUpdateInfo(prev => ({
+            ...prev,
+            available: false,
             updating: false,
-            lastUpdate: new Date() 
+            lastUpdate: new Date(),
           }));
-          
+
           // Notificar actualización exitosa
           addNotification({
             type: "success",
@@ -93,7 +101,7 @@ export const usePWAUpdate = () => {
         } catch (error) {
           console.error("Error al actualizar:", error);
           setUpdateInfo(prev => ({ ...prev, updating: false }));
-          
+
           addNotification({
             type: "error",
             title: "Error al actualizar",
@@ -116,8 +124,8 @@ export const usePWAUpdate = () => {
     // Exponer función de verificación manual
     (window as any).checkVonSim8Updates = checkForUpdates;
 
-    // Verificar actualizaciones cada 30 minutos
-    const interval = setInterval(checkForUpdates, 30 * 60 * 1000);
+    // Verificar actualizaciones cada 5 minutos
+    const interval = setInterval(checkForUpdates, 5 * 60 * 1000);
 
     return () => {
       // Limpiar la función global al desmontar
