@@ -61,16 +61,6 @@ export const CPUStats = memo(({ className }: CPUStatsProps) => {
           ciclos totales por el tiempo de cada ciclo según la velocidad configurada.
         </span>
       </div>
-      <div className="border-t border-stone-600 pt-2">
-        <strong className="text-mantis-300">Interpretación:</strong>
-        <br />
-        <span className="text-stone-300">
-          • CPI = 1: Instrucciones simples (ideal)
-          <br />
-          • CPI &gt; 1: Instrucciones complejas o múltiples ciclos
-          <br />• Menor tiempo = mejor rendimiento
-        </span>
-      </div>
     </div>
   );
 
@@ -91,16 +81,6 @@ export const CPUStats = memo(({ className }: CPUStatsProps) => {
         <span className="text-stone-300">
           Duración de cada ciclo calculada como 1/velocidad. Por ejemplo, 1 MHz = 1 microsegundo por
           ciclo.
-        </span>
-      </div>
-      <div className="border-t border-stone-600 pt-2">
-        <strong className="text-mantis-300">Impacto en Rendimiento:</strong>
-        <br />
-        <span className="text-stone-300">
-          • Mayor Hz = ciclos más rápidos
-          <br />
-          • Menor tiempo total de ejecución
-          <br />• Mejor experiencia de simulación
         </span>
       </div>
     </div>

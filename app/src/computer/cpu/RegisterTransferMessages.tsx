@@ -159,55 +159,6 @@ function getBorderAnimation(isLatest: boolean, stage: string) {
   }
 }
 
-// Definición de fases y subfases unificadas
-const fases = [
-  {
-    id: "captacion",
-    label: "Captación",
-    color: "text-blue-400",
-    icon: "📥",
-    descripcion: "Captando instrucción desde memoria",
-    pasos: [
-      "IP apunta a la dirección de memoria, el MAR recibe la dirección del IP",
-      "Se lee el contenido de memoria y se almacena en el MBR, IP se incrementa automáticamente",
-      "La instrucción se transfiere al IR",
-    ],
-  },
-  {
-    id: "ejecucion",
-    label: "Ejecución",
-    color: "text-green-400",
-    icon: "⚡",
-    descripcion: "Ejecutando instrucción",
-    subfases: [
-      {
-        id: "operandos",
-        label: "Obtención de operandos",
-        color: "text-yellow-400",
-        icon: "🔍",
-        descripcion: "Obteniendo operandos de la instrucción",
-        pasos: ["Se identifican y preparan los operandos necesarios para la operación."],
-      },
-      {
-        id: "alu",
-        label: "Procesar en ALU",
-        color: "text-green-400",
-        icon: "⚡",
-        descripcion: "Procesando en la ALU",
-        pasos: ["La ALU ejecuta la operación aritmética o lógica con los operandos."],
-      },
-      {
-        id: "escritura",
-        label: "Escribir resultado",
-        color: "text-purple-400",
-        icon: "💾",
-        descripcion: "Escribiendo resultado en registros",
-        pasos: ["El resultado de la operación se almacena en el registro destino."],
-      },
-    ],
-  },
-];
-
 // Función para obtener el color de la fase o subfase
 function getStageColor(stage: string, action: string) {
   if (stage === "Captación") return "text-blue-400";
@@ -251,7 +202,6 @@ export function RegisterTransferMessages() {
   const programModified = useAtomValue(programModifiedAtom);
 
   const [settings] = useSettings();
-  const [showCaptacionSteps, setShowCaptacionSteps] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -420,36 +370,12 @@ export function RegisterTransferMessages() {
                           {msg.stage}
                         </h4>
                         <p className="text-xs text-stone-400">
-                          {msg.stage === "Captación" && (
-                            <>
-                              Leer instrucción
-                              <button
-                                className="ml-2 rounded-lg bg-blue-500/20 px-2 py-1 text-xs text-blue-300 transition-all duration-200 hover:bg-blue-500/40 hover:scale-105 active:scale-95 border border-blue-400/30"
-                                onClick={() => setShowCaptacionSteps(v => !v)}
-                              >
-                                {showCaptacionSteps ? "− Ocultar pasos" : "+ Ver pasos"}
-                              </button>
-                            </>
-                          )}
+                          {msg.stage === "Captación" && "Leer instrucción"}
                           {msg.stage === "Obtención de operandos" && "Preparar datos"}
                           {msg.stage === "Ejecución" && "Procesar instrucción"}
                           {msg.stage === "Escritura" && "Guardar resultado"}
                           {msg.stage === "Interrupción" && "Manejar interrupción"}
                         </p>
-                        {/* Pasos de captación expandibles con animación */}
-                        {msg.stage === "Captación" && showCaptacionSteps && (
-                          <div className="mt-3 animate-slide-down">
-                            <ul className="ml-2 list-decimal text-xs text-blue-300 space-y-1">
-                              {fases
-                                .find(f => f.id === "captacion")
-                                ?.pasos.map((paso, i) => (
-                                  <li key={i} className="transition-all duration-200 hover:text-blue-200">
-                                    {paso}
-                                  </li>
-                                ))}
-                            </ul>
-                          </div>
-                        )}
                       </div>
                     </div>
                   </div>
