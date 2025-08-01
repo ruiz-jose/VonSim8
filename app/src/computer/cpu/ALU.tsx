@@ -370,21 +370,21 @@ export function ALU() {
       )}
 
       {/* Flags mejoradas */}
-      <animated.div
-        className={clsx(
-          "absolute flex min-h-[30px] w-min min-w-[38px] items-center gap-0.5 rounded-lg border-2 border-stone-400 bg-gradient-to-br from-stone-700 via-stone-600 to-stone-800 px-0.5 py-1 font-bold text-stone-200 shadow-lg ring-1 ring-stone-300",
-          settings.flagsVisibility === "SF_OF_CF_ZF"
-            ? "left-[210px] top-[190px]"
-            : "left-[230px] top-[190px]",
-        )}
-        style={getSpring("cpu.FLAGS")}
-      >
-        <span className="pointer-events-none absolute left-0.5 top-0.5 rounded bg-stone-900/80 px-0.5 text-[6px] font-bold text-stone-300">
-          FLAGS
-        </span>
+             <animated.div
+         className={clsx(
+           "absolute flex items-center justify-center gap-0.5 rounded border-2 border-amber-400 bg-transparent font-bold text-stone-200 shadow-lg ring-1 ring-amber-300",
+           settings.flagsVisibility === "SF_OF_CF_ZF"
+             ? "left-[210px] top-[190px] min-h-[40px] min-w-[60px] px-2"
+             : "left-[230px] top-[190px] min-h-[40px] min-w-[40px] px-1",
+         )}
+         style={getSpring("cpu.FLAGS")}
+       >
+                 <span className="pointer-events-none absolute left-0.5 top-0.5 rounded bg-stone-900/80 px-0.5 text-[7px] font-bold text-stone-300">
+           FLAGS
+         </span>
 
-        {/* Espaciado adicional para evitar solapamiento con el título */}
-        <div className="mt-2 flex items-center gap-0.5">
+         {/* Contenido centrado en el registro */}
+         <div className="mt-3 flex items-center gap-0.5">
           {connectScreenAndKeyboard && (
             <span
               className={clsx(
