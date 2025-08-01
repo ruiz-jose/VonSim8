@@ -337,7 +337,9 @@ function AnimatedControlMemoryBadge({
     >
       <animated.span
         style={{
-          animation: pulseActive.to(active => active ? "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite" : "none"),
+          animation: pulseActive.to(active =>
+            active ? "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite" : "none",
+          ),
         }}
       >
         1
@@ -394,7 +396,9 @@ function AnimatedSequencerBadge({
     >
       <animated.span
         style={{
-          animation: pulseActive.to(active => active ? "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite" : "none"),
+          animation: pulseActive.to(active =>
+            active ? "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite" : "none",
+          ),
         }}
       >
         2
@@ -473,7 +477,13 @@ function AnimatedControlMemory({
           <rect key={i} x={62} y={9 + i * 6} width={6} height={2} rx={1} fill="#e879f9" />
         ))}
         {/* Celdas de memoria animadas con efecto de lectura sincronizadas con la barra del decodificador */}
-        <AnimatedMemoryCells key={memAnimKey} progress={progress} phase={phase} resetAnimations={resetAnimations} returnToOriginal={returnToOriginal} />
+        <AnimatedMemoryCells
+          key={memAnimKey}
+          progress={progress}
+          phase={phase}
+          resetAnimations={resetAnimations}
+          returnToOriginal={returnToOriginal}
+        />
       </svg>
     </animated.div>
   );
@@ -520,7 +530,6 @@ export function Control() {
   const translate = useTranslate();
   const cycle = useAtomValue(cycleAtom);
   const [showControlMem, setShowControlMem] = useState(false);
-  
 
   // El progreso de la memoria de control ahora depende del progreso del decodificador
   const [, setSequencerActive] = useState(false);

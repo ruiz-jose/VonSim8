@@ -60,4 +60,4 @@ describe("Control Component - Viñeta 1 Pulse Effect", () => {
     expect(screen.getByText("computer.cpu.decoder")).toBeInTheDocument();
     expect(screen.getByText("Instrucción")).toBeInTheDocument();
   });
-}); 
+});

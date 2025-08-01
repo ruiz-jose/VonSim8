@@ -369,7 +369,11 @@ async function startThread(generator: EventGenerator): Promise<void> {
             console.log("displayMessageresultmbr:", displayMessageresultmbr);
             console.log("shouldDisplayMessage:", shouldDisplayMessage);
 
-            if (shouldDisplayMessage || sourceRegister === "SP" || (currentInstructionModeid && sourceRegister === "IP")) {
+            if (
+              shouldDisplayMessage ||
+              sourceRegister === "SP" ||
+              (currentInstructionModeid && sourceRegister === "IP")
+            ) {
               if (resultmbrimar) {
                 store.set(messageAtom, displayMessageresultmbr);
               } else if (showRI) {

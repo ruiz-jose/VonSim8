@@ -1,8 +1,9 @@
 import { render, screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { NotificationProvider } from "../../components/NotificationCenter";
-import { Provider as JotaiProvider } from "jotai/react";
 import { createStore } from "jotai";
+import { Provider as JotaiProvider } from "jotai/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+import { NotificationProvider } from "../../components/NotificationCenter";
 
 // Mock de las dependencias básicas
 vi.mock("@/lib/posthog", () => ({
@@ -69,9 +70,7 @@ const TestWrapper = ({ children }: { children: React.ReactNode }) => {
   const store = createStore();
   return (
     <JotaiProvider store={store}>
-      <NotificationProvider>
-        {children}
-      </NotificationProvider>
+      <NotificationProvider>{children}</NotificationProvider>
     </JotaiProvider>
   );
 };

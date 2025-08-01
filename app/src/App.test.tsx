@@ -1,13 +1,13 @@
 import "@testing-library/jest-dom";
 
 import { render, screen } from "@testing-library/react";
+import { createStore } from "jotai";
+import { Provider as JotaiProvider } from "jotai/react";
 import { useMedia } from "react-use";
 import { describe, expect, it, vi } from "vitest";
 
-import { NotificationProvider } from "./components/NotificationCenter";
-import { Provider as JotaiProvider } from "jotai/react";
-import { createStore } from "jotai";
 import App from "./App";
+import { NotificationProvider } from "./components/NotificationCenter";
 
 (globalThis as any).ResizeObserver = class {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -42,9 +42,7 @@ const TestWrapper = ({ children }: { children: React.ReactNode }) => {
   const store = createStore();
   return (
     <JotaiProvider store={store}>
-      <NotificationProvider>
-        {children}
-      </NotificationProvider>
+      <NotificationProvider>{children}</NotificationProvider>
     </JotaiProvider>
   );
 };
