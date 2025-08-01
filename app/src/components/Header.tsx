@@ -8,6 +8,7 @@ import { Controls } from "@/components/Controls";
 import { EducationalMenu, EducationalProgress } from "@/components/educational";
 import { NotificationCenter } from "@/components/NotificationCenter";
 import { settingsOpenAtom } from "@/components/Settings";
+import { UpdateSettings } from "@/components/UpdateSettings";
 import { IconButton } from "@/components/ui/Button";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { cycleAtom } from "@/computer/cpu/state";
@@ -218,6 +219,7 @@ const ActionButtons = memo(
     return (
       <div className="flex items-center gap-1">
         <NotificationCenter />
+        <UpdateSettings />
 
         <Tooltip content="Centro de aprendizaje" position="bottom">
           <IconButton

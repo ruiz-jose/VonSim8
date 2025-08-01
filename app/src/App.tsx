@@ -9,11 +9,13 @@ import { Header } from "@/components/Header";
 import { KeyboardShortcuts } from "@/components/KeyboardShortcuts";
 import { Settings, settingsOpenAtom } from "@/components/Settings";
 import { ToastAction } from "@/components/ui/Toast";
+import { UpdateBanner } from "@/components/UpdateBanner";
 import { WelcomeTour } from "@/components/WelcomeTour";
 import { ComputerContainer } from "@/computer";
 import { cycleAtom } from "@/computer/cpu/state";
 import { Editor } from "@/editor";
 import { usePWAUpdate } from "@/hooks/usePWAUpdate";
+import { useVersionCheck } from "@/hooks/useVersionCheck";
 import { useTranslate } from "@/lib/i18n";
 import { useFilters, useLanguage } from "@/lib/settings";
 import { toast } from "@/lib/toast";
@@ -29,34 +31,12 @@ const App = memo(() => {
   const isMobile = useMedia("(max-width: 640px)");
   const translate = useTranslate();
 
-  // Inicializar el hook de actualización PWA
+  // Inicializar los hooks de actualización
   usePWAUpdate();
+  useVersionCheck();
 
   // Memoizar el estilo para evitar re-renders innecesarios
   const containerStyle = useMemo(() => ({ filter }), [filter]);
-
-  // Aviso de nueva versión disponible
-  useEffect(() => {
-    const STORAGE_KEY = "vonsim8-commit-hash";
-    const lastHash = localStorage.getItem(STORAGE_KEY);
-    if (lastHash && lastHash !== __COMMIT_HASH__) {
-      toast({
-        title: translate("update.update-available"),
-        description: "",
-        action: (
-          <ToastAction
-            altText={translate("update.reload")}
-            onClick={() => window.location.reload()}
-          >
-            {translate("update.reload")}
-          </ToastAction>
-        ),
-        variant: "info",
-        duration: 60000,
-      });
-    }
-    localStorage.setItem(STORAGE_KEY, __COMMIT_HASH__);
-  }, [translate]);
 
   return (
     <div
@@ -65,6 +45,7 @@ const App = memo(() => {
       lang={lang}
       style={containerStyle}
     >
+      <UpdateBanner />
       <Header data-testid="header" />
 
       {isMobile ? <MobileLayout /> : <DesktopLayout />}
