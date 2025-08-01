@@ -240,15 +240,28 @@ export function RegisterTransferMessages() {
   }, [message]);
 
   // Limpiar el historial cuando el contador de ciclos por instrucción se reinicie (nueva instrucción)
+  // o cuando se reinicie la simulación
   useEffect(() => {
-    const unsubscribe = store.sub(currentInstructionCycleCountAtom, () => {
+    const unsubscribeCycleCount = store.sub(currentInstructionCycleCountAtom, () => {
       const newCount = store.get(currentInstructionCycleCountAtom);
       if (newCount === 0) {
         // Si el contador se reinicia a 0, es una nueva instrucción
         store.set(messageHistoryAtom, []);
       }
     });
-    return unsubscribe;
+
+    const unsubscribeSimulation = store.sub(simulationAtom, () => {
+      const simulationStatus = store.get(simulationAtom);
+      // Si la simulación se detiene o se reinicia, limpiar el historial
+      if (simulationStatus.type === "stopped") {
+        store.set(messageHistoryAtom, []);
+      }
+    });
+
+    return () => {
+      unsubscribeCycleCount();
+      unsubscribeSimulation();
+    };
   }, []);
 
   // Avisar al usuario si el programa en ejecución es modificado
