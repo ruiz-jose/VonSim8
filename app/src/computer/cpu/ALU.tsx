@@ -148,24 +148,17 @@ export function ALU() {
             rightPathSVG = generateDataPath(rightReg as DataRegister, "right", instruction);
           }
 
-          // Generar path dinámico para el bus de resultado
-          const resultPathSVG = generateDataPath(
-            "result start" as DataRegister,
-            destReg as DataRegister,
-            instruction,
-          );
-
           // Para debugging: usar paths hardcodeados si los dinámicos fallan
           const fallbackLeftPath =
             "M 455 45 L 465 45 L 550 45 L 550 16 L 90 16 L 90 85 L 130 85 L 220 85";
           const fallbackRightPath =
             "M 455 85 L 465 85 L 550 85 L 550 250 L 90 250 L 90 145 L 125 145 L 220 145";
-          const fallbackResultPath = "M 280 115 L 272 115 L 370 115 L 370 250 L 421 250 L 425 45";
 
           // Usar los paths dinámicos si están disponibles, sino usar los hardcodeados
           setLeftPath(leftPathSVG || fallbackLeftPath);
           setRightPath(rightPathSVG || fallbackRightPath);
-          setResultPath(resultPathSVG || fallbackResultPath);
+          // NO establecer el path de resultado para evitar la animación del bus de resultado
+          setResultPath("");
         } else {
           // Si no es una instrucción de ALU, ocultar todo
           setShowOperation(false);
