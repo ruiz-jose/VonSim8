@@ -381,11 +381,16 @@ async function startThread(generator: EventGenerator): Promise<void> {
               } else if (showRI2) {
                 store.set(messageAtom, `Ejecución: ri ← MBR; MAR ← MBR`);
               } else if (
-                executeStageCounter === 4 &&
+                executeStageCounter === 2 &&
                 currentInstructionModeri &&
                 currentInstructionName === "MOV"
               ) {
-                store.set(messageAtom, `Ejecución: ri ← MBR; MAR ← IP`);
+                store.set(messageAtom, `Ejecución: MAR ← IP`);
+              }else if (
+                        executeStageCounter === 4 &&
+                        currentInstructionName === "MOV"
+                      ) {
+                        store.set(messageAtom, `Ejecución: ri ← MBR; MAR ← IP`);
               } else if (
                 sourceRegister === "ri" &&
                 currentInstructionName === "MOV" &&
@@ -469,13 +474,12 @@ async function startThread(generator: EventGenerator): Promise<void> {
               displayMessage = "Interrupción: MAR ← (video)";
               shouldDisplayMessage = false;
             } else if (
-              currentInstructionModeri &&
-              executeStageCounter === 3 &&
+              currentInstructionModeri &&             
               currentInstructionName === "MOV"
             ) {
-              displayMessage = "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1; MAR ← ri";
-              pause = false;
-              shouldDisplayMessage = false;
+              displayMessage = "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1";
+              pause = true;
+              // No establecer shouldDisplayMessage = false para permitir mostrar las transferencias
             } else if (executeStageCounter === 4 && currentInstructionName === "CALL") {
               pause = false;
             } else {
@@ -777,6 +781,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 (executeStageCounter === 4 || executeStageCounter === 8) &&
                 currentInstructionName === "INT") ||
               (executeStageCounter === 3 && currentInstructionName === "MOV") ||
+              (executeStageCounter === 5 && currentInstructionName === "MOV") ||
               (currentInstructionModeid &&
                 executeStageCounter === 4 &&
                 (currentInstructionName === "CALL" ||
@@ -786,6 +791,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             ) {
               ContinuarSinGuardar = true;
             }
+            console.log("ContinuarSinGuarda:", ContinuarSinGuardar);
             console.log("executeStageCounter:", executeStageCounter);
             if (!ContinuarSinGuardar) {
               store.set(messageAtom, messageReadWrite);
