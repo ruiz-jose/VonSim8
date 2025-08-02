@@ -91,12 +91,14 @@ export class MOVInstruction extends Instruction<"MOV"> {
         // yield* super.consumeInstruction(computer, "ri.h");
       } else {
         if (this.operation.mode === "mem<-reg" || this.operation.mode === "reg<-mem") {
-          // Move BX to ri
+          // Move BL to ri para direccionamiento indirecto
           yield* computer.cpu.copyByteRegister("BL", "ri.l");
         }
       }
     }
     if (this.operation.mode === "reg<-imd") {
+      // Emitir el evento de cambio de fase antes de copiar el valor inmediato
+      yield { type: "cpu:cycle.update", phase: "writeback" };
       // Fetch immediate value and store it in id
       if (size === 8 && typeof out === "string") {
         yield* super.consumeInstruction(computer, out as ByteRegister); // Copiar directamente al registro `out`
@@ -111,10 +113,10 @@ export class MOVInstruction extends Instruction<"MOV"> {
       if (this.operation.size === 16) yield* super.consumeInstruction(computer, "id.h");
     }
 
-    yield { type: "cpu:cycle.update", phase: "writeback" };
-
     switch (mode) {
       case "reg<-reg": {
+        // Emitir el evento de cambio de fase antes de la transferencia
+        yield { type: "cpu:cycle.update", phase: "writeback" };
         // Simular transferencia por el bus de datos interno usando el MBR
         if (size === 8) {
           yield { type: "cpu:register.buscopy", src, dest: out, size: 8 };
@@ -131,6 +133,8 @@ export class MOVInstruction extends Instruction<"MOV"> {
       case "reg<-mem": {
         yield* computer.cpu.setMAR("ri");
         if (!(yield* computer.cpu.useBus("mem-read"))) return false;
+        // Emitir el evento de cambio de fase antes de copiar al registro destino
+        yield { type: "cpu:cycle.update", phase: "writeback" };
         if (size === 8) {
           yield* computer.cpu.getMBR(out); // Copiar directamente al registro `out`
         }
@@ -168,13 +172,15 @@ export class MOVInstruction extends Instruction<"MOV"> {
         const [low] = splitRegister(src);
         // Write low byte
         yield* computer.cpu.setMAR("ri");
+        // Emitir el evento de cambio de fase antes de copiar el registro al MBR
+        yield { type: "cpu:cycle.update", phase: "writeback" };
         yield* computer.cpu.setMBR(low);
         if (!(yield* computer.cpu.useBus("mem-write"))) return false; // Error writing to memory
         /*  if (high) {
           // Write high byte
           yield* computer.cpu.updateWordRegister("ri", ri => ri.add(1));
           yield* computer.cpu.setMAR("ri");
-          yield* computer.cpu.setMBR(high);
+          yield* computer.cpu.setMBR("id.h");
           if (!(yield* computer.cpu.useBus("mem-write"))) return false; // Error writing to memory
         }*/
         return true;
@@ -191,6 +197,8 @@ export class MOVInstruction extends Instruction<"MOV"> {
           yield* computer.cpu.copyByteRegister("BL", "ri.l");
         }
         yield* computer.cpu.setMAR("ri");
+        // Emitir el evento de cambio de fase antes de copiar el valor al MBR
+        yield { type: "cpu:cycle.update", phase: "writeback" };
         //yield* computer.cpu.setMBR("id.l");
         if (!(yield* computer.cpu.useBus("mem-write"))) return false; // Error writing to memory
         if (size === 16) {

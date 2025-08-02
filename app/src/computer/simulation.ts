@@ -292,10 +292,10 @@ function handleDirectMOV(sourceRegister: string, executeStage: number): MessageC
     };
   }
 
-  // En la etapa 4 hay una animación simultánea: MAR ← IP y ri ← MBR
-  if (executeStage === 4) {
+  // En la etapa 4, para direccionamiento directo, copiar directamente del MBR al MAR
+  if (executeStage === 4 && sourceRegister === "ri") {
     return {
-      message: "Ejecución: MAR ← IP ; ri ← MBR",
+      message: "Ejecución: MAR ← MBR",
       shouldDisplay: true,
       shouldPause: true,
     };
@@ -398,6 +398,15 @@ function generateRegisterUpdateMessage(
   // Casos especiales para instrucciones CALL
   if (name === "CALL") {
     return handleCALLRegisterUpdate(sourceRegister);
+  }
+
+  // Caso especial para IP en instrucciones con direccionamiento directo durante la captación
+  if (sourceRegister === "IP" && modeRi && !modeId && executeStage === 3) {
+    return {
+      message: "Captación: MBR ← read(Memoria[MAR]); IP ← IP + 1",
+      shouldDisplay: true,
+      shouldPause: true,
+    };
   }
 
   // Caso general
@@ -673,6 +682,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
           "modeRi:",
           currentInstructionModeri,
         );
+        console.log("🔍 Instrucción completa:", JSON.stringify(event.value.instruction, null, 2));
         mbridirmar = false;
         resultmbrimar = false;
         displayMessageresultmbr = "";
@@ -732,6 +742,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             }
             fetchStageCounter++;
           } else if (event.value.type === "cpu:register.update") {
+            console.log("🔍 Debug: Captación register.update - fetchStageCounter:", fetchStageCounter, "executeStageCounter:", executeStageCounter);
             store.set(messageAtom, "Captación: MBR ← read(Memoria[MAR]); IP ← IP + 1");
             cycleCount++;
             currentInstructionCycleCount++;
@@ -793,6 +804,13 @@ async function startThread(generator: EventGenerator): Promise<void> {
             console.log("displayMessageresultmbr:", displayMessageresultmbr);
             console.log("shouldDisplayMessage:", shouldDisplayMessage);
 
+            // Detectar si es MOV con direccionamiento indirecto para evitar contabilizar el ciclo adicional
+            const isIndirectMOV = currentInstructionName === "MOV" && 
+              sourceRegister === "ri" && 
+              executeStageCounter === 3 &&
+              !currentInstructionModeid && 
+              !currentInstructionModeri; // No es directo ni inmediato, por lo tanto es indirecto
+
             // Usar las nuevas funciones auxiliares para generar mensajes
             const instructionContext = createInstructionContext();
 
@@ -810,21 +828,36 @@ async function startThread(generator: EventGenerator): Promise<void> {
               if (resultmbrimar) {
                 store.set(messageAtom, displayMessageresultmbr);
               } else if (mbridirmar) {
-                store.set(messageAtom, `Ejecución: id ← MBR; MAR ← IP`);
+                // Para MOV con direccionamiento directo e inmediato, mostrar el mensaje correcto
+                if (currentInstructionName === "MOV" && currentInstructionModeri && currentInstructionModeid) {
+                  store.set(messageAtom, "Ejecución: MAR ← IP; MBR→ri");
+                } else {
+                  store.set(messageAtom, `Ejecución: id ← MBR; MAR ← IP`);
+                }
+              } else if (sourceRegister === "ri" && currentInstructionName === "MOV" && executeStageCounter === 4) {
+                // Caso especial para MOV con direccionamiento directo: copiar directamente del MBR al MAR
+                store.set(messageAtom, "Ejecución: MAR ← MBR");
               } else if (
                 shouldDisplayMessage ||
                 sourceRegister === "SP" ||
                 (currentInstructionModeid && sourceRegister === "IP") ||
                 messageConfig.shouldDisplay
               ) {
-                store.set(messageAtom, messageConfig.message);
+                // No mostrar mensaje para MOV con direccionamiento indirecto cuando se copia ri al MAR
+                if (!isIndirectMOV) {
+                  store.set(messageAtom, messageConfig.message);
+                }
               }
             }
 
-            cycleCount++;
-            currentInstructionCycleCount++;
-            store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+            // Para MOV con direccionamiento indirecto, no contabilizar el ciclo pero permitir la pausa
+            if (!isIndirectMOV) {
+              cycleCount++;
+              currentInstructionCycleCount++;
+              store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+            }
 
+            // Siempre permitir la pausa, independientemente de si se contabiliza el ciclo
             if (status.until === "cycle-change") {
               pauseSimulation();
             }
@@ -832,6 +865,10 @@ async function startThread(generator: EventGenerator): Promise<void> {
             executeStageCounter++;
           } else if (event.value.type === "cpu:register.update") {
             const sourceRegister = event.value.register;
+
+            // Debug: verificar si estamos en la etapa correcta
+            console.log("🔍 Debug register.update - fetchStageCounter:", fetchStageCounter, "executeStageCounter:", executeStageCounter);
+            console.log("🔍 Debug register.update - currentInstructionModeri:", currentInstructionModeri, "currentInstructionModeid:", currentInstructionModeid);
 
             // Usar las nuevas funciones auxiliares para generar mensajes de actualización
             const instructionContext = createInstructionContext();
@@ -868,6 +905,10 @@ async function startThread(generator: EventGenerator): Promise<void> {
               }
               if (executeStageCounter === 4 && currentInstructionName === "CALL") {
                 displayMessage = "Ejecución: write(Memoria[MAR]) ← MBR; SP ← SP - 1";
+              }
+              // Caso especial para captación del segundo byte en instrucciones con direccionamiento directo
+              if (executeStageCounter === 3 && sourceRegister === "IP" && currentInstructionName === "MOV") {
+                displayMessage = "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1";
               }
               console.log("displayMessage:", displayMessage);
               console.log("currentInstructionName:", currentInstructionName);
@@ -936,7 +977,10 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 (currentInstructionName === "ADD" ||
                   currentInstructionName === "SUB" ||
                   currentInstructionName === "CMP")) ||
-              (executeStageCounter === 3 && currentInstructionName === "POP")
+              (executeStageCounter === 3 && currentInstructionName === "POP") ||
+              (currentInstructionModeri && currentInstructionModeid &&
+                executeStageCounter === 4 &&
+                currentInstructionName === "MOV")
             ) {
               mbridirmar = true;
             }
@@ -955,7 +999,16 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 cycleCount++;
                 currentInstructionCycleCount++;
                 store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
-                if (status.until === "cycle-change") {
+                
+                // Detectar si este es el último evento de la instrucción
+                // Para MOV con direccionamiento directo, cuando se copia al registro destino, es el final
+                const isLastEvent = currentInstructionName === "MOV" && 
+                  (sourceRegister === "AL" || sourceRegister === "AH" || 
+                   sourceRegister === "BL" || sourceRegister === "BH" ||
+                   sourceRegister === "CL" || sourceRegister === "CH" ||
+                   sourceRegister === "DL" || sourceRegister === "DH");
+                
+                if (status.until === "cycle-change" && !isLastEvent) {
                   pauseSimulation();
                 }
               }
@@ -1143,13 +1196,28 @@ async function startThread(generator: EventGenerator): Promise<void> {
             if (currentInstructionName === "IN") {
               messageReadWrite = "Ejecución: MBR ← read(PIO[MAR])";
             }
+            // Para MOV, determinar si es lectura o escritura basado en el modo de direccionamiento
+            if (currentInstructionName === "MOV" && executeStageCounter === 5) {
+              // Si es mem<-reg o mem<-imd, es escritura a memoria
+              if (currentInstructionModeri && !currentInstructionModeid) {
+                // Es direccionamiento directo con destino memoria
+                messageReadWrite = "Ejecución: write(Memoria[MAR]) ← MBR";
+              } else if (!currentInstructionModeri && !currentInstructionModeid) {
+                // Es direccionamiento indirecto con destino memoria
+                messageReadWrite = "Ejecución: write(Memoria[MAR]) ← MBR";
+              } else {
+                // Es lectura de memoria (reg<-mem)
+                messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";
+              }
+            }
             let ContinuarSinGuardar = false;
             if (
               (currentInstructionModeri &&
                 (executeStageCounter === 4 || executeStageCounter === 8) &&
                 currentInstructionName === "INT") ||
               (executeStageCounter === 3 && currentInstructionName === "MOV") ||
-              (executeStageCounter === 5 && currentInstructionName === "MOV") ||
+              // Para MOV con direccionamiento directo, permitir que se muestre el mensaje en executeStageCounter === 5
+              // (executeStageCounter === 5 && currentInstructionName === "MOV") ||
               (currentInstructionModeid &&
                 executeStageCounter === 4 &&
                 (currentInstructionName === "CALL" ||
@@ -1222,9 +1290,10 @@ async function startThread(generator: EventGenerator): Promise<void> {
         }
         // Remove the setTimeout delay - this was causing slowdown when animations are disabled
       } else if (event.value.type === "cpu:cycle.end") {
-        if (status.until === "cycle-change" || status.until === "end-of-instruction") {
+        if (status.until === "end-of-instruction") {
           pauseSimulation();
         }
+        // Para cycle-change, no pausar automáticamente para permitir que la instrucción se complete
         // Remove the setTimeout delay - this was causing slowdown when animations are disabled
       }
     }

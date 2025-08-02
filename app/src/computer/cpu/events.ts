@@ -716,11 +716,11 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
             instructionName === "OR" ||
             instructionName === "XOR");
 
-        // Para instrucciones con operandos de memoria, solo terminar la fase cuando se copia al registro destino
-        // Para otras instrucciones, terminar cuando se escribe en MBR
+        // Para instrucciones con operandos de memoria, terminar la fase cuando se lee el valor de memoria y se copia al MBR
+        // Para otras instrucciones, terminar cuando se escribe en el registro destino
         const shouldCompletePhase =
-          !isMemoryOperandInstruction ||
-          (isMemoryOperandInstruction && normalizedRegister !== "MBR");
+          (isMemoryOperandInstruction && normalizedRegister === "MBR") ||
+          (!isMemoryOperandInstruction && normalizedRegister !== "MBR");
 
         if (shouldCompletePhase) {
           // Actualizar la fase para indicar que "fetch-operands" ha terminado
