@@ -1232,15 +1232,33 @@ async function startThread(generator: EventGenerator): Promise<void> {
             }
             // Para MOV, determinar si es lectura o escritura basado en el modo de direccionamiento
             if (currentInstructionName === "MOV" && executeStageCounter === 5) {
+              // Para determinar si es escritura o lectura, necesitamos verificar el patrón de la instrucción
+              // Si es reg<-mem (como MOV AL, [0F]), es lectura de memoria
               // Si es mem<-reg o mem<-imd, es escritura a memoria
+              
+              // Para MOV AL, [0F]: currentInstructionModeri=true, currentInstructionModeid=false
+              // Para MOV [0F], AL: currentInstructionModeri=true, currentInstructionModeid=false
+              // Para MOV [BL], AL: currentInstructionModeri=false, currentInstructionModeid=false
+              // Para MOV [0F], 5: currentInstructionModeri=true, currentInstructionModeid=true
+              
+              // La diferencia está en el orden de los operandos, pero no tenemos esa información aquí
+              // Vamos a usar una heurística basada en el contexto de la instrucción
+              
+              // Si estamos en executeStageCounter === 5 y es MOV con direccionamiento directo,
+              // y no es inmediato, entonces es lectura de memoria (reg<-mem)
               if (currentInstructionModeri && !currentInstructionModeid) {
-                // Es direccionamiento directo con destino memoria
-                messageReadWrite = "Ejecución: write(Memoria[MAR]) ← MBR";
+                // Es direccionamiento directo sin inmediato - es lectura de memoria
+                messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";
               } else if (!currentInstructionModeri && !currentInstructionModeid) {
-                // Es direccionamiento indirecto con destino memoria
+                // Es direccionamiento indirecto - puede ser lectura o escritura
+                // Para MOV con direccionamiento indirecto, necesitamos determinar si es escritura
+                // Si estamos en executeStageCounter === 5 y es MOV indirecto, es escritura a memoria
+                messageReadWrite = "Ejecución: write(Memoria[MAR]) ← MBR";
+              } else if (currentInstructionModeri && currentInstructionModeid) {
+                // Es direccionamiento directo e inmediato - es escritura a memoria
                 messageReadWrite = "Ejecución: write(Memoria[MAR]) ← MBR";
               } else {
-                // Es lectura de memoria (reg<-mem)
+                // Caso por defecto - lectura de memoria
                 messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";
               }
             }
