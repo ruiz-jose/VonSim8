@@ -742,7 +742,12 @@ async function startThread(generator: EventGenerator): Promise<void> {
             }
             fetchStageCounter++;
           } else if (event.value.type === "cpu:register.update") {
-            console.log("🔍 Debug: Captación register.update - fetchStageCounter:", fetchStageCounter, "executeStageCounter:", executeStageCounter);
+            console.log(
+              "🔍 Debug: Captación register.update - fetchStageCounter:",
+              fetchStageCounter,
+              "executeStageCounter:",
+              executeStageCounter,
+            );
             store.set(messageAtom, "Captación: MBR ← read(Memoria[MAR]); IP ← IP + 1");
             cycleCount++;
             currentInstructionCycleCount++;
@@ -805,10 +810,11 @@ async function startThread(generator: EventGenerator): Promise<void> {
             console.log("shouldDisplayMessage:", shouldDisplayMessage);
 
             // Detectar si es MOV con direccionamiento indirecto para evitar contabilizar el ciclo adicional
-            const isIndirectMOV = currentInstructionName === "MOV" && 
-              sourceRegister === "ri" && 
+            const isIndirectMOV =
+              currentInstructionName === "MOV" &&
+              sourceRegister === "ri" &&
               executeStageCounter === 3 &&
-              !currentInstructionModeid && 
+              !currentInstructionModeid &&
               !currentInstructionModeri; // No es directo ni inmediato, por lo tanto es indirecto
 
             // Usar las nuevas funciones auxiliares para generar mensajes
@@ -829,12 +835,20 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 store.set(messageAtom, displayMessageresultmbr);
               } else if (mbridirmar) {
                 // Para MOV con direccionamiento directo e inmediato, mostrar el mensaje correcto
-                if (currentInstructionName === "MOV" && currentInstructionModeri && currentInstructionModeid) {
+                if (
+                  currentInstructionName === "MOV" &&
+                  currentInstructionModeri &&
+                  currentInstructionModeid
+                ) {
                   store.set(messageAtom, "Ejecución: MAR ← IP; MBR→ri");
                 } else {
                   store.set(messageAtom, `Ejecución: id ← MBR; MAR ← IP`);
                 }
-              } else if (sourceRegister === "ri" && currentInstructionName === "MOV" && executeStageCounter === 4) {
+              } else if (
+                sourceRegister === "ri" &&
+                currentInstructionName === "MOV" &&
+                executeStageCounter === 4
+              ) {
                 // Caso especial para MOV con direccionamiento directo: copiar directamente del MBR al MAR
                 store.set(messageAtom, "Ejecución: MAR ← MBR");
               } else if (
@@ -867,8 +881,18 @@ async function startThread(generator: EventGenerator): Promise<void> {
             const sourceRegister = event.value.register;
 
             // Debug: verificar si estamos en la etapa correcta
-            console.log("🔍 Debug register.update - fetchStageCounter:", fetchStageCounter, "executeStageCounter:", executeStageCounter);
-            console.log("🔍 Debug register.update - currentInstructionModeri:", currentInstructionModeri, "currentInstructionModeid:", currentInstructionModeid);
+            console.log(
+              "🔍 Debug register.update - fetchStageCounter:",
+              fetchStageCounter,
+              "executeStageCounter:",
+              executeStageCounter,
+            );
+            console.log(
+              "🔍 Debug register.update - currentInstructionModeri:",
+              currentInstructionModeri,
+              "currentInstructionModeid:",
+              currentInstructionModeid,
+            );
 
             // Usar las nuevas funciones auxiliares para generar mensajes de actualización
             const instructionContext = createInstructionContext();
@@ -907,7 +931,11 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 displayMessage = "Ejecución: write(Memoria[MAR]) ← MBR; SP ← SP - 1";
               }
               // Caso especial para captación del segundo byte en instrucciones con direccionamiento directo
-              if (executeStageCounter === 3 && sourceRegister === "IP" && currentInstructionName === "MOV") {
+              if (
+                executeStageCounter === 3 &&
+                sourceRegister === "IP" &&
+                currentInstructionName === "MOV"
+              ) {
                 displayMessage = "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1";
               }
               console.log("displayMessage:", displayMessage);
@@ -978,7 +1006,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
                   currentInstructionName === "SUB" ||
                   currentInstructionName === "CMP")) ||
               (executeStageCounter === 3 && currentInstructionName === "POP") ||
-              (currentInstructionModeri && currentInstructionModeid &&
+              (currentInstructionModeri &&
+                currentInstructionModeid &&
                 executeStageCounter === 4 &&
                 currentInstructionName === "MOV")
             ) {
@@ -999,15 +1028,20 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 cycleCount++;
                 currentInstructionCycleCount++;
                 store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
-                
+
                 // Detectar si este es el último evento de la instrucción
                 // Para MOV con direccionamiento directo, cuando se copia al registro destino, es el final
-                const isLastEvent = currentInstructionName === "MOV" && 
-                  (sourceRegister === "AL" || sourceRegister === "AH" || 
-                   sourceRegister === "BL" || sourceRegister === "BH" ||
-                   sourceRegister === "CL" || sourceRegister === "CH" ||
-                   sourceRegister === "DL" || sourceRegister === "DH");
-                
+                const isLastEvent =
+                  currentInstructionName === "MOV" &&
+                  (sourceRegister === "AL" ||
+                    sourceRegister === "AH" ||
+                    sourceRegister === "BL" ||
+                    sourceRegister === "BH" ||
+                    sourceRegister === "CL" ||
+                    sourceRegister === "CH" ||
+                    sourceRegister === "DL" ||
+                    sourceRegister === "DH");
+
                 if (status.until === "cycle-change" && !isLastEvent) {
                   pauseSimulation();
                 }

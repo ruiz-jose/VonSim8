@@ -118,7 +118,6 @@ export function Register({
           ) : displayName === "result" ? (
             // Para el registro result, no mostrar el valor - será mostrado en el texto del bus
             <span className="opacity-0" />
-          
           ) : (
             // Formato original para otros registros
             <>

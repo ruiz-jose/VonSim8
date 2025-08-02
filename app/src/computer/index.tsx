@@ -4,7 +4,12 @@ import { ReactZoomPanPinchRef, TransformComponent, TransformWrapper } from "reac
 
 import { ZoomControls } from "@/components/ZoomControls";
 import { RegisterTransferMessages } from "@/computer/cpu/RegisterTransferMessages";
-import { hideControlBusTextsOnInit, hideALUResultTextOnInit, hideALULeftTextOnInit, hideALURightTextOnInit } from "@/computer/shared/animate";
+import {
+  hideALULeftTextOnInit,
+  hideALUResultTextOnInit,
+  hideALURightTextOnInit,
+  hideControlBusTextsOnInit,
+} from "@/computer/shared/animate";
 
 import { SystemBus } from "./bus/SystemBus";
 import { Clock } from "./clock/Clock";

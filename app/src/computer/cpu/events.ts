@@ -346,7 +346,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
 
       // Animación del bus de resultado (color violeta) - SIN texto todavía
       console.log("� Iniciando animación del bus de resultado...");
-      
+
       // Animar el bus de resultado sin mostrar el texto aún
       await anim(
         [
@@ -364,10 +364,10 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       // AHORA mostrar el texto del resultado después de actualizar FLAGS
       console.log("💜 Mostrando texto del resultado después de actualizar FLAGS...");
       showALUResultText();
-      
+
       // Pequeña pausa para que se vea el texto
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       // Ocultar el texto y el bus simultáneamente
       await Promise.all([
         anim({ key: "cpu.alu.results.opacity", to: 0 }, { duration: 1, easing: "easeInSine" }),
