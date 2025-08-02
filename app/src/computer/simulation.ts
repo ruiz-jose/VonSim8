@@ -265,6 +265,15 @@ function generateRegisterTransferMessage(
     return handleCALLInstruction(sourceRegister);
   }
 
+  // Casos especiales para instrucciones aritméticas (ADD, SUB, CMP, AND, OR, XOR)
+  if (["ADD", "SUB", "CMP", "AND", "OR", "XOR"].includes(name) && sourceRegister === "ri") {
+    return {
+      message: "Ejecución: MAR ← MBR",
+      shouldDisplay: true,
+      shouldPause: true,
+    };
+  }
+
   // Caso general
   return {
     message: `Ejecución: MAR ← ${sourceRegister}`,
@@ -327,7 +336,7 @@ function handleDirectMOV(sourceRegister: string, executeStage: number): MessageC
 function handleImmediateMOV(sourceRegister: string): MessageConfig {
   if (sourceRegister === "ri") {
     return {
-      message: "Ejecución: MAR ← ri",
+      message: "Ejecución: MAR ← MBR",
       shouldDisplay: true,
       shouldPause: true,
     };
@@ -418,7 +427,7 @@ function generateRegisterUpdateMessage(
   // Caso especial para IP en instrucciones con direccionamiento directo durante la captación
   if (sourceRegister === "IP" && modeRi && !modeId && executeStage === 3) {
     return {
-      message: "Captación: MBR ← read(Memoria[MAR]); IP ← IP + 1",
+      message: "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1",
       shouldDisplay: true,
       shouldPause: true,
     };
@@ -789,14 +798,11 @@ async function startThread(generator: EventGenerator): Promise<void> {
           } else if (event.value.type === "cpu:wr.on") {
             messageReadWrite = "Ejecución: write(Memoria[MAR]) ← MBR";
             
-            // Detectar si es una instrucción MOV que escribe en memoria y detener automáticamente
+            // Detectar si es una instrucción MOV que escribe en memoria (solo para logging)
             if (currentInstructionName === "MOV" && !isMOVReadOperation(currentInstructionOperands)) {
-              console.log("🔍 MOV Debug - Deteniendo simulación después de escritura en memoria");
+              console.log("🔍 MOV Debug - Escritura en memoria detectada");
               console.log("🔍 MOV Debug - Operandos:", currentInstructionOperands);
               console.log("🔍 MOV Debug - Es lectura:", isMOVReadOperation(currentInstructionOperands));
-              
-              // Detener la simulación automáticamente después de la escritura en memoria
-              pauseSimulation();
             }
           } else if (event.value.type === "pio:write.ok") {
             store.set(messageAtom, "Ejecución: write(PIO[MAR]) ← MBR");
@@ -866,7 +872,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
                   currentInstructionModeri &&
                   currentInstructionModeid
                 ) {
-                  store.set(messageAtom, "Ejecución: MAR ← IP; MBR→ri");
+                  store.set(messageAtom, "Ejecución: MAR ← IP; MBR→MBR");
                 } else {
                   store.set(messageAtom, `Ejecución: id ← MBR; MAR ← IP`);
                 }
@@ -960,7 +966,13 @@ async function startThread(generator: EventGenerator): Promise<void> {
               if (
                 executeStageCounter === 3 &&
                 sourceRegister === "IP" &&
-                currentInstructionName === "MOV"
+                (currentInstructionName === "MOV" ||
+                  currentInstructionName === "ADD" ||
+                  currentInstructionName === "SUB" ||
+                  currentInstructionName === "CMP" ||
+                  currentInstructionName === "AND" ||
+                  currentInstructionName === "OR" ||
+                  currentInstructionName === "XOR")
               ) {
                 displayMessage = "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1";
               }
@@ -1019,7 +1031,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
                   ? "IP"
                   : event.value.register === "FLAGS.l"
                     ? "FLAGS"
-                    : event.value.register;
+                    : event.value.register === "ri.l"
+                      ? "MBR"
+                      : event.value.register;
 
             if (String(sourceRegister) === "right.l" || String(sourceRegister) === "left.l") {
               fuenteALU = "MBR";
@@ -1028,6 +1042,12 @@ async function startThread(generator: EventGenerator): Promise<void> {
             if (
               (currentInstructionModeri &&
                 executeStageCounter === 3 &&
+                (currentInstructionName === "ADD" ||
+                  currentInstructionName === "SUB" ||
+                  currentInstructionName === "CMP")) ||
+              // También manejar el caso cuando los flags no están establecidos correctamente
+              // pero es una instrucción aritmética en executeStageCounter === 3
+              (executeStageCounter === 3 &&
                 (currentInstructionName === "ADD" ||
                   currentInstructionName === "SUB" ||
                   currentInstructionName === "CMP")) ||
@@ -1046,7 +1066,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
 
             if (!mbridirmar) {
               if (
-                String(sourceRegister) !== "ri.l" &&
+                String(sourceRegister) !== "MBR" &&
                 String(sourceRegister) !== "right.l" &&
                 String(sourceRegister) !== "left.l"
               ) {
@@ -1112,7 +1132,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
               displaySource =
                 sourceRegister === "result"
                   ? `${destRegister} ${currentInstructionName} ${fuenteALU}`
-                  : sourceRegister;
+                  : sourceRegister === "ri" 
+                    ? "MBR"
+                    : sourceRegister;
               MBRALU =
                 `${sourceRegister} ${currentInstructionName} ${fuenteALU}` + "; write(FLAGS)";
             }
@@ -1123,7 +1145,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
               destinoALU = sourceRegister;
             }
 
-            let displayMessage = `Ejecución: ${destRegister} ← ${displaySource}`;
+            let displayMessage = `Ejecución: ${destRegister === "ri" ? "MAR" : destRegister} ← ${displaySource}`;
             const displayMessageFLAGS = "; write(FLAGS)"; // Agregar el mensaje de FLAGS aquí
 
             if (
@@ -1137,7 +1159,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             if (sourceRegister === "ri" && destRegister === "IP") {
               displayMessage = "Ejecución: IP ← MBR";
               if (currentInstructionName === "CALL") {
-                displayMessage = "Ejecución: IP ← ri";
+                displayMessage = "Ejecución: IP ← MBR";
               }
               store.set(messageAtom, displayMessage);
               if (status.until === "cycle-change") {
@@ -1236,6 +1258,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
               currentInstructionName === "ADD" ||
               currentInstructionName === "SUB" ||
               currentInstructionName === "CMP" ||
+              currentInstructionName === "AND" ||
+              currentInstructionName === "OR" ||
+              currentInstructionName === "XOR" ||
               currentInstructionName === "CALL" ||
               currentInstructionName === "INT" ||
               currentInstructionName === "PUSH" ||
@@ -1283,7 +1308,16 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 (currentInstructionName === "CALL" ||
                   currentInstructionName === "ADD" ||
                   currentInstructionName === "SUB" ||
-                  currentInstructionName === "CMP"))
+                  currentInstructionName === "CMP")) ||
+              // Para instrucciones aritméticas con direccionamiento directo en executeStageCounter === 3,
+              // no mostrar el mensaje de bus:reset porque cpu:register.update manejará el mensaje correcto
+              (executeStageCounter === 3 &&
+                (currentInstructionName === "ADD" ||
+                  currentInstructionName === "SUB" ||
+                  currentInstructionName === "CMP" ||
+                  currentInstructionName === "AND" ||
+                  currentInstructionName === "OR" ||
+                  currentInstructionName === "XOR"))
             ) {
               ContinuarSinGuardar = true;
             }
@@ -1316,7 +1350,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
               (currentInstructionName === "ADD" || currentInstructionName === "SUB")
             ) {
               resultmbrimar = true;
-              displayMessageresultmbr = `Ejecución: MBR ← ${sourceRegister} ; MAR ← ri`;
+              displayMessageresultmbr = `Ejecución: MBR ← ${sourceRegister} ; MAR ← MBR`;
             } else {
               store.set(messageAtom, `Ejecución: MBR ← ${sourceRegister}`);
               if (status.until === "cycle-change") {
