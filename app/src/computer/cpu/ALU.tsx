@@ -14,6 +14,9 @@ import { aluOperationAtom, connectScreenAndKeyboardAtom, cycleAtom, registerAtom
  */
 export function ALU() {
   const FLAGS = useAtomValue(registerAtoms.FLAGS);
+  const result = useAtomValue(registerAtoms.result);
+  const left = useAtomValue(registerAtoms.left);
+  const right = useAtomValue(registerAtoms.right);
   const operation = useAtomValue(aluOperationAtom);
   const cycle = useAtomValue(cycleAtom);
   const [showOperation, setShowOperation] = useState(false);
@@ -285,7 +288,7 @@ export function ALU() {
           />
         )}
 
-        {/* Etiquetas de los registros fuente - sincronizadas con la animación del engranaje */}
+        {/* Etiquetas de los registros fuente - sincronizadas con la animación del operando */}
         {leftSource && rightSource && showOperation && leftPath && rightPath && (
           <animated.text
             x="125"
@@ -293,9 +296,11 @@ export function ALU() {
             fill="#34D399"
             fontSize="12"
             fontWeight="bold"
-            style={getSpring("cpu.alu.cog")}
+            style={{
+              opacity: getSpring("cpu.alu.leftText").opacity,
+            }}
           >
-            {leftSource}=
+            {leftSource} = {(left as Byte<16>).low.toString("hex")}
           </animated.text>
         )}
         {leftSource && rightSource && showOperation && leftPath && rightPath && (
@@ -305,23 +310,28 @@ export function ALU() {
             fill="#60A5FA"
             fontSize="12"
             fontWeight="bold"
-            style={getSpring("cpu.alu.cog")}
+            style={{
+              opacity: getSpring("cpu.alu.rightText").opacity,
+            }}
           >
-            {rightSource}=
+            {rightSource} = {(right as Byte<16>).low.toString("hex")}
           </animated.text>
         )}
 
-        {/* Etiqueta del registro destino - sincronizada con la animación del engranaje */}
-        {resultDestination && showOperation && resultPath && (
+        {/* Etiqueta del registro destino con valor - sincronizada con la animación del engranaje */}
+        {resultDestination && showOperation && (
           <animated.text
             x="310"
             y="95"
-            fill="#F59E0B"
+            fill="#A855F7"
             fontSize="12"
             fontWeight="bold"
-            style={getSpring("cpu.alu.cog")}
+            style={{
+              ...getSpring("cpu.alu.cog"),
+              opacity: getSpring("cpu.alu.resultText").opacity,
+            }}
           >
-            {resultDestination}=
+            {resultDestination} = {(result as Byte<16>).low.toString("hex")}
           </animated.text>
         )}
 

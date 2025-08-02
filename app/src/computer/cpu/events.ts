@@ -6,6 +6,12 @@ import {
   activateRegister,
   anim,
   deactivateRegister,
+  hideALULeftText,
+  hideALUResultText,
+  hideALURightText,
+  showALULeftText,
+  showALUResultText,
+  showALURightText,
   turnLineOff,
   turnLineOn,
   updateRegisterWithGlow, // Nueva función
@@ -306,13 +312,22 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         console.log("✅ Ya estamos en fase executing, procediendo directamente");
       }
 
-      await anim(
-        [
-          { key: "cpu.alu.operands.opacity", from: 1 },
-          { key: "cpu.alu.operands.strokeDashoffset", from: 1, to: 0 },
-        ],
-        pathsDrawConfig,
-      );
+      // Mostrar los textos del left y right y animar los operandos simultáneamente
+      await Promise.all([
+        (async () => {
+          showALULeftText();
+          showALURightText();
+          await anim(
+            [
+              { key: "cpu.alu.operands.opacity", from: 1 },
+              { key: "cpu.alu.operands.strokeDashoffset", from: 1, to: 0 },
+            ],
+            pathsDrawConfig,
+          );
+          hideALULeftText();
+          hideALURightText();
+        })(),
+      ]);
       store.set(aluOperationAtom, event.operation);
       console.log("⚙️ Iniciando animación del engranaje de la ALU...");
       await Promise.all([
@@ -329,8 +344,10 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         { duration: 1, easing: "easeOutQuart" },
       );
 
-      // Animación del bus de resultado (color amarillo)
-      console.log("🟡 Iniciando animación del bus de resultado...");
+      // Animación del bus de resultado (color violeta) - SIN texto todavía
+      console.log("� Iniciando animación del bus de resultado...");
+      
+      // Animar el bus de resultado sin mostrar el texto aún
       await anim(
         [
           { key: "cpu.alu.results.opacity", from: 1 },
@@ -344,8 +361,20 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       store.set(registerAtoms.result, event.result);
       await Promise.all([deactivateRegister("cpu.result"), deactivateRegister("cpu.FLAGS")]);
 
-      // Ocultar el bus de resultado
-      await anim({ key: "cpu.alu.results.opacity", to: 0 }, { duration: 1, easing: "easeInSine" });
+      // AHORA mostrar el texto del resultado después de actualizar FLAGS
+      console.log("💜 Mostrando texto del resultado después de actualizar FLAGS...");
+      showALUResultText();
+      
+      // Pequeña pausa para que se vea el texto
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Ocultar el texto y el bus simultáneamente
+      await Promise.all([
+        anim({ key: "cpu.alu.results.opacity", to: 0 }, { duration: 1, easing: "easeInSine" }),
+        (async () => {
+          hideALUResultText();
+        })(),
+      ]);
 
       await anim({ key: "cpu.alu.operands.opacity", to: 0 }, { duration: 1, easing: "easeInSine" });
       return;

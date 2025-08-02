@@ -4,7 +4,7 @@ import { ReactZoomPanPinchRef, TransformComponent, TransformWrapper } from "reac
 
 import { ZoomControls } from "@/components/ZoomControls";
 import { RegisterTransferMessages } from "@/computer/cpu/RegisterTransferMessages";
-import { hideControlBusTextsOnInit } from "@/computer/shared/animate";
+import { hideControlBusTextsOnInit, hideALUResultTextOnInit, hideALULeftTextOnInit, hideALURightTextOnInit } from "@/computer/shared/animate";
 
 import { SystemBus } from "./bus/SystemBus";
 import { Clock } from "./clock/Clock";
@@ -34,10 +34,16 @@ export function ComputerContainer() {
   useEffect(() => {
     // Ejecutar inmediatamente
     hideControlBusTextsOnInit();
+    hideALUResultTextOnInit();
+    hideALULeftTextOnInit();
+    hideALURightTextOnInit();
 
     // Retry después de un breve delay para asegurar que los springs estén disponibles
     const retryTimer = setTimeout(() => {
       hideControlBusTextsOnInit();
+      hideALUResultTextOnInit();
+      hideALULeftTextOnInit();
+      hideALURightTextOnInit();
       // Verificar estado después del retry
       // Resetear spring si es necesario
     }, 100);

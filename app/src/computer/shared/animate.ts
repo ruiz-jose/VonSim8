@@ -370,6 +370,123 @@ export function hideWriteControlText() {
   }
 }
 
+// --- ALU RESULT BUS TEXT VISIBILITY MANAGEMENT ---
+// Llama esto cuando se quiera mostrar el texto del bus de resultado de la ALU
+export function showALUResultText() {
+  try {
+    const aluResultTextSpring = getSpring("cpu.alu.resultText.opacity");
+    if (aluResultTextSpring) {
+      aluResultTextSpring.start({ to: 1 });
+    }
+  } catch (e) {
+    /* noop */
+  }
+}
+
+// Llama esto cuando se quiera ocultar el texto del bus de resultado de la ALU
+export function hideALUResultText() {
+  try {
+    const aluResultTextSpring = getSpring("cpu.alu.resultText.opacity");
+    if (aluResultTextSpring) {
+      aluResultTextSpring.start({ to: 0 });
+    }
+  } catch (e) {
+    /* noop */
+  }
+}
+
+// Oculta el texto del bus de resultado de la ALU al iniciar la app
+export function hideALUResultTextOnInit() {
+  setTimeout(() => {
+    try {
+      const aluResultTextSpring = getSpring("cpu.alu.resultText.opacity");
+      if (aluResultTextSpring) {
+        aluResultTextSpring.set(0);
+      }
+    } catch (e) {
+      /* noop */
+    }
+  }, 0);
+}
+
+// --- ALU LEFT BUS TEXT VISIBILITY MANAGEMENT ---
+// Llama esto cuando se quiera mostrar el texto del bus left de la ALU
+export function showALULeftText() {
+  try {
+    const aluLeftTextSpring = getSpring("cpu.alu.leftText.opacity");
+    if (aluLeftTextSpring) {
+      aluLeftTextSpring.start({ to: 1 });
+    }
+  } catch (e) {
+    /* noop */
+  }
+}
+
+// Llama esto cuando se quiera ocultar el texto del bus left de la ALU
+export function hideALULeftText() {
+  try {
+    const aluLeftTextSpring = getSpring("cpu.alu.leftText.opacity");
+    if (aluLeftTextSpring) {
+      aluLeftTextSpring.start({ to: 0 });
+    }
+  } catch (e) {
+    /* noop */
+  }
+}
+
+// Oculta el texto del bus left de la ALU al iniciar la app
+export function hideALULeftTextOnInit() {
+  setTimeout(() => {
+    try {
+      const aluLeftTextSpring = getSpring("cpu.alu.leftText.opacity");
+      if (aluLeftTextSpring) {
+        aluLeftTextSpring.set(0);
+      }
+    } catch (e) {
+      /* noop */
+    }
+  }, 0);
+}
+
+// --- ALU RIGHT BUS TEXT VISIBILITY MANAGEMENT ---
+// Llama esto cuando se quiera mostrar el texto del bus right de la ALU
+export function showALURightText() {
+  try {
+    const aluRightTextSpring = getSpring("cpu.alu.rightText.opacity");
+    if (aluRightTextSpring) {
+      aluRightTextSpring.start({ to: 1 });
+    }
+  } catch (e) {
+    /* noop */
+  }
+}
+
+// Llama esto cuando se quiera ocultar el texto del bus right de la ALU
+export function hideALURightText() {
+  try {
+    const aluRightTextSpring = getSpring("cpu.alu.rightText.opacity");
+    if (aluRightTextSpring) {
+      aluRightTextSpring.start({ to: 0 });
+    }
+  } catch (e) {
+    /* noop */
+  }
+}
+
+// Oculta el texto del bus right de la ALU al iniciar la app
+export function hideALURightTextOnInit() {
+  setTimeout(() => {
+    try {
+      const aluRightTextSpring = getSpring("cpu.alu.rightText.opacity");
+      if (aluRightTextSpring) {
+        aluRightTextSpring.set(0);
+      }
+    } catch (e) {
+      /* noop */
+    }
+  }, 0);
+}
+
 export async function turnLineOn(line: SimplePathKey, duration: number) {
   return await anim(
     [

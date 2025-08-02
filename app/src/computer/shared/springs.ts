@@ -132,6 +132,9 @@ const springs = {
       results: SimplePath(),
       cog: { rot: new SpringValue(0) },
       operation: { backgroundColor: new SpringValue(colors.stone[800]) },
+      resultText: { opacity: new SpringValue(0) },
+      leftText: { opacity: new SpringValue(0) },
+      rightText: { opacity: new SpringValue(0) },
     },
     decoder: {
       path: SimplePath(),

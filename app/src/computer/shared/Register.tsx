@@ -109,29 +109,16 @@ export function Register({
                 {low.toString("hex")}
               </span>
             </>
-          ) : displayName === "left" || displayName === "right" || displayName === "result" ? (
-            // Formato especial para left, right y result - estilo similar a los textos de los buses
-            <span
-              className="ml-12 font-mono text-xs font-bold"
-              style={{
-                color:
-                  displayName === "left"
-                    ? "#34D399"
-                    : displayName === "right"
-                      ? "#60A5FA"
-                      : "#F59E0B",
-                fontSize: "12px",
-                fontWeight: "bold",
-                textShadow:
-                  displayName === "left"
-                    ? "0 0 8px rgba(52, 211, 153, 0.6)"
-                    : displayName === "right"
-                      ? "0 0 8px rgba(96, 165, 250, 0.6)"
-                      : "0 0 8px rgba(245, 158, 11, 0.6)",
-              }}
-            >
-              {low.toString("hex")}
-            </span>
+          ) : displayName === "left" ? (
+            // Para el registro left, no mostrar el valor - será mostrado en el texto del bus
+            <span className="opacity-0" />
+          ) : displayName === "right" ? (
+            // Para el registro right, no mostrar el valor - será mostrado en el texto del bus
+            <span className="opacity-0" />
+          ) : displayName === "result" ? (
+            // Para el registro result, no mostrar el valor - será mostrado en el texto del bus
+            <span className="opacity-0" />
+          
           ) : (
             // Formato original para otros registros
             <>
