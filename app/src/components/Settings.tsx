@@ -107,35 +107,41 @@ export function Settings({ className }: { className?: string }) {
             Velocidad CPU (Hz)
           </SettingTitle>
           <SettingSubtitle>
-            Velocidad del procesador. Determina el tiempo de ciclo de la CPU.
+            <span className="font-medium text-stone-300">
+              {settings.cpuSpeed} Hz
+            </span>
+            {" "}({(1/settings.cpuSpeed).toFixed(2)}s por ciclo)
+            {settings.cpuSpeed === 1 && " - Muy lenta"}
+            {settings.cpuSpeed === 2 && " - Lenta"}
+            {settings.cpuSpeed === 4 && " - Normal"}
+            {settings.cpuSpeed === 10 && " - Rápida"}
           </SettingSubtitle>
         </SettingInfo>
 
-        {/* Select para cpuSpeed con opciones en Hz */}
-        <Select
-          value={settings.cpuSpeed}
-          onValueChange={(value: "1" | "2" | "4" | "10") =>
-            setSettings(prev => ({ ...prev, cpuSpeed: value }))
-          }
-        >
-          <SelectTrigger className="w-32">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="1" title="1 Hz = 1 segundo por ciclo - Muy lenta">
-              1 Hz (1.0s)
-            </SelectItem>
-            <SelectItem value="2" title="2 Hz = 0.5 segundos por ciclo - Lenta">
-              2 Hz (0.5s)
-            </SelectItem>
-            <SelectItem value="4" title="4 Hz = 0.25 segundos por ciclo - Normal">
-              4 Hz (0.25s)
-            </SelectItem>
-            <SelectItem value="10" title="10 Hz = 0.1 segundos por ciclo - Rápida">
-              10 Hz (0.1s)
-            </SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex flex-col items-end gap-2">
+          {/* Slider para cpuSpeed con opciones discretas: 1, 2, 4, 10 Hz */}
+          <Slider
+            className="w-44"
+            value={[
+              settings.cpuSpeed === 1 ? 0 :
+              settings.cpuSpeed === 2 ? 1 :
+              settings.cpuSpeed === 4 ? 2 : 3
+            ]}
+            onValueChange={([value]) => {
+              const speeds = [1, 2, 4, 10] as const;
+              setSettings(prev => ({ ...prev, cpuSpeed: speeds[value] }));
+            }}
+            min={0}
+            max={3}
+            step={1}
+          />
+          <div className="flex w-44 justify-between text-xs text-stone-500">
+            <span>1 Hz</span>
+            <span>2 Hz</span>
+            <span>4 Hz</span>
+            <span>10 Hz</span>
+          </div>
+        </div>
       </Setting>
 
       <Setting>

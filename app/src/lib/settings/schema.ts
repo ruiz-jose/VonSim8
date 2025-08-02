@@ -68,7 +68,7 @@ export const settingsSchema = z.object({
    * CPU speed in Hz. This determines the cycle time of the CPU.
    * Higher Hz means faster CPU cycles.
    */
-  cpuSpeed: z.enum(["1", "2", "4", "10"]).catch("1"),
+  cpuSpeed: z.union([z.literal(1), z.literal(2), z.literal(4), z.literal(10)]).catch(1),
 
   /**
    * This property states how many milliseconds units takes for the printer

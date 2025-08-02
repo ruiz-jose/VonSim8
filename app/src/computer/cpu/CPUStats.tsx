@@ -20,7 +20,7 @@ export const CPUStats = memo(({ className }: CPUStatsProps) => {
   const [showDetails, setShowDetails] = useState(false);
 
   // Convertir cpuSpeed de Hz a tiempo de ciclo en milisegundos
-  const cpuSpeedHz = parseInt(settings.cpuSpeed);
+  const cpuSpeedHz = settings.cpuSpeed;
   const cycleTimeMs = 1000 / cpuSpeedHz; // Convertir Hz a milisegundos por ciclo
 
   if (!settings.showStatsCPU) return null;
