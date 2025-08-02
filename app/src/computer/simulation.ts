@@ -181,6 +181,7 @@ let messageReadWrite = "";
 let shouldDisplayMessage = true;
 let currentInstructionModeid = false;
 let currentInstructionModeri = false;
+let currentInstructionOperands: string[] = [];
 let cycleCount = 0;
 let currentInstructionCycleCount = 0; // Contador de ciclos para la instrucción actual
 let instructionCount = 0;
@@ -217,6 +218,20 @@ function getAddressingMode(instruction: InstructionContext): string {
     return "directo";
   }
   return "registro";
+}
+
+// Función auxiliar para determinar si una instrucción MOV es lectura o escritura
+function isMOVReadOperation(operands: string[]): boolean {
+  if (operands.length !== 2) return false;
+  
+  const [dest, src] = operands;
+  
+  // Si el destino es un registro y la fuente es memoria, es lectura (reg<-mem)
+  // Ejemplo: MOV AL, [0F] -> ["AL", "[0F]"] -> true (lectura)
+  const isDestRegister = /^[ABCD][LH]$/.test(dest) || /^[ABCD]X$/.test(dest);
+  const isSrcMemory = src.startsWith('[') && src.endsWith(']');
+  
+  return isDestRegister && isSrcMemory;
 }
 
 // Función auxiliar para generar mensajes de transferencia de registros
@@ -662,6 +677,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
         currentInstructionName = event.value.instruction.name;
         currentInstructionModeid = event.value.instruction.willUse.id ? true : false;
         currentInstructionModeri = event.value.instruction.willUse.ri ? true : false;
+        currentInstructionOperands = event.value.instruction.operands;
         store.set(showriAtom, currentInstructionModeri);
         // Reiniciar el contador de ciclos para la nueva instrucción
         currentInstructionCycleCount = 0;
@@ -772,6 +788,16 @@ async function startThread(generator: EventGenerator): Promise<void> {
             messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";
           } else if (event.value.type === "cpu:wr.on") {
             messageReadWrite = "Ejecución: write(Memoria[MAR]) ← MBR";
+            
+            // Detectar si es una instrucción MOV que escribe en memoria y detener automáticamente
+            if (currentInstructionName === "MOV" && !isMOVReadOperation(currentInstructionOperands)) {
+              console.log("🔍 MOV Debug - Deteniendo simulación después de escritura en memoria");
+              console.log("🔍 MOV Debug - Operandos:", currentInstructionOperands);
+              console.log("🔍 MOV Debug - Es lectura:", isMOVReadOperation(currentInstructionOperands));
+              
+              // Detener la simulación automáticamente después de la escritura en memoria
+              pauseSimulation();
+            }
           } else if (event.value.type === "pio:write.ok") {
             store.set(messageAtom, "Ejecución: write(PIO[MAR]) ← MBR");
             cycleCount++;
@@ -1230,36 +1256,18 @@ async function startThread(generator: EventGenerator): Promise<void> {
             if (currentInstructionName === "IN") {
               messageReadWrite = "Ejecución: MBR ← read(PIO[MAR])";
             }
-            // Para MOV, determinar si es lectura o escritura basado en el modo de direccionamiento
+            // Para MOV, determinar si es lectura o escritura basado en los operandos
             if (currentInstructionName === "MOV" && executeStageCounter === 5) {
-              // Para determinar si es escritura o lectura, necesitamos verificar el patrón de la instrucción
-              // Si es reg<-mem (como MOV AL, [0F]), es lectura de memoria
-              // Si es mem<-reg o mem<-imd, es escritura a memoria
+              console.log("🔍 MOV Debug - Operandos:", currentInstructionOperands);
+              console.log("🔍 MOV Debug - Es lectura:", isMOVReadOperation(currentInstructionOperands));
               
-              // Para MOV AL, [0F]: currentInstructionModeri=true, currentInstructionModeid=false
-              // Para MOV [0F], AL: currentInstructionModeri=true, currentInstructionModeid=false
-              // Para MOV [BL], AL: currentInstructionModeri=false, currentInstructionModeid=false
-              // Para MOV [0F], 5: currentInstructionModeri=true, currentInstructionModeid=true
-              
-              // La diferencia está en el orden de los operandos, pero no tenemos esa información aquí
-              // Vamos a usar una heurística basada en el contexto de la instrucción
-              
-              // Si estamos en executeStageCounter === 5 y es MOV con direccionamiento directo,
-              // y no es inmediato, entonces es lectura de memoria (reg<-mem)
-              if (currentInstructionModeri && !currentInstructionModeid) {
-                // Es direccionamiento directo sin inmediato - es lectura de memoria
+              // Usar la función auxiliar para determinar si es lectura o escritura
+              if (isMOVReadOperation(currentInstructionOperands)) {
+                // Es lectura de memoria (reg<-mem)
                 messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";
-              } else if (!currentInstructionModeri && !currentInstructionModeid) {
-                // Es direccionamiento indirecto - puede ser lectura o escritura
-                // Para MOV con direccionamiento indirecto, necesitamos determinar si es escritura
-                // Si estamos en executeStageCounter === 5 y es MOV indirecto, es escritura a memoria
-                messageReadWrite = "Ejecución: write(Memoria[MAR]) ← MBR";
-              } else if (currentInstructionModeri && currentInstructionModeid) {
-                // Es direccionamiento directo e inmediato - es escritura a memoria
-                messageReadWrite = "Ejecución: write(Memoria[MAR]) ← MBR";
               } else {
-                // Caso por defecto - lectura de memoria
-                messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";
+                // Es escritura a memoria (mem<-reg o mem<-imd)
+                messageReadWrite = "Ejecución: write(Memoria[MAR]) ← MBR";
               }
             }
             let ContinuarSinGuardar = false;
