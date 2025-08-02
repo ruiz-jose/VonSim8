@@ -54,12 +54,8 @@ export function ControlLines() {
 
   return (
     <>
-      {showReadAnim && (
-        <ReadBusAnimation pathRef={rdAnimatedPathRef} progressSpring={rdDashoffset} />
-      )}
-      {showWriteAnim && (
-        <WriteBusAnimation pathRef={wrAnimatedPathRef} progressSpring={wrDashoffset} />
-      )}
+      {showReadAnim && <ReadBusAnimation pathRef={rdAnimatedPathRef} />}
+      {showWriteAnim && <WriteBusAnimation pathRef={wrAnimatedPathRef} />}
       <svg className="pointer-events-none absolute inset-0 z-[15] size-full">
         <path
           ref={rdPathRef}
@@ -147,7 +143,6 @@ export function ControlLines() {
         {devices.hasIOBus && (
           <>
             <ControlLine springs="bus.iom" d="M 380 460 H 675 V 525" />
-
             <path
               className="fill-none stroke-stone-900 stroke-[6px]"
               strokeLinejoin="round"
@@ -162,53 +157,42 @@ export function ControlLines() {
           </>
         )}
 
-        {devices.pic && <ControlLine springs="bus.pic" d="M 521 595 V 730 H 450" />}
-        {devices.timer && <ControlLine springs="bus.timer" d="M 563 595 V 875" />}
-        {devices.pio && <ControlLine springs="bus.pio" d="M 612 595 V 730 H 900" />}
-        {devices.handshake && <ControlLine springs="bus.handshake" d="M 710 595 V 950 H 900" />}
-
-        {/* CPU/PIC */}
-
+        {/* Control lines for each device */}
         {devices.pic && (
           <>
-            <ControlLine springs="bus.intr" d="M 110 700 V 470" />
-            <ControlLine springs="bus.inta" d="M 160 470 V 700" />
+            <ControlLine springs="bus.intr" d="M 450 805 V 1015 H 900" />
+            <ControlLine springs="bus.inta" d="M 470 805 V 1015 H 900" />
           </>
         )}
 
-        {/* Interrupt lines */}
-
-        {devices.pic && devices.f10 && <ControlLine springs="bus.int0" d="M 145 950 V 900" />}
-        {devices.pic && devices.timer && (
-          <ControlLine springs="bus.int1" d="M 475 955 H 400 V 900" />
-        )}
-        {devices.pic && devices.handshake && (
-          <ControlLine springs="bus.int2" d="M 900 1075 H 300 V 900" />
-        )}
-
-        {/* Other devices */}
-
-        {devices.pio === "switches-and-leds" && (
+        {devices.pio && (
           <>
-            <ControlLine springs="bus.switches->pio" d="M 1300 758 H 1120" />
-            <ControlLine springs="bus.pio->leds" d="M 1120 868 H 1300" />
+            <ControlLine springs="bus.int0" d="M 900 815 V 1015 H 900" />
+            <ControlLine springs="bus.int1" d="M 920 815 V 1015 H 900" />
+            <ControlLine springs="bus.int2" d="M 940 815 V 1015 H 900" />
           </>
         )}
 
-        {devices.pio === "printer" && (
+        {devices.timer && <ControlLine springs="bus.int0" d="M 583 875 V 1015 H 900" />}
+
+        {devices.handshake && <ControlLine springs="bus.int0" d="M 900 1015 H 900" />}
+
+        {/* Printer connections */}
+        {devices.printer && (
           <>
-            <ControlLine springs="bus.printer.strobe" d="M 1120 770 H 1225 V 992 H 1300" />
-            <ControlLine springs="bus.printer.busy" d="M 1300 1007 H 1210 V 782 H 1120" />
-            <ControlLine springs="bus.printer.data" d="M 1120 850 H 1175 V 1062 H 1300" />
+            <ControlLine springs="bus.printer.strobe" d="M 900 1015 H 900" />
+            <ControlLine springs="bus.printer.busy" d="M 920 1015 H 900" />
+            <ControlLine springs="bus.printer.data" d="M 940 1015 H 900" />
           </>
         )}
 
-        {devices.handshake === "printer" && (
-          <>
-            <ControlLine springs="bus.printer.strobe" d="M 1120 992 H 1300" />
-            <ControlLine springs="bus.printer.busy" d="M 1300 1007 H 1120" />
-            <ControlLine springs="bus.printer.data" d="M 1120 1062 H 1300" />
-          </>
+        {/* PIO to switches and LEDs */}
+        {devices.pio && devices.switches && (
+          <ControlLine springs="bus.switches->pio" d="M 900 815 V 1015 H 900" />
+        )}
+
+        {devices.pio && devices.leds && (
+          <ControlLine springs="bus.pio->leds" d="M 900 815 V 1015 H 900" />
         )}
       </svg>
     </>
@@ -314,63 +298,70 @@ function ControlLineLegend({
 // Animación de texto 'Read' siguiendo exactamente la animación roja del bus de control
 type ReadBusAnimationProps = {
   pathRef: React.RefObject<SVGPathElement>;
-  progressSpring: any;
 };
-function ReadBusAnimation({ pathRef, progressSpring }: ReadBusAnimationProps) {
+function ReadBusAnimation({ pathRef }: ReadBusAnimationProps) {
   const [visible, setVisible] = useState(true);
   const setShowReadAnim = useSetAtom(showReadBusAnimationAtom);
   const [ready, setReady] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  // Sincroniza el progreso con el valor actual del spring (que va de 1 a 0)
+  // Animación manual que funciona - simular progreso
   useEffect(() => {
-    if (!progressSpring || typeof progressSpring.get !== "function") return;
-    let running = true;
-    function update() {
-      if (!running) return;
-      const val = progressSpring.get();
-      setProgress(1 - val);
-      if (val > 0) requestAnimationFrame(update);
+    if (visible && ready) {
+      const startTime = Date.now();
+      const duration = 2000; // 2 segundos
+
+      const animate = () => {
+        const elapsed = Date.now() - startTime;
+        const newProgress = Math.min(elapsed / duration, 1);
+        setProgress(newProgress);
+
+        if (newProgress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          // Cuando la animación termina, ocultar el texto
+          setVisible(false);
+          setTimeout(() => setShowReadAnim(false), 100);
+        }
+      };
+
+      animate();
     }
-    update();
-    return () => {
-      running = false;
+  }, [visible, ready, setShowReadAnim]);
+
+  useEffect(() => {
+    // Esperar a que el path esté disponible con retry
+    let attempts = 0;
+    const maxAttempts = 50; // 500ms máximo
+
+    const checkPath = () => {
+      if (pathRef.current) {
+        setReady(true);
+        return;
+      }
+
+      attempts++;
+      if (attempts < maxAttempts) {
+        setTimeout(checkPath, 10);
+      } else {
+        setReady(false);
+      }
     };
-  }, [progressSpring]);
 
-  useEffect(() => {
-    // Esperar a que el path esté disponible
-    if (!pathRef.current) {
-      const timeout = setTimeout(() => setReady(r => !r), 10);
-      return () => clearTimeout(timeout);
-    }
-    setReady(true);
-  }, [pathRef]); // Eliminado pathRef.current del array de dependencias
-
-  useEffect(() => {
-    if (!ready) return;
-    // Cuando el progreso llegue a 1, ocultar el texto
-    if (progress >= 1) {
-      setVisible(false);
-      setTimeout(() => setShowReadAnim(false), 100);
-    }
-  }, [progress, ready, setShowReadAnim]);
+    checkPath();
+  }, [pathRef]);
 
   if (!visible || !ready) return null;
-  // Usar getPointAtLength para seguir el path animado
-  let x = 0,
-    y = 0;
-  if (pathRef.current) {
-    const path = pathRef.current;
-    const totalLength = path.getTotalLength();
-    const point = path.getPointAtLength(progress * totalLength);
-    x = point.x + 40; // Desplazamiento extra a la derecha
-    y = point.y;
-  } else {
-    // Fallback: línea recta
-    x = 380 + (800 - 380) * progress + 40;
-    y = 420;
-  }
+
+  // Calcular coordenadas para llegar hasta la memoria
+  // El path va desde CPU (380, 420) hasta Memory (800, 420)
+  const startX = 380;
+  const endX = 800;
+  const y = 420;
+
+  // Interpolar posición basada en el progreso
+  const x = startX + (endX - startX) * progress + 40; // +40 para offset del texto
+
   return (
     <div
       className="pointer-events-none absolute z-[100] select-none text-xs font-extrabold"
@@ -394,63 +385,70 @@ function ReadBusAnimation({ pathRef, progressSpring }: ReadBusAnimationProps) {
 // Animación de texto 'Write' siguiendo exactamente la animación naranja del bus de control
 type WriteBusAnimationProps = {
   pathRef: React.RefObject<SVGPathElement>;
-  progressSpring: any;
 };
-function WriteBusAnimation({ pathRef, progressSpring }: WriteBusAnimationProps) {
+function WriteBusAnimation({ pathRef }: WriteBusAnimationProps) {
   const [visible, setVisible] = useState(true);
   const setShowWriteAnim = useSetAtom(showWriteBusAnimationAtom);
   const [ready, setReady] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  // Sincroniza el progreso con el valor actual del spring (que va de 1 a 0)
+  // Animación manual que funciona - simular progreso
   useEffect(() => {
-    if (!progressSpring || typeof progressSpring.get !== "function") return;
-    let running = true;
-    function update() {
-      if (!running) return;
-      const val = progressSpring.get();
-      setProgress(1 - val);
-      if (val > 0) requestAnimationFrame(update);
+    if (visible && ready) {
+      const startTime = Date.now();
+      const duration = 2000; // 2 segundos
+
+      const animate = () => {
+        const elapsed = Date.now() - startTime;
+        const newProgress = Math.min(elapsed / duration, 1);
+        setProgress(newProgress);
+
+        if (newProgress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          // Cuando la animación termina, ocultar el texto
+          setVisible(false);
+          setTimeout(() => setShowWriteAnim(false), 100);
+        }
+      };
+
+      animate();
     }
-    update();
-    return () => {
-      running = false;
-    };
-  }, [progressSpring]);
+  }, [visible, ready, setShowWriteAnim]);
 
   useEffect(() => {
-    // Esperar a que el path esté disponible
-    if (!pathRef.current) {
-      const timeout = setTimeout(() => setReady(r => !r), 10);
-      return () => clearTimeout(timeout);
-    }
-    setReady(true);
+    // Esperar a que el path esté disponible con retry
+    let attempts = 0;
+    const maxAttempts = 50; // 500ms máximo
+
+    const checkPath = () => {
+      if (pathRef.current) {
+        setReady(true);
+        return;
+      }
+
+      attempts++;
+      if (attempts < maxAttempts) {
+        setTimeout(checkPath, 10);
+      } else {
+        setReady(false);
+      }
+    };
+
+    checkPath();
   }, [pathRef]);
 
-  useEffect(() => {
-    if (!ready) return;
-    // Cuando el progreso llegue a 1, ocultar el texto
-    if (progress >= 1) {
-      setVisible(false);
-      setTimeout(() => setShowWriteAnim(false), 100);
-    }
-  }, [progress, ready, setShowWriteAnim]);
-
   if (!visible || !ready) return null;
-  // Usar getPointAtLength para seguir el path animado
-  let x = 0,
-    y = 0;
-  if (pathRef.current) {
-    const path = pathRef.current;
-    const totalLength = path.getTotalLength();
-    const point = path.getPointAtLength(progress * totalLength);
-    x = point.x + 40; // Desplazamiento extra a la derecha
-    y = point.y;
-  } else {
-    // Fallback: línea recta
-    x = 380 + (800 - 380) * progress + 40;
-    y = 440;
-  }
+
+  // Calcular coordenadas para llegar hasta la memoria
+  // El path va desde CPU (380, 440) hasta Memory (800, 440)
+  const startX = 380;
+  const endX = 800;
+  const y = 440;
+
+  // Interpolar posición basada en el progreso
+  const x = startX + (endX - startX) * progress + 40; // +40 para offset del texto
+
   return (
     <div
       className="pointer-events-none absolute z-[100] select-none text-xs font-extrabold"

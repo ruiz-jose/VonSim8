@@ -135,9 +135,12 @@ describe("Sistema de Actualizaciones", () => {
       fireEvent.click(dismissButton);
 
       // Esperar a que la animación termine y verificar que el banner se oculte
-      await waitFor(() => {
-        expect(screen.queryByText("Nueva versión disponible")).not.toBeInTheDocument();
-      }, { timeout: 1000 });
+      await waitFor(
+        () => {
+          expect(screen.queryByText("Nueva versión disponible")).not.toBeInTheDocument();
+        },
+        { timeout: 1000 },
+      );
     });
   });
 });

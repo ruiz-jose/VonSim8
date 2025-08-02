@@ -32,7 +32,17 @@ export function ComputerContainer() {
 
   // Ocultar textos de bus de control al iniciar
   useEffect(() => {
+    // Ejecutar inmediatamente
     hideControlBusTextsOnInit();
+
+    // Retry después de un breve delay para asegurar que los springs estén disponibles
+    const retryTimer = setTimeout(() => {
+      hideControlBusTextsOnInit();
+      // Verificar estado después del retry
+      // Resetear spring si es necesario
+    }, 100);
+
+    return () => clearTimeout(retryTimer);
   }, []);
 
   return (

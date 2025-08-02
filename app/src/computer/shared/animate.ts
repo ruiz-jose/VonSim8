@@ -304,12 +304,18 @@ export function hideControlBusTextsOnInit() {
   // Siempre ocultar ambos textos al inicio, forzando opacidad 0 de forma asíncrona para evitar que react-spring la sobrescriba
   setTimeout(() => {
     try {
-      getSpring("bus.rd.opacity").set(0);
+      const rdSpring = getSpring("bus.rd.opacity");
+      if (rdSpring) {
+        rdSpring.set(0);
+      }
     } catch (e) {
       /* noop */
     }
     try {
-      getSpring("bus.wr.opacity").set(0);
+      const wrSpring = getSpring("bus.wr.opacity");
+      if (wrSpring) {
+        wrSpring.set(0);
+      }
     } catch (e) {
       /* noop */
     }
@@ -319,7 +325,10 @@ export function hideControlBusTextsOnInit() {
 // Llama esto cuando se quiera mostrar el texto "Read" (por ejemplo, al animar el bus de control RD)
 export function showReadControlText() {
   try {
-    getSpring("bus.rd.opacity").start({ to: 1 });
+    const rdSpring = getSpring("bus.rd.opacity");
+    if (rdSpring) {
+      rdSpring.start({ to: 1 });
+    }
   } catch (e) {
     /* noop */
   }
@@ -328,7 +337,10 @@ export function showReadControlText() {
 // Llama esto cuando se quiera ocultar el texto "Read" (al terminar la animación)
 export function hideReadControlText() {
   try {
-    getSpring("bus.rd.opacity").start({ to: 0 });
+    const rdSpring = getSpring("bus.rd.opacity");
+    if (rdSpring) {
+      rdSpring.start({ to: 0 });
+    }
   } catch (e) {
     /* noop */
   }
@@ -337,7 +349,10 @@ export function hideReadControlText() {
 // Llama esto cuando se quiera mostrar el texto "Write" (por ejemplo, al animar el bus de control WR)
 export function showWriteControlText() {
   try {
-    getSpring("bus.wr.opacity").start({ to: 1 });
+    const wrSpring = getSpring("bus.wr.opacity");
+    if (wrSpring) {
+      wrSpring.start({ to: 1 });
+    }
   } catch (e) {
     /* noop */
   }
@@ -346,7 +361,10 @@ export function showWriteControlText() {
 // Llama esto cuando se quiera ocultar el texto "Write" (al terminar la animación)
 export function hideWriteControlText() {
   try {
-    getSpring("bus.wr.opacity").start({ to: 0 });
+    const wrSpring = getSpring("bus.wr.opacity");
+    if (wrSpring) {
+      wrSpring.start({ to: 0 });
+    }
   } catch (e) {
     /* noop */
   }

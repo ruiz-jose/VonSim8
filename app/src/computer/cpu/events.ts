@@ -706,21 +706,22 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       // Para instrucciones que obtienen operandos de memoria, la fase debe terminar cuando el valor real se copia al registro destino
       if (currentPhase === "fetching-operands" && normalizedRegister !== "IR") {
         // Verificar si es una instrucción que obtiene operandos de memoria
-        const isMemoryOperandInstruction = instructionName && (
-          instructionName === "MOV" || 
-          instructionName === "ADD" || 
-          instructionName === "SUB" || 
-          instructionName === "CMP" || 
-          instructionName === "AND" || 
-          instructionName === "OR" || 
-          instructionName === "XOR"
-        );
-        
+        const isMemoryOperandInstruction =
+          instructionName &&
+          (instructionName === "MOV" ||
+            instructionName === "ADD" ||
+            instructionName === "SUB" ||
+            instructionName === "CMP" ||
+            instructionName === "AND" ||
+            instructionName === "OR" ||
+            instructionName === "XOR");
+
         // Para instrucciones con operandos de memoria, solo terminar la fase cuando se copia al registro destino
         // Para otras instrucciones, terminar cuando se escribe en MBR
-        const shouldCompletePhase = !isMemoryOperandInstruction || 
+        const shouldCompletePhase =
+          !isMemoryOperandInstruction ||
           (isMemoryOperandInstruction && normalizedRegister !== "MBR");
-        
+
         if (shouldCompletePhase) {
           // Actualizar la fase para indicar que "fetch-operands" ha terminado
           currentPhase = "fetching-operands-completed";

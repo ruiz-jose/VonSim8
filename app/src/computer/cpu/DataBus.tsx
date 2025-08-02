@@ -19,8 +19,8 @@ import { useAtomValue } from "jotai";
 
 import { animated, getSpring } from "@/computer/shared/springs";
 
-import { cycleAtom } from "./state";
 import type { PhysicalRegister } from "./state";
+import { cycleAtom } from "./state";
 
 type Node = { position: [x: number, y: number] };
 
@@ -579,13 +579,13 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
   const { path, ...style } = getSpring("cpu.internalBus.data");
   // Agrego el spring del bus de dirección (MBR→MAR)
   const { path: addressPath, ...addressStyle } = getSpring("cpu.internalBus.address");
-  
+
   // Obtener el estado del ciclo para determinar la fase actual
   const cycle = useAtomValue(cycleAtom);
-  
+
   // Determinar si estamos en la fase de escritura
   const isWritebackPhase = cycle?.phase === "writeback";
-  
+
   // Determinar el color del bus de datos según la fase
   const getDataBusColor = () => {
     if (isWritebackPhase) {
@@ -593,7 +593,7 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
     }
     return "stroke-mantis-400 drop-shadow-[0_0_8px_rgba(34,197,94,0.6)]";
   };
-  
+
   const getDataBusGlowColor = () => {
     if (isWritebackPhase) {
       return "stroke-purple-300";
@@ -668,7 +668,7 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
       <circle cx={390} cy={250} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
       <circle cx={550} cy={250} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
       <circle cx={550} cy={348} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
-      
+
       {/* Círculo del nodo IP join - solo visible cuando showri es true */}
       {showri && <circle cx={390} cy={349} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />}
 
