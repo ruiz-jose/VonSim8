@@ -390,7 +390,7 @@ export function ALU() {
               className={clsx(
                 "rounded border px-0.5 py-0 text-[10px] font-bold transition-all duration-200",
                 IF
-                  ? "border-stone-300 bg-stone-300 text-stone-950 shadow-[0_0_4px_rgba(120,113,108,0.6)]"
+                  ? "border-amber-400 bg-amber-400 text-stone-950 shadow-[0_0_4px_rgba(251,191,36,0.6)]"
                   : "border-stone-600 bg-stone-800 text-stone-300",
               )}
             >
@@ -404,7 +404,7 @@ export function ALU() {
                 className={clsx(
                   "rounded border px-0.5 py-0 text-[10px] font-bold transition-all duration-200",
                   SF
-                    ? "border-stone-300 bg-stone-300 text-stone-950 shadow-[0_0_4px_rgba(120,113,108,0.6)]"
+                    ? "border-amber-400 bg-amber-400 text-stone-950 shadow-[0_0_4px_rgba(251,191,36,0.6)]"
                     : "border-stone-600 bg-stone-800 text-stone-300",
                 )}
               >
@@ -414,7 +414,7 @@ export function ALU() {
                 className={clsx(
                   "rounded border px-0.5 py-0 text-[10px] font-bold transition-all duration-200",
                   OF
-                    ? "border-stone-300 bg-stone-300 text-stone-950 shadow-[0_0_4px_rgba(120,113,108,0.6)]"
+                    ? "border-amber-400 bg-amber-400 text-stone-950 shadow-[0_0_4px_rgba(251,191,36,0.6)]"
                     : "border-stone-600 bg-stone-800 text-stone-300",
                 )}
               >
@@ -427,7 +427,7 @@ export function ALU() {
             className={clsx(
               "rounded border px-0.5 py-0 text-[10px] font-bold transition-all duration-200",
               CF
-                ? "border-stone-300 bg-stone-300 text-stone-950 shadow-[0_0_4px_rgba(120,113,108,0.6)]"
+                ? "border-amber-400 bg-amber-400 text-stone-950 shadow-[0_0_4px_rgba(251,191,36,0.6)]"
                 : "border-stone-600 bg-stone-800 text-stone-300",
             )}
           >
@@ -437,7 +437,7 @@ export function ALU() {
             className={clsx(
               "rounded border px-0.5 py-0 text-[10px] font-bold transition-all duration-200",
               ZF
-                ? "border-stone-300 bg-stone-300 text-stone-950 shadow-[0_0_4px_rgba(120,113,108,0.6)]"
+                ? "border-yellow-400 bg-yellow-400 text-stone-950 shadow-[0_0_4px_rgba(250,204,21,0.6)]"
                 : "border-stone-600 bg-stone-800 text-stone-300",
             )}
           >
