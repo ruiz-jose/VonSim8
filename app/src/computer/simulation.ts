@@ -192,6 +192,8 @@ let mbridirmar = false;
 let resultmbrimar = false;
 let displayMessageresultmbr = "";
 let displayMessagepop = "";
+let blBxToRiProcessed = false; // Flag para rastrear cuando BL/BX→ri ya fue procesado
+let blBxRegisterName = ""; // Para recordar si era BL o BX
 
 // Tipos para mejorar la legibilidad y mantenibilidad
 type InstructionContext = {
@@ -711,6 +713,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
         mbridirmar = false;
         resultmbrimar = false;
         displayMessageresultmbr = "";
+        blBxToRiProcessed = false;
+        blBxRegisterName = "";
       }
 
       if (
@@ -873,6 +877,17 @@ async function startThread(generator: EventGenerator): Promise<void> {
                   currentInstructionModeid
                 ) {
                   store.set(messageAtom, "Ejecución: MAR ← IP; MBR→MBR");
+                } else if (
+                  sourceRegister === "ri" &&
+                  currentInstructionName === "MOV" &&
+                  !currentInstructionModeri &&
+                  !currentInstructionModeid
+                ) {
+                  // Caso especial para MOV [BL], n - mostrar el mensaje usando el registro almacenado
+                  store.set(messageAtom, `Ejecución: MAR ← ${blBxRegisterName}`);
+                  mbridirmar = false;
+                  blBxToRiProcessed = false; // También resetear esta bandera
+                  blBxRegisterName = ""; // Limpiar el nombre almacenado
                 } else {
                   store.set(messageAtom, `Ejecución: id ← MBR; MAR ← IP`);
                 }
@@ -897,7 +912,10 @@ async function startThread(generator: EventGenerator): Promise<void> {
             }
 
             // Para MOV con direccionamiento indirecto, no contabilizar el ciclo pero permitir la pausa
-            if (!isIndirectMOV) {
+            // Para el caso de BL/BX a ri, SÍ contabilizar el ciclo aquí (no se contabilizó en register.copy)
+            const skipCycleCount = isIndirectMOV && !blBxToRiProcessed;
+               
+            if (!skipCycleCount) {
               cycleCount++;
               currentInstructionCycleCount++;
               store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
@@ -1195,10 +1213,16 @@ async function startThread(generator: EventGenerator): Promise<void> {
               (sourceRegister === "BL" && destRegister === "ri") ||
               (sourceRegister === "BX" && destRegister === "ri")
             ) {
-              displayMessage = "Ejecución: MAR ← BL";
-              store.set(messageAtom, displayMessage);
+              // Para MOV [BL], n - NO guardar mensaje aquí, se guardará en cpu:mar.set
+              const registerName = sourceRegister === "BL" ? "BL" : "BX";
+              blBxRegisterName = registerName; // Recordar el nombre del registro
+              displayMessage = `Ejecución: MAR ← ${registerName}`;
+              // NO guardar el mensaje aquí: store.set(messageAtom, displayMessage);
               shouldDisplayMessage = false;
               executeStageCounter++;
+              // Marcar que ya se procesó esta transferencia para mostrar el mensaje correcto en cpu:mar.set
+              mbridirmar = true;
+              blBxToRiProcessed = true; // Marcar que se procesó BL/BX→ri
             } else {
               if (String(sourceRegister) === "right.l") {
                 fuenteALU = sourceRegister;
@@ -1218,17 +1242,26 @@ async function startThread(generator: EventGenerator): Promise<void> {
             );
 
             // Para instrucciones MOV entre registros, siempre contabilizar el ciclo
+            // Para BL/BX a ri, NO contabilizar el ciclo aquí (se contabilizará en cpu:mar.set)
             if (currentInstructionName === "MOV") {
-              store.set(messageAtom, displayMessage);
-              cycleCount++;
-              currentInstructionCycleCount++;
-              store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
-              console.log(
-                "✅ Ciclo contabilizado para MOV register.copy - cycleCount:",
-                cycleCount,
-                "currentInstructionCycleCount:",
-                currentInstructionCycleCount,
-              );
+              const isBLorBXToRi = (sourceRegister === "BL" || sourceRegister === "BX") && destRegister === "ri";
+              
+              if (!isBLorBXToRi) {
+                store.set(messageAtom, displayMessage);
+                cycleCount++;
+                currentInstructionCycleCount++;
+                store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+                console.log(
+                  "✅ Ciclo contabilizado para MOV register.copy - cycleCount:",
+                  cycleCount,
+                  "currentInstructionCycleCount:",
+                  currentInstructionCycleCount,
+                );
+              } else {
+                console.log(
+                  "⏭️ Ciclo NO contabilizado para MOV register.copy (BL/BX→ri) - se contabilizará en cpu:mar.set"
+                );
+              }
             } else if (
               (destRegister !== "result" &&
                 destRegister !== "left" &&
@@ -1322,8 +1355,10 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 (executeStageCounter === 4 || executeStageCounter === 8) &&
                 currentInstructionName === "INT") ||
               (executeStageCounter === 3 && currentInstructionName === "MOV") ||
-              // Para MOV con direccionamiento directo, permitir que se muestre el mensaje en executeStageCounter === 5
-              // (executeStageCounter === 5 && currentInstructionName === "MOV") ||
+              // Para MOV con direccionamiento directo en executeStageCounter === 5,
+              // no mostrar el mensaje de bus:reset porque cpu:register.update manejará el mensaje correcto
+              // (se está leyendo el tercer byte - valor inmediato)
+              (executeStageCounter === 5 && currentInstructionName === "MOV" && currentInstructionModeri) ||
               (currentInstructionModeid &&
                 executeStageCounter === 4 &&
                 (currentInstructionName === "CALL" ||
@@ -1352,9 +1387,12 @@ async function startThread(generator: EventGenerator): Promise<void> {
               currentInstructionCycleCount++;
               store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
               
-              // No pausar si es el último paso de escritura en memoria
-              if (status.until === "cycle-change" && 
-                  !(messageReadWrite === "Ejecución: write(Memoria[MAR]) ← MBR" && isLastStepBeforeCycleEnd)) {
+              // No pausar si es una instrucción MOV que escribe en memoria (último paso)
+              // La pausa debe ocurrir en cpu:cycle.end
+              const isMOVWriteToMemory = currentInstructionName === "MOV" && 
+                                        messageReadWrite === "Ejecución: write(Memoria[MAR]) ← MBR";
+              
+              if (status.until === "cycle-change" && !isMOVWriteToMemory) {
                 pauseSimulation();
               }
             } else if (isLastStepBeforeCycleEnd) {
