@@ -14,7 +14,7 @@ export const settingsSchema = z.object({
    * Show or hide the CPU statistics.
    * Controls whether the CPU statistics are visible in the UI.
    */
-  showStatsCPU: z.boolean().catch(true),
+  showStatsCPU: z.boolean().catch(false),
 
   /**
    * Interface language.
