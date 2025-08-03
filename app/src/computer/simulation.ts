@@ -1376,7 +1376,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             // Identificar si este bus:reset es el último paso antes del cycle.end
             let isLastStepBeforeCycleEnd = false;
             
-            // Para MOV, ADD, SUB con escritura en memoria:
+            // Para MOV/ADD/SUB con escritura en memoria:
             // - Direccionamiento directo: bus:reset en executeStageCounter === 6 es el último paso
             // - Direccionamiento indirecto: bus:reset en executeStageCounter === 5 es el último paso
             if ((currentInstructionName === "MOV" || 
@@ -1398,42 +1398,42 @@ async function startThread(generator: EventGenerator): Promise<void> {
               (currentInstructionModeri &&
                 (executeStageCounter === 4 || executeStageCounter === 8) &&
                 currentInstructionName === "INT") ||
-              // Para MOV con direccionamiento directo durante la captación del operando en executeStageCounter === 3,
+              // Para MOV/ADD/SUB con direccionamiento directo durante la captación del operando en executeStageCounter === 3,
               // no mostrar el mensaje de bus:reset porque cpu:register.update manejará el mensaje correcto
-              (executeStageCounter === 3 && currentInstructionName === "MOV" && currentInstructionModeri) ||
-              // Para MOV con direccionamiento directo en executeStageCounter === 3 (captación de dirección),
+              (executeStageCounter === 3 && (currentInstructionName === "MOV" || currentInstructionName === "ADD" || currentInstructionName === "SUB") && currentInstructionModeri) ||
+              // Para MOV/ADD/SUB con direccionamiento directo en executeStageCounter === 3 (captación de dirección),
               // no contabilizar el ciclo porque cpu:register.update ya lo maneja
-              (executeStageCounter === 3 && currentInstructionName === "MOV" && !currentInstructionModeri && !currentInstructionModeid &&
+              (executeStageCounter === 3 && (currentInstructionName === "MOV" || currentInstructionName === "ADD" || currentInstructionName === "SUB") && !currentInstructionModeri && !currentInstructionModeid &&
                currentInstructionOperands.length >= 2 &&
                // Excluir cuando se está captando la dirección (cualquier operando con dirección directa)
-               (// Direccionamiento directo simple: MOV X, AL o MOV AL, X (sin corchetes, con direcciones/registros)
+               (// Direccionamiento directo simple: MOV/ADD/SUB X, AL o MOV/ADD/SUB AL, X (sin corchetes, con direcciones/registros)
                 (!currentInstructionOperands[0].startsWith('[') && !currentInstructionOperands[0].endsWith(']') &&
                  !currentInstructionOperands[1].startsWith('[') && !currentInstructionOperands[1].endsWith(']') &&
                  (/^\d+$/.test(currentInstructionOperands[1]) || /^\d+[hH]$/i.test(currentInstructionOperands[1]) ||
                   /^[0-9A-Fa-f]+[hH]?$/.test(currentInstructionOperands[1]) ||
                   /^\d+$/.test(currentInstructionOperands[0]) || /^\d+[hH]$/i.test(currentInstructionOperands[0]) ||
                   /^[0-9A-Fa-f]+[hH]?$/.test(currentInstructionOperands[0]))) ||
-                // Direccionamiento directo con corchetes: MOV [09], CL o MOV AL, [0F] (captación de dirección)
+                // Direccionamiento directo con corchetes: MOV/ADD/SUB [09], CL o MOV/ADD/SUB AL, [0F] (captación de dirección)
                 ((currentInstructionOperands[0].startsWith('[') && currentInstructionOperands[0].endsWith(']') &&
                   /^\[[0-9A-Fa-f]+[hH]?\]$/.test(currentInstructionOperands[0])) ||
                  (currentInstructionOperands[1].startsWith('[') && currentInstructionOperands[1].endsWith(']') &&
                   /^\[[0-9A-Fa-f]+[hH]?\]$/.test(currentInstructionOperands[1]))))) ||
-              // Para MOV con direccionamiento indirecto + inmediato (MOV [BL], 4) en executeStageCounter === 3,
+              // Para MOV/ADD/SUB con direccionamiento indirecto + inmediato (MOV/ADD/SUB [BL], 4) en executeStageCounter === 3,
               // no contabilizar el ciclo porque cpu:register.update ya maneja la captación del valor inmediato
-              (executeStageCounter === 3 && currentInstructionName === "MOV" && !currentInstructionModeri && !currentInstructionModeid &&
+              (executeStageCounter === 3 && (currentInstructionName === "MOV" || currentInstructionName === "ADD" || currentInstructionName === "SUB") && !currentInstructionModeri && !currentInstructionModeid &&
                currentInstructionOperands.length >= 2 &&
-               // Detectar MOV [registro], valor_inmediato
+               // Detectar MOV/ADD/SUB [registro], valor_inmediato
                ((currentInstructionOperands[0].startsWith('[') && currentInstructionOperands[0].endsWith(']') &&
                  /^\[[A-Za-z]+[LH]?\]$/i.test(currentInstructionOperands[0]) && // [BL], [BH], [CL], etc.
                  (/^\d+$/.test(currentInstructionOperands[1]) || /^\d+[hH]$/i.test(currentInstructionOperands[1]))) || // valor inmediato
-                // También detectar MOV valor_inmediato, [registro]
+                // También detectar MOV/ADD/SUB valor_inmediato, [registro]
                 (currentInstructionOperands[1].startsWith('[') && currentInstructionOperands[1].endsWith(']') &&
                  /^\[[A-Za-z]+[LH]?\]$/i.test(currentInstructionOperands[1]) && // [BL], [BH], [CL], etc.
                  (/^\d+$/.test(currentInstructionOperands[0]) || /^\d+[hH]$/i.test(currentInstructionOperands[0]))))) ||
-              // Para MOV con direccionamiento directo en executeStageCounter === 5,
+              // Para MOV/ADD/SUB con direccionamiento directo en executeStageCounter === 5,
               // no mostrar el mensaje de bus:reset porque cpu:register.update manejará el mensaje correcto
               // (se está leyendo el tercer byte - valor inmediato)
-              (executeStageCounter === 5 && currentInstructionName === "MOV" && currentInstructionModeri) ||
+              (executeStageCounter === 5 && (currentInstructionName === "MOV" || currentInstructionName === "ADD" || currentInstructionName === "SUB") && currentInstructionModeri) ||
               (currentInstructionModeid &&
                 executeStageCounter === 4 &&
                 (currentInstructionName === "CALL" ||
@@ -1455,9 +1455,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
             } else {
               console.log("🔄 ContinuarSinGuardar mantenido como false - ninguna condición cumplida");
               
-              // Debug específico para MOV en step 3
-              if (executeStageCounter === 3 && currentInstructionName === "MOV" && !currentInstructionModeri && !currentInstructionModeid) {
-                console.log("🔍 Debug MOV step 3:");
+              // Debug específico para MOV/ADD/SUB en step 3
+              if (executeStageCounter === 3 && (currentInstructionName === "MOV" || currentInstructionName === "ADD" || currentInstructionName === "SUB") && !currentInstructionModeri && !currentInstructionModeid) {
+                console.log(`🔍 Debug ${currentInstructionName} step 3:`);
                 console.log("   Operandos length >= 2:", currentInstructionOperands.length >= 2);
                 console.log("   Operando[0] no tiene []:", !currentInstructionOperands[0].startsWith('[') && !currentInstructionOperands[0].endsWith(']'));
                 console.log("   Operando[1] no tiene []:", !currentInstructionOperands[1].startsWith('[') && !currentInstructionOperands[1].endsWith(']'));
@@ -1474,11 +1474,11 @@ async function startThread(generator: EventGenerator): Promise<void> {
             console.log("🔍 bus:reset Debug - currentInstructionOperands:", currentInstructionOperands);
             console.log("🔍 bus:reset Debug - Operando[0]:", currentInstructionOperands[0]);
             console.log("🔍 bus:reset Debug - Operando[1]:", currentInstructionOperands[1]);
-            console.log("🔍 bus:reset Debug - Condición MOV directo step 3:", 
-              executeStageCounter === 3 && currentInstructionName === "MOV" && !currentInstructionModeri && !currentInstructionModeid);
+            console.log("🔍 bus:reset Debug - Condición MOV/ADD/SUB directo step 3:", 
+              executeStageCounter === 3 && (currentInstructionName === "MOV" || currentInstructionName === "ADD" || currentInstructionName === "SUB") && !currentInstructionModeri && !currentInstructionModeid);
             console.log("🔍 bus:reset Debug - Es lectura de memoria:", messageReadWrite === "Ejecución: MBR ← read(Memoria[MAR])");
-            console.log("🔍 bus:reset Debug - MOV indirecto debe mostrar:", 
-              currentInstructionName === "MOV" && !currentInstructionModeri && !currentInstructionModeid && 
+            console.log("🔍 bus:reset Debug - MOV/ADD/SUB indirecto debe mostrar:", 
+              (currentInstructionName === "MOV" || currentInstructionName === "ADD" || currentInstructionName === "SUB") && !currentInstructionModeri && !currentInstructionModeid && 
               executeStageCounter === 5 && messageReadWrite === "Ejecución: MBR ← read(Memoria[MAR])");
             
             if (!ContinuarSinGuardar) {
