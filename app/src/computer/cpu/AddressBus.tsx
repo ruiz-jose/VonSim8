@@ -22,17 +22,17 @@ export function generateAddressPath(
 ): string {
   let path = "";
   if (showpath1) {
-    path = "M 455 388 H 550 V 349 H 659"; // ri - ajustado para conectar con MAR desde registro redimensionado
+    path = "M 455 388 H 550 V 349 H 610"; // ri - ajustado para conectar con MAR desde registro redimensionado
   }
   if (showpath2) {
-    path = "M 629 250 H 550 V 349 H 659"; // mbr - ajustado para conectar con MAR
+    path = "M 629 250 H 550 V 349 H 610"; // mbr - ajustado para conectar con MAR
   }
   switch (from) {
     case "SP":
-      return "M 460 309 H 550 V 349 H 659";
+      return "M 460 309 H 550 V 349 H 610";
 
     case "IP":
-      return "M 460 349 H 659";
+      return "M 460 349 H 610";
 
     case "ri":
       return showpath1 || showpath2 ? path : "";
@@ -52,7 +52,8 @@ export function AddressBus({ showSP, showri }: AddressBusProps) {
     showSP ? "M 400 309 H 550 V 250" : "", // SP (ampliado desde la izquierda)
     "M 400 349 H 550 V 255", // IP (ampliado desde la izquierda)
     showri ? "M 420 388 H 550 V 300" : "", // ri (ampliado desde la izquierda)
-    "M 400 349 H 659", // Connection to MAR (ampliado desde la izquierda)
+    "M 400 349 H 610", // Connection to MAR (ampliado desde la izquierda)
+    "M 610 349 H 650", // MAR to external address bus (conexión gris)
   ];
 
   return (

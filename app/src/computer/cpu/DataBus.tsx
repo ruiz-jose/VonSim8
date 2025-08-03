@@ -36,7 +36,7 @@ dataBus.addNode("id", { position: [451, 205] });
 dataBus.addNode("SP", { position: [451, 309] });
 dataBus.addNode("IP", { position: [455, 349] }); // Más centrado visualmente respecto al registro IP
 dataBus.addNode("ri", { position: [455, 388] });
-dataBus.addNode("MAR", { position: [698, 349] });
+dataBus.addNode("MAR", { position: [682, 349] });
 dataBus.addNode("result", { position: [272, 115] });
 dataBus.addNode("NodoRegIn", { position: [390, 115] }); // Antes: [370, 115]
 dataBus.addNode("NodoRegOut", { position: [550, 115] }); // Nodo de unión para salidas de registros
@@ -310,8 +310,8 @@ export function generateDataPath(
   });
   if (normalizedFrom === "ri" && normalizedTo === "MAR" && mode === "mem<-imd") {
     // Ruta directa desde ri hasta MAR para instrucciones con modo directo e inmediato
-    console.log("🎯 Usando ruta especial ri → MAR:", "M 455 388 H 550 V 349 H 659");
-    return "M 455 388 H 550 V 349 H 659";
+    console.log("🎯 Usando ruta especial ri → MAR:", "M 455 388 H 550 V 349 H 643");
+    return "M 455 388 H 550 V 349 H 643";
   }
 
   // Verificar que los nodos existen en el grafo antes de calcular la ruta
@@ -462,7 +462,7 @@ export function generateDataPath(
       path = ["MBR", "mbr reg join", "ri join", "ri"];
     } else {
       // Para otros casos, usar la ruta del AddressBus (showpath2): MBR -> MAR
-      return "M 629 250 H 550 V 349 H 659";
+      return "M 629 250 H 550 V 349 H 643";
     }
     // Generar el path SVG
     const start = dataBus.getNodeAttribute(path[0], "position");

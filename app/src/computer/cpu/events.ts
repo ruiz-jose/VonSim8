@@ -575,7 +575,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       const regNorm = normalize(event.register); // NO toLowerCase
       const isFromMBR = regNorm === "MBR";
       const path = isFromMBR
-        ? "M 629 250 H 550 V 349 H 659" // path especial, siempre desde el MBR
+        ? "M 629 250 H 550 V 349 H 643" // path especial, siempre desde el MBR
         : generateAddressPath(regNorm as MARRegister); // path normal
       console.log(
         "[cpu:mar.set] event.register:",

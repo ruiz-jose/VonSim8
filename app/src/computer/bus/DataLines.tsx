@@ -38,13 +38,7 @@ export function DataLines() {
     <svg className="pointer-events-none absolute inset-0 z-[5] size-full">
       {/* Data lines */}
       <path
-        className="fill-none stroke-stone-900 stroke-[14px]"
-        strokeLinejoin="round"
-        d={dataPath}
-      />
-      {/* Línea base del bus de datos */}
-      <path
-        className="fill-none stroke-stone-700 stroke-[12px]"
+        className="fill-none stroke-stone-700 stroke-bus"
         strokeLinejoin="round"
         d={dataPath}
       />
@@ -75,13 +69,7 @@ export function DataLines() {
 
       {/* Address lines */}
       <path
-        className="fill-none stroke-stone-900 stroke-[14px]"
-        strokeLinejoin="round"
-        d={addressPath}
-      />
-      {/* Línea base del bus de direcciones */}
-      <path
-        className="fill-none stroke-stone-700 stroke-[12px]"
+        className="fill-none stroke-stone-700 stroke-bus"
         strokeLinejoin="round"
         d={addressPath}
       />
