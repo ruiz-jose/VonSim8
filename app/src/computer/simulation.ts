@@ -1296,6 +1296,27 @@ async function startThread(generator: EventGenerator): Promise<void> {
               }
             }
             let ContinuarSinGuardar = false;
+            // Identificar si este bus:reset es el último paso antes del cycle.end
+            let isLastStepBeforeCycleEnd = false;
+            
+            // Para MOV, ADD, SUB con escritura en memoria:
+            // - Direccionamiento directo: bus:reset en executeStageCounter === 6 es el último paso
+            // - Direccionamiento indirecto: bus:reset en executeStageCounter === 5 es el último paso
+            if ((currentInstructionName === "MOV" || 
+                 currentInstructionName === "ADD" || 
+                 currentInstructionName === "SUB") && 
+                messageReadWrite === "Ejecución: write(Memoria[MAR]) ← MBR") {
+              
+              // Direccionamiento directo (modeRi = true): último paso en executeStageCounter === 6
+              if (currentInstructionModeri && executeStageCounter === 6) {
+                isLastStepBeforeCycleEnd = true;
+              }
+              // Direccionamiento indirecto (modeRi = false, modeId = false): último paso en executeStageCounter === 5
+              else if (!currentInstructionModeri && !currentInstructionModeid && executeStageCounter === 5) {
+                isLastStepBeforeCycleEnd = true;
+              }
+            }
+            
             if (
               (currentInstructionModeri &&
                 (executeStageCounter === 4 || executeStageCounter === 8) &&
@@ -1323,14 +1344,26 @@ async function startThread(generator: EventGenerator): Promise<void> {
             }
             console.log("ContinuarSinGuarda:", ContinuarSinGuardar);
             console.log("executeStageCounter:", executeStageCounter);
+            console.log("isLastStepBeforeCycleEnd:", isLastStepBeforeCycleEnd);
+            
             if (!ContinuarSinGuardar) {
               store.set(messageAtom, messageReadWrite);
               cycleCount++;
               currentInstructionCycleCount++;
               store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
-              if (status.until === "cycle-change") {
+              
+              // No pausar si es el último paso de escritura en memoria
+              if (status.until === "cycle-change" && 
+                  !(messageReadWrite === "Ejecución: write(Memoria[MAR]) ← MBR" && isLastStepBeforeCycleEnd)) {
                 pauseSimulation();
               }
+            } else if (isLastStepBeforeCycleEnd) {
+              // Para el último paso antes de cycle.end: mostrar mensaje y contabilizar ciclo, pero NO pausar
+              store.set(messageAtom, messageReadWrite);
+              cycleCount++;
+              currentInstructionCycleCount++;
+              store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+              // No pausar aquí - la pausa ocurrirá en cycle.end
             }
           } else if (event.value.type === "cpu:mbr.set") {
             const sourceRegister =
