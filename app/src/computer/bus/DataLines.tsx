@@ -5,7 +5,7 @@ export function DataLines() {
   const { devices } = useSimulation();
 
   const addressPath = [
-    "M 610 349 H 800", // Extendido a la izquierda para llegar al registro MAR
+    "M 645 349 H 800", // Comienza desde el borde derecho del registro MAR
     devices.pic && "M 725 349 V 770 H 450",
     devices.pio && "M 725 349 V 770 H 900",
     devices.timer && "M 725 349 V 770 H 618 V 875",
@@ -15,7 +15,7 @@ export function DataLines() {
     .join(" ");
 
   const dataPath = [
-    "M 629 249 H 800", // CPU -> Memory - ajustado para conectar con el registro MBR redimensionado
+    "M 649 249 H 800", // CPU -> Memory - ajustado para conectar con el registro MBR redimensionado
     devices.pic && "M 765 249 V 790 H 450",
     devices.pio && "M 765 249 V 790 H 900",
     devices.timer && "M 765 249 V 790 H 598 V 875",
@@ -35,7 +35,7 @@ export function DataLines() {
   } = getSpring("bus.address");
 
   return (
-    <svg className="pointer-events-none absolute inset-0 z-[5] size-full">
+    <svg className="pointer-events-none absolute inset-0 z-[25] size-full">
       {/* Data lines */}
       <path
         className="fill-none stroke-stone-700 stroke-bus"

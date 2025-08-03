@@ -72,11 +72,12 @@ const resetExternalDataPath = () =>
 /**
  * Genera el path SVG para el bus de direcciones (MAR → memoria)
  * usando las mismas coordenadas que el path estático en DataLines.tsx
+ * La animación comienza más a la derecha del registro MAR
  */
 function generateExternalAddressPath(): string {
-  // Siempre desde MAR hacia la memoria (como indica el usuario)
-  // Coordenadas que coinciden con el addressPath estático en DataLines.tsx
-  return "M 610 349 H 800";
+  // Comienza más a la derecha del registro MAR (645, 349) y va hacia la memoria
+  // Usando el mismo patrón que los buses de control pero desde una posición más a la derecha del MAR
+  return "M 635 349 H 800";
 }
 
 // Función para animar el bus de direcciones externo (igual que el interno del CPU)
