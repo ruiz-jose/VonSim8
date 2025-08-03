@@ -280,7 +280,10 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
   switch (event.type) {
     case "cpu:alu.execute": {
       console.log("🚀 Evento cpu:alu.execute recibido, fase actual:", currentPhase);
-      const pathsDrawConfig = { duration: BUS_ANIMATION_DURATION, easing: "easeInOutSine" } as const;
+      const pathsDrawConfig = {
+        duration: BUS_ANIMATION_DURATION,
+        easing: "easeInOutSine",
+      } as const;
 
       // Esperar a que estemos en la fase "executing" o proceder si ya estamos en ella
       if (currentPhase !== "executing") {

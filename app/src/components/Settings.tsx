@@ -107,10 +107,8 @@ export function Settings({ className }: { className?: string }) {
             Velocidad CPU (Hz)
           </SettingTitle>
           <SettingSubtitle>
-            <span className="font-medium text-stone-300">
-              {settings.cpuSpeed} Hz
-            </span>
-            {" "}({(1/settings.cpuSpeed).toFixed(2)}s por ciclo)
+            <span className="font-medium text-stone-300">{settings.cpuSpeed} Hz</span> (
+            {(1 / settings.cpuSpeed).toFixed(2)}s por ciclo)
             {settings.cpuSpeed === 1 && " - Muy lenta"}
             {settings.cpuSpeed === 2 && " - Lenta"}
             {settings.cpuSpeed === 4 && " - Normal"}
@@ -123,9 +121,13 @@ export function Settings({ className }: { className?: string }) {
           <Slider
             className="w-44"
             value={[
-              settings.cpuSpeed === 1 ? 0 :
-              settings.cpuSpeed === 2 ? 1 :
-              settings.cpuSpeed === 4 ? 2 : 3
+              settings.cpuSpeed === 1
+                ? 0
+                : settings.cpuSpeed === 2
+                  ? 1
+                  : settings.cpuSpeed === 4
+                    ? 2
+                    : 3,
             ]}
             onValueChange={([value]) => {
               const speeds = [1, 2, 4, 10] as const;

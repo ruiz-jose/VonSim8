@@ -225,14 +225,14 @@ function getAddressingMode(instruction: InstructionContext): string {
 // Función auxiliar para determinar si una instrucción MOV es lectura o escritura
 function isMOVReadOperation(operands: string[]): boolean {
   if (operands.length !== 2) return false;
-  
+
   const [dest, src] = operands;
-  
+
   // Si el destino es un registro y la fuente es memoria, es lectura (reg<-mem)
   // Ejemplo: MOV AL, [0F] -> ["AL", "[0F]"] -> true (lectura)
-  const isDestRegister = /^[ABCD][LH]$/.test(dest) || /^[ABCD]X$/.test(dest);
-  const isSrcMemory = src.startsWith('[') && src.endsWith(']');
-  
+  const isDestRegister = /^[A-D][LH]$/.test(dest) || /^[A-D]X$/.test(dest);
+  const isSrcMemory = src.startsWith("[") && src.endsWith("]");
+
   return isDestRegister && isSrcMemory;
 }
 
@@ -740,7 +740,10 @@ async function startThread(generator: EventGenerator): Promise<void> {
             store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
             store.set(cycleCountAtom, cycleCount);
             store.set(messageAtom, "Ejecución: Detenido");
-            console.log("🛑 HLT ejecutado - executeStageCounter establecido a 4, cycleCount:", cycleCount);
+            console.log(
+              "🛑 HLT ejecutado - executeStageCounter establecido a 4, cycleCount:",
+              cycleCount,
+            );
           } else if (status.until === "cycle-change" || status.until === "end-of-instruction") {
             pauseSimulation();
           }
@@ -807,12 +810,18 @@ async function startThread(generator: EventGenerator): Promise<void> {
             messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";
           } else if (event.value.type === "cpu:wr.on") {
             messageReadWrite = "Ejecución: write(Memoria[MAR]) ← MBR";
-            
+
             // Detectar si es una instrucción MOV que escribe en memoria (solo para logging)
-            if (currentInstructionName === "MOV" && !isMOVReadOperation(currentInstructionOperands)) {
+            if (
+              currentInstructionName === "MOV" &&
+              !isMOVReadOperation(currentInstructionOperands)
+            ) {
               console.log("🔍 MOV Debug - Escritura en memoria detectada");
               console.log("🔍 MOV Debug - Operandos:", currentInstructionOperands);
-              console.log("🔍 MOV Debug - Es lectura:", isMOVReadOperation(currentInstructionOperands));
+              console.log(
+                "🔍 MOV Debug - Es lectura:",
+                isMOVReadOperation(currentInstructionOperands),
+              );
             }
           } else if (event.value.type === "pio:write.ok") {
             store.set(messageAtom, "Ejecución: write(PIO[MAR]) ← MBR");
@@ -875,23 +884,42 @@ async function startThread(generator: EventGenerator): Promise<void> {
               logInstructionExecution("MAR.set", sourceRegister, instructionContext, messageConfig);
 
               // Debug adicional para MOV con IP
-              if (sourceRegister === "IP" && currentInstructionName === "MOV" && executeStageCounter === 4) {
+              if (
+                sourceRegister === "IP" &&
+                currentInstructionName === "MOV" &&
+                executeStageCounter === 4
+              ) {
                 console.log("🔍 Debug MOV IP - Verificando condiciones:");
                 console.log("   sourceRegister === 'IP':", sourceRegister === "IP");
-                console.log("   currentInstructionName === 'MOV':", currentInstructionName === "MOV");
+                console.log(
+                  "   currentInstructionName === 'MOV':",
+                  currentInstructionName === "MOV",
+                );
                 console.log("   currentInstructionModeri:", currentInstructionModeri);
                 console.log("   !currentInstructionModeid:", !currentInstructionModeid);
                 console.log("   executeStageCounter === 4:", executeStageCounter === 4);
                 console.log("   currentInstructionOperands:", currentInstructionOperands);
-                console.log("   currentInstructionOperands.length === 2:", currentInstructionOperands.length === 2);
+                console.log(
+                  "   currentInstructionOperands.length === 2:",
+                  currentInstructionOperands.length === 2,
+                );
                 if (currentInstructionOperands.length >= 2) {
                   console.log("   Segundo operando:", currentInstructionOperands[1]);
-                  console.log("   !startsWith('['):", !currentInstructionOperands[1].startsWith('['));
-                  console.log("   !endsWith(']'):", !currentInstructionOperands[1].endsWith(']'));
+                  console.log(
+                    "   !startsWith('['):",
+                    !currentInstructionOperands[1].startsWith("["),
+                  );
+                  console.log("   !endsWith(']'):", !currentInstructionOperands[1].endsWith("]"));
                   console.log("   /^\\d+$/.test():", /^\d+$/.test(currentInstructionOperands[1]));
-                  console.log("   /^\\d+h$/i.test():", /^\d+h$/i.test(currentInstructionOperands[1]));
-                  console.log("   Es valor inmediato (decimal o hex):", 
-                    /^\d+$/.test(currentInstructionOperands[1]) || /^\d+h$/i.test(currentInstructionOperands[1]));
+                  console.log(
+                    "   /^\\d+h$/i.test():",
+                    /^\d+h$/i.test(currentInstructionOperands[1]),
+                  );
+                  console.log(
+                    "   Es valor inmediato (decimal o hex):",
+                    /^\d+$/.test(currentInstructionOperands[1]) ||
+                      /^\d+h$/i.test(currentInstructionOperands[1]),
+                  );
                 }
               }
 
@@ -927,13 +955,16 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 !currentInstructionModeid &&
                 executeStageCounter === 4 &&
                 currentInstructionOperands.length === 2 &&
-                !currentInstructionOperands[1].startsWith('[') &&
-                !currentInstructionOperands[1].endsWith(']') &&
-                (/^\d+$/.test(currentInstructionOperands[1]) || /^\d+h$/i.test(currentInstructionOperands[1]))
+                !currentInstructionOperands[1].startsWith("[") &&
+                !currentInstructionOperands[1].endsWith("]") &&
+                (/^\d+$/.test(currentInstructionOperands[1]) ||
+                  /^\d+h$/i.test(currentInstructionOperands[1]))
               ) {
-                // Caso especial para MOV con direccionamiento directo + valor inmediato (MOV X, 5): 
+                // Caso especial para MOV con direccionamiento directo + valor inmediato (MOV X, 5):
                 // mostrar el mensaje especial cuando IP va al MAR
-                console.log("🎯 CONDICIÓN ESPECIAL DETECTADA - MOV con direccionamiento directo + valor inmediato");
+                console.log(
+                  "🎯 CONDICIÓN ESPECIAL DETECTADA - MOV con direccionamiento directo + valor inmediato",
+                );
                 console.log("🔍 Operandos:", currentInstructionOperands);
                 console.log("🔍 Segundo operando:", currentInstructionOperands[1]);
                 console.log("🔍 Es número:", /^\d+$/.test(currentInstructionOperands[1]));
@@ -961,7 +992,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             // Para MOV con direccionamiento indirecto, no contabilizar el ciclo pero permitir la pausa
             // Para el caso de BL/BX a ri, SÍ contabilizar el ciclo aquí (no se contabilizó en register.copy)
             const skipCycleCount = isIndirectMOV && !blBxToRiProcessed;
-               
+
             if (!skipCycleCount) {
               cycleCount++;
               currentInstructionCycleCount++;
@@ -974,7 +1005,10 @@ async function startThread(generator: EventGenerator): Promise<void> {
             }
 
             executeStageCounter++;
-            console.log("🔍 cpu:mar.set - executeStageCounter después del incremento:", executeStageCounter);
+            console.log(
+              "🔍 cpu:mar.set - executeStageCounter después del incremento:",
+              executeStageCounter,
+            );
           } else if (event.value.type === "cpu:register.update") {
             const sourceRegister = event.value.register;
 
@@ -1198,7 +1232,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
               displaySource =
                 sourceRegister === "result"
                   ? `${destRegister} ${currentInstructionName} ${fuenteALU}`
-                  : sourceRegister === "ri" 
+                  : sourceRegister === "ri"
                     ? "MBR"
                     : sourceRegister;
               MBRALU =
@@ -1294,8 +1328,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
             // Para instrucciones MOV entre registros, siempre contabilizar el ciclo
             // Para BL/BX a ri, NO contabilizar el ciclo aquí (se contabilizará en cpu:mar.set)
             if (currentInstructionName === "MOV") {
-              const isBLorBXToRi = (sourceRegister === "BL" || sourceRegister === "BX") && destRegister === "ri";
-              
+              const isBLorBXToRi =
+                (sourceRegister === "BL" || sourceRegister === "BX") && destRegister === "ri";
+
               if (!isBLorBXToRi) {
                 store.set(messageAtom, displayMessage);
                 cycleCount++;
@@ -1309,7 +1344,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 );
               } else {
                 console.log(
-                  "⏭️ Ciclo NO contabilizado para MOV register.copy (BL/BX→ri) - se contabilizará en cpu:mar.set"
+                  "⏭️ Ciclo NO contabilizado para MOV register.copy (BL/BX→ri) - se contabilizará en cpu:mar.set",
                 );
               }
             } else if (
@@ -1367,8 +1402,11 @@ async function startThread(generator: EventGenerator): Promise<void> {
             // Para MOV, determinar si es lectura o escritura basado en los operandos
             if (currentInstructionName === "MOV" && executeStageCounter === 5) {
               console.log("🔍 MOV Debug - Operandos:", currentInstructionOperands);
-              console.log("🔍 MOV Debug - Es lectura:", isMOVReadOperation(currentInstructionOperands));
-              
+              console.log(
+                "🔍 MOV Debug - Es lectura:",
+                isMOVReadOperation(currentInstructionOperands),
+              );
+
               // Usar la función auxiliar para determinar si es lectura o escritura
               if (isMOVReadOperation(currentInstructionOperands)) {
                 // Es lectura de memoria (reg<-mem)
@@ -1381,65 +1419,97 @@ async function startThread(generator: EventGenerator): Promise<void> {
             let ContinuarSinGuardar = false;
             // Identificar si este bus:reset es el último paso antes del cycle.end
             let isLastStepBeforeCycleEnd = false;
-            
+
             // Para MOV/ADD/SUB con escritura en memoria:
             // - Direccionamiento directo: bus:reset en executeStageCounter === 6 es el último paso
             // - Direccionamiento indirecto: bus:reset en executeStageCounter === 5 es el último paso
-            if ((currentInstructionName === "MOV" || 
-                 currentInstructionName === "ADD" || 
-                 currentInstructionName === "SUB") && 
-                messageReadWrite === "Ejecución: write(Memoria[MAR]) ← MBR") {
-              
+            if (
+              (currentInstructionName === "MOV" ||
+                currentInstructionName === "ADD" ||
+                currentInstructionName === "SUB") &&
+              messageReadWrite === "Ejecución: write(Memoria[MAR]) ← MBR"
+            ) {
               // Direccionamiento directo (modeRi = true): último paso en executeStageCounter === 6
               if (currentInstructionModeri && executeStageCounter === 6) {
                 isLastStepBeforeCycleEnd = true;
               }
               // Direccionamiento indirecto (modeRi = false, modeId = false): último paso en executeStageCounter === 5
-              else if (!currentInstructionModeri && !currentInstructionModeid && executeStageCounter === 5) {
+              else if (
+                !currentInstructionModeri &&
+                !currentInstructionModeid &&
+                executeStageCounter === 5
+              ) {
                 isLastStepBeforeCycleEnd = true;
               }
             }
-            
+
             if (
               (currentInstructionModeri &&
                 (executeStageCounter === 4 || executeStageCounter === 8) &&
                 currentInstructionName === "INT") ||
               // Para MOV/ADD/SUB con direccionamiento directo durante la captación del operando en executeStageCounter === 3,
               // no mostrar el mensaje de bus:reset porque cpu:register.update manejará el mensaje correcto
-              (executeStageCounter === 3 && (currentInstructionName === "MOV" || currentInstructionName === "ADD" || currentInstructionName === "SUB") && currentInstructionModeri) ||
+              (executeStageCounter === 3 &&
+                (currentInstructionName === "MOV" ||
+                  currentInstructionName === "ADD" ||
+                  currentInstructionName === "SUB") &&
+                currentInstructionModeri) ||
               // Para MOV/ADD/SUB con direccionamiento directo en executeStageCounter === 3 (captación de dirección),
               // no contabilizar el ciclo porque cpu:register.update ya lo maneja
-              (executeStageCounter === 3 && (currentInstructionName === "MOV" || currentInstructionName === "ADD" || currentInstructionName === "SUB") && !currentInstructionModeri && !currentInstructionModeid &&
-               currentInstructionOperands.length >= 2 &&
-               // Excluir cuando se está captando la dirección (cualquier operando con dirección directa)
-               (// Direccionamiento directo simple: MOV/ADD/SUB X, AL o MOV/ADD/SUB AL, X (sin corchetes, con direcciones/registros)
-                (!currentInstructionOperands[0].startsWith('[') && !currentInstructionOperands[0].endsWith(']') &&
-                 !currentInstructionOperands[1].startsWith('[') && !currentInstructionOperands[1].endsWith(']') &&
-                 (/^\d+$/.test(currentInstructionOperands[1]) || /^\d+[hH]$/i.test(currentInstructionOperands[1]) ||
-                  /^[0-9A-Fa-f]+[hH]?$/.test(currentInstructionOperands[1]) ||
-                  /^\d+$/.test(currentInstructionOperands[0]) || /^\d+[hH]$/i.test(currentInstructionOperands[0]) ||
-                  /^[0-9A-Fa-f]+[hH]?$/.test(currentInstructionOperands[0]))) ||
-                // Direccionamiento directo con corchetes: MOV/ADD/SUB [09], CL o MOV/ADD/SUB AL, [0F] (captación de dirección)
-                ((currentInstructionOperands[0].startsWith('[') && currentInstructionOperands[0].endsWith(']') &&
-                  /^\[[0-9A-Fa-f]+[hH]?\]$/.test(currentInstructionOperands[0])) ||
-                 (currentInstructionOperands[1].startsWith('[') && currentInstructionOperands[1].endsWith(']') &&
-                  /^\[[0-9A-Fa-f]+[hH]?\]$/.test(currentInstructionOperands[1]))))) ||
+              (executeStageCounter === 3 &&
+                (currentInstructionName === "MOV" ||
+                  currentInstructionName === "ADD" ||
+                  currentInstructionName === "SUB") &&
+                !currentInstructionModeri &&
+                !currentInstructionModeid &&
+                currentInstructionOperands.length >= 2 && // Direccionamiento directo simple: MOV/ADD/SUB X, AL o MOV/ADD/SUB AL, X (sin corchetes, con direcciones/registros)
+                // Excluir cuando se está captando la dirección (cualquier operando con dirección directa)
+                ((!currentInstructionOperands[0].startsWith("[") &&
+                  !currentInstructionOperands[0].endsWith("]") &&
+                  !currentInstructionOperands[1].startsWith("[") &&
+                  !currentInstructionOperands[1].endsWith("]") &&
+                  (/^\d+$/.test(currentInstructionOperands[1]) ||
+                    /^\d+h$/i.test(currentInstructionOperands[1]) ||
+                    /^[0-9A-F]+h?$/i.test(currentInstructionOperands[1]) ||
+                    /^\d+$/.test(currentInstructionOperands[0]) ||
+                    /^\d+h$/i.test(currentInstructionOperands[0]) ||
+                    /^[0-9A-F]+h?$/i.test(currentInstructionOperands[0]))) ||
+                  // Direccionamiento directo con corchetes: MOV/ADD/SUB [09], CL o MOV/ADD/SUB AL, [0F] (captación de dirección)
+                  (currentInstructionOperands[0].startsWith("[") &&
+                    currentInstructionOperands[0].endsWith("]") &&
+                    /^\[[0-9A-F]+h?\]$/i.test(currentInstructionOperands[0])) ||
+                  (currentInstructionOperands[1].startsWith("[") &&
+                    currentInstructionOperands[1].endsWith("]") &&
+                    /^\[[0-9A-F]+h?\]$/i.test(currentInstructionOperands[1])))) ||
               // Para MOV/ADD/SUB con direccionamiento indirecto + inmediato (MOV/ADD/SUB [BL], 4) en executeStageCounter === 3,
               // no contabilizar el ciclo porque cpu:register.update ya maneja la captación del valor inmediato
-              (executeStageCounter === 3 && (currentInstructionName === "MOV" || currentInstructionName === "ADD" || currentInstructionName === "SUB") && !currentInstructionModeri && !currentInstructionModeid &&
-               currentInstructionOperands.length >= 2 &&
-               // Detectar MOV/ADD/SUB [registro], valor_inmediato
-               ((currentInstructionOperands[0].startsWith('[') && currentInstructionOperands[0].endsWith(']') &&
-                 /^\[[A-Za-z]+[LH]?\]$/i.test(currentInstructionOperands[0]) && // [BL], [BH], [CL], etc.
-                 (/^\d+$/.test(currentInstructionOperands[1]) || /^\d+[hH]$/i.test(currentInstructionOperands[1]))) || // valor inmediato
-                // También detectar MOV/ADD/SUB valor_inmediato, [registro]
-                (currentInstructionOperands[1].startsWith('[') && currentInstructionOperands[1].endsWith(']') &&
-                 /^\[[A-Za-z]+[LH]?\]$/i.test(currentInstructionOperands[1]) && // [BL], [BH], [CL], etc.
-                 (/^\d+$/.test(currentInstructionOperands[0]) || /^\d+[hH]$/i.test(currentInstructionOperands[0]))))) ||
+              (executeStageCounter === 3 &&
+                (currentInstructionName === "MOV" ||
+                  currentInstructionName === "ADD" ||
+                  currentInstructionName === "SUB") &&
+                !currentInstructionModeri &&
+                !currentInstructionModeid &&
+                currentInstructionOperands.length >= 2 &&
+                // Detectar MOV/ADD/SUB [registro], valor_inmediato
+                ((currentInstructionOperands[0].startsWith("[") &&
+                  currentInstructionOperands[0].endsWith("]") &&
+                  /^\[[A-Z]+\]$/i.test(currentInstructionOperands[0]) && // [BL], [BH], [CL], etc.
+                  (/^\d+$/.test(currentInstructionOperands[1]) ||
+                    /^\d+h$/i.test(currentInstructionOperands[1]))) || // valor inmediato
+                  // También detectar MOV/ADD/SUB valor_inmediato, [registro]
+                  (currentInstructionOperands[1].startsWith("[") &&
+                    currentInstructionOperands[1].endsWith("]") &&
+                    /^\[[A-Z]+\]$/i.test(currentInstructionOperands[1]) && // [BL], [BH], [CL], etc.
+                    (/^\d+$/.test(currentInstructionOperands[0]) ||
+                      /^\d+h$/i.test(currentInstructionOperands[0]))))) ||
               // Para MOV/ADD/SUB con direccionamiento directo en executeStageCounter === 5,
               // no mostrar el mensaje de bus:reset porque cpu:register.update manejará el mensaje correcto
               // (se está leyendo el tercer byte - valor inmediato)
-              (executeStageCounter === 5 && (currentInstructionName === "MOV" || currentInstructionName === "ADD" || currentInstructionName === "SUB") && currentInstructionModeri) ||
+              (executeStageCounter === 5 &&
+                (currentInstructionName === "MOV" ||
+                  currentInstructionName === "ADD" ||
+                  currentInstructionName === "SUB") &&
+                currentInstructionModeri) ||
               (currentInstructionModeid &&
                 executeStageCounter === 4 &&
                 (currentInstructionName === "CALL" ||
@@ -1459,16 +1529,43 @@ async function startThread(generator: EventGenerator): Promise<void> {
               ContinuarSinGuardar = true;
               console.log("🔄 ContinuarSinGuardar establecido a true - condición cumplida");
             } else {
-              console.log("🔄 ContinuarSinGuardar mantenido como false - ninguna condición cumplida");
-              
+              console.log(
+                "🔄 ContinuarSinGuardar mantenido como false - ninguna condición cumplida",
+              );
+
               // Debug específico para MOV/ADD/SUB en step 3
-              if (executeStageCounter === 3 && (currentInstructionName === "MOV" || currentInstructionName === "ADD" || currentInstructionName === "SUB") && !currentInstructionModeri && !currentInstructionModeid) {
+              if (
+                executeStageCounter === 3 &&
+                (currentInstructionName === "MOV" ||
+                  currentInstructionName === "ADD" ||
+                  currentInstructionName === "SUB") &&
+                !currentInstructionModeri &&
+                !currentInstructionModeid
+              ) {
                 console.log(`🔍 Debug ${currentInstructionName} step 3:`);
                 console.log("   Operandos length >= 2:", currentInstructionOperands.length >= 2);
-                console.log("   Operando[0] no tiene []:", !currentInstructionOperands[0].startsWith('[') && !currentInstructionOperands[0].endsWith(']'));
-                console.log("   Operando[1] no tiene []:", !currentInstructionOperands[1].startsWith('[') && !currentInstructionOperands[1].endsWith(']'));
-                console.log("   Test operando[0] es dirección:", /^\d+$/.test(currentInstructionOperands[0]) || /^\d+[hH]$/i.test(currentInstructionOperands[0]) || /^[0-9A-Fa-f]+[hH]?$/.test(currentInstructionOperands[0]));
-                console.log("   Test operando[1] es inmediato:", /^\d+$/.test(currentInstructionOperands[1]) || /^\d+[hH]$/i.test(currentInstructionOperands[1]) || /^[0-9A-Fa-f]+[hH]?$/.test(currentInstructionOperands[1]));
+                console.log(
+                  "   Operando[0] no tiene []:",
+                  !currentInstructionOperands[0].startsWith("[") &&
+                    !currentInstructionOperands[0].endsWith("]"),
+                );
+                console.log(
+                  "   Operando[1] no tiene []:",
+                  !currentInstructionOperands[1].startsWith("[") &&
+                    !currentInstructionOperands[1].endsWith("]"),
+                );
+                console.log(
+                  "   Test operando[0] es dirección:",
+                  /^\d+$/.test(currentInstructionOperands[0]) ||
+                    /^\d+h$/i.test(currentInstructionOperands[0]) ||
+                    /^[0-9A-F]+h?$/i.test(currentInstructionOperands[0]),
+                );
+                console.log(
+                  "   Test operando[1] es inmediato:",
+                  /^\d+$/.test(currentInstructionOperands[1]) ||
+                    /^\d+h$/i.test(currentInstructionOperands[1]) ||
+                    /^[0-9A-F]+h?$/i.test(currentInstructionOperands[1]),
+                );
               }
             }
             console.log("ContinuarSinGuarda:", ContinuarSinGuardar);
@@ -1477,27 +1574,48 @@ async function startThread(generator: EventGenerator): Promise<void> {
             console.log("🔍 bus:reset Debug - messageReadWrite:", messageReadWrite);
             console.log("🔍 bus:reset Debug - currentInstructionModeri:", currentInstructionModeri);
             console.log("🔍 bus:reset Debug - currentInstructionModeid:", currentInstructionModeid);
-            console.log("🔍 bus:reset Debug - currentInstructionOperands:", currentInstructionOperands);
+            console.log(
+              "🔍 bus:reset Debug - currentInstructionOperands:",
+              currentInstructionOperands,
+            );
             console.log("🔍 bus:reset Debug - Operando[0]:", currentInstructionOperands[0]);
             console.log("🔍 bus:reset Debug - Operando[1]:", currentInstructionOperands[1]);
-            console.log("🔍 bus:reset Debug - Condición MOV/ADD/SUB directo step 3:", 
-              executeStageCounter === 3 && (currentInstructionName === "MOV" || currentInstructionName === "ADD" || currentInstructionName === "SUB") && !currentInstructionModeri && !currentInstructionModeid);
-            console.log("🔍 bus:reset Debug - Es lectura de memoria:", messageReadWrite === "Ejecución: MBR ← read(Memoria[MAR])");
-            console.log("🔍 bus:reset Debug - MOV/ADD/SUB indirecto debe mostrar:", 
-              (currentInstructionName === "MOV" || currentInstructionName === "ADD" || currentInstructionName === "SUB") && !currentInstructionModeri && !currentInstructionModeid && 
-              executeStageCounter === 5 && messageReadWrite === "Ejecución: MBR ← read(Memoria[MAR])");
-            
+            console.log(
+              "🔍 bus:reset Debug - Condición MOV/ADD/SUB directo step 3:",
+              executeStageCounter === 3 &&
+                (currentInstructionName === "MOV" ||
+                  currentInstructionName === "ADD" ||
+                  currentInstructionName === "SUB") &&
+                !currentInstructionModeri &&
+                !currentInstructionModeid,
+            );
+            console.log(
+              "🔍 bus:reset Debug - Es lectura de memoria:",
+              messageReadWrite === "Ejecución: MBR ← read(Memoria[MAR])",
+            );
+            console.log(
+              "🔍 bus:reset Debug - MOV/ADD/SUB indirecto debe mostrar:",
+              (currentInstructionName === "MOV" ||
+                currentInstructionName === "ADD" ||
+                currentInstructionName === "SUB") &&
+                !currentInstructionModeri &&
+                !currentInstructionModeid &&
+                executeStageCounter === 5 &&
+                messageReadWrite === "Ejecución: MBR ← read(Memoria[MAR])",
+            );
+
             if (!ContinuarSinGuardar) {
               store.set(messageAtom, messageReadWrite);
               cycleCount++;
               currentInstructionCycleCount++;
               store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
-              
+
               // No pausar si es una instrucción MOV que escribe en memoria (último paso)
               // La pausa debe ocurrir en cpu:cycle.end
-              const isMOVWriteToMemory = currentInstructionName === "MOV" && 
-                                        messageReadWrite === "Ejecución: write(Memoria[MAR]) ← MBR";
-              
+              const isMOVWriteToMemory =
+                currentInstructionName === "MOV" &&
+                messageReadWrite === "Ejecución: write(Memoria[MAR]) ← MBR";
+
               if (status.until === "cycle-change" && !isMOVWriteToMemory) {
                 pauseSimulation();
               }

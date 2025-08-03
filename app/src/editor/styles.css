@@ -45,7 +45,7 @@
     );
     border-left: 3px solid #3b82f6;
     border-right: 1px solid rgba(59, 130, 246, 0.2);
-    box-shadow: 
+    box-shadow:
       0 0 0 1px rgba(59, 130, 246, 0.1),
       0 2px 8px rgba(59, 130, 246, 0.15),
       inset 0 1px 0 rgba(255, 255, 255, 0.05);
@@ -58,11 +58,7 @@
     content: "";
     position: absolute;
     inset: 0;
-    background: radial-gradient(
-      ellipse at center,
-      rgba(59, 130, 246, 0.05) 0%,
-      transparent 70%
-    );
+    background: radial-gradient(ellipse at center, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
     pointer-events: none;
     z-index: -1;
   }
@@ -83,7 +79,7 @@
       #3b82f6 80%,
       transparent 100%
     );
-    box-shadow: 
+    box-shadow:
       0 0 8px rgba(59, 130, 246, 0.6),
       0 0 16px rgba(59, 130, 246, 0.3);
     animation: glow 2s ease-in-out infinite alternate;
@@ -99,7 +95,7 @@
     color: #3b82f6;
     font-size: 16px;
     font-weight: bold;
-    text-shadow: 
+    text-shadow:
       0 0 8px rgba(59, 130, 246, 0.8),
       0 0 16px rgba(59, 130, 246, 0.4);
     z-index: 10;
@@ -109,17 +105,13 @@
 
   /* Indicador adicional en el gutter para la instrucción en curso */
   .cm-current-instruction .cm-gutterElement {
-    background: linear-gradient(
-      135deg,
-      rgba(59, 130, 246, 0.2) 0%,
-      rgba(59, 130, 246, 0.1) 100%
-    );
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0.1) 100%);
     color: #60a5fa;
     font-weight: 700;
     text-shadow: 0 0 4px rgba(59, 130, 246, 0.5);
     border-radius: 4px;
     margin: 1px 2px;
-    box-shadow: 
+    box-shadow:
       0 0 0 1px rgba(59, 130, 246, 0.3),
       0 1px 3px rgba(59, 130, 246, 0.2);
     position: relative;
@@ -154,11 +146,7 @@
     content: "";
     position: absolute;
     inset: 0;
-    background: radial-gradient(
-      ellipse at center,
-      rgba(59, 130, 246, 0.05) 0%,
-      transparent 70%
-    );
+    background: radial-gradient(ellipse at center, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
     pointer-events: none;
     z-index: -1;
   }
@@ -195,19 +183,20 @@
 
   @keyframes glow {
     0% {
-      box-shadow: 
+      box-shadow:
         0 0 8px rgba(59, 130, 246, 0.6),
         0 0 16px rgba(59, 130, 246, 0.3);
     }
     100% {
-      box-shadow: 
+      box-shadow:
         0 0 12px rgba(59, 130, 246, 0.8),
         0 0 24px rgba(59, 130, 246, 0.5);
     }
   }
 
   @keyframes gutterGlow {
-    0%, 100% {
+    0%,
+    100% {
       opacity: 0.3;
       transform: scale(1);
     }

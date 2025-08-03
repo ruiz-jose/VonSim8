@@ -12,42 +12,65 @@ El ciclo de la instrucción se define como la secuencia de microoperaciones que 
 `destino` ← `origen`
 
 La visualización del ciclo de instrucción se basa en el modelo RTL (Register Transfer Level), mostrando el desplazamiento de datos y las señales de control en cada fase. Esto facilita la comprensión de las microoperaciones internas y la interacción entre los componentes del procesador.
+## Etapa de Captación: 
+En esta etapa, común a todas las instrucciones, consiste en la lectura de la instrucción desde la memoria.
 
-## Etapa de Captación:
+1. **`MAR` $\leftarrow$ `IP`**:
+La Unidad de Control (UC) transfiere el contenido del registro puntero de instrucciones (`IP`) al registro de direcciones de memoria (`MAR`). Este paso prepara el sistema para acceder a la posición de memoria donde se encuentra la próxima instrucción.
+2. **`MBR` $\leftarrow$ `read(Memoria[MAR])` ; `IP` $\leftarrow$ `IP` + 1**:
+La UC activa la señal de lectura para obtener el contenido de la memoria en la dirección especificada por el (`MAR`). El dato leído se transfiere al registro de datos de memoria (`MBR`) mediante el bus de datos. Simultáneamente, el registro (`IP`) se incrementa en uno, apuntando así a la siguiente instrucción en memoria u operando de la instrucción vigente.
+3. **`IR` $\leftarrow$ `MBR`**:
+Finalmente, el contenido del registro de datos de memoria (`MBR`) se copia en el registro de instrucciones (`IR`). Con este paso, la instrucción ha sido captada y está lista para ser decodificada y ejecutada. 
 
-En esta etapa, común a todas las instrucciones, se realiza la lectura de la instrucción desde la memoria.
+La etapa de captación tiene 3 ciclos para todas las instrucciones.
 
-1. **`MAR` ← `IP`**:
-   El contenido del registro puntero de instrucciones `IP` se transfiere al registro de direcciones de memoria `MAR`. La UC genera la señal necesaria para seleccionar el valor del `IP` y copiarlo en el `MAR`.
-2. **`MDR` ← `read(Memoria[MAR])` ; `IP` ← `IP` + 1**:
-   La UC activa la señal de lectura (read) hacia la memoria, utilizando el valor del `MAR` como dirección. El dato leído se transfiere al Registro de Datos de Memoria `MBR` a través del bus de datos. Simultáneamente, el `IP` se incrementa en 1 para apuntar al siguiente byte.
-3. **`IR` ← `MBR`**:
-   El contenido del `MBR` se transfiere al Registro de Instrucciones `IR`, completando la etapa de captación.
-
-## Etapa de Ejecución:
-
+### Etapa de Ejecución:
 En esta etapa, las operaciones específicas dependen del tipo de instrucción. A continuación, se describen algunos casos representativos:
 
-- MOV `Rx`, `Ry` (Copiar entre registros)
-  1. **`Rx` ← `Ry`**:
-     El contenido del registro `Ry` se copia en el registro `Rx`.
+Instruccion de transferencia de datos MOV
+#### Destino registro
+* MOV `Rx`, `Ry` (Entre registros)
+  4. **`Rx` $\leftarrow$ `Ry`**: El valor almacenado en Ry se copia en el registro Rx.
 
-- MOV `Rx`, `[Dirección]` (Cargar a registro)
-  1. **`MAR` ← `IP`**:
-     El valor del `IP` se transfiere a `MAR`.
-  2. **`MBR` ← `read(Memoria[MAR])`; `IP` ← `IP` + 1**:
-     Se lee (read) de memoria el contenido de la dirección indicada por `MAR` y se almacena en `MBR`.Simultáneamente, el `IP` se incrementa.
-  3. **`MAR` ← `MBR`**:
-     El contenido de `MBR` se transfiere a `MAR`.
-  4. **`MBR` ← `read(Memoria[MAR])`**:
-     Se lee de memoria el contenido de la dirección indicada por `MAR` y se almacena en `MBR`.
-  5. **`Rx` ← `MBR`**:
-     El contenido del `MBR` se copia al registro `Rx`.
+* MOV `Rx`, `[Dirección]` (Directo)
+  4. **`MAR` $\leftarrow$ `IP`**: El contenido de IP se transfiere al registro MAR.
+  5. **`MBR` $\leftarrow$ `read(Memoria[MAR])`; `IP` $\leftarrow$ `IP` + 1**: Se lee el dato de la memoria en la dirección indicada por MAR y se almacena en MBR; luego, IP se incrementa en uno.  
+  6. **`MAR` $\leftarrow$ `MBR`**: El valor de MBR se transfiere a MAR.
+  7. **`MBR` $\leftarrow$ `read(Memoria[MAR])`**: Se lee el dato de la memoria en la nueva dirección de MAR y se almacena en MBR.
+  8. **`Rx`  $\leftarrow$ `MBR`**: Finalmente, el contenido de MBR se copia en el registro Rx.
 
-- MOV `[Dirección]`, `Ry` (Almacenar en memoria)  
-  1, 2, 3. Igual que MOV `Rx`, `[Dirección]`. 4. **`MBR` ← `Ry`**:
-  El contenido de `Ry` se transfiere a `MBR`. 5. **`write(Memoria[MAR])` ← `MBR`**:
-  El contenido de `MBR` se escribe (write) en memoria en la dirección apuntada por el `MAR`.
+* MOV `Rx`, `Dato` (Inmediato)
+  4. 5. Se obtiene el operando de la instrucción.
+  6. **`Rx`  $\leftarrow$ `MBR`**: El contenido de MBR se transfiere al registro Rx.
+
+* MOV `Rx`, `[BL]` (Indirecto) 
+  4. **`MAR` $\leftarrow$ `BL`**: El contenido de BL se transfiere al registro MAR.
+  5. **`MBR` $\leftarrow$ `read(Memoria[MAR])`**: Se lee el dato de la memoria en la dirección indicada por MAR y se almacena en MBR.
+  6. **`Rx`  $\leftarrow$ `MBR`**: Finalmente, el contenido de MBR se copia en el registro Rx.
+
+  #### Destino Memoria
+* MOV `[Dirección]`, `Ry` (Directo)     
+  4. 5. Se obtiene el operando de la instrucción.
+  6. **`MAR` $\leftarrow$ `MBR`**: El valor de MBR se transfiere al registro MAR.
+  7. **`MBR` $\leftarrow$ `Ry`**: El contenido de Ry se copia en MBR.
+  8. **`write(Memoria[MAR])` $\leftarrow$ `MBR`**: Se escribe el valor de MBR en la posición de memoria indicada por MAR.
+
+* MOV `[BL]`, `Ry` (Indirecto)     
+  4. **`MAR` $\leftarrow$ `BL`**: El contenido de BL se transfiere al registro MAR.
+  5. **`MBR` $\leftarrow$ `Ry`**: El contenido de Ry se copia en MBR.
+  6. **`write(Memoria[MAR])` $\leftarrow$ `MBR`**: Se escribe el valor de MBR en la posición de memoria indicada por MAR.
+
+* MOV `[Dirección]`, `Dato` (Inmediato)     
+  4. 5. Se obtiene el operando de la instrucción.
+  6. **`MAR` $\leftarrow$ `IP`;`ri` $\leftarrow$ `MBR`**: El contenido de IP se transfiere al registro MAR y simultaneamente se transfiere el valor de MBR a un registro intermedio (ri) .  
+  7. **`MBR` $\leftarrow$ `read(Memoria[MAR])`; `IP` $\leftarrow$ `IP` + 1**: Se lee el dato de la memoria en la dirección indicada por MAR y se almacena en MBR; luego, IP se incrementa en uno.  
+  8. **`MAR` $\leftarrow$ `ri`**: El contenido de ri se transfiere al registro MAR.
+  9. **`write(Memoria[MAR])` $\leftarrow$ `MBR`**: Se escribe el valor de MBR en la posición de memoria indicada por MAR.
+
+* MOV `[BL]`, `Dato` (Inmediato)     
+  4. 5. Se obtiene el operando de la instrucción.
+  6. **`MAR` $\leftarrow$ `BL`**: El contenido de BL se transfiere al registro MAR.
+  7. **`write(Memoria[MAR])` $\leftarrow$ `MBR`**: Se escribe el valor de MBR en la posición de memoria indicada por MAR.
 
 - ADD `Rx`, `[Dirección]` (Sumar a registro)
   1, 2, 3, 4. Igual que MOV `Rx`, `[Dirección]`. 5. **`Rx` ← `Rx` + `MBR`**:
