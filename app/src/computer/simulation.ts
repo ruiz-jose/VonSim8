@@ -844,6 +844,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
             console.log("resultmbrimar:", resultmbrimar);
             console.log("displayMessageresultmbr:", displayMessageresultmbr);
             console.log("shouldDisplayMessage:", shouldDisplayMessage);
+            console.log("🔍 BL/BX Debug - blBxToRiProcessed:", blBxToRiProcessed);
+            console.log("🔍 BL/BX Debug - blBxRegisterName:", blBxRegisterName);
 
             // Detectar si es MOV con direccionamiento indirecto para evitar contabilizar el ciclo adicional
             const isIndirectMOV =
@@ -966,6 +968,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             }
 
             executeStageCounter++;
+            console.log("🔍 cpu:mar.set - executeStageCounter después del incremento:", executeStageCounter);
           } else if (event.value.type === "cpu:register.update") {
             const sourceRegister = event.value.register;
 
@@ -1258,10 +1261,10 @@ async function startThread(generator: EventGenerator): Promise<void> {
               displayMessage = `Ejecución: MAR ← ${registerName}`;
               // NO guardar el mensaje aquí: store.set(messageAtom, displayMessage);
               shouldDisplayMessage = false;
-              executeStageCounter++;
               // Marcar que ya se procesó esta transferencia para mostrar el mensaje correcto en cpu:mar.set
               mbridirmar = true;
               blBxToRiProcessed = true; // Marcar que se procesó BL/BX→ri
+              // NO incrementar executeStageCounter aquí - se maneja en cpu:mar.set
             } else {
               if (String(sourceRegister) === "right.l") {
                 fuenteALU = sourceRegister;
@@ -1278,6 +1281,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
               destRegister,
               "currentInstructionName:",
               currentInstructionName,
+              "executeStageCounter:",
+              executeStageCounter,
             );
 
             // Para instrucciones MOV entre registros, siempre contabilizar el ciclo
@@ -1393,7 +1398,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
               (currentInstructionModeri &&
                 (executeStageCounter === 4 || executeStageCounter === 8) &&
                 currentInstructionName === "INT") ||
-              (executeStageCounter === 3 && currentInstructionName === "MOV") ||
+              // Para MOV con direccionamiento directo durante la captación del operando en executeStageCounter === 3,
+              // no mostrar el mensaje de bus:reset porque cpu:register.update manejará el mensaje correcto
+              (executeStageCounter === 3 && currentInstructionName === "MOV" && currentInstructionModeri) ||
               // Para MOV con direccionamiento directo en executeStageCounter === 5,
               // no mostrar el mensaje de bus:reset porque cpu:register.update manejará el mensaje correcto
               // (se está leyendo el tercer byte - valor inmediato)
@@ -1419,6 +1426,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
             console.log("ContinuarSinGuarda:", ContinuarSinGuardar);
             console.log("executeStageCounter:", executeStageCounter);
             console.log("isLastStepBeforeCycleEnd:", isLastStepBeforeCycleEnd);
+            console.log("🔍 bus:reset Debug - messageReadWrite:", messageReadWrite);
+            console.log("🔍 bus:reset Debug - currentInstructionModeri:", currentInstructionModeri);
+            console.log("🔍 bus:reset Debug - currentInstructionModeid:", currentInstructionModeid);
             
             if (!ContinuarSinGuardar) {
               store.set(messageAtom, messageReadWrite);
