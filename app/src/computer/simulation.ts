@@ -866,6 +866,27 @@ async function startThread(generator: EventGenerator): Promise<void> {
               // Logging para debugging
               logInstructionExecution("MAR.set", sourceRegister, instructionContext, messageConfig);
 
+              // Debug adicional para MOV con IP
+              if (sourceRegister === "IP" && currentInstructionName === "MOV" && executeStageCounter === 4) {
+                console.log("🔍 Debug MOV IP - Verificando condiciones:");
+                console.log("   sourceRegister === 'IP':", sourceRegister === "IP");
+                console.log("   currentInstructionName === 'MOV':", currentInstructionName === "MOV");
+                console.log("   currentInstructionModeri:", currentInstructionModeri);
+                console.log("   !currentInstructionModeid:", !currentInstructionModeid);
+                console.log("   executeStageCounter === 4:", executeStageCounter === 4);
+                console.log("   currentInstructionOperands:", currentInstructionOperands);
+                console.log("   currentInstructionOperands.length === 2:", currentInstructionOperands.length === 2);
+                if (currentInstructionOperands.length >= 2) {
+                  console.log("   Segundo operando:", currentInstructionOperands[1]);
+                  console.log("   !startsWith('['):", !currentInstructionOperands[1].startsWith('['));
+                  console.log("   !endsWith(']'):", !currentInstructionOperands[1].endsWith(']'));
+                  console.log("   /^\\d+$/.test():", /^\d+$/.test(currentInstructionOperands[1]));
+                  console.log("   /^\\d+h$/i.test():", /^\d+h$/i.test(currentInstructionOperands[1]));
+                  console.log("   Es valor inmediato (decimal o hex):", 
+                    /^\d+$/.test(currentInstructionOperands[1]) || /^\d+h$/i.test(currentInstructionOperands[1]));
+                }
+              }
+
               // Manejar casos especiales que requieren lógica adicional
               if (resultmbrimar) {
                 store.set(messageAtom, displayMessageresultmbr);
@@ -891,6 +912,24 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 } else {
                   store.set(messageAtom, `Ejecución: id ← MBR; MAR ← IP`);
                 }
+              } else if (
+                sourceRegister === "IP" &&
+                currentInstructionName === "MOV" &&
+                currentInstructionModeri &&
+                !currentInstructionModeid &&
+                executeStageCounter === 4 &&
+                currentInstructionOperands.length === 2 &&
+                !currentInstructionOperands[1].startsWith('[') &&
+                !currentInstructionOperands[1].endsWith(']') &&
+                (/^\d+$/.test(currentInstructionOperands[1]) || /^\d+h$/i.test(currentInstructionOperands[1]))
+              ) {
+                // Caso especial para MOV con direccionamiento directo + valor inmediato (MOV X, 5): 
+                // mostrar el mensaje especial cuando IP va al MAR
+                console.log("🎯 CONDICIÓN ESPECIAL DETECTADA - MOV con direccionamiento directo + valor inmediato");
+                console.log("🔍 Operandos:", currentInstructionOperands);
+                console.log("🔍 Segundo operando:", currentInstructionOperands[1]);
+                console.log("🔍 Es número:", /^\d+$/.test(currentInstructionOperands[1]));
+                store.set(messageAtom, "Ejecución: MAR ← IP ; ri ← MBR");
               } else if (
                 sourceRegister === "ri" &&
                 currentInstructionName === "MOV" &&
