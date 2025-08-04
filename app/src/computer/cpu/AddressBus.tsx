@@ -22,14 +22,14 @@ export function generateAddressPath(
 ): string {
   let path = "";
   if (showpath1) {
-    path = "M 455 388 H 550 V 349 H 610"; // ri - ajustado para conectar con MAR desde registro redimensionado
+    path = "M 455 388 H 550 V 348 H 610"; // ri - ajustado para conectar con MAR desde registro redimensionado
   }
      if (showpath2) {
-     path = "M 594 249 H 550 V 349 H 610"; // mbr - ajustado para conectar con MAR
+     path = "M 594 249 H 550 V 348 H 610"; // mbr - ajustado para conectar con MAR
    }
   switch (from) {
     case "SP":
-      return "M 460 309 H 550 V 349 H 610";
+      return "M 460 309 H 550 V 348 H 610";
 
     case "IP":
       return "M 460 349 H 610";

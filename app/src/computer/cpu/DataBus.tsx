@@ -310,8 +310,8 @@ export function generateDataPath(
   });
   if (normalizedFrom === "ri" && normalizedTo === "MAR" && mode === "mem<-imd") {
     // Ruta directa desde ri hasta MAR para instrucciones con modo directo e inmediato
-    console.log("🎯 Usando ruta especial ri → MAR:", "M 455 388 H 550 V 349 H 643");
-    return "M 455 388 H 550 V 349 H 643";
+    console.log("🎯 Usando ruta especial ri → MAR:", "M 455 388 H 550 V 348 H 610");
+    return "M 455 388 H 550 V 348 H 610";
   }
 
   // Verificar que los nodos existen en el grafo antes de calcular la ruta
@@ -462,7 +462,7 @@ export function generateDataPath(
       path = ["MBR", "mbr reg join", "ri join", "ri"];
                    } else {
                  // Para otros casos, usar la ruta del AddressBus (showpath2): MBR -> MAR
-                 return "M 594 249 H 550 V 349 H 643";
+                 return "M 594 249 H 550 V 348 H 610";
                }
     // Generar el path SVG
     const start = dataBus.getNodeAttribute(path[0], "position");
