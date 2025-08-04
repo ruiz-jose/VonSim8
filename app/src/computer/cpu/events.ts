@@ -25,6 +25,7 @@ import { colors } from "@/lib/tailwind";
 
 import { DataRegister, generateDataPath, generateSimultaneousLeftRightPath } from "./DataBus";
 import { aluOperationAtom, cycleAtom, MARAtom, MBRAtom, registerAtoms } from "./state";
+import { getSettings } from "@/lib/settings";
 
 console.log("🔧 generateDataPath importado:", typeof generateDataPath);
 
@@ -64,13 +65,17 @@ const drawDataPath = (from: DataRegister, to: DataRegister, instruction: string,
       return Promise.resolve(); // Si no hay ruta, no animar
     }
 
+    // Usar la configuración de velocidad de animación
+    const settings = getSettings();
+    const duration = settings.animations ? settings.executionUnit : 1;
+
     return anim(
       [
         { key: "cpu.internalBus.data.path", from: path },
         { key: "cpu.internalBus.data.opacity", from: 1 },
         { key: "cpu.internalBus.data.strokeDashoffset", from: 1, to: 0 },
       ],
-      { duration: BUS_ANIMATION_DURATION, easing: "easeInOutSine" },
+      { duration, easing: "easeInOutSine" },
     );
   } catch (error) {
     console.error("❌ Error en drawDataPath:", error);
@@ -85,13 +90,17 @@ const drawSimultaneousLeftRightPath = (from: DataRegister, instruction: string, 
     const path = generateSimultaneousLeftRightPath(from, instruction, mode);
     if (!path) return Promise.resolve(); // Si no hay ruta, no animar
 
+    // Usar la configuración de velocidad de animación
+    const settings = getSettings();
+    const duration = settings.animations ? settings.executionUnit : 1;
+
     return anim(
       [
         { key: "cpu.internalBus.data.path", from: path },
         { key: "cpu.internalBus.data.opacity", from: 1 },
         { key: "cpu.internalBus.data.strokeDashoffset", from: 1, to: 0 },
       ],
-      { duration: BUS_ANIMATION_DURATION, easing: "easeInOutSine" },
+      { duration, easing: "easeInOutSine" },
     );
   } catch (error) {
     console.warn("Error en drawSimultaneousLeftRightPath:", error);
@@ -280,8 +289,11 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
   switch (event.type) {
     case "cpu:alu.execute": {
       console.log("🚀 Evento cpu:alu.execute recibido, fase actual:", currentPhase);
+      // Usar la configuración de velocidad de animación
+      const settings = getSettings();
+      const duration = settings.animations ? settings.executionUnit : 1;
       const pathsDrawConfig = {
-        duration: BUS_ANIMATION_DURATION,
+        duration,
         easing: "easeInOutSine",
       } as const;
 
@@ -489,19 +501,23 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
     }
 
     case "cpu:decode": {
+      // Usar la configuración de velocidad de animación
+      const settings = getSettings();
+      const duration = settings.animations ? settings.executionUnit : 1;
+      
       await anim(
         [
           { key: "cpu.decoder.path.opacity", from: 1 },
           { key: "cpu.decoder.path.strokeDashoffset", from: 1, to: 0 },
         ],
-        { duration: BUS_ANIMATION_DURATION, easing: "easeInOutSine" },
+        { duration, easing: "easeInOutSine" },
       );
       await anim(
         [
           { key: "cpu.decoder.progress.opacity", from: 1 },
           { key: "cpu.decoder.progress.progress", from: 0, to: 1 },
         ],
-        { duration: BUS_ANIMATION_DURATION, easing: "easeInOutSine" },
+        { duration, easing: "easeInOutSine" },
       );
       await anim(
         [

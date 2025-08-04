@@ -15,6 +15,7 @@ import type { SimulatorEvent } from "@/computer/shared/types";
 import { finishSimulation, notifyWarning } from "@/computer/simulation";
 import { store } from "@/lib/jotai";
 import { colors } from "@/lib/tailwind";
+import { getSettings } from "@/lib/settings";
 
 import { memoryAtom, operatingAddressAtom } from "./state";
 
@@ -45,11 +46,15 @@ const BUS_ANIMATION_DURATION = 5;
 // Función para animar el bus de datos externo (igual que el interno del CPU)
 export const drawExternalDataPath = (
   direction: "memory-to-mbr" | "mbr-to-memory",
-  duration = BUS_ANIMATION_DURATION,
+  duration?: number,
 ) => {
   try {
     const path = generateExternalDataPath(direction);
     if (!path) return Promise.resolve();
+
+    // Usar la configuración de velocidad de animación si no se especifica duración
+    const settings = getSettings();
+    const actualDuration = duration ?? (settings.animations ? settings.executionUnit : 1);
 
     return anim(
       [
@@ -57,7 +62,7 @@ export const drawExternalDataPath = (
         { key: "bus.data.opacity", from: 1 },
         { key: "bus.data.strokeDashoffset", from: 1, to: 0 },
       ],
-      { duration, easing: "easeInOutSine" },
+      { duration: actualDuration, easing: "easeInOutSine" },
     );
   } catch (error) {
     console.warn("Error en drawExternalDataPath:", error);
@@ -81,10 +86,14 @@ function generateExternalAddressPath(): string {
 }
 
 // Función para animar el bus de direcciones externo (igual que el interno del CPU)
-export const drawExternalAddressPath = (duration = BUS_ANIMATION_DURATION) => {
+export const drawExternalAddressPath = (duration?: number) => {
   try {
     const path = generateExternalAddressPath();
     if (!path) return Promise.resolve();
+
+    // Usar la configuración de velocidad de animación si no se especifica duración
+    const settings = getSettings();
+    const actualDuration = duration ?? (settings.animations ? settings.executionUnit : 1);
 
     return anim(
       [
@@ -92,7 +101,7 @@ export const drawExternalAddressPath = (duration = BUS_ANIMATION_DURATION) => {
         { key: "bus.address.opacity", from: 1 },
         { key: "bus.address.strokeDashoffset", from: 1, to: 0 },
       ],
-      { duration, easing: "easeInOutSine" },
+      { duration: actualDuration, easing: "easeInOutSine" },
     );
   } catch (error) {
     console.warn("Error en drawExternalAddressPath:", error);
@@ -105,10 +114,14 @@ const resetExternalAddressPath = () =>
   anim({ key: "bus.address.opacity", to: 0 }, { duration: 1, easing: "easeInSine" });
 
 // Función para animar el bus de control RD (CPU -> dispositivos)
-const drawRDControlPath = (duration = BUS_ANIMATION_DURATION) => {
+const drawRDControlPath = (duration?: number) => {
   try {
     // Path desde CPU hacia memoria y otros dispositivos
     const path = "M 380 420 H 800"; // Path básico CPU -> Memory
+    
+    // Usar la configuración de velocidad de animación si no se especifica duración
+    const settings = getSettings();
+    const actualDuration = duration ?? (settings.animations ? settings.executionUnit : 1);
 
     return anim(
       [
@@ -116,7 +129,7 @@ const drawRDControlPath = (duration = BUS_ANIMATION_DURATION) => {
         { key: "bus.rd.opacity", from: 1 },
         { key: "bus.rd.strokeDashoffset", from: 1, to: 0 },
       ],
-      { duration, easing: "easeInOutSine" },
+      { duration: actualDuration, easing: "easeInOutSine" },
     );
   } catch (error) {
     console.warn("Error en drawRDControlPath:", error);
@@ -125,10 +138,14 @@ const drawRDControlPath = (duration = BUS_ANIMATION_DURATION) => {
 };
 
 // Función para animar el bus de control WR (CPU -> dispositivos)
-const drawWRControlPath = () => {
+const drawWRControlPath = (duration?: number) => {
   try {
     // Path desde CPU hacia memoria y otros dispositivos
     const path = "M 380 440 H 800"; // Path básico CPU -> Memory
+
+    // Usar la configuración de velocidad de animación si no se especifica duración
+    const settings = getSettings();
+    const actualDuration = duration ?? (settings.animations ? settings.executionUnit : 1);
 
     return anim(
       [
@@ -136,7 +153,7 @@ const drawWRControlPath = () => {
         { key: "bus.wr.opacity", from: 1 },
         { key: "bus.wr.strokeDashoffset", from: 1, to: 0 },
       ],
-      { duration: BUS_ANIMATION_DURATION, easing: "easeInOutSine" },
+      { duration: actualDuration, easing: "easeInOutSine" },
     );
   } catch (error) {
     console.warn("Error en drawWRControlPath:", error);
@@ -217,12 +234,11 @@ export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promi
           );
         });
         // Animar el bus de direcciones y el bus de control RD en simultáneo
-        const duration = BUS_ANIMATION_DURATION; // Usa la duración global para coherencia
         await Promise.all([
-          drawExternalAddressPath(duration),
+          drawExternalAddressPath(),
           (async () => {
             showReadControlText();
-            await drawRDControlPath(duration);
+            await drawRDControlPath();
             hideReadControlText();
           })(),
         ]);
@@ -243,7 +259,7 @@ export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promi
       );
 
       // Animar el bus de datos desde la memoria hacia el MBR (igual que bus interno)
-      await drawExternalDataPath("memory-to-mbr", BUS_ANIMATION_DURATION);
+      await drawExternalDataPath("memory-to-mbr");
 
       // Actualizar el valor primero
       store.set(MBRAtom, event.value);
@@ -276,8 +292,7 @@ export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promi
       showWriteControlText();
 
       // Animar el bus de direcciones y el bus de control WR en simultáneo
-      const duration = BUS_ANIMATION_DURATION; // Usa la duración global para coherencia
-      await Promise.all([drawExternalAddressPath(duration), drawWRControlPath()]);
+      await Promise.all([drawExternalAddressPath(), drawWRControlPath()]);
 
       // Ocultar texto "Write" al terminar la animación
       hideWriteControlText();

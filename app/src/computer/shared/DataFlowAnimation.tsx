@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { memo, useEffect, useState } from "react";
+import { useSettings } from "@/lib/settings";
 
 type DataFlowAnimationProps = {
   from: string;
@@ -11,9 +12,13 @@ type DataFlowAnimationProps = {
 };
 
 export const DataFlowAnimation = memo(
-  ({ from, to, data, duration = 2000, className, onComplete }: DataFlowAnimationProps) => {
+  ({ from, to, data, duration, className, onComplete }: DataFlowAnimationProps) => {
     const [isVisible, setIsVisible] = useState(false);
     const [progress, setProgress] = useState(0);
+    const settings = useSettings();
+
+    // Usar la configuración de velocidad de animación si no se especifica duración
+    const actualDuration = duration ?? (settings.animations ? settings.executionUnit * 2 : 1000);
 
     useEffect(() => {
       setIsVisible(true);
@@ -22,7 +27,7 @@ export const DataFlowAnimation = memo(
       const startTime = Date.now();
       const animate = () => {
         const elapsed = Date.now() - startTime;
-        const newProgress = Math.min(elapsed / duration, 1);
+        const newProgress = Math.min(elapsed / actualDuration, 1);
 
         setProgress(newProgress);
 
@@ -37,7 +42,7 @@ export const DataFlowAnimation = memo(
       };
 
       requestAnimationFrame(animate);
-    }, [from, to, data, duration, onComplete]);
+    }, [from, to, data, actualDuration, onComplete]);
 
     if (!isVisible) return null;
 

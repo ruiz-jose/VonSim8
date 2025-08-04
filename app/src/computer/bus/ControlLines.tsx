@@ -5,6 +5,7 @@ import { showReadBusAnimationAtom, showWriteBusAnimationAtom } from "@/computer/
 import { animated, getSpring, SimplePathKey } from "@/computer/shared/springs";
 import { useSimulation } from "@/computer/simulation";
 import { useTranslate } from "@/lib/i18n";
+import { useSettings } from "@/lib/settings";
 
 export function ControlLines() {
   const { devices } = useSimulation();
@@ -304,12 +305,14 @@ function ReadBusAnimation({ pathRef }: ReadBusAnimationProps) {
   const setShowReadAnim = useSetAtom(showReadBusAnimationAtom);
   const [ready, setReady] = useState(false);
   const [progress, setProgress] = useState(0);
+  const settings = useSettings();
 
   // Animación manual que funciona - simular progreso
   useEffect(() => {
     if (visible && ready) {
       const startTime = Date.now();
-      const duration = 2000; // 2 segundos
+      // Usar la configuración de velocidad de animación
+      const duration = settings.animations ? settings.executionUnit * 2 : 100; // 2 unidades de ejecución o 100ms mínimo
 
       const animate = () => {
         const elapsed = Date.now() - startTime;
@@ -327,7 +330,7 @@ function ReadBusAnimation({ pathRef }: ReadBusAnimationProps) {
 
       animate();
     }
-  }, [visible, ready, setShowReadAnim]);
+  }, [visible, ready, setShowReadAnim, settings.animations, settings.executionUnit]);
 
   useEffect(() => {
     // Esperar a que el path esté disponible con retry
@@ -391,12 +394,14 @@ function WriteBusAnimation({ pathRef }: WriteBusAnimationProps) {
   const setShowWriteAnim = useSetAtom(showWriteBusAnimationAtom);
   const [ready, setReady] = useState(false);
   const [progress, setProgress] = useState(0);
+  const settings = useSettings();
 
   // Animación manual que funciona - simular progreso
   useEffect(() => {
     if (visible && ready) {
       const startTime = Date.now();
-      const duration = 2000; // 2 segundos
+      // Usar la configuración de velocidad de animación
+      const duration = settings.animations ? settings.executionUnit * 2 : 100; // 2 unidades de ejecución o 100ms mínimo
 
       const animate = () => {
         const elapsed = Date.now() - startTime;
@@ -414,7 +419,7 @@ function WriteBusAnimation({ pathRef }: WriteBusAnimationProps) {
 
       animate();
     }
-  }, [visible, ready, setShowWriteAnim]);
+  }, [visible, ready, setShowWriteAnim, settings.animations, settings.executionUnit]);
 
   useEffect(() => {
     // Esperar a que el path esté disponible con retry
