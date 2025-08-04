@@ -931,7 +931,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
                currentInstructionName === "AND" ||
                currentInstructionName === "OR" ||
                currentInstructionName === "XOR") &&
-              executeStageCounter >= 5; // En etapas avanzadas, ri → MAR es solo preparación
+              (executeStageCounter >= 5 || // En etapas avanzadas, ri → MAR es solo preparación
+               // También skip para direccionamiento indirecto en etapa 4
+               (executeStageCounter === 4 && !currentInstructionModeid && !currentInstructionModeri));
 
             // Usar las nuevas funciones auxiliares para generar mensajes
             const instructionContext = createInstructionContext();

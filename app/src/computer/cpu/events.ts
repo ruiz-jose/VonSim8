@@ -611,7 +611,9 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
          currentInstructionName === "AND" ||
          currentInstructionName === "OR" ||
          currentInstructionName === "XOR") &&
-        currentExecuteStageCounter >= 5; // En etapas avanzadas, ri → MAR es solo preparación
+        (currentExecuteStageCounter >= 5 || // En etapas avanzadas, ri → MAR es solo preparación
+         // También skip para direccionamiento indirecto en etapa 4 (cuando no hay modos directos/inmediatos)
+         (currentExecuteStageCounter === 4 && instructionName === currentInstructionName));
       
       const path = isFromMBR
         ? "M 629 250 H 550 V 349 H 643" // path especial, siempre desde el MBR
