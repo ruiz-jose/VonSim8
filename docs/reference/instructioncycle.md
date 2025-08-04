@@ -72,6 +72,8 @@ Instruccion de transferencia de datos MOV
   6. **`MAR` $\leftarrow$ `BL`**: El contenido de BL se transfiere al registro MAR.
   7. **`write(Memoria[MAR])` $\leftarrow$ `MBR`**: Se escribe el valor de MBR en la posición de memoria indicada por MAR.
 
+  
+
 - ADD `Rx`, `[Dirección]` (Sumar a registro)
   1, 2, 3, 4. Igual que MOV `Rx`, `[Dirección]`. 5. **`Rx` ← `Rx` + `MBR`**:
   La Unidad Aritmético-Lógica (ALU) realiza la suma entre `Rx` y `MBR`, almacenando el resultado en `Rx`. El Registro de Estado `RS` se actualiza con los indicadores correspondientes.

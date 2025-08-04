@@ -267,6 +267,11 @@ function generateRegisterTransferMessage(
     return handleCALLInstruction(sourceRegister);
   }
 
+  // Casos especiales para instrucciones aritméticas con solo direccionamiento directo
+  if (["ADD", "SUB", "CMP", "AND", "OR", "XOR"].includes(name) && modeRi && !modeId) {
+    return handleDirectArithmetic(sourceRegister, executeStage);
+  }
+
   // Casos especiales para instrucciones aritméticas (ADD, SUB, CMP, AND, OR, XOR)
   if (["ADD", "SUB", "CMP", "AND", "OR", "XOR"].includes(name) && sourceRegister === "ri") {
     return {
@@ -359,6 +364,32 @@ function handleImmediateMOV(sourceRegister: string): MessageConfig {
   };
 }
 
+// Función específica para instrucciones aritméticas con solo direccionamiento directo
+function handleDirectArithmetic(sourceRegister: string, executeStage: number): MessageConfig {
+  if (executeStage === 2) {
+    return {
+      message: "Ejecución: MAR ← IP",
+      shouldDisplay: true,
+      shouldPause: true,
+    };
+  }
+
+  // En la etapa 4, para direccionamiento directo, copiar directamente del MBR al MAR
+  if (executeStage === 4 && sourceRegister === "ri") {
+    return {
+      message: "Ejecución: MAR ← MBR",
+      shouldDisplay: true,
+      shouldPause: true,
+    };
+  }
+
+  return {
+    message: `Ejecución: MAR ← ${sourceRegister}`,
+    shouldDisplay: true,
+    shouldPause: true,
+  };
+}
+
 // Función específica para instrucciones INT
 function handleINTInstruction(
   sourceRegister: string,
@@ -419,6 +450,11 @@ function generateRegisterUpdateMessage(
   // Casos especiales para instrucciones MOV con solo direccionamiento directo
   if (name === "MOV" && modeRi && !modeId) {
     return handleDirectMOVUpdate();
+  }
+
+  // Casos especiales para instrucciones aritméticas con solo direccionamiento directo
+  if (["ADD", "SUB", "CMP", "AND", "OR", "XOR"].includes(name) && modeRi && !modeId) {
+    return handleDirectArithmeticUpdate();
   }
 
   // Casos especiales para instrucciones CALL
@@ -557,6 +593,15 @@ function handleDirectImmediateMOVUpdate(): MessageConfig {
 
 // Función específica para actualizaciones de registros en MOV con solo direccionamiento directo
 function handleDirectMOVUpdate(): MessageConfig {
+  return {
+    message: "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1",
+    shouldDisplay: true,
+    shouldPause: true,
+  };
+}
+
+// Función específica para actualizaciones de registros en instrucciones aritméticas con solo direccionamiento directo
+function handleDirectArithmeticUpdate(): MessageConfig {
   return {
     message: "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1",
     shouldDisplay: true,
@@ -862,11 +907,13 @@ async function startThread(generator: EventGenerator): Promise<void> {
             console.log("🔍 BL/BX Debug - blBxToRiProcessed:", blBxToRiProcessed);
             console.log("🔍 BL/BX Debug - blBxRegisterName:", blBxRegisterName);
 
-            // Detectar si es MOV con direccionamiento indirecto para evitar contabilizar el ciclo adicional
-            const isIndirectMOV =
-              currentInstructionName === "MOV" &&
+            // Detectar si es MOV/ADD/SUB con direccionamiento indirecto para evitar contabilizar el ciclo adicional
+            const isIndirectInstruction =
+              (currentInstructionName === "MOV" ||
+               currentInstructionName === "ADD" ||
+               currentInstructionName === "SUB") &&
               sourceRegister === "ri" &&
-              executeStageCounter === 3 &&
+              (executeStageCounter === 3 || blBxToRiProcessed) && // Ampliada: también cuando blBxToRiProcessed es true
               !currentInstructionModeid &&
               !currentInstructionModeri; // No es directo ni inmediato, por lo tanto es indirecto
 
@@ -940,7 +987,40 @@ async function startThread(generator: EventGenerator): Promise<void> {
                   !currentInstructionModeri &&
                   !currentInstructionModeid
                 ) {
-                  // Caso especial para MOV [BL], n - mostrar el mensaje usando el registro almacenado
+                  // Caso especial para MOV [BL], n - incrementar ciclo ANTES de mostrar el mensaje
+                  // para que aparezca como ciclo 4 (después de MBR ← read que fue ciclo 3)
+                  cycleCount++;
+                  currentInstructionCycleCount++;
+                  store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+                  console.log(
+                    "🔢 Ciclo incrementado ANTES de mostrar MAR ← BL/BX - cycleCount:",
+                    cycleCount,
+                    "currentInstructionCycleCount:",
+                    currentInstructionCycleCount,
+                  );
+                  // Ahora mostrar el mensaje usando el registro almacenado
+                  store.set(messageAtom, `Ejecución: MAR ← ${blBxRegisterName}`);
+                  mbridirmar = false;
+                  blBxToRiProcessed = false; // También resetear esta bandera
+                  blBxRegisterName = ""; // Limpiar el nombre almacenado
+                } else if (
+                  sourceRegister === "ri" &&
+                  (currentInstructionName === "ADD" || currentInstructionName === "SUB") &&
+                  !currentInstructionModeri &&
+                  !currentInstructionModeid
+                ) {
+                  // Caso especial para ADD/SUB [BL], CL - incrementar ciclo ANTES de mostrar el mensaje
+                  // para que aparezca como ciclo 4 (después de MBR ← read que fue ciclo 3)
+                  cycleCount++;
+                  currentInstructionCycleCount++;
+                  store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+                  console.log(
+                    "🔢 Ciclo incrementado ANTES de mostrar MAR ← BL/BX - cycleCount:",
+                    cycleCount,
+                    "currentInstructionCycleCount:",
+                    currentInstructionCycleCount,
+                  );
+                  // Ahora mostrar el mensaje usando el registro almacenado
                   store.set(messageAtom, `Ejecución: MAR ← ${blBxRegisterName}`);
                   mbridirmar = false;
                   blBxToRiProcessed = false; // También resetear esta bandera
@@ -982,21 +1062,33 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 (currentInstructionModeid && sourceRegister === "IP") ||
                 messageConfig.shouldDisplay
               ) {
-                // No mostrar mensaje para MOV con direccionamiento indirecto cuando se copia ri al MAR
-                if (!isIndirectMOV) {
+                // No mostrar mensaje para MOV/ADD/SUB con direccionamiento indirecto cuando se copia ri al MAR
+                if (!isIndirectInstruction) {
                   store.set(messageAtom, messageConfig.message);
                 }
               }
             }
 
-            // Para MOV con direccionamiento indirecto, no contabilizar el ciclo pero permitir la pausa
-            // Para el caso de BL/BX a ri, SÍ contabilizar el ciclo aquí (no se contabilizó en register.copy)
-            const skipCycleCount = isIndirectMOV && !blBxToRiProcessed;
+            // Para MOV/ADD/SUB con direccionamiento indirecto, no contabilizar el ciclo pero permitir la pausa
+            // PERO cuando blBxToRiProcessed era true, ya se contabilizó el ciclo arriba antes de mostrar el mensaje
+            const skipCycleCount = isIndirectInstruction; // Simplificado: siempre skip para indirecto
 
             if (!skipCycleCount) {
               cycleCount++;
               currentInstructionCycleCount++;
               store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+              console.log(
+                "🔢 Ciclo contabilizado en cpu:mar.set - cycleCount:",
+                cycleCount,
+                "currentInstructionCycleCount:",
+                currentInstructionCycleCount,
+              );
+            } else {
+              console.log(
+                "⏭️ Ciclo NO contabilizado en cpu:mar.set - skipCycleCount:",
+                skipCycleCount,
+                "(ciclo ya contabilizado arriba para BL/BX→ri)",
+              );
             }
 
             // Siempre permitir la pausa, independientemente de si se contabiliza el ciclo
@@ -1145,12 +1237,22 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 (currentInstructionName === "ADD" ||
                   currentInstructionName === "SUB" ||
                   currentInstructionName === "CMP")) ||
-              // También manejar el caso cuando los flags no están establecidos correctamente
-              // pero es una instrucción aritmética en executeStageCounter === 3
+              // Para instrucciones aritméticas con direccionamiento directo (no indirecto)
+              // Ejemplo: ADD CL, [05] necesita id ← MBR; MAR ← IP
+              // Pero ADD CL, [BL] NO lo necesita
               (executeStageCounter === 3 &&
                 (currentInstructionName === "ADD" ||
                   currentInstructionName === "SUB" ||
-                  currentInstructionName === "CMP")) ||
+                  currentInstructionName === "CMP") &&
+                currentInstructionModeri && // Solo para direccionamiento directo
+                currentInstructionOperands.length >= 2 &&
+                // Verificar que es direccionamiento directo con dirección fija (no registro)
+                ((currentInstructionOperands[0].startsWith("[") &&
+                  currentInstructionOperands[0].endsWith("]") &&
+                  /^\[[0-9A-F]+h?\]$/i.test(currentInstructionOperands[0])) ||
+                 (currentInstructionOperands[1].startsWith("[") &&
+                  currentInstructionOperands[1].endsWith("]") &&
+                  /^\[[0-9A-F]+h?\]$/i.test(currentInstructionOperands[1])))) ||
               (executeStageCounter === 3 && currentInstructionName === "POP") ||
               (currentInstructionModeri &&
                 currentInstructionModeid &&
@@ -1248,12 +1350,15 @@ async function startThread(generator: EventGenerator): Promise<void> {
             let displayMessage = `Ejecución: ${destRegister === "ri" ? "MAR" : destRegister} ← ${displaySource}`;
             const displayMessageFLAGS = "; write(FLAGS)"; // Agregar el mensaje de FLAGS aquí
 
+            // Solo agregar "; write(FLAGS)" para instrucciones aritméticas que NO sean transferencias a left/right de ALU
             if (
-              currentInstructionName === "ADD" ||
+              (currentInstructionName === "ADD" ||
               currentInstructionName === "SUB" ||
-              currentInstructionName === "CMP"
+              currentInstructionName === "CMP") &&
+              destRegister !== "left" &&
+              destRegister !== "right"
             ) {
-              displayMessage += displayMessageFLAGS; // Agregar salto de línea
+              displayMessage += displayMessageFLAGS;
             }
 
             if (sourceRegister === "ri" && destRegister === "IP") {
@@ -1325,9 +1430,14 @@ async function startThread(generator: EventGenerator): Promise<void> {
               executeStageCounter,
             );
 
-            // Para instrucciones MOV entre registros, siempre contabilizar el ciclo
+            // Para instrucciones MOV/ADD/SUB entre registros, siempre contabilizar el ciclo
             // Para BL/BX a ri, NO contabilizar el ciclo aquí (se contabilizará en cpu:mar.set)
-            if (currentInstructionName === "MOV") {
+            // Para transferencias a left/right de ALU, usar la lógica especial más abajo
+            if ((currentInstructionName === "MOV" ||
+                currentInstructionName === "ADD" ||
+                currentInstructionName === "SUB") &&
+                destRegister !== "left" &&
+                destRegister !== "right") {
               const isBLorBXToRi =
                 (sourceRegister === "BL" || sourceRegister === "BX") && destRegister === "ri";
 
@@ -1337,26 +1447,36 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 currentInstructionCycleCount++;
                 store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
                 console.log(
-                  "✅ Ciclo contabilizado para MOV register.copy - cycleCount:",
+                  `✅ Ciclo contabilizado para ${currentInstructionName} register.copy - cycleCount:`,
                   cycleCount,
                   "currentInstructionCycleCount:",
                   currentInstructionCycleCount,
                 );
               } else {
                 console.log(
-                  "⏭️ Ciclo NO contabilizado para MOV register.copy (BL/BX→ri) - se contabilizará en cpu:mar.set",
+                  `⏭️ Ciclo NO contabilizado para ${currentInstructionName} register.copy (BL/BX→ri) - se contabilizará en cpu:mar.set`,
                 );
               }
             } else if (
-              (destRegister !== "result" &&
-                destRegister !== "left" &&
-                destRegister !== "right" &&
-                sourceRegister !== "result" &&
-                sourceRegister !== "left" &&
-                sourceRegister !== "right") ||
-              (sourceRegister === "result" && destRegister !== "MBR")
+              // Contabilizar ciclos para todas las transferencias de registros normales
+              // EXCEPTO BL/BX → ri que se maneja en cpu:mar.set
+              // EXCEPTO transferencias a left/right de ALU que no se contabilizan
+              ((destRegister !== "result" &&
+                sourceRegister !== "result") ||
+              // También contabilizar cuando se transfiere resultado a un registro (no a MBR)
+              (sourceRegister === "result" && destRegister !== "MBR")) &&
+              // Excluir específicamente BL/BX → ri
+              !((sourceRegister === "BL" || sourceRegister === "BX") && destRegister === "ri") &&
+              // Excluir específicamente transferencias a left/right de ALU
+              !(destRegister === "left" || destRegister === "right")
             ) {
-              store.set(messageAtom, displayMessage);
+              // Para transferencias a left/right de ALU, NO mostrar mensaje ni contabilizar ciclo
+              if (destRegister === "left" || destRegister === "right") {
+                // No hacer nada - estas transferencias no se muestran ni contabilizan
+              } else {
+                store.set(messageAtom, displayMessage);
+              }
+              
               cycleCount++;
               currentInstructionCycleCount++;
               store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
@@ -1365,9 +1485,19 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 cycleCount,
                 "currentInstructionCycleCount:",
                 currentInstructionCycleCount,
+                "destRegister:",
+                destRegister,
+                "sourceRegister:",
+                sourceRegister,
               );
             } else {
-              console.log("❌ Ciclo NO contabilizado para register.copy - condición no cumplida");
+              console.log(
+                "❌ Ciclo NO contabilizado para register.copy - condición no cumplida:",
+                "destRegister:",
+                destRegister,
+                "sourceRegister:",
+                sourceRegister,
+              );
             }
           } else if (
             event.value.type === "bus:reset" &&
@@ -1483,6 +1613,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
                     /^\[[0-9A-F]+h?\]$/i.test(currentInstructionOperands[1])))) ||
               // Para MOV/ADD/SUB con direccionamiento indirecto + inmediato (MOV/ADD/SUB [BL], 4) en executeStageCounter === 3,
               // no contabilizar el ciclo porque cpu:register.update ya maneja la captación del valor inmediato
+              // PERO NO aplicar esto cuando se está leyendo de memoria (direccionamiento indirecto puro como ADD CL, [BL])
               (executeStageCounter === 3 &&
                 (currentInstructionName === "MOV" ||
                   currentInstructionName === "ADD" ||
@@ -1490,6 +1621,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 !currentInstructionModeri &&
                 !currentInstructionModeid &&
                 currentInstructionOperands.length >= 2 &&
+                messageReadWrite !== "Ejecución: MBR ← read(Memoria[MAR])" && // NUEVA CONDICIÓN: No aplicar cuando se está leyendo de memoria
                 // Detectar MOV/ADD/SUB [registro], valor_inmediato
                 ((currentInstructionOperands[0].startsWith("[") &&
                   currentInstructionOperands[0].endsWith("]") &&
@@ -1518,13 +1650,15 @@ async function startThread(generator: EventGenerator): Promise<void> {
                   currentInstructionName === "CMP")) ||
               // Para instrucciones aritméticas con direccionamiento directo en executeStageCounter === 3,
               // no mostrar el mensaje de bus:reset porque cpu:register.update manejará el mensaje correcto
+              // PERO NO aplicar esto cuando se está leyendo de memoria (direccionamiento indirecto)
               (executeStageCounter === 3 &&
                 (currentInstructionName === "ADD" ||
                   currentInstructionName === "SUB" ||
                   currentInstructionName === "CMP" ||
                   currentInstructionName === "AND" ||
                   currentInstructionName === "OR" ||
-                  currentInstructionName === "XOR"))
+                  currentInstructionName === "XOR") &&
+                messageReadWrite !== "Ejecución: MBR ← read(Memoria[MAR])") // NUEVA CONDICIÓN: No aplicar cuando se está leyendo de memoria
             ) {
               ContinuarSinGuardar = true;
               console.log("🔄 ContinuarSinGuardar establecido a true - condición cumplida");
