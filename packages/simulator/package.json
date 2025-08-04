@@ -26,7 +26,7 @@
     "eslint-config-vonsim": "workspace:^",
     "prettier": "^3.5.3",
     "type-fest": "^4.9.0",
-    "typescript": "~5.3.3",
+    "typescript": "~5.9.2",
     "vitest": "^1.6.1"
   }
 }
