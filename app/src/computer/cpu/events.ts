@@ -38,6 +38,16 @@ let pendingRightTransfer: { from: DataRegister; instruction: string; mode: strin
 // let _waitingForALUCogAnimation = false;
 // let _aluCogAnimationComplete = false;
 
+// Variables para rastrear el contexto actual de la instrucción
+let currentExecuteStageCounter = 0;
+let currentInstructionName = "";
+
+// Función para actualizar el contexto de la instrucción desde simulation.ts
+export function updateInstructionContext(executeStageCounter: number, instructionName: string) {
+  currentExecuteStageCounter = executeStageCounter;
+  currentInstructionName = instructionName;
+}
+
 // Tipo para las fases del ciclo de instrucción
 type CyclePhase =
   | "fetching"
@@ -590,6 +600,19 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       // Detectar si el registro origen es MBR (para animación especial)
       const regNorm = normalize(event.register); // NO toLowerCase
       const isFromMBR = regNorm === "MBR";
+      
+      // Detectar si es un caso donde ri → MAR no debe mostrar animación
+      // porque la dirección ya está almacenada en MAR
+      const isRiToMARSkipAnimation = 
+        regNorm === "ri" &&
+        (currentInstructionName === "ADD" || 
+         currentInstructionName === "SUB" || 
+         currentInstructionName === "CMP" ||
+         currentInstructionName === "AND" ||
+         currentInstructionName === "OR" ||
+         currentInstructionName === "XOR") &&
+        currentExecuteStageCounter >= 5; // En etapas avanzadas, ri → MAR es solo preparación
+      
       const path = isFromMBR
         ? "M 629 250 H 550 V 349 H 643" // path especial, siempre desde el MBR
         : generateAddressPath(regNorm as MARRegister); // path normal
@@ -604,10 +627,12 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         mode,
         "| instructionName:",
         instructionName,
+        "| isRiToMARSkipAnimation:",
+        isRiToMARSkipAnimation,
       );
 
-      // Animación azul (bus de direcciones) - solo si no es IP en modo mem<-imd
-      if (!(regNorm === "IP" && mode === "mem<-imd")) {
+      // Animación azul (bus de direcciones) - solo si no es IP en modo mem<-imd Y no es ri → MAR skip
+      if (!(regNorm === "IP" && mode === "mem<-imd") && !isRiToMARSkipAnimation) {
         await anim(
           [
             {
@@ -621,10 +646,14 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         );
         await activateRegister(`cpu.MAR`, colors.blue[500]);
         store.set(MARAtom, store.get(registerAtoms[regNorm]));
+      } else if (isRiToMARSkipAnimation) {
+        console.log("⏭️ Animación de bus y registro MAR omitida para ri → MAR en etapa avanzada");
+        // Aún actualizar el valor del MAR sin animación
+        store.set(MARAtom, store.get(registerAtoms[regNorm]));
       }
 
       // --- Lógica para animar desde el origen real si MAR se actualiza desde ri ---
-      if (regNorm === "ri") {
+      if (regNorm === "ri" && !isRiToMARSkipAnimation) {
         console.log("[cpu:mar.set] ri detectado, mode:", mode, "instructionName:", instructionName);
         // Para instrucciones con modo mem<-imd, mostrar animación especial ri -> MAR
         if (mode === "mem<-imd") {
@@ -665,7 +694,8 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       }
 
       // Solo desactivar si no es IP en modo mem<-imd (se hará en la animación simultánea)
-      if (!(regNorm === "IP" && mode === "mem<-imd")) {
+      // Y solo si no es ri → MAR skip (no hay animación que desactivar)
+      if (!(regNorm === "IP" && mode === "mem<-imd") && !isRiToMARSkipAnimation) {
         await Promise.all([
           deactivateRegister("cpu.MAR"),
           anim(
@@ -673,6 +703,8 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
             { duration: 1, easing: "easeInSine" },
           ),
         ]);
+      } else if (isRiToMARSkipAnimation) {
+        console.log("⏭️ Desactivación de registro MAR omitida para ri → MAR en etapa avanzada");
       }
       return;
     }

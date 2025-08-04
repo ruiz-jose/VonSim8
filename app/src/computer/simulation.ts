@@ -725,6 +725,10 @@ async function startThread(generator: EventGenerator): Promise<void> {
       const event = generator.next();
       if (event.done) break;
       if (event.value && typeof event.value !== "undefined") {
+        // Actualizar el contexto de la instrucción en events.ts
+        const { updateInstructionContext } = await import("@/computer/cpu/events");
+        updateInstructionContext(executeStageCounter, currentInstructionName || "");
+        
         await handleEvent(event.value);
       } else {
         continue;
@@ -917,6 +921,18 @@ async function startThread(generator: EventGenerator): Promise<void> {
               !currentInstructionModeid &&
               !currentInstructionModeri; // No es directo ni inmediato, por lo tanto es indirecto
 
+            // Detectar si es un caso donde ri → MAR no debe contabilizar ciclo
+            // porque la dirección ya está almacenada en MAR
+            const isRiToMARSkipCycle = 
+              sourceRegister === "ri" &&
+              (currentInstructionName === "ADD" || 
+               currentInstructionName === "SUB" || 
+               currentInstructionName === "CMP" ||
+               currentInstructionName === "AND" ||
+               currentInstructionName === "OR" ||
+               currentInstructionName === "XOR") &&
+              executeStageCounter >= 5; // En etapas avanzadas, ri → MAR es solo preparación
+
             // Usar las nuevas funciones auxiliares para generar mensajes
             const instructionContext = createInstructionContext();
 
@@ -1063,15 +1079,19 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 messageConfig.shouldDisplay
               ) {
                 // No mostrar mensaje para MOV/ADD/SUB con direccionamiento indirecto cuando se copia ri al MAR
-                if (!isIndirectInstruction) {
+                // Tampoco mostrar mensaje cuando ri → MAR en instrucciones aritméticas en etapas avanzadas
+                if (!isIndirectInstruction && !isRiToMARSkipCycle) {
                   store.set(messageAtom, messageConfig.message);
+                } else if (isRiToMARSkipCycle) {
+                  console.log("⏭️ Mensaje NO mostrado para ri → MAR en etapa avanzada (dirección ya en MAR)");
                 }
               }
             }
 
             // Para MOV/ADD/SUB con direccionamiento indirecto, no contabilizar el ciclo pero permitir la pausa
             // PERO cuando blBxToRiProcessed era true, ya se contabilizó el ciclo arriba antes de mostrar el mensaje
-            const skipCycleCount = isIndirectInstruction; // Simplificado: siempre skip para indirecto
+            // También skip cuando ri → MAR en instrucciones aritméticas en etapas avanzadas
+            const skipCycleCount = isIndirectInstruction || isRiToMARSkipCycle;
 
             if (!skipCycleCount) {
               cycleCount++;
@@ -1087,20 +1107,32 @@ async function startThread(generator: EventGenerator): Promise<void> {
               console.log(
                 "⏭️ Ciclo NO contabilizado en cpu:mar.set - skipCycleCount:",
                 skipCycleCount,
-                "(ciclo ya contabilizado arriba para BL/BX→ri)",
+                "isIndirectInstruction:",
+                isIndirectInstruction,
+                "isRiToMARSkipCycle:",
+                isRiToMARSkipCycle,
+                "(dirección ya almacenada en MAR)",
               );
             }
 
             // Siempre permitir la pausa, independientemente de si se contabiliza el ciclo
-            if (status.until === "cycle-change") {
+            // Pero para casos donde ri → MAR es solo preparación, no pausar
+            if (status.until === "cycle-change" && !isRiToMARSkipCycle) {
               pauseSimulation();
             }
 
-            executeStageCounter++;
-            console.log(
-              "🔍 cpu:mar.set - executeStageCounter después del incremento:",
-              executeStageCounter,
-            );
+            // Solo incrementar executeStageCounter si no es un caso de ri → MAR que se omite
+            if (!isRiToMARSkipCycle) {
+              executeStageCounter++;
+              console.log(
+                "🔍 cpu:mar.set - executeStageCounter después del incremento:",
+                executeStageCounter,
+              );
+            } else {
+              console.log(
+                "⏭️ executeStageCounter NO incrementado para ri → MAR en etapa avanzada",
+              );
+            }
           } else if (event.value.type === "cpu:register.update") {
             const sourceRegister = event.value.register;
 
