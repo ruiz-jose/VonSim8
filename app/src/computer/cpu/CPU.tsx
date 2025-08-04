@@ -192,7 +192,14 @@ export function CPU() {
           DL
         </span>
       </div>
-      {showid && <Reg name="id" className={clsx("left-[450px] top-[190px]", "border-cyan-400")} />}
+      {showid && (
+        <div className="absolute left-[450px] top-[190px] z-10">
+          <Reg name="id" className="border-cyan-400" />
+          <span className="absolute left-0 top-0 z-30 select-none rounded-full border border-cyan-400 bg-cyan-800 px-1 py-0 font-mono text-xs font-bold tracking-widest text-cyan-400">
+            id
+          </span>
+        </div>
+      )}
 
       <div className="absolute left-[450px] top-[332px] z-10">
         <Reg name="IP" emphasis className="border-red-500" />
@@ -216,7 +223,7 @@ export function CPU() {
           MAR
         </span>
       </div>
-      <div className="absolute left-[610px] top-[233px] z-10">
+      <div className="absolute left-[594px] top-[233px] z-10">
         <Reg name="MBR" className="border-indigo-400" />
         <span
           className="absolute left-0 top-0 z-30 select-none rounded-full border border-indigo-400 bg-indigo-800 px-1 py-0 font-mono text-[10px] font-bold tracking-widest text-indigo-200"

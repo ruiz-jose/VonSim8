@@ -15,7 +15,7 @@ export function DataLines() {
     .join(" ");
 
   const dataPath = [
-    "M 649 249 H 800", // CPU -> Memory - ajustado para conectar con el registro MBR redimensionado
+    "M 635 249 H 800", // CPU -> Memory - comienza desde el borde derecho del registro MBR a la altura del centro
     devices.pic && "M 765 249 V 790 H 450",
     devices.pio && "M 765 249 V 790 H 900",
     devices.timer && "M 765 249 V 790 H 598 V 875",

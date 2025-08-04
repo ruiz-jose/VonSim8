@@ -27,7 +27,7 @@ type Node = { position: [x: number, y: number] };
 const dataBus = new UndirectedGraph<Node>({ allowSelfLoops: false });
 
 // These are the endpoints of the bus
-dataBus.addNode("MBR", { position: [620, 250] });
+dataBus.addNode("MBR", { position: [594, 249] });
 dataBus.addNode("AL", { position: [455, 45] }); // Ajustado para el centro del registro de 8 bits
 dataBus.addNode("BL", { position: [455, 85] }); // Ajustado para el centro del registro de 8 bits
 dataBus.addNode("CL", { position: [455, 125] }); // Ajustado para el centro del registro de 8 bits
@@ -81,7 +81,7 @@ dataBus.addNode("BL out", { position: [483, 85] }); // Lado izquierdo del regist
 dataBus.addNode("CL out", { position: [483, 125] }); // Lado izquierdo del registro CL
 dataBus.addNode("DL out", { position: [483, 165] }); // Lado izquierdo del registro DL
 dataBus.addNode("id out", { position: [441, 205] }); // Lado izquierdo del registro id
-dataBus.addNode("MBR out", { position: [630, 250] }); // Nodo de salida de MBR
+dataBus.addNode("MBR out", { position: [626, 249] }); // Nodo de salida de MBR
 dataBus.addNode("MBR out join", { position: [550, 250] }); // Nodo de unión de salida de MBR
 dataBus.addNode("SP out", { position: [510, 309] });
 dataBus.addNode("IP out", { position: [510, 349] }); // Más a la derecha, borde derecho del registro IP
@@ -460,10 +460,10 @@ export function generateDataPath(
     } else if (mode === "mem<-imd" && (instruction === "ADD" || instruction === "SUB")) {
       // Para instrucciones ADD/SUB con modo mem<-imd, usar ruta directa MBR -> ri
       path = ["MBR", "mbr reg join", "ri join", "ri"];
-    } else {
-      // Para otros casos, usar la ruta del AddressBus (showpath2): MBR -> MAR
-      return "M 629 250 H 550 V 349 H 643";
-    }
+                   } else {
+                 // Para otros casos, usar la ruta del AddressBus (showpath2): MBR -> MAR
+                 return "M 594 249 H 550 V 349 H 643";
+               }
     // Generar el path SVG
     const start = dataBus.getNodeAttribute(path[0], "position");
     let d = `M ${start[0]} ${start[1]}`;
@@ -651,6 +651,7 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
           "M 390 115 L 425 85 L 455 85", // línea recta de NodoRegIn a BL join y luego a BL
           "M 390 115 L 425 125 L 455 125", // línea recta de NodoRegIn a CL join y luego a CL
           "M 390 115 L 425 165 L 455 165", // línea recta de NodoRegIn a DL join y luego a DL
+          showid ? "M 390 115 L 425 205 L 451 205": "", // línea recta de NodoRegIn a id join y luego a id
           // Líneas para NodoRegOut - estética profesional similar al bus de entrada
           "M 550 115 L 525 45 L 445 45", // línea recta de NodoRegOut a AL out join y luego a AL out
           "M 550 115 L 525 85 L 445 85", // línea recta de NodoRegOut a BL out join y luego a BL out

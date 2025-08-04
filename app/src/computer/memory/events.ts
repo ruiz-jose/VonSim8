@@ -25,12 +25,12 @@ import { memoryAtom, operatingAddressAtom } from "./state";
  */
 function generateExternalDataPath(direction: "memory-to-mbr" | "mbr-to-memory"): string {
   // Coordenadas que coinciden exactamente con el dataPath estático en DataLines.tsx
-  const mbrX = 629; // Coordenada x del MBR (coincide con dataPath)
-  const mbrY = 249; // Coordenada y del MBR (coincide con dataPath)
+  const mbrX = 635; // Coordenada x del borde derecho del MBR (coincide con dataPath)
+  const mbrY = 249; // Coordenada y del centro del MBR (coincide con dataPath)
 
   // Coordenadas de la memoria (coinciden con dataPath)
   const memoryX = 800;
-  const memoryY = 249; // Misma altura que el MBR
+  const memoryY = 249; // Misma altura que el centro del MBR
 
   if (direction === "memory-to-mbr") {
     // Animación desde la memoria hacia el MBR

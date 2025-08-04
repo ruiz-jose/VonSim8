@@ -24,9 +24,9 @@ export function generateAddressPath(
   if (showpath1) {
     path = "M 455 388 H 550 V 349 H 610"; // ri - ajustado para conectar con MAR desde registro redimensionado
   }
-  if (showpath2) {
-    path = "M 629 250 H 550 V 349 H 610"; // mbr - ajustado para conectar con MAR
-  }
+     if (showpath2) {
+     path = "M 594 249 H 550 V 349 H 610"; // mbr - ajustado para conectar con MAR
+   }
   switch (from) {
     case "SP":
       return "M 460 309 H 550 V 349 H 610";
@@ -54,6 +54,7 @@ export function AddressBus({ showSP, showri }: AddressBusProps) {
     showri ? "M 420 388 H 550 V 300" : "", // ri (ampliado desde la izquierda)
     "M 400 349 H 610", // Connection to MAR (ampliado desde la izquierda)
     "M 610 349 H 650", // MAR to external address bus (conexión gris)
+    "M 390 115 H 250 V 205", // NodoRegIn to id join (conexión gris)
   ];
 
   return (

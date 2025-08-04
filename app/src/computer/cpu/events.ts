@@ -615,9 +615,9 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
          // También skip para direccionamiento indirecto en etapa 4 (cuando no hay modos directos/inmediatos)
          (currentExecuteStageCounter === 4 && instructionName === currentInstructionName));
       
-      const path = isFromMBR
-        ? "M 629 250 H 550 V 349 H 643" // path especial, siempre desde el MBR
-        : generateAddressPath(regNorm as MARRegister); // path normal
+             const path = isFromMBR
+         ? "M 594 249 H 550 V 349 H 643" // path especial, siempre desde el MBR
+         : generateAddressPath(regNorm as MARRegister); // path normal
       console.log(
         "[cpu:mar.set] event.register:",
         event.register,
