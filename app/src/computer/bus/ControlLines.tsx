@@ -73,7 +73,7 @@ export function ControlLines() {
         {showReadAnim && (
           <animated.path
             ref={rdAnimatedPathRef}
-            d={rdPath_anim}
+            d={rdPath_anim || rdPath}
             className="fill-none stroke-red-500 stroke-[3px] drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]"
             strokeLinejoin="round"
             pathLength={1}
@@ -87,7 +87,7 @@ export function ControlLines() {
         {/* Efecto de brillo adicional para el bus RD */}
         {showReadAnim && (
           <animated.path
-            d={rdPath_anim}
+            d={rdPath_anim || rdPath}
             className="fill-none stroke-red-300 stroke-1 opacity-50"
             strokeLinejoin="round"
             pathLength={1}
@@ -113,7 +113,7 @@ export function ControlLines() {
         {showWriteAnim && (
           <animated.path
             ref={wrAnimatedPathRef}
-            d={wrPath_anim}
+            d={wrPath_anim || wrPath}
             className="fill-none stroke-orange-400 stroke-[3px] drop-shadow-[0_0_8px_rgba(251,146,60,0.6)]"
             strokeLinejoin="round"
             pathLength={1}
@@ -127,7 +127,7 @@ export function ControlLines() {
         {/* Efecto de brillo adicional para el bus WR */}
         {showWriteAnim && (
           <animated.path
-            d={wrPath_anim}
+            d={wrPath_anim || wrPath}
             className="fill-none stroke-orange-300 stroke-1 opacity-50"
             strokeLinejoin="round"
             pathLength={1}
@@ -362,8 +362,8 @@ function ReadBusAnimation({ pathRef }: ReadBusAnimationProps) {
   const endX = 800;
   const y = 420;
 
-  // Interpolar posición basada en el progreso
-  const x = startX + (endX - startX) * progress + 40; // +40 para offset del texto
+  // Interpolar posición basada en el progreso (sin offset adicional para que llegue exactamente a la memoria)
+  const x = startX + (endX - startX) * progress;
 
   return (
     <div
@@ -451,8 +451,8 @@ function WriteBusAnimation({ pathRef }: WriteBusAnimationProps) {
   const endX = 800;
   const y = 440;
 
-  // Interpolar posición basada en el progreso
-  const x = startX + (endX - startX) * progress + 40; // +40 para offset del texto
+  // Interpolar posición basada en el progreso (sin offset adicional para que llegue exactamente a la memoria)
+  const x = startX + (endX - startX) * progress;
 
   return (
     <div

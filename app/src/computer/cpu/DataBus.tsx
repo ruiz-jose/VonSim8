@@ -142,6 +142,8 @@ dataBus.addUndirectedEdge("id out join", "left");
 dataBus.addUndirectedEdge("outr mbr join", "mbr reg join");
 dataBus.addUndirectedEdge("MBR", "outr mbr join");
 dataBus.addUndirectedEdge("MBR", "MBR out");
+dataBus.addUndirectedEdge("MBR out", "MBR out join");
+dataBus.addUndirectedEdge("MBR out join", "NodoRegOut");
 dataBus.addUndirectedEdge("MBR out", "outr mbr join");
 
 dataBus.addUndirectedEdge("mbr reg join", "NodoRegIn");
@@ -294,6 +296,7 @@ export function generateDataPath(
     "IP",
     "ri",
     "MAR",
+    "MBR",
     "left",
     "right",
     "left end",
@@ -439,6 +442,12 @@ export function generateDataPath(
         normalizedTo,
       ];
     }
+  } else if (normalizedFrom === "MBR" && normalizedTo === "id") {
+    // Caso específico: MBR → id
+    // Ruta: MBR → MBR out → outr mbr join → mbr reg join → NodoRegIn → id join → id
+    console.log("🎯 Caso específico MBR → id detectado");
+    path = ["MBR", "MBR out", "outr mbr join", "mbr reg join", "NodoRegIn", "id join", "id"];
+    console.log("🎯 Path definido para MBR → id:", path);
   } else if (registers.includes(normalizedFrom) && normalizedTo === "MBR") {
     // Caso específico: registro → MBR
     // Ruta: registro → registro out → registro out join → NodoRegOut → outr mbr join → MBR
@@ -564,6 +573,10 @@ export function generateDataPath(
   }
 
   console.log("🎯 generateDataPath retornando:", d);
+  // Log específico para MBR → id
+  if (normalizedFrom === "MBR" && normalizedTo === "id") {
+    console.log("🎯 Path SVG generado para MBR → id:", d);
+  }
   return d;
 }
 
