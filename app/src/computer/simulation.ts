@@ -1842,16 +1842,6 @@ async function startThread(generator: EventGenerator): Promise<void> {
               cycleCount++;
               currentInstructionCycleCount++;
               store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
-
-              // No pausar si es una instrucción MOV que escribe en memoria (último paso)
-              // La pausa debe ocurrir en cpu:cycle.end
-              const isMOVWriteToMemory =
-                currentInstructionName === "MOV" &&
-                messageReadWrite === "Ejecución: write(Memoria[MAR]) ← MBR";
-
-              if (status.until === "cycle-change" && !isMOVWriteToMemory) {
-                pauseSimulation();
-              }
             } else if (isLastStepBeforeCycleEnd) {
               // Para el último paso antes de cycle.end: mostrar mensaje y contabilizar ciclo, pero NO pausar
               store.set(messageAtom, messageReadWrite);
@@ -1881,6 +1871,18 @@ async function startThread(generator: EventGenerator): Promise<void> {
             ) {
               resultmbrimar = true;
               displayMessageresultmbr = `Ejecución: MBR ← ${sourceRegister} ; MAR ← MBR`;
+            } else if (event.value.register === "result.l") {
+              // Caso especial para cuando se copia el resultado de la ALU al MBR
+              const displayMessage = `Ejecución: MBR ← ${sourceRegister.replace("; write(FLAGS)", " ; update(FLAGS)")}`;
+              store.set(messageAtom, displayMessage);
+              cycleCount++;
+              currentInstructionCycleCount++;
+              store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+              
+              // Pausar si estamos ejecutando por ciclos
+              if (status.until === "cycle-change") {
+                pauseSimulation();
+              }
             } else {
               // Dejar que events.ts maneje completamente el evento, incluyendo animación
               // Solo actualizar contadores locales si es necesario
@@ -1912,10 +1914,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
         }
         // Remove the setTimeout delay - this was causing slowdown when animations are disabled
       } else if (event.value.type === "cpu:cycle.end") {
-        if (status.until === "end-of-instruction") {
+        if (status.until === "end-of-instruction" || status.until === "cycle-change") {
           pauseSimulation();
         }
-        // Para cycle-change, no pausar automáticamente para permitir que la instrucción se complete
         // Remove the setTimeout delay - this was causing slowdown when animations are disabled
       }
     }
