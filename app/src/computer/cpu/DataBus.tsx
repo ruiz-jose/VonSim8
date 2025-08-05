@@ -160,7 +160,8 @@ dataBus.addUndirectedEdge("AL join", "AL");
 dataBus.addUndirectedEdge("BL join", "BL");
 dataBus.addUndirectedEdge("CL join", "CL");
 dataBus.addUndirectedEdge("DL join", "DL");
-//dataBus.addUndirectedEdge("id join", "data mbr join");
+dataBus.addUndirectedEdge("id join", "id");
+dataBus.addUndirectedEdge("id join", "data mbr join");
 dataBus.addUndirectedEdge("MBR", "data mbr join");
 dataBus.addUndirectedEdge("data mbr join", "NodoRegIn");
 

@@ -1861,6 +1861,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
               // No pausar aquí - la pausa ocurrirá en cycle.end
             }
           } else if (event.value.type === "cpu:mbr.set") {
+            // NOTA: La animación del bus se maneja en events.ts
+            // Aquí solo manejamos casos especiales de mensajes que requieren lógica específica
             const sourceRegister =
               event.value.register === "id.l"
                 ? "id"
@@ -1880,10 +1882,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
               resultmbrimar = true;
               displayMessageresultmbr = `Ejecución: MBR ← ${sourceRegister} ; MAR ← MBR`;
             } else {
-              store.set(messageAtom, `Ejecución: MBR ← ${sourceRegister}`);
-              if (status.until === "cycle-change") {
-                pauseSimulation();
-              }
+              // Dejar que events.ts maneje completamente el evento, incluyendo animación
+              // Solo actualizar contadores locales si es necesario
               executeStageCounter++;
               cycleCount++;
               currentInstructionCycleCount++;
