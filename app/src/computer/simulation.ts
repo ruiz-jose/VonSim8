@@ -194,6 +194,7 @@ let displayMessageresultmbr = "";
 let displayMessagepop = "";
 let blBxToRiProcessed = false; // Flag para rastrear cuando BL/BX→ri ya fue procesado
 let blBxRegisterName = ""; // Para recordar si era BL o BX
+let idToMbrCombinedMessage = false; // Flag para rastrear cuando id ← MBR debe combinarse con MAR ← ri
 
 // Tipos para mejorar la legibilidad y mantenibilidad
 type InstructionContext = {
@@ -921,8 +922,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
               !currentInstructionModeid &&
               !currentInstructionModeri; // No es directo ni inmediato, por lo tanto es indirecto
 
-            // Detectar si es un caso donde ri → MAR no debe contabilizar ciclo
-            // porque la dirección ya está almacenada en MAR
+            // Detectar si es un caso donde ri → MAR no debe contabilizar ciclo ni mostrarse
+            // porque la dirección ya está almacenada en MAR (para operaciones de escritura
+            // o cuando ri → MAR es solo preparación interna del procesador)
             const isRiToMARSkipCycle = 
               sourceRegister === "ri" &&
               (currentInstructionName === "ADD" || 
@@ -931,9 +933,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
                currentInstructionName === "AND" ||
                currentInstructionName === "OR" ||
                currentInstructionName === "XOR") &&
-              (executeStageCounter >= 5 || // En etapas avanzadas, ri → MAR es solo preparación
-               // También skip para direccionamiento indirecto en etapa 4
-               (executeStageCounter === 4 && !currentInstructionModeid && !currentInstructionModeri));
+              executeStageCounter >= 5 && // En etapas avanzadas
+              (messageReadWrite === "Ejecución: write(Memoria[MAR]) ← MBR" || // Para escritura
+               executeStageCounter >= 7); // Para etapas muy avanzadas (preparación interna)
 
             // Usar las nuevas funciones auxiliares para generar mensajes
             const instructionContext = createInstructionContext();
@@ -991,7 +993,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
               // Manejar casos especiales que requieren lógica adicional
               if (resultmbrimar) {
                 store.set(messageAtom, displayMessageresultmbr);
-              } else if (mbridirmar) {
+              } else if (mbridirmar && !isRiToMARSkipCycle) {
                 // Para MOV con direccionamiento directo e inmediato, mostrar el mensaje correcto
                 if (
                   currentInstructionName === "MOV" &&
@@ -1044,13 +1046,26 @@ async function startThread(generator: EventGenerator): Promise<void> {
                   blBxToRiProcessed = false; // También resetear esta bandera
                   blBxRegisterName = ""; // Limpiar el nombre almacenado
                 } else {
-                  store.set(messageAtom, `Ejecución: id ← MBR; MAR ← IP`);
+                  // Caso especial para instrucciones ALU con direccionamiento directo e inmediato
+                  // cuando se copia MBR a id: preparar mensaje combinado id ← MBR; MAR ← ri
+                  if (idToMbrCombinedMessage) {
+                    store.set(messageAtom, "Ejecución: id ← MBR; MAR ← ri");
+                    idToMbrCombinedMessage = false; // Reset the flag after use
+                  } else {
+                    store.set(messageAtom, `Ejecución: id ← MBR; MAR ← IP`);
+                  }
                 }
               } else if (
                 sourceRegister === "IP" &&
-                currentInstructionName === "MOV" &&
+                (currentInstructionName === "MOV" ||
+                  currentInstructionName === "ADD" ||
+                  currentInstructionName === "SUB" ||
+                  currentInstructionName === "CMP" ||
+                  currentInstructionName === "AND" ||
+                  currentInstructionName === "OR" ||
+                  currentInstructionName === "XOR") &&
                 currentInstructionModeri &&
-                !currentInstructionModeid &&
+                currentInstructionModeid &&
                 executeStageCounter === 4 &&
                 currentInstructionOperands.length === 2 &&
                 !currentInstructionOperands[1].startsWith("[") &&
@@ -1058,10 +1073,10 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 (/^\d+$/.test(currentInstructionOperands[1]) ||
                   /^\d+h$/i.test(currentInstructionOperands[1]))
               ) {
-                // Caso especial para MOV con direccionamiento directo + valor inmediato (MOV X, 5):
-                // mostrar el mensaje especial cuando IP va al MAR
+                // Caso especial para MOV/ADD/SUB/CMP/AND/OR/XOR con direccionamiento directo + valor inmediato:
+                // mostrar el mensaje especial cuando IP va al MAR y simultáneamente MBR va a ri
                 console.log(
-                  "🎯 CONDICIÓN ESPECIAL DETECTADA - MOV con direccionamiento directo + valor inmediato",
+                  `🎯 CONDICIÓN ESPECIAL DETECTADA - ${currentInstructionName} con direccionamiento directo + valor inmediato`,
                 );
                 console.log("🔍 Operandos:", currentInstructionOperands);
                 console.log("🔍 Segundo operando:", currentInstructionOperands[1]);
@@ -1088,6 +1103,12 @@ async function startThread(generator: EventGenerator): Promise<void> {
                   console.log("⏭️ Mensaje NO mostrado para ri → MAR en etapa avanzada (dirección ya en MAR)");
                 }
               }
+            }
+
+            // Limpiar mbridirmar si es un caso ri → MAR que se debe omitir completamente
+            if (mbridirmar && isRiToMARSkipCycle && sourceRegister === "ri") {
+              mbridirmar = false;
+              console.log("🧹 mbridirmar limpiado para ri → MAR omitido en etapa avanzada");
             }
 
             // Para MOV/ADD/SUB con direccionamiento indirecto, no contabilizar el ciclo pero permitir la pausa
@@ -1117,10 +1138,13 @@ async function startThread(generator: EventGenerator): Promise<void> {
               );
             }
 
-            // Siempre permitir la pausa, independientemente de si se contabiliza el ciclo
-            // Pero para casos donde ri → MAR es solo preparación, no pausar
-            if (status.until === "cycle-change" && !isRiToMARSkipCycle) {
-              pauseSimulation();
+            // Siempre permitir la pausa en modo cycle-change, independientemente de si se contabiliza el ciclo
+            // Las excepciones son: instrucciones indirectas y casos ri → MAR que se omiten completamente
+            if (status.until === "cycle-change") {
+              // Solo omitir la pausa para instrucciones indirectas y ri → MAR que se omiten
+              if (!isIndirectInstruction && !isRiToMARSkipCycle) {
+                pauseSimulation();
+              }
             }
 
             // Solo incrementar executeStageCounter si no es un caso de ri → MAR que se omite
@@ -1202,6 +1226,23 @@ async function startThread(generator: EventGenerator): Promise<void> {
               ) {
                 displayMessage = "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1";
               }
+              
+              // Caso especial para el paso 7 de instrucciones ALU con direccionamiento directo e inmediato
+              // Cuando se lee de memoria el valor apuntado por ri (después de captar dirección e inmediato)
+              if (
+                executeStageCounter === 5 &&
+                sourceRegister === "IP" &&
+                currentInstructionModeri &&
+                currentInstructionModeid &&
+                (currentInstructionName === "ADD" ||
+                  currentInstructionName === "SUB" ||
+                  currentInstructionName === "CMP" ||
+                  currentInstructionName === "AND" ||
+                  currentInstructionName === "OR" ||
+                  currentInstructionName === "XOR")
+              ) {
+                displayMessage = "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1";
+              }
               console.log("displayMessage:", displayMessage);
               console.log("currentInstructionName:", currentInstructionName);
               console.log("currentInstructionModeri:", currentInstructionModeri);
@@ -1250,6 +1291,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
               }
             }
           } else if (event.value.type === "cpu:mbr.get") {
+            const originalRegister = event.value.register; // Mantener el registro original
             const sourceRegister =
               event.value.register === "id.l"
                 ? "id"
@@ -1291,8 +1333,31 @@ async function startThread(generator: EventGenerator): Promise<void> {
               (currentInstructionModeri &&
                 currentInstructionModeid &&
                 executeStageCounter === 4 &&
-                currentInstructionName === "MOV")
+                currentInstructionName === "MOV") ||
+              // Caso especial para instrucciones ALU con direccionamiento directo e inmediato
+              // cuando se copia MBR a id - preparar para mensaje combinado id ← MBR; MAR ← ri
+              (originalRegister === "id.l" &&
+                currentInstructionModeri &&
+                currentInstructionModeid &&
+                (currentInstructionName === "ADD" ||
+                  currentInstructionName === "SUB" ||
+                  currentInstructionName === "CMP" ||
+                  currentInstructionName === "AND" ||
+                  currentInstructionName === "OR" ||
+                  currentInstructionName === "XOR"))
             ) {
+              // Marcar que se debe usar el mensaje combinado
+              if (originalRegister === "id.l" &&
+                  currentInstructionModeri &&
+                  currentInstructionModeid &&
+                  (currentInstructionName === "ADD" ||
+                    currentInstructionName === "SUB" ||
+                    currentInstructionName === "CMP" ||
+                    currentInstructionName === "AND" ||
+                    currentInstructionName === "OR" ||
+                    currentInstructionName === "XOR")) {
+                idToMbrCombinedMessage = true;
+              }
               mbridirmar = true;
             }
 

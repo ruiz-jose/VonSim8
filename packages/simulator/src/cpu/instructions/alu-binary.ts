@@ -69,26 +69,121 @@ export class ALUBinaryInstruction extends Instruction<
         name: this.name,
         position: this.position,
         operands: this.#formatOperands(),
-        //willUse: { ri: mode === "reg<-mem" || mode === "mem<-reg" || mode === "mem<-imd" },
         willUse: {
           id: this.operation.mode === "mem<-imd" && this.operation.out.mode === "direct", // Solo marcar `id` como true si es "mem<-imd" y "direct"
           ri:
             this.operation.mode === "mem<-imd" &&
             this.operation.out.mode === "direct" &&
-            this.name !== "CMP", // Solo marcar `id` como true si es "mem<-imd" y "direct"
+            this.name !== "CMP", // Solo marcar `ri` como true si es "mem<-imd" y "direct"
         },
       },
     };
 
-    // All intructions are, at least, 2 bytes long.
-    // yield* super.consumeInstruction(computer, "IR");
-    // yield { type: "cpu:decode" };
     // Consumir la instrucción solo una vez
     yield* super.consumeInstruction(computer, "IR");
     yield { type: "cpu:decode" };
 
     yield { type: "cpu:cycle.update", phase: "decoded", next: "fetch-operands" };
 
+    // CASO ESPECIAL: mem<-imd con direccionamiento directo (ej: ADD [04], 01h)
+    // Seguir la misma secuencia que MOV x, 2 para captar segundo y tercer byte
+    if (mode === "mem<-imd" && out.mode === "direct") {
+      // Paso 4: Captar segundo byte (dirección) igual que MOV
+      yield* this.consumeInstruction(computer, "ri.l");
+      
+      // Paso 5: Captar tercer byte (valor inmediato) igual que MOV
+      yield* this.consumeInstruction(computer, "id.l");
+      
+      // Paso 6: Leer byte de memoria apuntado por ri
+      yield* computer.cpu.setMAR("ri");
+      if (!(yield* computer.cpu.useBus("mem-read"))) return false;
+      yield* computer.cpu.getMBR("left.l");
+      
+      // Paso 7: Mover valor inmediato (id) al registro right para la operación ALU
+      yield* computer.cpu.copyByteRegister("id.l", "right.l");
+      
+      // Paso 8: Ejecutar operación ALU
+      yield { type: "cpu:cycle.update", phase: "execute" };
+      
+      const left = computer.cpu.getRegister("left.l");
+      const right = computer.cpu.getRegister("right.l");
+      let result: AnyByte;
+      const flags: PartialFlags = {};
+
+      switch (this.name) {
+        case "AND":
+        case "OR":
+        case "XOR": {
+          const signed =
+            this.name === "AND"
+              ? left.signed & right.signed
+              : this.name === "OR"
+                ? left.signed | right.signed
+                : left.signed ^ right.signed;
+
+          result = Byte.fromSigned(signed, size) as AnyByte;
+          flags.CF = false;
+          flags.OF = false;
+          break;
+        }
+
+        case "ADD":
+        case "ADC": {
+          const carry = this.name === "ADC" && computer.cpu.getFlag("CF") ? 1 : 0;
+          const unsigned = left.unsigned + right.unsigned + carry;
+
+          if (unsigned > Byte.maxValue(size)) {
+            flags.CF = true;
+            result = Byte.fromUnsigned(unsigned - Byte.maxValue(size) - 1, size) as AnyByte;
+          } else {
+            flags.CF = false;
+            result = Byte.fromUnsigned(unsigned, size) as AnyByte;
+          }
+
+          flags.OF =
+            (left.signed >= 0 && right.signed >= 0 && result.signed < 0) ||
+            (left.signed < 0 && right.signed < 0 && result.signed >= 0);
+          break;
+        }
+
+        case "SUB":
+        case "SBB":
+        case "CMP": {
+          const borrow = this.name === "SBB" && computer.cpu.getFlag("CF") ? 1 : 0;
+          const unsigned = left.unsigned - right.unsigned - borrow;
+
+          if (unsigned < 0) {
+            flags.CF = true;
+            result = Byte.fromUnsigned(unsigned + Byte.maxValue(size) + 1, size) as AnyByte;
+          } else {
+            flags.CF = false;
+            result = Byte.fromUnsigned(unsigned, size) as AnyByte;
+          }
+
+          flags.OF =
+            (left.signed >= 0 && right.signed < 0 && result.signed < 0) ||
+            (left.signed < 0 && right.signed >= 0 && result.signed >= 0);
+          break;
+        }
+      }
+
+      flags.ZF = result.isZero();
+      flags.SF = result.signed < 0;
+
+      yield* computer.cpu.aluExecute(this.name === "CMP" ? "SUB" : this.name, result, flags);
+
+      if (this.name === "CMP") return true; // No writeback para CMP
+
+      // Paso 9: Writeback - depositar resultado en memoria
+      yield { type: "cpu:cycle.update", phase: "writeback" };
+      yield* computer.cpu.setMBR("result.l");
+      yield* computer.cpu.setMAR("ri");
+      if (!(yield* computer.cpu.useBus("mem-write"))) return false;
+
+      return true;
+    }
+
+    // RESTO DE CASOS (mantener lógica original para otros modos)
     if (mode === "reg<-reg" || mode === "reg<-mem" || mode === "reg<-imd") {
       if (mode !== "reg<-mem") {
         // Move out operand to left register
