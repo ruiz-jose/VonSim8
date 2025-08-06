@@ -177,7 +177,9 @@ export class ALUBinaryInstruction extends Instruction<
       // Paso 9: Writeback - depositar resultado en memoria
       yield { type: "cpu:cycle.update", phase: "writeback" };
       yield* computer.cpu.setMBR("result.l");
-      yield* computer.cpu.setMAR("ri");
+      // NOTA: Para mem<-imd con direccionamiento directo, el MAR ya contiene la dirección correcta
+      // desde el paso 6, por lo que NO necesitamos volver a asignarlo
+      // yield* computer.cpu.setMAR("ri"); // ELIMINADO: MAR ya tiene la dirección destino
       if (!(yield* computer.cpu.useBus("mem-write"))) return false;
 
       return true;

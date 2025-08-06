@@ -1896,6 +1896,23 @@ async function startThread(generator: EventGenerator): Promise<void> {
               store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
             } else if (
               // Para instrucciones aritméticas con direccionamiento directo e inmediato
+              // Etapa 6: copiar el MBR al registro ri (para la animación simultánea MBR → ri + IP → MAR)
+              // Esta es la condición que estaba faltando para generar la animación simultánea correcta
+              currentInstructionModeri &&
+              currentInstructionModeid &&
+              executeStageCounter === 6 &&
+              (currentInstructionName === "ADD" ||
+                currentInstructionName === "SUB" ||
+                currentInstructionName === "CMP" ||
+                currentInstructionName === "AND" ||
+                currentInstructionName === "OR" ||
+                currentInstructionName === "XOR")
+            ) {
+              // IMPORTANTE: No manejar aquí - dejar que events.ts maneje completamente 
+              // para generar la animación simultánea MBR → ri + IP → MAR
+              console.log("🎯 Ciclo 6 detectado - delegando a events.ts para animación simultánea MBR → ri + IP → MAR");
+            } else if (
+              // Para instrucciones aritméticas con direccionamiento directo e inmediato
               // Etapa 7: depositar el resultado de la ALU en MBR
               currentInstructionModeri &&
               currentInstructionModeid &&
