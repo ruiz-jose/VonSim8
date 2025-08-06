@@ -36,6 +36,7 @@ dataBus.addNode("id", { position: [451, 205] });
 dataBus.addNode("SP", { position: [451, 309] });
 dataBus.addNode("IP", { position: [455, 349] }); // Más centrado visualmente respecto al registro IP
 dataBus.addNode("ri", { position: [455, 388] });
+dataBus.addNode("ri out", { position: [480, 388] }); // Nodo salida de ri
 dataBus.addNode("MAR", { position: [682, 349] });
 dataBus.addNode("result", { position: [272, 115] });
 dataBus.addNode("NodoRegIn", { position: [390, 115] }); // Antes: [370, 115]
@@ -170,6 +171,8 @@ dataBus.addUndirectedEdge("data mbr join", "NodoRegIn");
 dataBus.addUndirectedEdge("IP", "IP join");
 dataBus.addUndirectedEdge("SP", "SP join");
 dataBus.addUndirectedEdge("ri", "ri join");
+dataBus.addUndirectedEdge("ri", "ri out"); // Conectar ri con ri out
+dataBus.addUndirectedEdge("ri out", "ri out join"); // Conectar ri out con ri out join
 dataBus.addUndirectedEdge("MAR join1", "ri");
 dataBus.addUndirectedEdge("MAR join2", "MAR join1");
 dataBus.addUndirectedEdge("MAR", "MAR join2");
@@ -318,6 +321,28 @@ export function generateDataPath(
     return "M 455 388 H 550 V 348 H 610";
   }
 
+  // Path especial: MBR -> RI para MOV (ruta que pasa por IP join)
+  if (normalizedFrom === "MBR" && normalizedTo === "ri" && instruction?.startsWith("MOV")) {
+    console.log("🎯 Usando ruta especial MBR → ri (MOV pasando por IP join)");
+    // Ruta: MBR → mbr reg join → IP join → ri join → ri
+    // Posiciones: [620,250] → [390,250] → [390,349] → [390,388] → [455,388]
+    return "M 620 250 H 390 V 349 V 388 H 455";
+  }
+
+  // Path especial: ri -> left end para animaciones simultáneas
+  if (normalizedFrom === "ri" && normalizedTo === "left end") {
+    console.log("🎯 Usando ruta especial ri → left end");
+    // Ruta: ri → ri out → ri out join → NodoRegOut → bleft1 → bleft2 → bleft3 → left → left end
+    return "M 455 388 H 480 H 550 H 590 V 250 H 30 V 85 H 125 H 220";
+  }
+
+  // Path especial: ri -> right end para animaciones simultáneas  
+  if (normalizedFrom === "ri" && normalizedTo === "right end") {
+    console.log("🎯 Usando ruta especial ri → right end");
+    // Ruta: ri → ri out → ri out join → outr mbr join → mbr reg join → IR mbr join → operands mbr join → right join → right → right end
+    return "M 455 388 H 480 H 550 V 250 H 390 H 250 H 90 V 145 H 125 H 220";
+  }
+
   // Verificar que los nodos existen en el grafo antes de calcular la ruta
   if (!dataBus.hasNode(normalizedFrom)) {
     console.warn(`Nodo origen '${normalizedFrom}' no existe en el grafo`);
@@ -415,7 +440,7 @@ export function generateDataPath(
     // Ruta especial: BL → BL out → BL out join → NodoRegOut → outr mbr join → MAR join2 → MAR
     path = ["BL", "BL out", "BL out join", "NodoRegOut", "outr mbr join", "MAR join2", "MAR"];
   } else if (registers.includes(normalizedFrom) && registers.includes(normalizedTo)) {
-    // Si el destino es SP, IP o ri, pasar por NodoRegDir
+    // Si el destino es SP, IP o ri, pasar por NodoRegIn
     if (["SP", "IP", "ri"].includes(normalizedTo)) {
       path = [
         normalizedFrom,
@@ -424,7 +449,7 @@ export function generateDataPath(
         "NodoRegOut",
         "outr mbr join",
         "mbr reg join",
-        "NodoRegDir",
+        "NodoRegIn",
         `${normalizedTo} join`,
         normalizedTo,
       ];

@@ -466,7 +466,7 @@ function generateRegisterUpdateMessage(
   // Caso especial para IP en instrucciones con direccionamiento directo durante la captación
   if (sourceRegister === "IP" && modeRi && !modeId && executeStage === 3) {
     return {
-      message: "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1",
+      message: "Ejecución: MBR ← read(Memoria[MAR]) | IP ← IP + 1",
       shouldDisplay: true,
       shouldPause: true,
     };
@@ -586,7 +586,7 @@ function handleINTRegisterUpdate(sourceRegister: string): MessageConfig {
 // Función específica para actualizaciones de registros en MOV con direccionamiento directo e inmediato
 function handleDirectImmediateMOVUpdate(): MessageConfig {
   return {
-    message: "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1",
+    message: "Ejecución: MBR ← read(Memoria[MAR]) | IP ← IP + 1",
     shouldDisplay: true,
     shouldPause: true,
   };
@@ -595,7 +595,7 @@ function handleDirectImmediateMOVUpdate(): MessageConfig {
 // Función específica para actualizaciones de registros en MOV con solo direccionamiento directo
 function handleDirectMOVUpdate(): MessageConfig {
   return {
-    message: "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1",
+    message: "Ejecución: MBR ← read(Memoria[MAR]) | IP ← IP + 1",
     shouldDisplay: true,
     shouldPause: true,
   };
@@ -604,7 +604,7 @@ function handleDirectMOVUpdate(): MessageConfig {
 // Función específica para actualizaciones de registros en instrucciones aritméticas con solo direccionamiento directo
 function handleDirectArithmeticUpdate(): MessageConfig {
   return {
-    message: "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1",
+    message: "Ejecución: MBR ← read(Memoria[MAR]) | IP ← IP + 1",
     shouldDisplay: true,
     shouldPause: true,
   };
@@ -836,7 +836,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
               "executeStageCounter:",
               executeStageCounter,
             );
-            store.set(messageAtom, "Captación: MBR ← read(Memoria[MAR]); IP ← IP + 1");
+            store.set(messageAtom, "Captación: MBR ← read(Memoria[MAR]) | IP ← IP + 1");
             cycleCount++;
             currentInstructionCycleCount++;
             store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
@@ -911,6 +911,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
             console.log("shouldDisplayMessage:", shouldDisplayMessage);
             console.log("🔍 BL/BX Debug - blBxToRiProcessed:", blBxToRiProcessed);
             console.log("🔍 BL/BX Debug - blBxRegisterName:", blBxRegisterName);
+
+            // Inicializar variable para controlar contabilización doble de ciclo
+            let simultaneousCycleCounted = false;
 
             // Detectar si es MOV/ADD/SUB con direccionamiento indirecto para evitar contabilizar el ciclo adicional
             const isIndirectInstruction =
@@ -1065,9 +1068,10 @@ async function startThread(generator: EventGenerator): Promise<void> {
                   currentInstructionName === "OR" ||
                   currentInstructionName === "XOR") &&
                 currentInstructionModeri &&
-                currentInstructionModeid &&
                 executeStageCounter === 4 &&
                 currentInstructionOperands.length === 2 &&
+                currentInstructionOperands[0].startsWith("[") &&
+                currentInstructionOperands[0].endsWith("]") &&
                 !currentInstructionOperands[1].startsWith("[") &&
                 !currentInstructionOperands[1].endsWith("]") &&
                 (/^\d+$/.test(currentInstructionOperands[1]) ||
@@ -1081,7 +1085,23 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 console.log("🔍 Operandos:", currentInstructionOperands);
                 console.log("🔍 Segundo operando:", currentInstructionOperands[1]);
                 console.log("🔍 Es número:", /^\d+$/.test(currentInstructionOperands[1]));
-                store.set(messageAtom, "Ejecución: MAR ← IP ; ri ← MBR");
+                
+                // Mensaje con prefijo "Ejecución:" y sufijo con ícono animado de simultaneidad
+                store.set(messageAtom, "Ejecución: MAR ← IP | ri ← MBR");
+                
+                // Contabilizar el ciclo para el mensaje simultáneo
+                cycleCount++;
+                currentInstructionCycleCount++;
+                store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+                console.log(
+                  "🔢 Ciclo contabilizado para mensaje simultáneo - cycleCount:",
+                  cycleCount,
+                  "currentInstructionCycleCount:",
+                  currentInstructionCycleCount,
+                );
+                
+                // Marcar que ya se contabilizó el ciclo para evitar doble contabilización
+                simultaneousCycleCounted = true;
               } else if (
                 sourceRegister === "ri" &&
                 currentInstructionName === "MOV" &&
@@ -1114,7 +1134,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
             // Para MOV/ADD/SUB con direccionamiento indirecto, no contabilizar el ciclo pero permitir la pausa
             // PERO cuando blBxToRiProcessed era true, ya se contabilizó el ciclo arriba antes de mostrar el mensaje
             // También skip cuando ri → MAR en instrucciones aritméticas en etapas avanzadas
-            const skipCycleCount = isIndirectInstruction || isRiToMARSkipCycle;
+            // Y skip cuando ya se contabilizó para el mensaje simultáneo
+            const skipCycleCount = isIndirectInstruction || isRiToMARSkipCycle || simultaneousCycleCounted;
 
             if (!skipCycleCount) {
               cycleCount++;
@@ -1224,7 +1245,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
                   currentInstructionName === "OR" ||
                   currentInstructionName === "XOR")
               ) {
-                displayMessage = "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1";
+                displayMessage = "Ejecución: MBR ← read(Memoria[MAR]) | IP ← IP + 1";
               }
               
               // Caso especial para el paso 7 de instrucciones ALU con direccionamiento directo e inmediato
@@ -1241,7 +1262,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
                   currentInstructionName === "OR" ||
                   currentInstructionName === "XOR")
               ) {
-                displayMessage = "Ejecución: MBR ← read(Memoria[MAR]); IP ← IP + 1";
+                displayMessage = "Ejecución: MBR ← read(Memoria[MAR]) | IP ← IP + 1";
               }
               console.log("displayMessage:", displayMessage);
               console.log("currentInstructionName:", currentInstructionName);
