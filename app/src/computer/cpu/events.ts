@@ -198,7 +198,7 @@ let pendingMBRtoRI: { instruction: string; mode: string } | null = null;
 let pendingIPtoMAR: { instruction: string; mode: string } | null = null;
 
 // Variables para coordinar animaciones simultáneas para MBR→ID e IP→MAR
-let pendingMBRtoID: { instruction: string; mode: string } | null = null;
+let pendingMBRtoID: { instruction: string; mode: string; destination: string } | null = null;
 let pendingIPtoMARFromRegCopy: { instruction: string; mode: string } | null = null;
 // Función para normalizar nombres de registros (quita .l y .h)
 const normalize = (reg: string) => reg.replace(/\.(l|h)$/, "");
@@ -661,8 +661,40 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
 
           return;
         } else {
-          // Solo actualizar el registro pero no hacer animación aún
+          // No hay transferencia simultánea pendiente, ejecutar animación IP→MAR normal
+          console.log("🎯 Ejecutando animación IP→MAR normal (sin transferencia simultánea)");
+          
+          // Ejecutar animación del bus de direcciones IP→MAR
+          await anim(
+            [
+              {
+                key: "cpu.internalBus.address.path",
+                from: generateAddressPath("IP"),
+              },
+              { key: "cpu.internalBus.address.opacity", from: 1 },
+              { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
+            ],
+            { duration: 5, easing: "easeInOutSine" },
+          );
+          
+          // Activar registro MAR
+          await activateRegister(`cpu.MAR`, colors.blue[500]);
+          
+          // Actualizar el registro
           store.set(MARAtom, store.get(registerAtoms.IP));
+          
+          // Desactivar registro y resetear bus
+          await Promise.all([
+            deactivateRegister("cpu.MAR"),
+            anim(
+              { key: "cpu.internalBus.address.opacity", to: 0 },
+              { duration: 1, easing: "easeInSine" },
+            ),
+          ]);
+          
+          // Limpiar variable pendiente
+          pendingIPtoMARFromRegCopy = null;
+          
           return;
         }
       }
@@ -700,7 +732,8 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       );
 
       // Animación azul (bus de direcciones) - solo si no es IP en modo mem<-imd Y no es ri → MAR skip
-      if (!(regNorm === "IP" && mode === "mem<-imd") && !isRiToMARSkipAnimation) {
+      // IMPORTANTE: isRiToMARSkipAnimation solo debe aplicarse cuando regNorm === "ri"
+      if (!(regNorm === "IP" && mode === "mem<-imd") && !(regNorm === "ri" && isRiToMARSkipAnimation)) {
         await anim(
           [
             {
@@ -714,7 +747,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         );
         await activateRegister(`cpu.MAR`, colors.blue[500]);
         store.set(MARAtom, store.get(registerAtoms[regNorm]));
-      } else if (isRiToMARSkipAnimation) {
+      } else if (regNorm === "ri" && isRiToMARSkipAnimation) {
         console.log("⏭️ Animación de bus y registro MAR omitida para ri → MAR en etapa avanzada");
         // Aún actualizar el valor del MAR sin animación
         store.set(MARAtom, store.get(registerAtoms[regNorm]));
@@ -763,7 +796,8 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
 
       // Solo desactivar si no es IP en modo mem<-imd (se hará en la animación simultánea)
       // Y solo si no es ri → MAR skip (no hay animación que desactivar)
-      if (!(regNorm === "IP" && mode === "mem<-imd") && !isRiToMARSkipAnimation) {
+      // IMPORTANTE: isRiToMARSkipAnimation solo debe aplicarse cuando regNorm === "ri"
+      if (!(regNorm === "IP" && mode === "mem<-imd") && !(regNorm === "ri" && isRiToMARSkipAnimation)) {
         await Promise.all([
           deactivateRegister("cpu.MAR"),
           anim(
@@ -771,7 +805,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
             { duration: 1, easing: "easeInSine" },
           ),
         ]);
-      } else if (isRiToMARSkipAnimation) {
+      } else if (regNorm === "ri" && isRiToMARSkipAnimation) {
         console.log("⏭️ Desactivación de registro MAR omitida para ri → MAR en etapa avanzada");
       }
       return;
@@ -832,7 +866,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         } else if (normalizedRegister === "id") {
           // Detectar transferencias MBR→ID para animación simultánea con IP→MAR
           console.log(`🔄 Detectando transferencia MBR→ID para animación simultánea`);
-          pendingMBRtoID = { instruction: instructionName, mode };
+          pendingMBRtoID = { instruction: instructionName, mode, destination: "id" };
           console.log(`📝 Guardando pendingMBRtoID desde cpu:mbr.get: ${instructionName}, ${mode}`);
           
           // Verificar si ya tenemos pendiente una transferencia IP→MAR de la misma instrucción
@@ -1015,13 +1049,13 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         return;
       }
 
-      // Detectar transferencias MBR→ID e IP→MAR para animación simultánea
-      if ((src === "MBR" && dest === "id") || (src === "IP" && dest === "MAR")) {
+      // Detectar transferencias MBR→ID/ri e IP→MAR para animación simultánea
+      if ((src === "MBR" && (dest === "id" || dest === "ri")) || (src === "IP" && dest === "MAR")) {
         console.log(`🔄 Detectando transferencia para animación simultánea: ${src} → ${dest}`);
         
-        if (src === "MBR" && dest === "id") {
-          pendingMBRtoID = { instruction: instructionName, mode };
-          console.log(`📝 Guardando pendingMBRtoID: ${instructionName}, ${mode}`);
+        if (src === "MBR" && (dest === "id" || dest === "ri")) {
+          pendingMBRtoID = { instruction: instructionName, mode, destination: dest };
+          console.log(`📝 Guardando pendingMBRtoID: ${instructionName}, ${mode}, destino: ${dest}`);
         } else if (src === "IP" && dest === "MAR") {
           pendingIPtoMARFromRegCopy = { instruction: instructionName, mode };
           console.log(`📝 Guardando pendingIPtoMARFromRegCopy: ${instructionName}, ${mode}`);
@@ -1033,11 +1067,12 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
           pendingIPtoMARFromRegCopy &&
           pendingMBRtoID.instruction === pendingIPtoMARFromRegCopy.instruction
         ) {
-          console.log("🎯 Ejecutando animaciones simultáneas para MBR→ID + IP→MAR");
+          const destination = pendingMBRtoID.destination;
+          console.log(`🎯 Ejecutando animaciones simultáneas para MBR→${destination} + IP→MAR`);
 
           // Ejecutar ambas animaciones simultáneamente
           await Promise.all([
-            drawDataPath("MBR", "id", pendingMBRtoID.instruction, pendingMBRtoID.mode),
+            drawDataPath("MBR", destination as DataRegister, pendingMBRtoID.instruction, pendingMBRtoID.mode),
             anim(
               [
                 {
@@ -1051,15 +1086,20 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
             ),
           ]);
 
-          // Actualizar registros
-          store.set(registerAtoms.id, store.get(registerAtoms.MBR));
+          // Actualizar registros según el destino
+          if (destination === "id") {
+            store.set(registerAtoms.id, store.get(registerAtoms.MBR));
+          } else if (destination === "ri") {
+            store.set(registerAtoms.ri, store.get(registerAtoms.MBR));
+          }
           store.set(MARAtom, store.get(registerAtoms.IP));
 
           // Activar registros
-          await Promise.all([activateRegister("cpu.id"), activateRegister("cpu.MAR")]);
+          const registerToActivate = destination === "id" ? "cpu.id" : "cpu.ri";
+          await Promise.all([activateRegister(registerToActivate), activateRegister("cpu.MAR")]);
 
           // Desactivar registros
-          await Promise.all([deactivateRegister("cpu.id"), deactivateRegister("cpu.MAR")]);
+          await Promise.all([deactivateRegister(registerToActivate), deactivateRegister("cpu.MAR")]);
 
           // Resetear animaciones
           await Promise.all([
@@ -1080,6 +1120,8 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         // Si solo tenemos una transferencia, actualizar el registro pero no hacer animación aún
         if (src === "MBR" && dest === "id") {
           store.set(registerAtoms.id, store.get(registerAtoms.MBR));
+        } else if (src === "MBR" && dest === "ri") {
+          store.set(registerAtoms.ri, store.get(registerAtoms.MBR));
         } else if (src === "IP" && dest === "MAR") {
           store.set(MARAtom, store.get(registerAtoms.IP));
         }

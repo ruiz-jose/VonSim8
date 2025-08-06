@@ -1281,7 +1281,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             if (currentInstructionName === "CMP") {
               store.set(
                 messageAtom,
-                `Ejecución: ${destinoALU} ${currentInstructionName} ${fuenteALU} ; write(FLAGS)`,
+                `Ejecución: ${destinoALU} ${currentInstructionName} ${fuenteALU} ; update(FLAGS)`,
               );
               cycleCount++;
               currentInstructionCycleCount++;
@@ -1436,8 +1436,10 @@ async function startThread(generator: EventGenerator): Promise<void> {
                   : sourceRegister === "ri"
                     ? "MBR"
                     : sourceRegister;
+              // Para instrucciones aritméticas, el formato correcto es: MBR ADD id
+              // No importa el orden de sourceRegister y fuenteALU, siempre debe ser MBR [operación] id
               MBRALU =
-                `${sourceRegister} ${currentInstructionName} ${fuenteALU}` + "; write(FLAGS)";
+                `MBR ${currentInstructionName} id` + "; update(FLAGS)";
             }
             if (currentInstructionName === "CMP" && String(destRegister) === "right") {
               fuenteALU = sourceRegister;
@@ -1447,9 +1449,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
             }
 
             let displayMessage = `Ejecución: ${destRegister === "ri" ? "MAR" : destRegister} ← ${displaySource}`;
-            const displayMessageFLAGS = "; write(FLAGS)"; // Agregar el mensaje de FLAGS aquí
+            const displayMessageFLAGS = "; update(FLAGS)"; // Agregar el mensaje de FLAGS aquí
 
-            // Solo agregar "; write(FLAGS)" para instrucciones aritméticas que NO sean transferencias a left/right de ALU
+            // Solo agregar "; update(FLAGS)" para instrucciones aritméticas que NO sean transferencias a left/right de ALU
             if (
               (currentInstructionName === "ADD" ||
               currentInstructionName === "SUB" ||
@@ -1871,6 +1873,51 @@ async function startThread(generator: EventGenerator): Promise<void> {
             ) {
               resultmbrimar = true;
               displayMessageresultmbr = `Ejecución: MBR ← ${sourceRegister} ; MAR ← MBR`;
+            } else if (
+              // Para instrucciones aritméticas con direccionamiento directo e inmediato
+              // Etapa 5: copiar el tercer byte (valor inmediato) al registro id
+              currentInstructionModeri &&
+              currentInstructionModeid &&
+              executeStageCounter === 5 &&
+              (currentInstructionName === "ADD" ||
+                currentInstructionName === "SUB" ||
+                currentInstructionName === "CMP" ||
+                currentInstructionName === "AND" ||
+                currentInstructionName === "OR" ||
+                currentInstructionName === "XOR")
+            ) {
+              store.set(messageAtom, `Ejecución: id ← MBR`);
+              if (status.until === "cycle-change") {
+                pauseSimulation();
+              }
+              executeStageCounter++;
+              cycleCount++;
+              currentInstructionCycleCount++;
+              store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+            } else if (
+              // Para instrucciones aritméticas con direccionamiento directo e inmediato
+              // Etapa 7: depositar el resultado de la ALU en MBR
+              currentInstructionModeri &&
+              currentInstructionModeid &&
+              executeStageCounter === 7 &&
+              event.value.register === "result.l" &&
+              (currentInstructionName === "ADD" ||
+                currentInstructionName === "SUB" ||
+                currentInstructionName === "CMP" ||
+                currentInstructionName === "AND" ||
+                currentInstructionName === "OR" ||
+                currentInstructionName === "XOR")
+            ) {
+              // Usar el formato de mensaje que ya tienes implementado: MBR ← MBR ADD id; update(FLAGS)
+              const formattedMessage = sourceRegister.replace("; write(FLAGS)", "; update(FLAGS)");
+              store.set(messageAtom, `Ejecución: MBR ← ${formattedMessage}`);
+              if (status.until === "cycle-change") {
+                pauseSimulation();
+              }
+              executeStageCounter++;
+              cycleCount++;
+              currentInstructionCycleCount++;
+              store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
             } else if (event.value.register === "result.l") {
               // Caso especial para cuando se copia el resultado de la ALU al MBR
               const displayMessage = `Ejecución: MBR ← ${sourceRegister.replace("; write(FLAGS)", " ; update(FLAGS)")}`;
@@ -1885,11 +1932,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
               }
             } else {
               // Dejar que events.ts maneje completamente el evento, incluyendo animación
-              // Solo actualizar contadores locales si es necesario
-              executeStageCounter++;
-              cycleCount++;
-              currentInstructionCycleCount++;
-              store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+              // NO modificar contadores aquí para permitir que events.ts maneje las animaciones normalmente
+              console.log("🎬 Permitiendo que events.ts maneje cpu:mbr.set para animaciones normales");
             }
           }
         }
