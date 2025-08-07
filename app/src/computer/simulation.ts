@@ -996,6 +996,51 @@ async function startThread(generator: EventGenerator): Promise<void> {
               // Manejar casos especiales que requieren lógica adicional
               if (resultmbrimar) {
                 store.set(messageAtom, displayMessageresultmbr);
+              } else if (
+                sourceRegister === "IP" &&
+                (currentInstructionName === "MOV" ||
+                  currentInstructionName === "ADD" ||
+                  currentInstructionName === "SUB" ||
+                  currentInstructionName === "CMP" ||
+                  currentInstructionName === "AND" ||
+                  currentInstructionName === "OR" ||
+                  currentInstructionName === "XOR") &&
+                currentInstructionModeri &&
+                currentInstructionModeid &&
+                executeStageCounter === 4 &&
+                currentInstructionOperands.length === 2 &&
+                currentInstructionOperands[0].startsWith("[") &&
+                currentInstructionOperands[0].endsWith("]") &&
+                !currentInstructionOperands[1].startsWith("[") &&
+                !currentInstructionOperands[1].endsWith("]") &&
+                (/^\d+$/.test(currentInstructionOperands[1]) ||
+                  /^\d+h$/i.test(currentInstructionOperands[1]))
+              ) {
+                // Caso especial para MOV/ADD/SUB/CMP/AND/OR/XOR con direccionamiento directo + valor inmediato:
+                // mostrar el mensaje especial cuando IP va al MAR y simultáneamente MBR va a ri
+                console.log(
+                  `🎯 CONDICIÓN ESPECIAL DETECTADA - ${currentInstructionName} con direccionamiento directo + valor inmediato`,
+                );
+                console.log("🔍 Operandos:", currentInstructionOperands);
+                console.log("🔍 Segundo operando:", currentInstructionOperands[1]);
+                console.log("🔍 Es número:", /^\d+$/.test(currentInstructionOperands[1]));
+                
+                // Mensaje con prefijo "Ejecución:" y sufijo con ícono animado de simultaneidad
+                store.set(messageAtom, "Ejecución: MAR ← IP | ri ← MBR");
+                
+                // Contabilizar el ciclo para el mensaje simultáneo
+                cycleCount++;
+                currentInstructionCycleCount++;
+                store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+                console.log(
+                  "🔢 Ciclo contabilizado para mensaje simultáneo - cycleCount:",
+                  cycleCount,
+                  "currentInstructionCycleCount:",
+                  currentInstructionCycleCount,
+                );
+                
+                // Marcar que ya se contabilizó el ciclo para evitar doble contabilización
+                simultaneousCycleCounted = true;
               } else if (mbridirmar && !isRiToMARSkipCycle) {
                 // Para MOV con direccionamiento directo e inmediato, mostrar el mensaje correcto
                 if (
@@ -1052,56 +1097,12 @@ async function startThread(generator: EventGenerator): Promise<void> {
                   // Caso especial para instrucciones ALU con direccionamiento directo e inmediato
                   // cuando se copia MBR a id: preparar mensaje combinado id ← MBR; MAR ← ri
                   if (idToMbrCombinedMessage) {
-                    store.set(messageAtom, "Ejecución: id ← MBR; MAR ← ri");
+                    store.set(messageAtom, "Ejecución: id ← MBR |  MAR ← ri");
                     idToMbrCombinedMessage = false; // Reset the flag after use
                   } else {
-                    store.set(messageAtom, `Ejecución: id ← MBR; MAR ← IP`);
+                    store.set(messageAtom, `Ejecución: id ← MBR | MAR ← IP`);
                   }
                 }
-              } else if (
-                sourceRegister === "IP" &&
-                (currentInstructionName === "MOV" ||
-                  currentInstructionName === "ADD" ||
-                  currentInstructionName === "SUB" ||
-                  currentInstructionName === "CMP" ||
-                  currentInstructionName === "AND" ||
-                  currentInstructionName === "OR" ||
-                  currentInstructionName === "XOR") &&
-                currentInstructionModeri &&
-                executeStageCounter === 4 &&
-                currentInstructionOperands.length === 2 &&
-                currentInstructionOperands[0].startsWith("[") &&
-                currentInstructionOperands[0].endsWith("]") &&
-                !currentInstructionOperands[1].startsWith("[") &&
-                !currentInstructionOperands[1].endsWith("]") &&
-                (/^\d+$/.test(currentInstructionOperands[1]) ||
-                  /^\d+h$/i.test(currentInstructionOperands[1]))
-              ) {
-                // Caso especial para MOV/ADD/SUB/CMP/AND/OR/XOR con direccionamiento directo + valor inmediato:
-                // mostrar el mensaje especial cuando IP va al MAR y simultáneamente MBR va a ri
-                console.log(
-                  `🎯 CONDICIÓN ESPECIAL DETECTADA - ${currentInstructionName} con direccionamiento directo + valor inmediato`,
-                );
-                console.log("🔍 Operandos:", currentInstructionOperands);
-                console.log("🔍 Segundo operando:", currentInstructionOperands[1]);
-                console.log("🔍 Es número:", /^\d+$/.test(currentInstructionOperands[1]));
-                
-                // Mensaje con prefijo "Ejecución:" y sufijo con ícono animado de simultaneidad
-                store.set(messageAtom, "Ejecución: MAR ← IP | ri ← MBR");
-                
-                // Contabilizar el ciclo para el mensaje simultáneo
-                cycleCount++;
-                currentInstructionCycleCount++;
-                store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
-                console.log(
-                  "🔢 Ciclo contabilizado para mensaje simultáneo - cycleCount:",
-                  cycleCount,
-                  "currentInstructionCycleCount:",
-                  currentInstructionCycleCount,
-                );
-                
-                // Marcar que ya se contabilizó el ciclo para evitar doble contabilización
-                simultaneousCycleCounted = true;
               } else if (
                 sourceRegister === "ri" &&
                 currentInstructionName === "MOV" &&
@@ -1361,6 +1362,19 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 currentInstructionModeri &&
                 currentInstructionModeid &&
                 (currentInstructionName === "ADD" ||
+                  currentInstructionName === "SUB" ||
+                  currentInstructionName === "CMP" ||
+                  currentInstructionName === "AND" ||
+                  currentInstructionName === "OR" ||
+                  currentInstructionName === "XOR")) ||
+              // Caso especial para TODAS las instrucciones con direccionamiento directo e inmediato
+              // cuando se copia MBR a ri - preparar para animación simultánea
+              (originalRegister === "ri.l" &&
+                currentInstructionModeri &&
+                currentInstructionModeid &&
+                executeStageCounter === 4 &&
+                (currentInstructionName === "MOV" ||
+                  currentInstructionName === "ADD" ||
                   currentInstructionName === "SUB" ||
                   currentInstructionName === "CMP" ||
                   currentInstructionName === "AND" ||

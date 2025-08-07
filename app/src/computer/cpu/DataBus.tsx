@@ -61,7 +61,7 @@ dataBus.addNode("AL join", { position: [425, 45] }); // Ajustado para conectar c
 dataBus.addNode("BL join", { position: [425, 85] }); // Ajustado para conectar con el registro de 8 bits
 dataBus.addNode("CL join", { position: [425, 125] }); // Ajustado para conectar con el registro de 8 bits
 dataBus.addNode("DL join", { position: [425, 165] }); // Ajustado para conectar con el registro de 8 bits
-dataBus.addNode("id join", { position: [250, 205] });
+dataBus.addNode("id join", { position: [425, 205] }); // Alineado con AL join
 dataBus.addNode("data mbr join", { position: [390, 250] });
 dataBus.addNode("SP join", { position: [390, 309] });
 dataBus.addNode("IP join", { position: [390, 349] }); // Alineado con data mbr join y NodoRegIn
@@ -141,6 +141,7 @@ dataBus.addUndirectedEdge("SP out join", "MAR join2");
 dataBus.addUndirectedEdge("id out join", "left");
 */
 dataBus.addUndirectedEdge("outr mbr join", "mbr reg join");
+dataBus.addUndirectedEdge("outr mbr join", "data mbr join"); // Conexión directa para evitar FLAGS
 dataBus.addUndirectedEdge("MBR", "outr mbr join");
 dataBus.addUndirectedEdge("MBR", "MBR out");
 dataBus.addUndirectedEdge("MBR out", "MBR out join");
@@ -321,9 +322,17 @@ export function generateDataPath(
     return "M 455 388 H 550 V 348 H 610";
   }
 
-  // Path especial: MBR -> RI para MOV (ruta que pasa por IP join)
-  if (normalizedFrom === "MBR" && normalizedTo === "ri" && instruction?.startsWith("MOV")) {
-    console.log("🎯 Usando ruta especial MBR → ri (MOV pasando por IP join)");
+  // Path especial: MBR -> RI para instrucciones con direccionamiento directo + inmediato (ruta que pasa por IP join)
+  if (normalizedFrom === "MBR" && normalizedTo === "ri" && 
+      (instruction?.startsWith("MOV") || 
+       instruction?.startsWith("ADD") || 
+       instruction?.startsWith("SUB") || 
+       instruction?.startsWith("CMP") ||
+       instruction?.startsWith("AND") ||
+       instruction?.startsWith("OR") ||
+       instruction?.startsWith("XOR")) &&
+      mode === "mem<-imd") {
+    console.log("🎯 Usando ruta especial MBR → ri (direccionamiento directo + inmediato pasando por IP join)");
     // Ruta: MBR → mbr reg join → IP join → ri join → ri
     // Posiciones: [620,250] → [390,250] → [390,349] → [390,388] → [455,388]
     return "M 620 250 H 390 V 349 V 388 H 455";
@@ -439,6 +448,12 @@ export function generateDataPath(
     // Caso específico: BL → ri (pero la animación va a MAR)
     // Ruta especial: BL → BL out → BL out join → NodoRegOut → outr mbr join → MAR join2 → MAR
     path = ["BL", "BL out", "BL out join", "NodoRegOut", "outr mbr join", "MAR join2", "MAR"];
+  } else if (normalizedFrom === "MBR" && normalizedTo === "id") {
+    // Caso específico: MBR → id (ruta completa con id join alineado)
+    // Ruta: MBR → MBR out → outr mbr join → mbr reg join → NodoRegIn → id join → id
+    console.log("🎯 Caso específico MBR → id detectado");
+    path = ["MBR", "MBR out", "outr mbr join", "mbr reg join", "NodoRegIn", "id join", "id"];
+    console.log("🎯 Path definido para MBR → id:", path);
   } else if (registers.includes(normalizedFrom) && registers.includes(normalizedTo)) {
     // Si el destino es SP, IP o ri, pasar por NodoRegIn
     if (["SP", "IP", "ri"].includes(normalizedTo)) {
@@ -467,12 +482,6 @@ export function generateDataPath(
         normalizedTo,
       ];
     }
-  } else if (normalizedFrom === "MBR" && normalizedTo === "id") {
-    // Caso específico: MBR → id
-    // Ruta: MBR → MBR out → outr mbr join → mbr reg join → NodoRegIn → id join → id
-    console.log("🎯 Caso específico MBR → id detectado");
-    path = ["MBR", "MBR out", "outr mbr join", "mbr reg join", "NodoRegIn", "id join", "id"];
-    console.log("🎯 Path definido para MBR → id:", path);
   } else if (registers.includes(normalizedFrom) && normalizedTo === "MBR") {
     // Caso específico: registro → MBR
     // Ruta: registro → registro out → registro out join → NodoRegOut → outr mbr join → MBR

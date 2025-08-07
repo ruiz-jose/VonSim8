@@ -46,6 +46,7 @@ let currentInstructionName = "";
 export function updateInstructionContext(executeStageCounter: number, instructionName: string) {
   currentExecuteStageCounter = executeStageCounter;
   currentInstructionName = instructionName;
+  console.log(`🎯 updateInstructionContext: executeStageCounter=${executeStageCounter}, instructionName=${instructionName}`);
 }
 
 // Tipo para las fases del ciclo de instrucción
@@ -198,6 +199,10 @@ let lastSourceForRI: string | null = null;
 let pendingMBRtoID: { instruction: string; mode: string; destination: string } | null = null;
 let pendingMBRtoRI: { instruction: string; mode: string; destination: string } | null = null;
 let pendingIPtoMARFromRegCopy: { instruction: string; mode: string } | null = null;
+
+// Variables para coordinar animaciones simultáneas ri→MAR + MBR→id (paso 8 de ADD/SUB/CMP)
+let pendingRiToMAR: { instruction: string; mode: string } | null = null;
+let pendingMBRtoIDStep8: { instruction: string; mode: string } | null = null;
 // Función para normalizar nombres de registros (quita .l y .h)
 const normalize = (reg: string) => reg.replace(/\.(l|h)$/, "");
 
@@ -332,7 +337,10 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       pendingLeftTransfer = null;
       pendingRightTransfer = null;
       pendingMBRtoID = null;
+      pendingMBRtoRI = null;
       pendingIPtoMARFromRegCopy = null;
+      pendingRiToMAR = null;
+      pendingMBRtoIDStep8 = null;
       // _waitingForALUCogAnimation = false;
       // _aluCogAnimationComplete = false;
       currentPhase = "fetching";
@@ -383,6 +391,11 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       // Limpiar transferencias pendientes al inicio de un nuevo ciclo
       pendingLeftTransfer = null;
       pendingRightTransfer = null;
+      pendingMBRtoID = null;
+      pendingMBRtoRI = null;
+      pendingIPtoMARFromRegCopy = null;
+      pendingRiToMAR = null;
+      pendingMBRtoIDStep8 = null;
       // _waitingForALUCogAnimation = false;
       // _aluCogAnimationComplete = false;
       currentPhase = "fetching";
@@ -579,10 +592,10 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
             pendingIPtoMARFromRegCopy = null;
 
           } else if (pendingMBRtoRI && pendingMBRtoRI.instruction === instructionName) {
-            // Animación simultánea simplificada de buses para MOV con direccionamiento directo e inmediato
-            console.log("🎯 Ejecutando animación simultánea de buses para MBR→RI + IP→MAR (MOV directo-inmediato)");
+            // Animación simultánea de buses para instrucciones con direccionamiento directo e inmediato
+            console.log("🎯 Ejecutando animación simultánea de buses para MBR→RI + IP→MAR (directo-inmediato)");
             
-            // Ejecutar solo las animaciones de buses simultáneamente (sin actualizar registros)
+            // Ejecutar ambas animaciones de buses simultáneamente
             await Promise.all([
               // Animación del bus de direcciones IP→MAR
               anim(
@@ -600,7 +613,17 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
               drawDataPath("MBR", "ri", instructionName, pendingMBRtoRI.mode),
             ]);
 
-            // Resetear ambas animaciones al final (sin tocar los registros)
+            // Actualizar registros: copiar MBR a ri y IP a MAR
+            store.set(registerAtoms.ri, store.get(MBRAtom));
+            store.set(MARAtom, store.get(registerAtoms.IP));
+
+            // Activar registros para mostrar la actualización
+            await Promise.all([activateRegister("cpu.ri"), activateRegister("cpu.MAR")]);
+
+            // Desactivar registros
+            await Promise.all([deactivateRegister("cpu.ri"), deactivateRegister("cpu.MAR")]);
+
+            // Resetear ambas animaciones al final
             await Promise.all([
               resetDataPath(),
               anim(
@@ -655,8 +678,16 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         }
       }
       
+      // Detectar si ri → MAR debería ser parte de animación simultánea con MBR → id (paso 8 de ADD/SUB/CMP)
+      const isRiToMARSimultaneous = 
+        regNorm === "ri" &&
+        (currentInstructionName === "ADD" || 
+         currentInstructionName === "SUB" || 
+         currentInstructionName === "CMP") &&
+        currentExecuteStageCounter >= 5; // Paso 6 o superior (incluye paso 8)
+
       // Detectar si es un caso donde ri → MAR no debe mostrar animación
-      // porque la dirección ya está almacenada en MAR
+      // porque la dirección ya está almacenada en MAR, PERO no aplicar cuando es parte de animación simultánea
       const isRiToMARSkipAnimation = 
         regNorm === "ri" &&
         (currentInstructionName === "ADD" || 
@@ -665,9 +696,76 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
          currentInstructionName === "AND" ||
          currentInstructionName === "OR" ||
          currentInstructionName === "XOR") &&
+        !isRiToMARSimultaneous && // NO skip si es parte de animación simultánea
         (currentExecuteStageCounter >= 5 || // En etapas avanzadas, ri → MAR es solo preparación
          // También skip para direccionamiento indirecto en etapa 4 (cuando no hay modos directos/inmediatos)
          (currentExecuteStageCounter === 4 && instructionName === currentInstructionName));
+
+      console.log(`🔍 isRiToMARSimultaneous Debug:`, {
+        regNorm,
+        currentInstructionName,
+        currentExecuteStageCounter,
+        isRiToMARSimultaneous,
+        isRiToMARSkipAnimation,
+        mode,
+        instructionName
+      });
+
+      if (isRiToMARSimultaneous && !isRiToMARSkipAnimation) {
+        console.log(`🔄 Detectando transferencia ri→MAR para animación simultánea (paso 8) - ${currentInstructionName}`);
+        pendingRiToMAR = { instruction: instructionName, mode };
+        
+        // Verificar si ya tenemos pendiente una transferencia MBR→id para animación simultánea
+        if (pendingMBRtoIDStep8 && pendingMBRtoIDStep8.instruction === instructionName) {
+          console.log("🎯 Ejecutando animaciones simultáneas para ri→MAR + MBR→id (paso 8)");
+
+          // Ejecutar ambas animaciones simultáneamente
+          await Promise.all([
+            // Animación del bus de direcciones ri→MAR
+            anim(
+              [
+                {
+                  key: "cpu.internalBus.address.path",
+                  from: generateAddressPath("ri", true, false), // Pasar showpath1=true para ri
+                },
+                { key: "cpu.internalBus.address.opacity", from: 1 },
+                { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
+              ],
+              { duration: 5, easing: "easeInOutSine" },
+            ),
+            // Animación del bus de datos MBR→id
+            drawDataPath("MBR", "id", instructionName, mode),
+          ]);
+
+          // Actualizar registros: ri a MAR y MBR a id
+          store.set(MARAtom, store.get(registerAtoms.ri));
+          store.set(registerAtoms.id, store.get(MBRAtom));
+
+          // Activar registros para mostrar la actualización
+          await Promise.all([activateRegister("cpu.MAR"), activateRegister("cpu.id")]);
+
+          // Desactivar registros
+          await Promise.all([deactivateRegister("cpu.MAR"), deactivateRegister("cpu.id")]);
+
+          // Resetear ambas animaciones al final
+          await Promise.all([
+            anim(
+              { key: "cpu.internalBus.address.opacity", to: 0 },
+              { duration: 1, easing: "easeInSine" },
+            ),
+            resetDataPath(),
+          ]);
+          
+          // Limpiar variables pendientes
+          pendingRiToMAR = null;
+          pendingMBRtoIDStep8 = null;
+          return;
+        } else {
+          // Solo actualizar el registro MAR pero no hacer animación aún
+          store.set(MARAtom, store.get(registerAtoms.ri));
+          return;
+        }
+      }
       
              const path = isFromMBR
          ? "M 594 249 H 550 V 348 H 610" // path especial, siempre desde el MBR
@@ -687,9 +785,11 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         isRiToMARSkipAnimation,
       );
 
-      // Animación azul (bus de direcciones) - solo si no es IP en modo mem<-imd Y no es ri → MAR skip
+      // Animación azul (bus de direcciones) - solo si no es IP en modo mem<-imd Y no es ri → MAR skip Y no es ri → MAR simultáneo
       // IMPORTANTE: isRiToMARSkipAnimation solo debe aplicarse cuando regNorm === "ri"
-      if (!(regNorm === "IP" && mode === "mem<-imd") && !(regNorm === "ri" && isRiToMARSkipAnimation)) {
+      if (!(regNorm === "IP" && mode === "mem<-imd") && 
+          !(regNorm === "ri" && isRiToMARSkipAnimation) && 
+          !(regNorm === "ri" && isRiToMARSimultaneous)) {
         await anim(
           [
             {
@@ -703,10 +803,16 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         );
         await activateRegister(`cpu.MAR`, colors.blue[500]);
         store.set(MARAtom, store.get(registerAtoms[regNorm]));
-      } else if (regNorm === "ri" && isRiToMARSkipAnimation) {
-        console.log("⏭️ Animación de bus y registro MAR omitida para ri → MAR en etapa avanzada");
-        // Aún actualizar el valor del MAR sin animación
-        store.set(MARAtom, store.get(registerAtoms[regNorm]));
+      } else if (regNorm === "ri" && (isRiToMARSkipAnimation || isRiToMARSimultaneous)) {
+        if (isRiToMARSkipAnimation) {
+          console.log("⏭️ Animación de bus y registro MAR omitida para ri → MAR en etapa avanzada");
+        } else {
+          console.log("⏭️ Animación de bus y registro MAR diferida para ri → MAR simultáneo");
+        }
+        // Aún actualizar el valor del MAR sin animación (si no es simultáneo)
+        if (!isRiToMARSimultaneous) {
+          store.set(MARAtom, store.get(registerAtoms[regNorm]));
+        }
       }
 
       // --- Lógica para animar desde el origen real si MAR se actualiza desde ri ---
@@ -751,8 +857,11 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
 
       // Solo desactivar si no es IP en modo mem<-imd (se hará en la animación simultánea)
       // Y solo si no es ri → MAR skip (no hay animación que desactivar)
+      // Y solo si no es ri → MAR simultáneo (se hará en la animación simultánea)
       // IMPORTANTE: isRiToMARSkipAnimation solo debe aplicarse cuando regNorm === "ri"
-      if (!(regNorm === "IP" && mode === "mem<-imd") && !(regNorm === "ri" && isRiToMARSkipAnimation)) {
+      if (!(regNorm === "IP" && mode === "mem<-imd") && 
+          !(regNorm === "ri" && isRiToMARSkipAnimation) &&
+          !(regNorm === "ri" && isRiToMARSimultaneous)) {
         await Promise.all([
           deactivateRegister("cpu.MAR"),
           anim(
@@ -760,8 +869,12 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
             { duration: 1, easing: "easeInSine" },
           ),
         ]);
-      } else if (regNorm === "ri" && isRiToMARSkipAnimation) {
-        console.log("⏭️ Desactivación de registro MAR omitida para ri → MAR en etapa avanzada");
+      } else if (regNorm === "ri" && (isRiToMARSkipAnimation || isRiToMARSimultaneous)) {
+        if (isRiToMARSkipAnimation) {
+          console.log("⏭️ Desactivación de registro MAR omitida para ri → MAR en etapa avanzada");
+        } else {
+          console.log("⏭️ Desactivación de registro MAR diferida para ri → MAR simultáneo");
+        }
       }
       return;
     }
@@ -815,72 +928,151 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         const isALUOpWithMemory = aluOpsWithMemory.some(op => instructionName.startsWith(op));
 
         if (normalizedRegister === "ri" && mode === "mem<-imd") {
-          // Para instrucciones MOV con registro como destino, usar pendingMBRtoRI
-          if (instructionName.startsWith("MOV")) {
+          // Para TODAS las instrucciones con direccionamiento directo + inmediato, usar pendingMBRtoRI
+          if (instructionName.startsWith("MOV") || 
+              instructionName.startsWith("ADD") || 
+              instructionName.startsWith("SUB") || 
+              instructionName.startsWith("CMP") ||
+              instructionName.startsWith("AND") ||
+              instructionName.startsWith("OR") ||
+              instructionName.startsWith("XOR")) {
             pendingMBRtoRI = { instruction: instructionName, mode, destination: "ri" };
-            console.log("📝 Marcando animación MBR → ri como pendiente para MOV (animación simultánea)");
-          } else {
-            // Para otras instrucciones (ADD, SUB, CMP), usar el sistema existente
-            pendingMBRtoID = { instruction: instructionName, mode, destination: "ri" };
             console.log("📝 Marcando animación MBR → ri como pendiente para animación simultánea");
+          } else {
+            // Para otras instrucciones, usar el sistema existente
+            pendingMBRtoID = { instruction: instructionName, mode, destination: "ri" };
+            console.log("📝 Marcando animación MBR → ri como pendiente para animación simultánea (sistema existente)");
           }
         } else if (normalizedRegister === "id") {
-          // Detectar transferencias MBR→ID para animación simultánea con IP→MAR
-          console.log(`🔄 Detectando transferencia MBR→ID para animación simultánea`);
-          pendingMBRtoID = { instruction: instructionName, mode, destination: "id" };
-          console.log(`📝 Guardando pendingMBRtoID desde cpu:mbr.get: ${instructionName}, ${mode}`);
-          
-          // Verificar si ya tenemos pendiente una transferencia IP→MAR de la misma instrucción
-          if (
-            pendingIPtoMARFromRegCopy &&
-            pendingIPtoMARFromRegCopy.instruction === instructionName
-          ) {
-            console.log("🎯 Ejecutando animaciones simultáneas para MBR→ID + IP→MAR desde cpu:mbr.get");
+          // Detectar si es transferencia MBR→id para animación simultánea del paso 8 (ri→MAR + MBR→id)
+          const isStep8Simultaneous = 
+            (currentInstructionName === "ADD" || 
+             currentInstructionName === "SUB" || 
+             currentInstructionName === "CMP") &&
+            currentExecuteStageCounter >= 5; // Paso 6 o superior (incluye paso 8)
 
-            // Ejecutar ambas animaciones simultáneamente
-            await Promise.all([
-              drawDataPath("MBR", "id", pendingMBRtoID.instruction, pendingMBRtoID.mode),
-              anim(
-                [
-                  {
-                    key: "cpu.internalBus.address.path",
-                    from: generateAddressPath("IP"),
-                  },
-                  { key: "cpu.internalBus.address.opacity", from: 1 },
-                  { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
-                ],
-                { duration: 5, easing: "easeInOutSine" },
-              ),
-            ]);
+          console.log(`🔍 isStep8Simultaneous Debug:`, {
+            normalizedRegister,
+            currentInstructionName,
+            currentExecuteStageCounter,
+            isStep8Simultaneous,
+            mode,
+            instructionName
+          });
 
-            // Actualizar registros
-            store.set(registerAtoms.id, store.get(MBRAtom));
-            store.set(MARAtom, store.get(registerAtoms.IP));
+          if (isStep8Simultaneous) {
+            console.log(`🔄 Detectando transferencia MBR→id para animación simultánea (paso 8) - ${currentInstructionName}`);
+            pendingMBRtoIDStep8 = { instruction: instructionName, mode };
+            
+            // Verificar si ya tenemos pendiente una transferencia ri→MAR para animación simultánea
+            if (pendingRiToMAR && pendingRiToMAR.instruction === instructionName) {
+              console.log("🎯 Ejecutando animaciones simultáneas para ri→MAR + MBR→id (paso 8)");
 
-            // Activar registros
-            await Promise.all([activateRegister("cpu.id"), activateRegister("cpu.MAR")]);
+              // Ejecutar ambas animaciones simultáneamente
+              await Promise.all([
+                // Animación del bus de direcciones ri→MAR
+                anim(
+                  [
+                    {
+                      key: "cpu.internalBus.address.path",
+                      from: generateAddressPath("ri", true, false), // Pasar showpath1=true para ri
+                    },
+                    { key: "cpu.internalBus.address.opacity", from: 1 },
+                    { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
+                  ],
+                  { duration: 5, easing: "easeInOutSine" },
+                ),
+                // Animación del bus de datos MBR→id
+                drawDataPath("MBR", "id", instructionName, mode),
+              ]);
 
-            // Desactivar registros
-            await Promise.all([deactivateRegister("cpu.id"), deactivateRegister("cpu.MAR")]);
+              // Actualizar registros: ri a MAR y MBR a id
+              store.set(MARAtom, store.get(registerAtoms.ri));
+              store.set(registerAtoms.id, store.get(MBRAtom));
 
-            // Resetear animaciones
-            await Promise.all([
-              resetDataPath(),
-              anim(
-                { key: "cpu.internalBus.address.opacity", to: 0 },
-                { duration: 1, easing: "easeInSine" },
-              ),
-            ]);
+              // Activar registros para mostrar la actualización
+              await Promise.all([activateRegister("cpu.MAR"), activateRegister("cpu.id")]);
 
-            // Limpiar variables pendientes
-            pendingMBRtoID = null;
-            pendingIPtoMARFromRegCopy = null;
+              // Desactivar registros
+              await Promise.all([deactivateRegister("cpu.MAR"), deactivateRegister("cpu.id")]);
 
-            return;
+              // Resetear ambas animaciones al final
+              await Promise.all([
+                anim(
+                  { key: "cpu.internalBus.address.opacity", to: 0 },
+                  { duration: 1, easing: "easeInSine" },
+                ),
+                resetDataPath(),
+              ]);
+              
+              // Limpiar variables pendientes
+              pendingRiToMAR = null;
+              pendingMBRtoIDStep8 = null;
+              return;
+            } else {
+              // Solo actualizar el registro id pero no hacer animación aún
+              store.set(registerAtoms.id, store.get(MBRAtom));
+              return;
+            }
           } else {
-            // Solo actualizar el registro pero no hacer animación aún
-            store.set(registerAtoms.id, store.get(MBRAtom));
-            return;
+            // Lógica normal para otras transferencias MBR→ID (no paso 8)
+            // Detectar transferencias MBR→ID para animación simultánea con IP→MAR
+            console.log(`🔄 Detectando transferencia MBR→ID para animación simultánea`);
+            pendingMBRtoID = { instruction: instructionName, mode, destination: "id" };
+            console.log(`📝 Guardando pendingMBRtoID desde cpu:mbr.get: ${instructionName}, ${mode}`);
+            
+            // Verificar si ya tenemos pendiente una transferencia IP→MAR de la misma instrucción
+            if (
+              pendingIPtoMARFromRegCopy &&
+              pendingIPtoMARFromRegCopy.instruction === instructionName
+            ) {
+              console.log("🎯 Ejecutando animaciones simultáneas para MBR→ID + IP→MAR desde cpu:mbr.get");
+
+              // Ejecutar ambas animaciones simultáneamente
+              await Promise.all([
+                drawDataPath("MBR", "id", pendingMBRtoID.instruction, pendingMBRtoID.mode),
+                anim(
+                  [
+                    {
+                      key: "cpu.internalBus.address.path",
+                      from: generateAddressPath("IP"),
+                    },
+                    { key: "cpu.internalBus.address.opacity", from: 1 },
+                    { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
+                  ],
+                  { duration: 5, easing: "easeInOutSine" },
+                ),
+              ]);
+
+              // Actualizar registros
+              store.set(registerAtoms.id, store.get(MBRAtom));
+              store.set(MARAtom, store.get(registerAtoms.IP));
+
+              // Activar registros
+              await Promise.all([activateRegister("cpu.id"), activateRegister("cpu.MAR")]);
+
+              // Desactivar registros
+              await Promise.all([deactivateRegister("cpu.id"), deactivateRegister("cpu.MAR")]);
+
+              // Resetear animaciones
+              await Promise.all([
+                resetDataPath(),
+                anim(
+                  { key: "cpu.internalBus.address.opacity", to: 0 },
+                  { duration: 1, easing: "easeInSine" },
+                ),
+              ]);
+
+              // Limpiar variables pendientes
+              pendingMBRtoID = null;
+              pendingIPtoMARFromRegCopy = null;
+
+              return;
+            } else {
+              // Solo actualizar el registro pero no hacer animación aún
+              store.set(registerAtoms.id, store.get(MBRAtom));
+              return;
+            }
           }
         } else if (!isALUOp || isALUOpWithMemory) {
           await drawDataPath("MBR", normalizedRegister as DataRegister, instructionName, mode);
