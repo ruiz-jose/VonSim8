@@ -186,107 +186,15 @@ export class ALUBinaryInstruction extends Instruction<
     }
 
     // CASO ESPECIAL: mem<-imd con direccionamiento indirecto (ej: ADD [BL], 01h)
-    // Diferente a MOV [BL], 2 - requiere animación simultánea en paso 6
+    // Seguir EXACTAMENTE la misma secuencia que MOV [BL], 2 para los pasos 1-5
     if (mode === "mem<-imd" && out.mode === "indirect") {
       // Paso 4: Captar segundo byte (valor inmediato) igual que MOV [BL], 2
-      yield* this.consumeInstruction(computer, "id.l");
+      yield* this.consumeInstruction(computer, "ri.l", true); // Pasar true para saltar getMBR igual que MOV
       
-      // Paso 5: Copiar BL a ri (igual que MOV [BL], 2)
-      yield* computer.cpu.copyByteRegister("BL", "ri.l");
-      
-      // Paso 6: OPERACIÓN SIMULTÁNEA ESPECIAL para ADD/SUB/CMP:
-      // - Diferente a MOV [BL], 2 en este paso
-      // - Animación simultánea: BL → MAR + lectura de memoria
-      
-      yield* computer.cpu.setMAR("ri");
-      if (!(yield* computer.cpu.useBus("mem-read"))) return false;
-      yield* computer.cpu.getMBR("left.l");
-      
-      // Paso 7: Mover valor inmediato (id) al registro right para la operación ALU
-      yield* computer.cpu.copyByteRegister("id.l", "right.l");
-      
-      // Paso 8: Ejecutar operación ALU
-      yield { type: "cpu:cycle.update", phase: "execute" };
-      
-      const left = computer.cpu.getRegister("left.l");
-      const right = computer.cpu.getRegister("right.l");
-      let result: AnyByte;
-      const flags: PartialFlags = {};
-
-      switch (this.name) {
-        case "AND":
-        case "OR":
-        case "XOR": {
-          const signed =
-            this.name === "AND"
-              ? left.signed & right.signed
-              : this.name === "OR"
-                ? left.signed | right.signed
-                : left.signed ^ right.signed;
-
-          result = Byte.fromSigned(signed, size) as AnyByte;
-          flags.CF = false;
-          flags.OF = false;
-          break;
-        }
-
-        case "ADD":
-        case "ADC": {
-          const carry = this.name === "ADC" && computer.cpu.getFlag("CF") ? 1 : 0;
-          const unsigned = left.unsigned + right.unsigned + carry;
-
-          if (unsigned > Byte.maxValue(size)) {
-            flags.CF = true;
-            result = Byte.fromUnsigned(unsigned - Byte.maxValue(size) - 1, size) as AnyByte;
-          } else {
-            flags.CF = false;
-            result = Byte.fromUnsigned(unsigned, size) as AnyByte;
-          }
-
-          flags.OF =
-            (left.signed >= 0 && right.signed >= 0 && result.signed < 0) ||
-            (left.signed < 0 && right.signed < 0 && result.signed >= 0);
-          break;
-        }
-
-        case "SUB":
-        case "SBB":
-        case "CMP": {
-          const borrow = this.name === "SBB" && computer.cpu.getFlag("CF") ? 1 : 0;
-          const unsigned = left.unsigned - right.unsigned - borrow;
-
-          if (unsigned < 0) {
-            flags.CF = true;
-            result = Byte.fromUnsigned(unsigned + Byte.maxValue(size) + 1, size) as AnyByte;
-          } else {
-            flags.CF = false;
-            result = Byte.fromUnsigned(unsigned, size) as AnyByte;
-          }
-
-          flags.OF =
-            (left.signed >= 0 && right.signed < 0 && result.signed < 0) ||
-            (left.signed < 0 && right.signed >= 0 && result.signed >= 0);
-          break;
-        }
-      }
-
-      flags.ZF = result.isZero();
-      flags.SF = result.signed < 0;
-
-      yield* computer.cpu.aluExecute(this.name === "CMP" ? "SUB" : this.name, result, flags);
-
-      if (this.name === "CMP") return true; // No writeback para CMP
-
-      // Paso 9: Writeback - depositar resultado en memoria
-      yield { type: "cpu:cycle.update", phase: "writeback" };
-      yield* computer.cpu.setMBR("result.l");
-      // NOTA: Para mem<-imd con direccionamiento indirecto, el MAR ya contiene la dirección correcta
-      // desde el paso 6, por lo que NO necesitamos volver a asignarlo
-      // yield* computer.cpu.setMAR("ri"); // ELIMINADO: MAR ya tiene la dirección destino
-      if (!(yield* computer.cpu.useBus("mem-write"))) return false;
-
-      return true;
+      // Pasos 5-8: Seguir la lógica del switch principal como MOV
+      // NO hacer operaciones especiales aquí - continuar al flujo principal
     }
+
 
     // RESTO DE CASOS (mantener lógica original para otros modos)
     if (mode === "reg<-reg" || mode === "reg<-mem" || mode === "reg<-imd") {
@@ -322,15 +230,25 @@ export class ALUBinaryInstruction extends Instruction<
         yield* this.consumeInstruction(computer, "ri.l");
         //yield* this.consumeInstruction(computer, "ri.h");
       } else {
-        // Move BX to ri
-        yield* computer.cpu.copyByteRegister("BL", "ri.l");
+        // Para casos que NO sean mem<-imd con direccionamiento indirecto
+        if (!(this.operation.mode === "mem<-imd" && out.mode === "indirect")) {
+          // Move BL to ri para otros casos de direccionamiento indirecto
+          yield* computer.cpu.copyByteRegister("BL", "ri.l");
+        }
+        // Para mem<-imd indirecto, la copia BL → ri se hace en el switch principal
       }
 
       // Read value from memory
       yield* computer.cpu.setMAR("ri");
       if (!(yield* computer.cpu.useBus("mem-read"))) return false; // Error reading memory
-      if (this.operation.mode === "mem<-imd") yield* computer.cpu.getMBR("id.l");
-      else yield* computer.cpu.getMBR("left.l");
+      
+      // Para mem<-imd, el valor leído de memoria va a left.l para la operación ALU
+      if (this.operation.mode === "mem<-imd") {
+        yield* computer.cpu.getMBR("left.l");
+      } else {
+        yield* computer.cpu.getMBR("left.l");
+      }
+      
       if (size === 16) {
         yield* computer.cpu.updateWordRegister("ri", ri => ri.add(1));
         yield* computer.cpu.setMAR("ri");
@@ -344,8 +262,14 @@ export class ALUBinaryInstruction extends Instruction<
       if (size === 8) yield* computer.cpu.copyByteRegister(src, "right.l");
       else yield* computer.cpu.copyWordRegister(src, "right");
     } else if (mode === "reg<-imd" || mode === "mem<-imd") {
-      // Move immediate value to right register
-      yield* this.consumeInstruction(computer, "right.l");
+      // Para mem<-imd con direccionamiento indirecto, el valor inmediato ya se captó arriba
+      if (mode === "mem<-imd" && out.mode === "indirect") {
+        // Mover el valor inmediato desde ri.l al registro right para la operación ALU
+        yield* computer.cpu.copyByteRegister("ri.l", "right.l");
+      } else {
+        // Move immediate value to right register (casos normales)
+        yield* this.consumeInstruction(computer, "right.l");
+      }
       if (size === 16) yield* this.consumeInstruction(computer, "right.h");
     } else {
       // Fetch right operand, which is the memory cell
@@ -376,6 +300,11 @@ export class ALUBinaryInstruction extends Instruction<
       }
     }
     if (mode === "mem<-imd") {
+      // Para mem<-imd con direccionamiento indirecto, hacer la copia BL → ri ANTES
+      // de copiar id.l → left.l (siguiendo exactamente la secuencia de MOV)
+      if (out.mode === "indirect") {
+        yield* computer.cpu.copyByteRegister("BL", "ri.l");
+      }
       yield* computer.cpu.copyByteRegister("id.l", "left.l");
     }
 

@@ -936,9 +936,14 @@ async function startThread(generator: EventGenerator): Promise<void> {
                currentInstructionName === "AND" ||
                currentInstructionName === "OR" ||
                currentInstructionName === "XOR") &&
-              executeStageCounter >= 5 && // En etapas avanzadas
-              (messageReadWrite === "Ejecución: write(Memoria[MAR]) ← MBR" || // Para escritura
-               executeStageCounter >= 7); // Para etapas muy avanzadas (preparación interna)
+              ((executeStageCounter >= 5 && // En etapas avanzadas
+                (messageReadWrite === "Ejecución: write(Memoria[MAR]) ← MBR" || // Para escritura
+                 executeStageCounter >= 7)) || // Para etapas muy avanzadas (preparación interna)
+               // Caso específico: ADD/SUB/etc [BL], n - paso 9 innecesario (executeStageCounter === 5)
+               // porque el MAR ya tiene la dirección de destino
+               (executeStageCounter === 5 &&
+                !currentInstructionModeri &&
+                currentInstructionModeid));
 
             // Usar las nuevas funciones auxiliares para generar mensajes
             const instructionContext = createInstructionContext();
@@ -1110,6 +1115,23 @@ async function startThread(generator: EventGenerator): Promise<void> {
               ) {
                 // Caso especial para MOV con direccionamiento directo: copiar directamente del MBR al MAR
                 store.set(messageAtom, "Ejecución: MAR ← MBR");
+              } else if (
+                // Caso especial para instrucciones ALU con direccionamiento indirecto e inmediato
+                // cuando se copia el contenido de BL al MAR - paso 6 de ADD [BL], 6
+                sourceRegister === "ri" &&
+                (currentInstructionName === "ADD" ||
+                  currentInstructionName === "SUB" ||
+                  currentInstructionName === "CMP" ||
+                  currentInstructionName === "AND" ||
+                  currentInstructionName === "OR" ||
+                  currentInstructionName === "XOR") &&
+                !currentInstructionModeri &&
+                currentInstructionModeid &&
+                (executeStageCounter === 4 || executeStageCounter === 5)
+              ) {
+                // Mensaje simultáneo: MAR ← BL | id ← MBR
+                store.set(messageAtom, "Ejecución: MAR ← BL | id ← MBR");
+                console.log("🎯 Paso 6 de ADD [BL], 6 - Mensaje simultáneo: MAR ← BL | id ← MBR");
               } else if (
                 shouldDisplayMessage ||
                 sourceRegister === "SP" ||
@@ -1659,6 +1681,16 @@ async function startThread(generator: EventGenerator): Promise<void> {
                currentInstructionName === "CMP" ||
                currentInstructionName === "CALL"))*/
 
+            // Establecer mensaje por defecto para lectura de memoria
+            if (currentInstructionName === "ADD" || 
+                currentInstructionName === "SUB" || 
+                currentInstructionName === "CMP" ||
+                currentInstructionName === "AND" ||
+                currentInstructionName === "OR" ||
+                currentInstructionName === "XOR") {
+              messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";
+            }
+
             if (currentInstructionName === "RET") {
               messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";
             }
@@ -1681,6 +1713,40 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 // Es escritura a memoria (mem<-reg o mem<-imd)
                 messageReadWrite = "Ejecución: write(Memoria[MAR]) ← MBR";
               }
+            }
+            // Para ADD/SUB/CMP/AND/OR/XOR con direccionamiento indirecto e inmediato, determinar el mensaje apropiado
+            if ((currentInstructionName === "ADD" || 
+                 currentInstructionName === "SUB" || 
+                 currentInstructionName === "CMP" ||
+                 currentInstructionName === "AND" ||
+                 currentInstructionName === "OR" ||
+                 currentInstructionName === "XOR") && 
+                currentInstructionModeid && 
+                !currentInstructionModeri &&
+                executeStageCounter === 5) {
+              // Para instrucciones ALU con direccionamiento indirecto e inmediato en el paso 5 (lectura de memoria)
+              messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR]) | IP ← IP + 1";
+            } else if ((currentInstructionName === "ADD" || 
+                       currentInstructionName === "SUB" || 
+                       currentInstructionName === "CMP" ||
+                       currentInstructionName === "AND" ||
+                       currentInstructionName === "OR" ||
+                       currentInstructionName === "XOR") && 
+                      currentInstructionModeid && 
+                      !currentInstructionModeri &&
+                      executeStageCounter === 7) {
+              // Para instrucciones ALU con direccionamiento indirecto e inmediato en el paso 7 (lectura del operando de memoria)
+              messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";
+            } else if ((currentInstructionName === "ADD" || 
+                       currentInstructionName === "SUB" || 
+                       currentInstructionName === "CMP" ||
+                       currentInstructionName === "AND" ||
+                       currentInstructionName === "OR" ||
+                       currentInstructionName === "XOR") && 
+                      !currentInstructionModeid && 
+                      !currentInstructionModeri) {
+              // Para otras instrucciones ALU que no tengan el caso específico
+              messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";
             }
             let ContinuarSinGuardar = false;
             // Identificar si este bus:reset es el último paso antes del cycle.end
@@ -1794,7 +1860,19 @@ async function startThread(generator: EventGenerator): Promise<void> {
                   currentInstructionName === "AND" ||
                   currentInstructionName === "OR" ||
                   currentInstructionName === "XOR") &&
-                messageReadWrite !== "Ejecución: MBR ← read(Memoria[MAR])") // NUEVA CONDICIÓN: No aplicar cuando se está leyendo de memoria
+                messageReadWrite !== "Ejecución: MBR ← read(Memoria[MAR])") || // NUEVA CONDICIÓN: No aplicar cuando se está leyendo de memoria
+              // Para instrucciones ALU con direccionamiento indirecto e inmediato en executeStageCounter === 3,
+              // no contabilizar el ciclo porque cpu:register.update ya maneja el mensaje con "| IP ← IP + 1"
+              (executeStageCounter === 3 &&
+                (currentInstructionName === "ADD" ||
+                  currentInstructionName === "SUB" ||
+                  currentInstructionName === "CMP" ||
+                  currentInstructionName === "AND" ||
+                  currentInstructionName === "OR" ||
+                  currentInstructionName === "XOR") &&
+                currentInstructionModeid &&
+                !currentInstructionModeri &&
+                messageReadWrite === "Ejecución: MBR ← read(Memoria[MAR])") // Solo para lectura de memoria
             ) {
               ContinuarSinGuardar = true;
               console.log("🔄 ContinuarSinGuardar establecido a true - condición cumplida");
@@ -1879,6 +1957,11 @@ async function startThread(generator: EventGenerator): Promise<void> {
               cycleCount++;
               currentInstructionCycleCount++;
               store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+              
+              // Pausar si se está ejecutando por ciclos
+              if (status.until === "cycle-change") {
+                pauseSimulation();
+              }
             } else if (isLastStepBeforeCycleEnd) {
               // Para el último paso antes de cycle.end: mostrar mensaje y contabilizar ciclo, pero NO pausar
               store.set(messageAtom, messageReadWrite);
