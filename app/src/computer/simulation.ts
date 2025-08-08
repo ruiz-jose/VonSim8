@@ -1795,6 +1795,24 @@ async function startThread(generator: EventGenerator): Promise<void> {
                        currentInstructionName === "AND" ||
                        currentInstructionName === "OR" ||
                        currentInstructionName === "XOR") && 
+                      currentInstructionModeid && 
+                      currentInstructionModeri &&
+                      executeStageCounter === 8) {
+              // Para instrucciones ALU con direccionamiento directo e inmediato en el paso 8 (escritura del resultado a memoria)
+              // Ejemplo: ADD [04], 02h - Este paso almacena el resultado de la ALU en la dirección de memoria
+              if (lastMemoryOperationWasWrite) {
+                messageReadWrite = "Ejecución: write(Memoria[MAR]) ← MBR";
+                console.log("🎯 Paso 8 ADD [04], 02h - Estableciendo mensaje de escritura:", messageReadWrite);
+              } else {
+                messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";
+                console.log("🎯 Paso 8 ADD [04], 02h - Estableciendo mensaje de lectura:", messageReadWrite);
+              }
+            } else if ((currentInstructionName === "ADD" || 
+                       currentInstructionName === "SUB" || 
+                       currentInstructionName === "CMP" ||
+                       currentInstructionName === "AND" ||
+                       currentInstructionName === "OR" ||
+                       currentInstructionName === "XOR") && 
                       !currentInstructionModeid && 
                       !currentInstructionModeri) {
               // Para otras instrucciones ALU que no tengan el caso específico
@@ -1808,6 +1826,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             // - Direccionamiento directo: bus:reset en executeStageCounter === 6 es el último paso
             // - Direccionamiento indirecto: bus:reset en executeStageCounter === 5 es el último paso
             // - Direccionamiento indirecto con inmediato (ADD [BL], 2): bus:reset en executeStageCounter === 9 es el último paso
+            // - Direccionamiento directo con inmediato (ADD [04], 02h): bus:reset en executeStageCounter === 8 es el último paso
             if (
               (currentInstructionName === "MOV" ||
                 currentInstructionName === "ADD" ||
@@ -1815,7 +1834,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
               messageReadWrite === "Ejecución: write(Memoria[MAR]) ← MBR"
             ) {
               // Direccionamiento directo (modeRi = true): último paso en executeStageCounter === 6
-              if (currentInstructionModeri && executeStageCounter === 6) {
+              if (currentInstructionModeri && !currentInstructionModeid && executeStageCounter === 6) {
                 isLastStepBeforeCycleEnd = true;
               }
               // Direccionamiento indirecto (modeRi = false, modeId = false): último paso en executeStageCounter === 5
@@ -1831,6 +1850,14 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 !currentInstructionModeri &&
                 currentInstructionModeid &&
                 executeStageCounter === 9
+              ) {
+                isLastStepBeforeCycleEnd = true;
+              }
+              // Direccionamiento directo con inmediato (ADD [04], 02h): último paso en executeStageCounter === 8
+              else if (
+                currentInstructionModeri &&
+                currentInstructionModeid &&
+                executeStageCounter === 8
               ) {
                 isLastStepBeforeCycleEnd = true;
               }
