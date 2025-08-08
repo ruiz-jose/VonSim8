@@ -238,6 +238,13 @@ export class ALUBinaryInstruction extends Instruction<
         // Para mem<-imd indirecto, la copia BL → ri se hace en el switch principal
       }
 
+      // Para mem<-imd con direccionamiento indirecto: primero copiar BL a ri
+      if (this.operation.mode === "mem<-imd" && out.mode === "indirect") {
+        yield* computer.cpu.copyByteRegister("BL", "ri.l");
+        // Luego copiar MBR al registro ID sin contabilizar ciclo ni mostrar mensaje
+        yield* computer.cpu.getMBR("id.l");
+      }
+
       // Read value from memory
       yield* computer.cpu.setMAR("ri");
       if (!(yield* computer.cpu.useBus("mem-read"))) return false; // Error reading memory
@@ -264,8 +271,8 @@ export class ALUBinaryInstruction extends Instruction<
     } else if (mode === "reg<-imd" || mode === "mem<-imd") {
       // Para mem<-imd con direccionamiento indirecto, el valor inmediato ya se captó arriba
       if (mode === "mem<-imd" && out.mode === "indirect") {
-        // Mover el valor inmediato desde ri.l al registro right para la operación ALU
-        yield* computer.cpu.copyByteRegister("ri.l", "right.l");
+        // Mover el valor inmediato desde id.l al registro right para la operación ALU
+        yield* computer.cpu.copyByteRegister("id.l", "right.l");
       } else {
         // Move immediate value to right register (casos normales)
         yield* this.consumeInstruction(computer, "right.l");
@@ -298,14 +305,6 @@ export class ALUBinaryInstruction extends Instruction<
         if (size === 8) yield* computer.cpu.copyByteRegister(out, "left.l");
         else yield* computer.cpu.copyWordRegister(out, "left");
       }
-    }
-    if (mode === "mem<-imd") {
-      // Para mem<-imd con direccionamiento indirecto, hacer la copia BL → ri ANTES
-      // de copiar id.l → left.l (siguiendo exactamente la secuencia de MOV)
-      if (out.mode === "indirect") {
-        yield* computer.cpu.copyByteRegister("BL", "ri.l");
-      }
-      yield* computer.cpu.copyByteRegister("id.l", "left.l");
     }
 
     yield { type: "cpu:cycle.update", phase: "execute" };

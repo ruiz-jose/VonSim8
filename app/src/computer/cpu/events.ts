@@ -767,6 +767,82 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         }
       }
       
+      // Detectar caso especial: ADD/SUB/etc [BL], n - paso 6 (executeStageCounter === 4)
+      // Animaciones simultáneas: BL → MAR + MBR → ID
+      const isALUIndirectImmediateStep6 = 
+        regNorm === "ri" &&
+        (currentInstructionName === "ADD" || 
+         currentInstructionName === "SUB" || 
+         currentInstructionName === "CMP" ||
+         currentInstructionName === "AND" ||
+         currentInstructionName === "OR" ||
+         currentInstructionName === "XOR") &&
+        currentExecuteStageCounter === 4; // Paso 6 según el log
+
+      if (isALUIndirectImmediateStep6) {
+        console.log(`🎯 Caso especial detectado: ${currentInstructionName} [BL], n - paso 6`);
+        console.log("🎬 Ejecutando animaciones simultáneas: BL → MAR + MBR → ID");
+
+        // Usar la configuración de velocidad de animación
+        const settings = getSettings();
+        const duration = settings.animations ? settings.executionUnit : 1;
+
+        console.log("🚌 Iniciando animación del bus de direcciones BL → MAR");
+        console.log("📊 Iniciando animación del bus de datos MBR → ID");
+
+        // Ejecutar ambas animaciones simultáneamente
+        await Promise.all([
+          // Animación del bus de direcciones BL → MAR (mostrar que ri contiene el valor de BL)
+          (async () => {
+            console.log("🚌 Generando path para BL → MAR usando ri");
+            const addressPath = generateAddressPath("ri"); // ri contiene el valor de BL
+            console.log("🚌 Path generado para BL → MAR:", addressPath);
+            
+            return anim(
+              [
+                {
+                  key: "cpu.internalBus.address.path",
+                  from: addressPath,
+                },
+                { key: "cpu.internalBus.address.opacity", from: 1 },
+                { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
+              ],
+              { duration, easing: "easeInOutSine" },
+            );
+          })(),
+          // Animación del bus de datos MBR → ID
+          (async () => {
+            console.log("📊 Ejecutando animación MBR → ID");
+            return drawDataPath("MBR", "id", instructionName, mode);
+          })(),
+        ]);
+
+        console.log("✅ Ambas animaciones completadas, actualizando registros");
+
+        // Actualizar registros: ri (que contiene BL) a MAR y MBR a ID
+        store.set(MARAtom, store.get(registerAtoms.ri));
+        store.set(registerAtoms.id, store.get(MBRAtom));
+
+        // Activar registros para mostrar la actualización
+        await Promise.all([activateRegister("cpu.MAR"), activateRegister("cpu.id")]);
+
+        // Desactivar registros
+        await Promise.all([deactivateRegister("cpu.MAR"), deactivateRegister("cpu.id")]);
+
+        // Resetear ambas animaciones al final
+        console.log("🧹 Reseteando animaciones de bus");
+        await Promise.all([
+          anim(
+            { key: "cpu.internalBus.address.opacity", to: 0 },
+            { duration: 1, easing: "easeInSine" },
+          ),
+          resetDataPath(),
+        ]);
+
+        console.log("✅ Animaciones simultáneas completadas para paso 6");
+        return;
+      }
+      
              const path = isFromMBR
          ? "M 594 249 H 550 V 348 H 610" // path especial, siempre desde el MBR
          : generateAddressPath(regNorm as MARRegister); // path normal
@@ -1165,7 +1241,71 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       
       console.log(`🔄 cpu:register.copy: ${event.src} → ${event.dest} (normalizado: ${src} → ${dest})`);
 
-      // Detectar transferencias a left o right para animación simultánea
+      // Detectar preparación de operandos ALU para ADD [BL], 2 (mem<-imd indirecto)
+      const isALUIndirectImmediateADD = instructionName === "ADD" && mode === "mem<-imd";
+      
+      if ((dest === "left" || dest === "right") && isALUIndirectImmediateADD) {
+        console.log(`🎯 Detectando preparación de operando ALU: ${src} → ${dest} para ${instructionName}`);
+        
+        // Para ADD [BL], 2: ri → right (valor inmediato) e id → left (valor de memoria)
+        if (src === "ri" && dest === "right") {
+          // Mostrar animación de RI → right (representando el valor inmediato hacia la ALU)
+          console.log(`📋 Animación ALU: Valor inmediato (ri) → operando derecho ALU`);
+          await Promise.all([
+            drawDataPath("ri", "right", instructionName, mode),
+            // Mostrar animación de ri → MAR para indicar la preparación de dirección
+            anim(
+              [
+                {
+                  key: "cpu.internalBus.address.path",
+                  from: generateAddressPath("ri"),
+                },
+                { key: "cpu.internalBus.address.opacity", from: 1 },
+                { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
+              ],
+              { duration: 5, easing: "easeInOutSine" },
+            ),
+          ]);
+          
+          // Actualizar registros
+          store.set(registerAtoms.right, store.get(registerAtoms[src]));
+          
+          // Activar y desactivar registros
+          await Promise.all([activateRegister("cpu.right"), activateRegister("cpu.MAR")]);
+          await Promise.all([deactivateRegister("cpu.right"), deactivateRegister("cpu.MAR")]);
+          
+          // Resetear animaciones
+          await Promise.all([
+            resetDataPath(),
+            anim(
+              { key: "cpu.internalBus.address.opacity", to: 0 },
+              { duration: 1, easing: "easeInSine" },
+            ),
+          ]);
+          return;
+        } else if (src === "id" && dest === "left") {
+          // Mostrar animación de ID → left (valor de memoria hacia la ALU)
+          console.log(`📋 Animación ALU: Valor de memoria (id) → operando izquierdo ALU`);
+          await Promise.all([
+            drawDataPath("id", "left", instructionName, mode),
+            // Mostrar animación de MBR → id para indicar que el valor viene de memoria
+            drawDataPath("MBR", "id", instructionName, mode),
+          ]);
+          
+          // Actualizar registros
+          store.set(registerAtoms.left, store.get(registerAtoms[src]));
+          
+          // Activar y desactivar registros
+          await Promise.all([activateRegister("cpu.left"), activateRegister("cpu.id")]);
+          await Promise.all([deactivateRegister("cpu.left"), deactivateRegister("cpu.id")]);
+          
+          // Resetear animaciones
+          await resetDataPath();
+          return;
+        }
+      }
+
+      // Detectar transferencias a left o right para animación simultánea (comportamiento original)
       if (dest === "left" || dest === "right") {
         const transferInfo = { from: src as DataRegister, instruction: instructionName, mode };
 
