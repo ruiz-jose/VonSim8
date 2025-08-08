@@ -1074,6 +1074,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
                     "currentInstructionCycleCount:",
                     currentInstructionCycleCount,
                   );
+                  // Marcar que ya se contabilizó el ciclo para evitar doble contabilización
+                  simultaneousCycleCounted = true;
                   // Ahora mostrar el mensaje usando el registro almacenado
                   store.set(messageAtom, `Ejecución: MAR ← ${blBxRegisterName}`);
                   mbridirmar = false;
@@ -1096,6 +1098,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
                     "currentInstructionCycleCount:",
                     currentInstructionCycleCount,
                   );
+                  // Marcar que ya se contabilizó el ciclo para evitar doble contabilización
+                  simultaneousCycleCounted = true;
                   // Ahora mostrar el mensaje usando el registro almacenado
                   store.set(messageAtom, `Ejecución: MAR ← ${blBxRegisterName}`);
                   mbridirmar = false;
@@ -1196,10 +1200,12 @@ async function startThread(generator: EventGenerator): Promise<void> {
             }
 
             // Siempre permitir la pausa en modo cycle-change, independientemente de si se contabiliza el ciclo
-            // Las excepciones son: instrucciones indirectas y casos ri → MAR que se omiten completamente
+            // Las excepciones son: casos ri → MAR que se omiten completamente
+            // Para instrucciones indirectas, sí pausar si es la transferencia BL/BX → MAR (blBxToRiProcessed)
             if (status.until === "cycle-change") {
-              // Solo omitir la pausa para instrucciones indirectas y ri → MAR que se omiten
-              if (!isIndirectInstruction && !isRiToMARSkipCycle) {
+              // Solo omitir la pausa para ri → MAR que se omiten completamente
+              // Para instrucciones indirectas con BL/BX → MAR, SÍ pausar porque es un evento visible
+              if (!isRiToMARSkipCycle && !(isIndirectInstruction && !blBxToRiProcessed)) {
                 pauseSimulation();
               }
             }
@@ -1942,7 +1948,6 @@ async function startThread(generator: EventGenerator): Promise<void> {
                     /^\[[0-9A-F]+h?\]$/i.test(currentInstructionOperands[1])))) ||
               // Para MOV/ADD/SUB con direccionamiento indirecto + inmediato (MOV/ADD/SUB [BL], 4) en executeStageCounter === 3,
               // no contabilizar el ciclo porque cpu:register.update ya maneja la captación del valor inmediato
-              // PERO NO aplicar esto cuando se está leyendo de memoria (direccionamiento indirecto puro como ADD CL, [BL])
               (executeStageCounter === 3 &&
                 (currentInstructionName === "MOV" ||
                   currentInstructionName === "ADD" ||
@@ -1950,7 +1955,6 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 !currentInstructionModeri &&
                 !currentInstructionModeid &&
                 currentInstructionOperands.length >= 2 &&
-                messageReadWrite !== "Ejecución: MBR ← read(Memoria[MAR])" && // NUEVA CONDICIÓN: No aplicar cuando se está leyendo de memoria
                 // Detectar MOV/ADD/SUB [registro], valor_inmediato
                 ((currentInstructionOperands[0].startsWith("[") &&
                   currentInstructionOperands[0].endsWith("]") &&
