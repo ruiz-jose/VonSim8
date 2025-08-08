@@ -323,16 +323,21 @@ export function generateDataPath(
   }
 
   // Path especial: MBR -> RI para instrucciones con direccionamiento directo + inmediato (ruta que pasa por IP join)
-  if (normalizedFrom === "MBR" && normalizedTo === "ri" && 
-      (instruction?.startsWith("MOV") || 
-       instruction?.startsWith("ADD") || 
-       instruction?.startsWith("SUB") || 
-       instruction?.startsWith("CMP") ||
-       instruction?.startsWith("AND") ||
-       instruction?.startsWith("OR") ||
-       instruction?.startsWith("XOR")) &&
-      mode === "mem<-imd") {
-    console.log("🎯 Usando ruta especial MBR → ri (direccionamiento directo + inmediato pasando por IP join)");
+  if (
+    normalizedFrom === "MBR" &&
+    normalizedTo === "ri" &&
+    (instruction?.startsWith("MOV") ||
+      instruction?.startsWith("ADD") ||
+      instruction?.startsWith("SUB") ||
+      instruction?.startsWith("CMP") ||
+      instruction?.startsWith("AND") ||
+      instruction?.startsWith("OR") ||
+      instruction?.startsWith("XOR")) &&
+    mode === "mem<-imd"
+  ) {
+    console.log(
+      "🎯 Usando ruta especial MBR → ri (direccionamiento directo + inmediato pasando por IP join)",
+    );
     // Ruta: MBR → mbr reg join → IP join → ri join → ri
     // Posiciones: [620,250] → [390,250] → [390,349] → [390,388] → [455,388]
     return "M 620 250 H 390 V 349 V 388 H 455";
@@ -345,7 +350,7 @@ export function generateDataPath(
     return "M 455 388 H 480 H 550 H 590 V 250 H 30 V 85 H 125 H 220";
   }
 
-  // Path especial: ri -> right end para animaciones simultáneas  
+  // Path especial: ri -> right end para animaciones simultáneas
   if (normalizedFrom === "ri" && normalizedTo === "right end") {
     console.log("🎯 Usando ruta especial ri → right end");
     // Ruta: ri → ri out → ri out join → outr mbr join → mbr reg join → IR mbr join → operands mbr join → right join → right → right end
@@ -454,6 +459,12 @@ export function generateDataPath(
     console.log("🎯 Caso específico MBR → id detectado");
     path = ["MBR", "MBR out", "outr mbr join", "mbr reg join", "NodoRegIn", "id join", "id"];
     console.log("🎯 Path definido para MBR → id:", path);
+  } else if (normalizedFrom === "MBR" && ["AL", "BL", "CL", "DL"].includes(normalizedTo)) {
+    // Caso específico: MBR → {AL, BL, CL, DL} (evitar pasar por NodoRegOut)
+    // Ruta directa: MBR → mbr reg join → NodoRegIn → registro join → registro
+    console.log(`🎯 Caso específico MBR → ${normalizedTo} detectado - evitando NodoRegOut`);
+    path = ["MBR", "mbr reg join", "NodoRegIn", `${normalizedTo} join`, normalizedTo];
+    console.log(`🎯 Path definido para MBR → ${normalizedTo}:`, path);
   } else if (registers.includes(normalizedFrom) && registers.includes(normalizedTo)) {
     // Si el destino es SP, IP o ri, pasar por NodoRegIn
     if (["SP", "IP", "ri"].includes(normalizedTo)) {
@@ -504,10 +515,10 @@ export function generateDataPath(
     } else if (mode === "mem<-imd" && (instruction === "ADD" || instruction === "SUB")) {
       // Para instrucciones ADD/SUB con modo mem<-imd, usar ruta directa MBR -> ri
       path = ["MBR", "mbr reg join", "ri join", "ri"];
-                   } else {
-                 // Para otros casos, usar la ruta del AddressBus (showpath2): MBR -> MAR
-                 return "M 594 249 H 550 V 348 H 610";
-               }
+    } else {
+      // Para otros casos, usar la ruta del AddressBus (showpath2): MBR -> MAR
+      return "M 594 249 H 550 V 348 H 610";
+    }
     // Generar el path SVG
     const start = dataBus.getNodeAttribute(path[0], "position");
     let d = `M ${start[0]} ${start[1]}`;
@@ -699,7 +710,7 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
           "M 390 115 L 425 85 L 455 85", // línea recta de NodoRegIn a BL join y luego a BL
           "M 390 115 L 425 125 L 455 125", // línea recta de NodoRegIn a CL join y luego a CL
           "M 390 115 L 425 165 L 455 165", // línea recta de NodoRegIn a DL join y luego a DL
-          showid ? "M 390 115 L 425 205 L 451 205": "", // línea recta de NodoRegIn a id join y luego a id
+          showid ? "M 390 115 L 425 205 L 451 205" : "", // línea recta de NodoRegIn a id join y luego a id
           // Líneas para NodoRegOut - estética profesional similar al bus de entrada
           "M 550 115 L 525 45 L 445 45", // línea recta de NodoRegOut a AL out join y luego a AL out
           "M 550 115 L 525 85 L 445 85", // línea recta de NodoRegOut a BL out join y luego a BL out

@@ -14,8 +14,8 @@ import {
 import type { SimulatorEvent } from "@/computer/shared/types";
 import { finishSimulation, notifyWarning } from "@/computer/simulation";
 import { store } from "@/lib/jotai";
-import { colors } from "@/lib/tailwind";
 import { getSettings } from "@/lib/settings";
+import { colors } from "@/lib/tailwind";
 
 import { memoryAtom, operatingAddressAtom } from "./state";
 
@@ -40,8 +40,6 @@ function generateExternalDataPath(direction: "memory-to-mbr" | "mbr-to-memory"):
     return `M ${mbrX} ${mbrY} L ${memoryX} ${memoryY}`;
   }
 }
-
-const BUS_ANIMATION_DURATION = 5;
 
 // Función para animar el bus de datos externo (igual que el interno del CPU)
 export const drawExternalDataPath = (
@@ -118,7 +116,7 @@ const drawRDControlPath = (duration?: number) => {
   try {
     // Path desde CPU hacia memoria y otros dispositivos
     const path = "M 380 420 H 800"; // Path básico CPU -> Memory
-    
+
     // Usar la configuración de velocidad de animación si no se especifica duración
     const settings = getSettings();
     const actualDuration = duration ?? (settings.animations ? settings.executionUnit : 1);

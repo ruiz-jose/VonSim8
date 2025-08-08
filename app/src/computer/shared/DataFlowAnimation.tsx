@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { memo, useEffect, useState } from "react";
+
 import { useSettings } from "@/lib/settings";
 
 type DataFlowAnimationProps = {
@@ -15,7 +16,7 @@ export const DataFlowAnimation = memo(
   ({ from, to, data, duration, className, onComplete }: DataFlowAnimationProps) => {
     const [isVisible, setIsVisible] = useState(false);
     const [progress, setProgress] = useState(0);
-    const settings = useSettings();
+    const [settings] = useSettings();
 
     // Usar la configuración de velocidad de animación si no se especifica duración
     const actualDuration = duration ?? (settings.animations ? settings.executionUnit * 2 : 1000);

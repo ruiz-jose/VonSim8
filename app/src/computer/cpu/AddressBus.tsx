@@ -24,9 +24,9 @@ export function generateAddressPath(
   if (showpath1) {
     path = "M 455 388 H 550 V 348 H 610"; // ri - ajustado para conectar con MAR desde registro redimensionado
   }
-     if (showpath2) {
-     path = "M 594 249 H 550 V 348 H 610"; // mbr - ajustado para conectar con MAR
-   }
+  if (showpath2) {
+    path = "M 594 249 H 550 V 348 H 610"; // mbr - ajustado para conectar con MAR
+  }
   switch (from) {
     case "SP":
       return "M 460 309 H 550 V 348 H 610";

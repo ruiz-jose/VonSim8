@@ -70,7 +70,9 @@ export class ALUBinaryInstruction extends Instruction<
         position: this.position,
         operands: this.#formatOperands(),
         willUse: {
-          id: this.operation.mode === "mem<-imd" && (this.operation.out.mode === "direct" || this.operation.out.mode === "indirect"), // Marcar `id` como true para direccionamiento directo o indirecto
+          id:
+            this.operation.mode === "mem<-imd" &&
+            (this.operation.out.mode === "direct" || this.operation.out.mode === "indirect"), // Marcar `id` como true para direccionamiento directo o indirecto
           ri:
             this.operation.mode === "mem<-imd" &&
             this.operation.out.mode === "direct" && // Solo para direccionamiento directo
@@ -90,21 +92,21 @@ export class ALUBinaryInstruction extends Instruction<
     if (mode === "mem<-imd" && out.mode === "direct") {
       // Paso 4: Captar segundo byte (dirección) igual que MOV
       yield* this.consumeInstruction(computer, "ri.l");
-      
+
       // Paso 5: Captar tercer byte (valor inmediato) igual que MOV
       yield* this.consumeInstruction(computer, "id.l");
-      
+
       // Paso 6: Leer byte de memoria apuntado por ri
       yield* computer.cpu.setMAR("ri");
       if (!(yield* computer.cpu.useBus("mem-read"))) return false;
       yield* computer.cpu.getMBR("left.l");
-      
+
       // Paso 7: Mover valor inmediato (id) al registro right para la operación ALU
       yield* computer.cpu.copyByteRegister("id.l", "right.l");
-      
+
       // Paso 8: Ejecutar operación ALU
       yield { type: "cpu:cycle.update", phase: "execute" };
-      
+
       const left = computer.cpu.getRegister("left.l");
       const right = computer.cpu.getRegister("right.l");
       let result: AnyByte;
@@ -190,11 +192,10 @@ export class ALUBinaryInstruction extends Instruction<
     if (mode === "mem<-imd" && out.mode === "indirect") {
       // Paso 4: Captar segundo byte (valor inmediato) igual que MOV [BL], 2
       yield* this.consumeInstruction(computer, "ri.l", true); // Pasar true para saltar getMBR igual que MOV
-      
+
       // Pasos 5-8: Seguir la lógica del switch principal como MOV
       // NO hacer operaciones especiales aquí - continuar al flujo principal
     }
-
 
     // RESTO DE CASOS (mantener lógica original para otros modos)
     if (mode === "reg<-reg" || mode === "reg<-mem" || mode === "reg<-imd") {
@@ -248,14 +249,14 @@ export class ALUBinaryInstruction extends Instruction<
       // Read value from memory
       yield* computer.cpu.setMAR("ri");
       if (!(yield* computer.cpu.useBus("mem-read"))) return false; // Error reading memory
-      
+
       // Para mem<-imd, el valor leído de memoria va a left.l para la operación ALU
       if (this.operation.mode === "mem<-imd") {
         yield* computer.cpu.getMBR("left.l");
       } else {
         yield* computer.cpu.getMBR("left.l");
       }
-      
+
       if (size === 16) {
         yield* computer.cpu.updateWordRegister("ri", ri => ri.add(1));
         yield* computer.cpu.setMAR("ri");

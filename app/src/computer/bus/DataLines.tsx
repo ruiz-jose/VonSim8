@@ -37,11 +37,7 @@ export function DataLines() {
   return (
     <svg className="pointer-events-none absolute inset-0 z-[25] size-full">
       {/* Data lines */}
-      <path
-        className="fill-none stroke-stone-700 stroke-bus"
-        strokeLinejoin="round"
-        d={dataPath}
-      />
+      <path className="fill-none stroke-stone-700 stroke-bus" strokeLinejoin="round" d={dataPath} />
       {/* Línea animada del bus de datos - usando path dinámico del spring */}
       <animated.path
         d={path}
