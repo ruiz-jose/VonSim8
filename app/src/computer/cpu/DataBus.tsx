@@ -28,7 +28,8 @@ const dataBus = new UndirectedGraph<Node>({ allowSelfLoops: false });
 
 // These are the endpoints of the bus
 dataBus.addNode("MBR", { position: [615, 249] }); // Actualizado centro del MBR a x=615
-dataBus.addNode("MBR top", { position: [615, 220] }); // Nodo especial para entrada superior del MBR (actualizado a x=615)
+dataBus.addNode("MBR top", { position: [615, 229] }); // Nodo de entrada superior - justo arriba del registro MBR
+dataBus.addNode("MBR bottom", { position: [615, 269] }); // Nodo en la parte inferior del registro MBR
 dataBus.addNode("AL", { position: [455, 45] }); // Ajustado para el centro del registro de 8 bits
 dataBus.addNode("BL", { position: [455, 85] }); // Ajustado para el centro del registro de 8 bits
 dataBus.addNode("CL", { position: [455, 125] }); // Ajustado para el centro del registro de 8 bits
@@ -169,6 +170,7 @@ dataBus.addUndirectedEdge("id join", "id");
 dataBus.addUndirectedEdge("id join", "data mbr join");
 dataBus.addUndirectedEdge("MBR", "data mbr join");
 dataBus.addUndirectedEdge("MBR", "MBR top"); // Conectar MBR centro con MBR superior
+dataBus.addUndirectedEdge("MBR", "MBR bottom"); // Conectar MBR centro con MBR inferior
 dataBus.addUndirectedEdge("data mbr join", "NodoRegIn");
 
 dataBus.addUndirectedEdge("IP", "IP join");
@@ -221,7 +223,7 @@ dataBus.addNode("NodoRegOutToLeft", { position: [560, 115] });
 dataBus.addUndirectedEdge("outr mbr join left", "NodoRegOutToLeft");
 dataBus.addUndirectedEdge("NodoRegOutToLeft", "NodoRegOut");
 
-export type DataRegister = PhysicalRegister | "MBR" | "MBR top" | "result start" | "left end" | "right end";
+export type DataRegister = PhysicalRegister | "MBR" | "MBR top" | "MBR bottom" | "result start" | "left end" | "right end";
 
 /**
  * Genera una animación simultánea para left y right cuando ambos son destinos
@@ -320,8 +322,8 @@ export function generateDataPath(
   });
   if (normalizedFrom === "ri" && normalizedTo === "MAR" && mode === "mem<-imd") {
     // Ruta directa desde ri hasta MAR para instrucciones con modo directo e inmediato
-    console.log("🎯 Usando ruta especial ri → MAR:", "M 455 388 H 550 V 348 H 610");
-    return "M 455 388 H 550 V 348 H 610";
+    console.log("🎯 Usando ruta especial ri → MAR:", "M 455 388 H 550 V 348 H 580");
+    return "M 455 388 H 550 V 348 H 580";
   }
 
   // Path especial: MBR -> RI para instrucciones con direccionamiento directo + inmediato (ruta que pasa por IP join)
@@ -519,7 +521,7 @@ export function generateDataPath(
       path = ["MBR", "mbr reg join", "ri join", "ri"];
     } else {
       // Para otros casos, usar la ruta del AddressBus (showpath2): MBR -> MAR
-      return "M 594 249 H 550 V 348 H 610";
+      return "M 594 249 H 550 V 348 H 580";
     }
     // Generar el path SVG
     const start = dataBus.getNodeAttribute(path[0], "position");
@@ -601,7 +603,7 @@ export function generateDataPath(
     normalizedTo === "MBR" &&
     (instruction === "INT" || instruction === "CALL")
   ) {
-    return "M 510 349 H 550 V 250 H 620";
+    return "M 510 349 H 550 V 250 H 580";
   }
 
   if (path.length === 0) {
@@ -669,8 +671,7 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
         d={[
           // ALU registers
           "M 220 145 H 90", // left
-          "V 250 H 630", // Long path to MBR, here to get nice joins
-          "M 594 249 V 220", // MBR superior - conexión vertical desde centro del MBR hasta MBR top
+          "V 250 H 580", // Long path hacia MBR, termina mucho antes del registro para evitar superposición (movido de 600 a 580)
           "M 90 145 H 90", // right
           "M 272 115 H 390", // result (más a la derecha, sin bajar)
           "M 250 225 V 250", // flags

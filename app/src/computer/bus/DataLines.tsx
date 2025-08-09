@@ -15,8 +15,9 @@ export function DataLines() {
     .join(" ");
 
   const dataPath = [
-    "M 635 249 H 800", // CPU -> Memory - comienza desde el borde derecho del registro MBR a la altura del centro
-    "M 650 249 V 220 H 615 V 240", // Nuevo path para lectura: CPU boundary -> arriba -> centro superior MBR (x=615) -> baja 2cm (20px)
+    // Elimino la línea "M 635 249 H 800" que conecta el borde derecho del MBR con la memoria
+    "M 650 249 V 215 H 615 V 229", // Path para lectura: CPU boundary -> sube más arriba -> centro MBR -> baja hasta entrada superior
+    "M 615 269 V 285 H 650 V 249 H 800", // Path para escritura: desde parte inferior MBR -> baja más -> sale horizontalmente -> memoria
     devices.pic && "M 765 249 V 790 H 450",
     devices.pio && "M 765 249 V 790 H 900",
     devices.timer && "M 765 249 V 790 H 598 V 875",

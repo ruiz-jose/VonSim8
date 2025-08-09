@@ -31,8 +31,10 @@ function generateExternalDataPath(direction: "memory-to-mbr" | "mbr-to-memory"):
   // Coordenadas exactas del centro del MBR actualizadas
   const mbrCenterX = 615; // Coordenada x del centro exacto del MBR (actualizada)
   const mbrCenterY = 249; // Coordenada y del centro exacto del MBR
-  const mbrTopY = 220; // Coordenada y del borde superior del centro del MBR (nodo "MBR top")
-  const mbrBottomY = mbrTopY + 20; // 2 cm hacia abajo desde el centro superior (aproximadamente 20px = 2cm en esta escala)
+  const mbrTopY = 229; // Coordenada y de entrada superior - justo arriba del registro MBR
+  const mbrBottomY = 269; // Coordenada y de la parte inferior del registro MBR
+  const mbrUpperY = 215; // Coordenada y más arriba para continuar la ruta de entrada (simétrica a mbrLowerY)
+  const mbrLowerY = 285; // Coordenada y más abajo para continuar la ruta de salida
 
   // Coordenadas de la memoria (coinciden con dataPath)
   const memoryX = 800;
@@ -42,12 +44,13 @@ function generateExternalDataPath(direction: "memory-to-mbr" | "mbr-to-memory"):
   const cpuBoundaryX = 650; // Punto donde la línea llega al área del CPU
 
   if (direction === "memory-to-mbr") {
-    // Animación desde la memoria hacia el centro superior del MBR y luego baja 90° hacia abajo 2 cm
-    // Ruta: Memoria → CPU boundary → subir → centro MBR superior → bajar 90° hacia abajo 2 cm
-    return `M ${memoryX} ${memoryY} L ${cpuBoundaryX} ${memoryY} L ${cpuBoundaryX} ${mbrTopY} L ${mbrCenterX} ${mbrTopY} L ${mbrCenterX} ${mbrBottomY}`;
+    // Animación desde la memoria hacia el MBR por la parte superior (simétrica a la de salida)
+    // Ruta: Memoria → CPU boundary → subir más arriba → centro MBR superior → bajar hacia el centro
+    return `M ${memoryX} ${memoryY} L ${cpuBoundaryX} ${memoryY} L ${cpuBoundaryX} ${mbrUpperY} L ${mbrCenterX} ${mbrUpperY} L ${mbrCenterX} ${mbrTopY}`;
   } else {
-    // Animación desde el MBR hacia la memoria (mantener ruta original desde el borde derecho)
-    return `M ${mbrX} ${mbrY} L ${memoryX} ${memoryY}`;
+    // Animación desde el MBR hacia la memoria - RUTA POR LA PARTE INFERIOR
+    // Ruta: Parte inferior MBR → bajar más → salir horizontalmente hasta CPU boundary → ir hasta memoria
+    return `M ${mbrCenterX} ${mbrBottomY} L ${mbrCenterX} ${mbrLowerY} L ${cpuBoundaryX} ${mbrLowerY} L ${cpuBoundaryX} ${memoryY} L ${memoryX} ${memoryY}`;
   }
 }
 
