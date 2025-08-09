@@ -77,6 +77,7 @@ dataBus.addNode("right join", { position: [90, 145] });
 dataBus.addNode("operands mbr join", { position: [90, 250] });
 dataBus.addNode("outr mbr join", { position: [550, 250] });
 dataBus.addNode("mbr reg join", { position: [390, 250] });
+dataBus.addNode("MBR join", { position: [390, 250] }); // Alias para compatibilidad
 
 // Añadir nodos de unión para los registros AL, BL, CL, DL e id
 dataBus.addNode("AL out", { position: [483, 45] }); // Lado izquierdo del registro AL
@@ -151,6 +152,9 @@ dataBus.addUndirectedEdge("MBR out join", "NodoRegOut");
 dataBus.addUndirectedEdge("MBR out", "outr mbr join");
 
 dataBus.addUndirectedEdge("mbr reg join", "NodoRegIn");
+// Conexiones para el alias "MBR join"
+dataBus.addUndirectedEdge("outr mbr join", "MBR join");
+dataBus.addUndirectedEdge("MBR join", "NodoRegIn");
 dataBus.addUndirectedEdge("NodoRegIn", "AL join");
 dataBus.addUndirectedEdge("NodoRegIn", "BL join");
 dataBus.addUndirectedEdge("NodoRegIn", "CL join");
@@ -611,6 +615,14 @@ export function generateDataPath(
     return "";
   }
 
+  // Verificar que todos los nodos en el path existan
+  for (let i = 0; i < path.length; i++) {
+    if (!dataBus.hasNode(path[i])) {
+      console.error(`❌ Nodo "${path[i]}" no existe en el grafo. Path completo:`, path);
+      return "";
+    }
+  }
+
   // Generar el path SVG
   const start = dataBus.getNodeAttribute(path[0], "position");
   let d = `M ${start[0]} ${start[1]}`;
@@ -621,6 +633,7 @@ export function generateDataPath(
   }
 
   console.log("🎯 generateDataPath retornando:", d);
+  console.log("🎯 Path completo:", path);
   // Log específico para MBR → id
   if (normalizedFrom === "MBR" && normalizedTo === "id") {
     console.log("🎯 Path SVG generado para MBR → id:", d);

@@ -540,21 +540,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       const regNorm = normalize(event.register); // NO toLowerCase
       const isFromMBR = regNorm === "MBR";
 
-      // Pausar ejecución cuando se copia ri → MAR en direccionamiento directo, paso 4 (ej. MOV/ADD/SUB/CMP ...,[ri])
-      if (
-        regNorm === "ri" &&
-        (currentInstructionName === "MOV" ||
-          currentInstructionName === "ADD" ||
-          currentInstructionName === "SUB" ||
-          currentInstructionName === "CMP") &&
-        mode !== "mem<-imd" &&
-        currentExecuteStageCounter === 4
-      ) {
-        console.log(
-          "⏸️ Pausando ejecución: cpu:mar.set (ri → MAR) en paso 4 para direccionamiento directo",
-        );
-        pauseSimulation();
-      }
+
 
       // Detectar transferencias IP→MAR para animación simultánea con MBR→ID
       if (regNorm === "IP") {
