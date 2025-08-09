@@ -28,8 +28,8 @@ const dataBus = new UndirectedGraph<Node>({ allowSelfLoops: false });
 
 // These are the endpoints of the bus
 dataBus.addNode("MBR", { position: [615, 249] }); // Actualizado centro del MBR a x=615
-dataBus.addNode("MBR top", { position: [615, 229] }); // Nodo de entrada superior - justo arriba del registro MBR
-dataBus.addNode("MBR bottom", { position: [615, 269] }); // Nodo en la parte inferior del registro MBR
+dataBus.addNode("MBR top", { position: [615, 233] }); // Nodo de entrada superior - coincide con línea gris estática
+dataBus.addNode("MBR bottom", { position: [615, 274] }); // Nodo de salida inferior - coincide con línea gris estática
 dataBus.addNode("AL", { position: [455, 45] }); // Ajustado para el centro del registro de 8 bits
 dataBus.addNode("BL", { position: [455, 85] }); // Ajustado para el centro del registro de 8 bits
 dataBus.addNode("CL", { position: [455, 125] }); // Ajustado para el centro del registro de 8 bits

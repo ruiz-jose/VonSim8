@@ -24,24 +24,24 @@ import { memoryAtom, operatingAddressAtom } from "./state";
  * similar a como funciona el bus interno del CPU
  */
 function generateExternalDataPath(direction: "memory-to-mbr" | "mbr-to-memory"): string {
-  // Coordenadas que coinciden exactamente con el dataPath estático en DataLines.tsx
+  // Coordenadas que coinciden exactamente con las líneas grises estáticas en DataLines.tsx
   const mbrX = 635; // Coordenada x del borde derecho del MBR (para escritura)
   const mbrY = 249; // Coordenada y del centro del MBR
   
-  // Coordenadas exactas del centro del MBR actualizadas
-  const mbrCenterX = 615; // Coordenada x del centro exacto del MBR (actualizada)
+  // Coordenadas exactas que coinciden con las líneas grises estáticas en DataLines.tsx
+  const mbrCenterX = 615; // Coordenada x del centro exacto del MBR
   const mbrCenterY = 249; // Coordenada y del centro exacto del MBR
-  const mbrTopY = 229; // Coordenada y de entrada superior - justo arriba del registro MBR
-  const mbrBottomY = 269; // Coordenada y de la parte inferior del registro MBR
-  const mbrUpperY = 215; // Coordenada y más arriba para continuar la ruta de entrada (simétrica a mbrLowerY)
-  const mbrLowerY = 285; // Coordenada y más abajo para continuar la ruta de salida
+  const mbrTopY = 233; // Coordenada y de entrada superior (coincide con línea gris)
+  const mbrBottomY = 274; // Coordenada y de la parte inferior del MBR (coincide con línea gris)
+  const mbrUpperY = 222; // Coordenada y más arriba para la ruta de entrada (coincide con línea gris)
+  const mbrLowerY = 285; // Coordenada y más abajo para la ruta de salida (coincide con línea gris)
 
   // Coordenadas de la memoria (coinciden con dataPath)
   const memoryX = 800;
   const memoryY = 249; // Misma altura que el centro del MBR
 
-  // Coordenadas intermedias para el path con ángulos de 90 grados
-  const cpuBoundaryX = 650; // Punto donde la línea llega al área del CPU
+  // Coordenadas intermedias para el path con ángulos de 90 grados (coinciden con línea gris)
+  const cpuBoundaryX = 645; // Punto donde la línea llega al área del CPU (coincide con línea gris)
 
   if (direction === "memory-to-mbr") {
     // Animación desde la memoria hacia el MBR por la parte superior (simétrica a la de salida)
