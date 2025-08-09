@@ -19,7 +19,10 @@ export const DataFlowAnimation = memo(
     const [settings] = useSettings();
 
     // Usar la configuración de velocidad de animación si no se especifica duración
-    const actualDuration = duration ?? (settings.animations ? settings.executionUnit * 2 : 1000);
+    // Limitar la unidad de ejecución para evitar animaciones excesivamente lentas
+    const MAX_EXECUTION_UNIT_MS = 250; // mantener en sincronía con animate.ts
+    const clampedExecutionUnit = Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS);
+    const actualDuration = duration ?? (settings.animations ? clampedExecutionUnit * 2 : 1000);
 
     useEffect(() => {
       setIsVisible(true);

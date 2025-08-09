@@ -79,11 +79,16 @@ export async function anim(
   // Don't run animations if disabled AND not forced
   if (!settings.animations && !config.forceMs) return null;
 
+  // Limitar la duración efectiva para evitar animaciones excesivamente lentas
+  // incluso si el valor almacenado en settings supera el rango recomendado.
+  const MAX_EXECUTION_UNIT_MS = 250; // tope superior efectivo (ms por unidad)
+  const effectiveExecutionUnit = Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS);
+
   const springConfig = {
     duration: config.forceMs
       ? config.duration
       : settings.animations
-        ? config.duration * settings.executionUnit
+        ? config.duration * effectiveExecutionUnit
         : 1, // Use minimal duration when animations are disabled
     easing: easings[config.easing],
   };
