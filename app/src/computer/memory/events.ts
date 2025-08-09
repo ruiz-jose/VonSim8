@@ -25,18 +25,28 @@ import { memoryAtom, operatingAddressAtom } from "./state";
  */
 function generateExternalDataPath(direction: "memory-to-mbr" | "mbr-to-memory"): string {
   // Coordenadas que coinciden exactamente con el dataPath estático en DataLines.tsx
-  const mbrX = 635; // Coordenada x del borde derecho del MBR (coincide con dataPath)
-  const mbrY = 249; // Coordenada y del centro del MBR (coincide con dataPath)
+  const mbrX = 635; // Coordenada x del borde derecho del MBR (para escritura)
+  const mbrY = 249; // Coordenada y del centro del MBR
+  
+  // Coordenadas exactas del centro del MBR actualizadas
+  const mbrCenterX = 615; // Coordenada x del centro exacto del MBR (actualizada)
+  const mbrCenterY = 249; // Coordenada y del centro exacto del MBR
+  const mbrTopY = 220; // Coordenada y del borde superior del centro del MBR (nodo "MBR top")
+  const mbrBottomY = mbrTopY + 20; // 2 cm hacia abajo desde el centro superior (aproximadamente 20px = 2cm en esta escala)
 
   // Coordenadas de la memoria (coinciden con dataPath)
   const memoryX = 800;
   const memoryY = 249; // Misma altura que el centro del MBR
 
+  // Coordenadas intermedias para el path con ángulos de 90 grados
+  const cpuBoundaryX = 650; // Punto donde la línea llega al área del CPU
+
   if (direction === "memory-to-mbr") {
-    // Animación desde la memoria hacia el MBR
-    return `M ${memoryX} ${memoryY} L ${mbrX} ${mbrY}`;
+    // Animación desde la memoria hacia el centro superior del MBR y luego baja 90° hacia abajo 2 cm
+    // Ruta: Memoria → CPU boundary → subir → centro MBR superior → bajar 90° hacia abajo 2 cm
+    return `M ${memoryX} ${memoryY} L ${cpuBoundaryX} ${memoryY} L ${cpuBoundaryX} ${mbrTopY} L ${mbrCenterX} ${mbrTopY} L ${mbrCenterX} ${mbrBottomY}`;
   } else {
-    // Animación desde el MBR hacia la memoria
+    // Animación desde el MBR hacia la memoria (mantener ruta original desde el borde derecho)
     return `M ${mbrX} ${mbrY} L ${memoryX} ${memoryY}`;
   }
 }
@@ -48,7 +58,10 @@ export const drawExternalDataPath = (
 ) => {
   try {
     const path = generateExternalDataPath(direction);
-    if (!path) return Promise.resolve();
+    if (!path) {
+      console.warn("❌ No se generó path para drawExternalDataPath");
+      return Promise.resolve();
+    }
 
     // Usar la configuración de velocidad de animación si no se especifica duración
     const settings = getSettings();

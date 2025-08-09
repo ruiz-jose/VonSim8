@@ -27,7 +27,8 @@ type Node = { position: [x: number, y: number] };
 const dataBus = new UndirectedGraph<Node>({ allowSelfLoops: false });
 
 // These are the endpoints of the bus
-dataBus.addNode("MBR", { position: [594, 249] });
+dataBus.addNode("MBR", { position: [615, 249] }); // Actualizado centro del MBR a x=615
+dataBus.addNode("MBR top", { position: [615, 220] }); // Nodo especial para entrada superior del MBR (actualizado a x=615)
 dataBus.addNode("AL", { position: [455, 45] }); // Ajustado para el centro del registro de 8 bits
 dataBus.addNode("BL", { position: [455, 85] }); // Ajustado para el centro del registro de 8 bits
 dataBus.addNode("CL", { position: [455, 125] }); // Ajustado para el centro del registro de 8 bits
@@ -167,6 +168,7 @@ dataBus.addUndirectedEdge("DL join", "DL");
 dataBus.addUndirectedEdge("id join", "id");
 dataBus.addUndirectedEdge("id join", "data mbr join");
 dataBus.addUndirectedEdge("MBR", "data mbr join");
+dataBus.addUndirectedEdge("MBR", "MBR top"); // Conectar MBR centro con MBR superior
 dataBus.addUndirectedEdge("data mbr join", "NodoRegIn");
 
 dataBus.addUndirectedEdge("IP", "IP join");
@@ -219,7 +221,7 @@ dataBus.addNode("NodoRegOutToLeft", { position: [560, 115] });
 dataBus.addUndirectedEdge("outr mbr join left", "NodoRegOutToLeft");
 dataBus.addUndirectedEdge("NodoRegOutToLeft", "NodoRegOut");
 
-export type DataRegister = PhysicalRegister | "MBR" | "result start" | "left end" | "right end";
+export type DataRegister = PhysicalRegister | "MBR" | "MBR top" | "result start" | "left end" | "right end";
 
 /**
  * Genera una animación simultánea para left y right cuando ambos son destinos
@@ -669,6 +671,7 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
           // ALU registers
           "M 220 145 H 90", // left
           "V 250 H 630", // Long path to MBR, here to get nice joins
+          "M 594 249 V 220", // MBR superior - conexión vertical desde centro del MBR hasta MBR top
           "M 90 145 H 90", // right
           "M 272 115 H 390", // result (más a la derecha, sin bajar)
           "M 250 225 V 250", // flags
