@@ -18,7 +18,7 @@ import {
 } from "@/computer/shared/animate";
 import type { RegisterKey, SimplePathKey } from "@/computer/shared/springs";
 import type { SimulatorEvent } from "@/computer/shared/types";
-import { finishSimulation } from "@/computer/simulation";
+import { finishSimulation, pauseSimulation } from "@/computer/simulation";
 import { highlightCurrentInstruction } from "@/editor/methods";
 import { store } from "@/lib/jotai";
 import { getSettings } from "@/lib/settings";
@@ -540,6 +540,22 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       const regNorm = normalize(event.register); // NO toLowerCase
       const isFromMBR = regNorm === "MBR";
 
+      // Pausar ejecución cuando se copia ri → MAR en direccionamiento directo, paso 4 (ej. MOV/ADD/SUB/CMP ...,[ri])
+      if (
+        regNorm === "ri" &&
+        (currentInstructionName === "MOV" ||
+          currentInstructionName === "ADD" ||
+          currentInstructionName === "SUB" ||
+          currentInstructionName === "CMP") &&
+        mode !== "mem<-imd" &&
+        currentExecuteStageCounter === 4
+      ) {
+        console.log(
+          "⏸️ Pausando ejecución: cpu:mar.set (ri → MAR) en paso 4 para direccionamiento directo",
+        );
+        pauseSimulation();
+      }
+
       // Detectar transferencias IP→MAR para animación simultánea con MBR→ID
       if (regNorm === "IP") {
         console.log(`🔄 Detectando transferencia IP→MAR para animación simultánea`);
@@ -561,17 +577,21 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
             // Ejecutar ambas animaciones simultáneamente
             await Promise.all([
               drawDataPath("MBR", "id", pendingMBRtoID.instruction, pendingMBRtoID.mode),
-              anim(
-                [
-                  {
-                    key: "cpu.internalBus.address.path",
-                    from: generateAddressPath("IP"),
-                  },
-                  { key: "cpu.internalBus.address.opacity", from: 1 },
-                  { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
-                ],
-                { duration: 300, easing: "easeInOutSine", forceMs: true },
-              ),
+              (async () => {
+                const settings = getSettings();
+                const MAX_EXECUTION_UNIT_MS = 250;
+                const duration = settings.animations
+                  ? Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS)
+                  : 1;
+                return anim(
+                  [
+                    { key: "cpu.internalBus.address.path", from: generateAddressPath("IP") },
+                    { key: "cpu.internalBus.address.opacity", from: 1 },
+                    { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
+                  ],
+                  { duration, easing: "easeInOutSine", forceMs: true },
+                );
+              })(),
             ]);
 
             // Actualizar registros
@@ -605,17 +625,21 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
             // Ejecutar ambas animaciones de buses simultáneamente
             await Promise.all([
               // Animación del bus de direcciones IP→MAR
-              anim(
-                [
-                  {
-                    key: "cpu.internalBus.address.path",
-                    from: generateAddressPath("IP"),
-                  },
-                  { key: "cpu.internalBus.address.opacity", from: 1 },
-                  { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
-                ],
-                { duration: 300, easing: "easeInOutSine", forceMs: true },
-              ),
+              (async () => {
+                const settings = getSettings();
+                const MAX_EXECUTION_UNIT_MS = 250;
+                const duration = settings.animations
+                  ? Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS)
+                  : 1;
+                return anim(
+                  [
+                    { key: "cpu.internalBus.address.path", from: generateAddressPath("IP") },
+                    { key: "cpu.internalBus.address.opacity", from: 1 },
+                    { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
+                  ],
+                  { duration, easing: "easeInOutSine", forceMs: true },
+                );
+              })(),
               // Animación del bus de datos MBR→RI
               drawDataPath("MBR", "ri", instructionName, pendingMBRtoRI.mode),
             ]);
@@ -651,17 +675,21 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
           console.log("🎯 Ejecutando animación IP→MAR normal (sin transferencia simultánea)");
 
           // Ejecutar animación del bus de direcciones IP→MAR
-          await anim(
-            [
-              {
-                key: "cpu.internalBus.address.path",
-                from: generateAddressPath("IP"),
-              },
-              { key: "cpu.internalBus.address.opacity", from: 1 },
-              { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
-            ],
-            { duration: 300, easing: "easeInOutSine", forceMs: true },
-          );
+          {
+            const settings = getSettings();
+            const MAX_EXECUTION_UNIT_MS = 250;
+            const duration = settings.animations
+              ? Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS)
+              : 1;
+            await anim(
+              [
+                { key: "cpu.internalBus.address.path", from: generateAddressPath("IP") },
+                { key: "cpu.internalBus.address.opacity", from: 1 },
+                { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
+              ],
+              { duration, easing: "easeInOutSine", forceMs: true },
+            );
+          }
 
           // Activar registro MAR
           await activateRegister(`cpu.MAR`, colors.blue[500]);
@@ -1158,17 +1186,21 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
               // Ejecutar ambas animaciones simultáneamente
               await Promise.all([
                 drawDataPath("MBR", "id", pendingMBRtoID.instruction, pendingMBRtoID.mode),
-                anim(
-                  [
-                    {
-                      key: "cpu.internalBus.address.path",
-                      from: generateAddressPath("IP"),
-                    },
-                    { key: "cpu.internalBus.address.opacity", from: 1 },
-                    { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
-                  ],
-                  { duration: 300, easing: "easeInOutSine", forceMs: true },
-                ),
+                (async () => {
+                  const settings = getSettings();
+                  const MAX_EXECUTION_UNIT_MS = 250;
+                  const duration = settings.animations
+                    ? Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS)
+                    : 1;
+                  return anim(
+                    [
+                      { key: "cpu.internalBus.address.path", from: generateAddressPath("IP") },
+                      { key: "cpu.internalBus.address.opacity", from: 1 },
+                      { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
+                    ],
+                    { duration, easing: "easeInOutSine", forceMs: true },
+                  );
+                })(),
               ]);
 
               // Actualizar registros
@@ -1455,17 +1487,21 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
               pendingMBRtoID.instruction,
               pendingMBRtoID.mode,
             ),
-            anim(
-              [
-                {
-                  key: "cpu.internalBus.address.path",
-                  from: generateAddressPath("IP"),
-                },
-                { key: "cpu.internalBus.address.opacity", from: 1 },
-                { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
-              ],
-              { duration: 300, easing: "easeInOutSine", forceMs: true },
-            ),
+            (async () => {
+              const settings = getSettings();
+              const MAX_EXECUTION_UNIT_MS = 250;
+              const duration = settings.animations
+                ? Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS)
+                : 1;
+              return anim(
+                [
+                  { key: "cpu.internalBus.address.path", from: generateAddressPath("IP") },
+                  { key: "cpu.internalBus.address.opacity", from: 1 },
+                  { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
+                ],
+                { duration, easing: "easeInOutSine", forceMs: true },
+              );
+            })(),
             // Agregar animación del engranaje para mostrar la transferencia simultánea
             anim({ key: "cpu.alu.cog.rot", to: 6 }, { duration: 3, easing: "easeInOutCubic" }),
           ]);
