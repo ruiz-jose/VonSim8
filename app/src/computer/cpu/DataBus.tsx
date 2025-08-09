@@ -543,11 +543,10 @@ export function generateDataPath(
     }
   }
 
-  // Path especial: MBR -> IP en instrucciones de salto (JMP, JZ, JC)
+  // Path especial: MBR -> IP (siempre evitar NodoRegIn y NodoRegOut)
   if (
     normalizedFrom === "MBR" &&
-    normalizedTo === "IP" &&
-    ["JMP", "JZ", "JC"].includes(instruction ?? "")
+    normalizedTo === "IP"
   ) {
     const start = dataBus.getNodeAttribute("MBR", "position");
     const mid = dataBus.getNodeAttribute("mbr reg join", "position");

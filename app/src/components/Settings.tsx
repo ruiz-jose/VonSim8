@@ -62,16 +62,16 @@ export function Settings({ className }: { className?: string }) {
           </SettingTitle>
         </SettingInfo>
 
-        <Slider
-          className="w-44"
-          {...logSlider({
-            value: settings.executionUnit,
-            onValueChange: (value: number) =>
-              setSettings(prev => ({ ...prev, executionUnit: value })),
-            min: 500,
-            max: 1,
-          })}
-        />
+          <Slider
+            className="w-44"
+            {...logSlider({
+              value: Math.min(settings.executionUnit, 250),
+              onValueChange: (value: number) =>
+                setSettings(prev => ({ ...prev, executionUnit: Math.min(value, 250) })),
+              min: 250,
+              max: 1,
+            })}
+          />
       </Setting>
 
       <hr className="border-stone-600" />

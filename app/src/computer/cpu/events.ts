@@ -78,7 +78,8 @@ const drawDataPath = (from: DataRegister, to: DataRegister, instruction: string,
 
     // Usar la configuración de velocidad de animación
     const settings = getSettings();
-    const duration = settings.animations ? settings.executionUnit : 1;
+    const MAX_EXECUTION_UNIT_MS = 250;
+    const duration = settings.animations ? Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS) : 1;
 
     return anim(
       [
@@ -86,7 +87,7 @@ const drawDataPath = (from: DataRegister, to: DataRegister, instruction: string,
         { key: "cpu.internalBus.data.opacity", from: 1 },
         { key: "cpu.internalBus.data.strokeDashoffset", from: 1, to: 0 },
       ],
-      { duration, easing: "easeInOutSine" },
+      { duration, easing: "easeInOutSine", forceMs: true },
     );
   } catch (error) {
     console.error("❌ Error en drawDataPath:", error);
@@ -103,7 +104,8 @@ const drawSimultaneousLeftRightPath = (from: DataRegister, instruction: string, 
 
     // Usar la configuración de velocidad de animación
     const settings = getSettings();
-    const duration = settings.animations ? settings.executionUnit : 1;
+    const MAX_EXECUTION_UNIT_MS = 250;
+    const duration = settings.animations ? Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS) : 1;
 
     return anim(
       [
@@ -111,7 +113,7 @@ const drawSimultaneousLeftRightPath = (from: DataRegister, instruction: string, 
         { key: "cpu.internalBus.data.opacity", from: 1 },
         { key: "cpu.internalBus.data.strokeDashoffset", from: 1, to: 0 },
       ],
-      { duration, easing: "easeInOutSine" },
+      { duration, easing: "easeInOutSine", forceMs: true },
     );
   } catch (error) {
     console.warn("Error en drawSimultaneousLeftRightPath:", error);
@@ -231,10 +233,12 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       console.log("🚀 Evento cpu:alu.execute recibido, fase actual:", currentPhase);
       // Usar la configuración de velocidad de animación
       const settings = getSettings();
-      const duration = settings.animations ? settings.executionUnit : 1;
+      const MAX_EXECUTION_UNIT_MS = 250;
+      const duration = settings.animations ? Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS) : 1;
       const pathsDrawConfig = {
         duration,
         easing: "easeInOutSine",
+        forceMs: true,
       } as const;
 
       // Esperar a que estemos en la fase "executing" o proceder si ya estamos en ella
@@ -362,7 +366,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
           { key: "cpu.id.opacity", to: 0 },
           { key: "cpu.ri.opacity", to: 0 },
         ],
-        { duration: 0.5, easing: "easeInOutQuad" },
+        { duration: 150, easing: "easeInOutQuad", forceMs: true },
       );
       return;
     }
@@ -411,7 +415,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
           { key: "cpu.id.opacity", to: event.instruction.willUse.id ? 1 : 0 },
           { key: "cpu.ri.opacity", to: event.instruction.willUse.ri ? 1 : 0 },
         ],
-        { duration: 0.5, easing: "easeInOutQuad" },
+        { duration: 150, easing: "easeInOutQuad", forceMs: true },
       );
       return;
     }
@@ -448,30 +452,28 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
     }
 
     case "cpu:decode": {
-      // Usar la configuración de velocidad de animación
-      const settings = getSettings();
-      const duration = settings.animations ? settings.executionUnit : 1;
-
-      await anim(
+      // No bloquear el ciclo: lanzar animaciones sin await y con duración fija en ms
+      const durationMs = 150;
+      void anim(
         [
           { key: "cpu.decoder.path.opacity", from: 1 },
           { key: "cpu.decoder.path.strokeDashoffset", from: 1, to: 0 },
         ],
-        { duration, easing: "easeInOutSine" },
+        { duration: durationMs, easing: "easeInOutSine", forceMs: true },
       );
-      await anim(
+      void anim(
         [
           { key: "cpu.decoder.progress.opacity", from: 1 },
           { key: "cpu.decoder.progress.progress", from: 0, to: 1 },
         ],
-        { duration, easing: "easeInOutSine" },
+        { duration: durationMs, easing: "easeInOutSine", forceMs: true },
       );
-      await anim(
+      void anim(
         [
           { key: "cpu.decoder.path.opacity", to: 0 },
           { key: "cpu.decoder.progress.opacity", to: 0 },
         ],
-        { duration: 1, easing: "easeInSine" },
+        { duration: 80, easing: "easeInSine", forceMs: true },
       );
       return;
     }
@@ -568,7 +570,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
                   { key: "cpu.internalBus.address.opacity", from: 1 },
                   { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
                 ],
-                { duration: 5, easing: "easeInOutSine" },
+                { duration: 300, easing: "easeInOutSine", forceMs: true },
               ),
             ]);
 
@@ -612,7 +614,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
                   { key: "cpu.internalBus.address.opacity", from: 1 },
                   { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
                 ],
-                { duration: 5, easing: "easeInOutSine" },
+                { duration: 300, easing: "easeInOutSine", forceMs: true },
               ),
               // Animación del bus de datos MBR→RI
               drawDataPath("MBR", "ri", instructionName, pendingMBRtoRI.mode),
@@ -658,7 +660,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
               { key: "cpu.internalBus.address.opacity", from: 1 },
               { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
             ],
-            { duration: 5, easing: "easeInOutSine" },
+            { duration: 300, easing: "easeInOutSine", forceMs: true },
           );
 
           // Activar registro MAR
@@ -738,7 +740,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
                 { key: "cpu.internalBus.address.opacity", from: 1 },
                 { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
               ],
-              { duration: 5, easing: "easeInOutSine" },
+              { duration: 300, easing: "easeInOutSine", forceMs: true },
             ),
             // Animación del bus de datos MBR→id
             drawDataPath("MBR", "id", instructionName, mode),
@@ -792,7 +794,8 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
 
         // Usar la configuración de velocidad de animación
         const settings = getSettings();
-        const duration = settings.animations ? settings.executionUnit : 1;
+        const MAX_EXECUTION_UNIT_MS = 250;
+        const duration = settings.animations ? Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS) : 1;
 
         console.log("🚌 Iniciando animación del bus de direcciones BL → MAR");
         console.log("📊 Iniciando animación del bus de datos MBR → ID");
@@ -870,10 +873,16 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
 
       // Animación azul (bus de direcciones) - solo si no es IP en modo mem<-imd Y no es ri → MAR skip Y no es ri → MAR simultáneo
       // IMPORTANTE: isRiToMARSkipAnimation solo debe aplicarse cuando regNorm === "ri"
+      const isDirectAddressingForRi =
+        regNorm === "ri" &&
+        (instructionName === "MOV" || instructionName === "ADD" || instructionName === "SUB" || instructionName === "CMP") &&
+        mode !== "mem<-imd";
+
       if (
         !(regNorm === "IP" && mode === "mem<-imd") &&
         !(regNorm === "ri" && isRiToMARSkipAnimation) &&
-        !(regNorm === "ri" && isRiToMARSimultaneous)
+        !(regNorm === "ri" && isRiToMARSimultaneous) &&
+        !isDirectAddressingForRi // No mostrar bus en mar.set para direccionamiento directo
       ) {
         await anim(
           [
@@ -884,7 +893,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
             { key: "cpu.internalBus.address.opacity", from: 1 },
             { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
           ],
-          { duration: 5, easing: "easeInOutSine" },
+          { duration: 300, easing: "easeInOutSine", forceMs: true },
         );
         await activateRegister(`cpu.MAR`, colors.blue[500]);
         store.set(MARAtom, store.get(registerAtoms[regNorm]));
@@ -903,6 +912,19 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       // --- Lógica para animar desde el origen real si MAR se actualiza desde ri ---
       if (regNorm === "ri" && !isRiToMARSkipAnimation) {
         console.log("[cpu:mar.set] ri detectado, mode:", mode, "instructionName:", instructionName);
+        // Para direccionamiento directo (MOV/ADD/SUB/CMP), NO mostrar bus aquí (se mostró en mbr.get)
+        if (
+          (instructionName === "MOV" || instructionName === "ADD" || instructionName === "SUB" || instructionName === "CMP") &&
+          mode !== "mem<-imd"
+        ) {
+          // Solo actualizar MAR sin animación de bus
+          store.set(MARAtom, store.get(registerAtoms.ri));
+          // Destello/actualización de MAR después de haberse mostrado el bus en mbr.get
+          await activateRegister("cpu.MAR", colors.blue[500]);
+          await deactivateRegister("cpu.MAR");
+          lastSourceForRI = null;
+          return;
+        }
         // Para instrucciones con modo mem<-imd, mostrar animación especial ri -> MAR
         if (mode === "mem<-imd") {
           console.log("✅ Animando bus especial: ri → MAR (modo mem<-imd)", {
@@ -1007,8 +1029,16 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         (normalizedRegister === "MAR" || normalizedRegister.startsWith("MAR.")) &&
         !skipMBRtoMAR
       ) {
-        console.log("Animando bus de datos: MBR → MAR", { instructionName, mode });
-        await drawDataPath("MBR", "MAR", instructionName, mode);
+        console.log("Animando bus de direcciones (azul): MBR → MAR en mbr.get", { instructionName, mode });
+        // Mostrar SIEMPRE el bus de direcciones (azul) para MBR → MAR aquí
+        await anim(
+          [
+            { key: "cpu.internalBus.address.path", from: "M 594 249 H 550 V 348 H 610" },
+            { key: "cpu.internalBus.address.opacity", from: 1 },
+            { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
+          ],
+          { duration: 300, easing: "easeInOutSine", forceMs: true },
+        );
       } else if (["AL", "BL", "CL", "DL", "ri", "id"].includes(normalizedRegister)) {
         // Para instrucciones ADD, SUB, CMP con memoria, mostrar animación MBR → ri o MBR → id
         const aluOpsWithMemory = ["ADD", "SUB", "CMP"];
@@ -1073,7 +1103,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
                     { key: "cpu.internalBus.address.opacity", from: 1 },
                     { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
                   ],
-                  { duration: 5, easing: "easeInOutSine" },
+                 { duration: 300, easing: "easeInOutSine", forceMs: true },
                 ),
                 // Animación del bus de datos MBR→id
                 drawDataPath("MBR", "id", instructionName, mode),
@@ -1137,7 +1167,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
                     { key: "cpu.internalBus.address.opacity", from: 1 },
                     { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
                   ],
-                  { duration: 5, easing: "easeInOutSine" },
+                  { duration: 300, easing: "easeInOutSine", forceMs: true },
                 ),
               ]);
 
@@ -1172,7 +1202,36 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
             }
           }
         } else if (!isALUOp || isALUOpWithMemory) {
-          await drawDataPath("MBR", normalizedRegister as DataRegister, instructionName, mode);
+          // Para direccionamiento directo (MOV/ADD/SUB/CMP): mostrar bus de direcciones MBR→MAR aquí
+          if (
+            normalizedRegister === "ri" &&
+            mode !== "mem<-imd" &&
+            (instructionName === "MOV" || instructionName === "ADD" || instructionName === "SUB" || instructionName === "CMP")
+          ) {
+            console.log("📘 Animación de direcciones (mbr.get directo): MBR → MAR (bus azul)");
+            await anim(
+              [
+                { key: "cpu.internalBus.address.path", from: "M 594 249 H 550 V 348 H 610" },
+                { key: "cpu.internalBus.address.opacity", from: 1 },
+                { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
+              ],
+              { duration: 300, easing: "easeInOutSine", forceMs: true },
+            );
+            // Ocultar el bus de direcciones tras la animación
+            await anim(
+              { key: "cpu.internalBus.address.opacity", to: 0 },
+              { duration: 100, easing: "easeInSine", forceMs: true },
+            );
+            // No dibujar bus de datos MBR→ri aquí
+            console.log("⏭️ Omitiendo animación de datos MBR → ri en direccionamiento directo (mbr.get)");
+          } else {
+          // Omitir animación MBR → ri en direccionamiento directo (no inmediato)
+          if (normalizedRegister === "ri" && mode !== "mem<-imd") {
+            console.log("⏭️ Omitiendo animación MBR → ri para direccionamiento directo");
+          } else {
+            await drawDataPath("MBR", normalizedRegister as DataRegister, instructionName, mode);
+          }
+          }
         }
       }
 
@@ -1288,7 +1347,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
                 { key: "cpu.internalBus.address.opacity", from: 1 },
                 { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
               ],
-              { duration: 5, easing: "easeInOutSine" },
+              { duration: 300, easing: "easeInOutSine", forceMs: true },
             ),
           ]);
 
@@ -1405,7 +1464,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
                 { key: "cpu.internalBus.address.opacity", from: 1 },
                 { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
               ],
-              { duration: 5, easing: "easeInOutSine" },
+              { duration: 300, easing: "easeInOutSine", forceMs: true },
             ),
             // Agregar animación del engranaje para mostrar la transferencia simultánea
             anim({ key: "cpu.alu.cog.rot", to: 6 }, { duration: 3, easing: "easeInOutCubic" }),

@@ -57,7 +57,8 @@ export const settingsSchema = z.object({
    *
    * This property states how many milliseconds one execution unit takes.
    */
-  executionUnit: z.number().min(1).max(500).catch(150),
+  // Reducimos el máximo permitido para evitar animaciones extremadamente lentas
+  executionUnit: z.number().min(1).max(250).catch(150),
 
   /**
    * This property states how many milliseconds takes for the clock to tick.

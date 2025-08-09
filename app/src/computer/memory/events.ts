@@ -65,7 +65,9 @@ export const drawExternalDataPath = (
 
     // Usar la configuración de velocidad de animación si no se especifica duración
     const settings = getSettings();
-    const actualDuration = duration ?? (settings.animations ? settings.executionUnit : 1);
+    const MAX_EXECUTION_UNIT_MS = 250;
+    const eu = Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS);
+    const actualDuration = duration ?? (settings.animations ? eu : 1);
 
     return anim(
       [
@@ -73,7 +75,7 @@ export const drawExternalDataPath = (
         { key: "bus.data.opacity", from: 1 },
         { key: "bus.data.strokeDashoffset", from: 1, to: 0 },
       ],
-      { duration: actualDuration, easing: "easeInOutSine" },
+      { duration: actualDuration, easing: "easeInOutSine", forceMs: true },
     );
   } catch (error) {
     console.warn("Error en drawExternalDataPath:", error);
@@ -104,7 +106,9 @@ export const drawExternalAddressPath = (duration?: number) => {
 
     // Usar la configuración de velocidad de animación si no se especifica duración
     const settings = getSettings();
-    const actualDuration = duration ?? (settings.animations ? settings.executionUnit : 1);
+    const MAX_EXECUTION_UNIT_MS = 250;
+    const eu = Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS);
+    const actualDuration = duration ?? (settings.animations ? eu : 1);
 
     return anim(
       [
@@ -112,7 +116,7 @@ export const drawExternalAddressPath = (duration?: number) => {
         { key: "bus.address.opacity", from: 1 },
         { key: "bus.address.strokeDashoffset", from: 1, to: 0 },
       ],
-      { duration: actualDuration, easing: "easeInOutSine" },
+      { duration: actualDuration, easing: "easeInOutSine", forceMs: true },
     );
   } catch (error) {
     console.warn("Error en drawExternalAddressPath:", error);
@@ -132,7 +136,9 @@ const drawRDControlPath = (duration?: number) => {
 
     // Usar la configuración de velocidad de animación si no se especifica duración
     const settings = getSettings();
-    const actualDuration = duration ?? (settings.animations ? settings.executionUnit : 1);
+    const MAX_EXECUTION_UNIT_MS = 250;
+    const eu = Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS);
+    const actualDuration = duration ?? (settings.animations ? eu : 1);
 
     return anim(
       [
@@ -140,7 +146,7 @@ const drawRDControlPath = (duration?: number) => {
         { key: "bus.rd.opacity", from: 1 },
         { key: "bus.rd.strokeDashoffset", from: 1, to: 0 },
       ],
-      { duration: actualDuration, easing: "easeInOutSine" },
+      { duration: actualDuration, easing: "easeInOutSine", forceMs: true },
     );
   } catch (error) {
     console.warn("Error en drawRDControlPath:", error);
@@ -156,7 +162,9 @@ const drawWRControlPath = (duration?: number) => {
 
     // Usar la configuración de velocidad de animación si no se especifica duración
     const settings = getSettings();
-    const actualDuration = duration ?? (settings.animations ? settings.executionUnit : 1);
+    const MAX_EXECUTION_UNIT_MS = 250;
+    const eu = Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS);
+    const actualDuration = duration ?? (settings.animations ? eu : 1);
 
     return anim(
       [
@@ -164,7 +172,7 @@ const drawWRControlPath = (duration?: number) => {
         { key: "bus.wr.opacity", from: 1 },
         { key: "bus.wr.strokeDashoffset", from: 1, to: 0 },
       ],
-      { duration: actualDuration, easing: "easeInOutSine" },
+      { duration: actualDuration, easing: "easeInOutSine", forceMs: true },
     );
   } catch (error) {
     console.warn("Error en drawWRControlPath:", error);
