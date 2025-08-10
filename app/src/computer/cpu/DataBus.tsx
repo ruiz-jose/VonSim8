@@ -73,8 +73,8 @@ dataBus.addNode("mbr top approach", { position: [600, 233] }); // Punto de aprox
 dataBus.addNode("mbr top entry", { position: [615, 233] }); // Punto de entrada específico a MBR top (coincide con MBR top)
 // Nodos para la ruta MBR bottom → IR siguiendo el camino del bus gris
 dataBus.addNode("mbr bottom exit", { position: [615, 285] }); // Punto de salida inferior (siguiendo bus gris)
-dataBus.addNode("mbr to bus horizontal", { position: [580, 285] }); // Punto donde se conecta con el bus horizontal
-dataBus.addNode("mbr to bus join", { position: [580, 250] }); // Punto donde sube al bus principal horizontal
+dataBus.addNode("mbr to bus horizontal", { position: [585, 285] }); // Punto donde se conecta con el bus horizontal
+dataBus.addNode("mbr to bus join", { position: [585, 250] }); // Punto donde sube al bus principal horizontal
 dataBus.addNode("mbr to cpu center", { position: [390, 250] }); // Punto en el centro de la CPU (data mbr join)
 dataBus.addNode("mbr to ir horizontal", { position: [250, 250] }); // Punto horizontal hacia IR (siguiendo línea gris 390->250)
 dataBus.addNode("mbr to ir vertical end", { position: [250, 272] }); // Final de la línea gris vertical
@@ -711,7 +711,7 @@ export function generateMBRtoMARPath(): string {
   const mbrToBusJoin = [580, 250]; // mbr to bus join (punto donde sube al bus principal)
   const outrMbrJoin = [550, 250]; // outr mbr join (nodo central del bus)
   const marJoin2 = [550, 349]; // MAR join2 
-  const mar = [665, 349]; // MAR (movido 17px a la izquierda - aproximadamente 1 cm)
+  const mar = [615, 349]; // MAR (movido 1 cm más a la izquierda desde 665)
   
   return `M ${mbrBottom[0]} ${mbrBottom[1]} L ${mbrBottomExit[0]} ${mbrBottomExit[1]} L ${mbrToBusHorizontal[0]} ${mbrToBusHorizontal[1]} L ${mbrToBusJoin[0]} ${mbrToBusJoin[1]} L ${outrMbrJoin[0]} ${outrMbrJoin[1]} L ${marJoin2[0]} ${marJoin2[1]} L ${mar[0]} ${mar[1]}`;
 }
