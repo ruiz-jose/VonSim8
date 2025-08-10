@@ -197,6 +197,8 @@ let blBxRegisterName = ""; // Para recordar si era BL o BX
 let idToMbrCombinedMessage = false; // Flag para rastrear cuando id ← MBR debe combinarse con MAR ← ri
 let lastMemoryOperationWasWrite = false; // Flag para rastrear si la última operación de memoria fue escritura
 
+let shouldPauseAfterEvent = false; // Nueva bandera para pausar después del evento
+
 // Tipos para mejorar la legibilidad y mantenibilidad
 type InstructionContext = {
   name: string;
@@ -749,6 +751,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
         // Reiniciar el contador de ciclos para la nueva instrucción
         currentInstructionCycleCount = 0;
         store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+        // Resetear la bandera de pausa al iniciar nueva instrucción
+        shouldPauseAfterEvent = false;
         console.log(
           "🔄 Nueva instrucción iniciada:",
           currentInstructionName,
@@ -891,6 +895,22 @@ async function startThread(generator: EventGenerator): Promise<void> {
 
           if (event.value.type === "cpu:mar.set") {
             const sourceRegister = event.value.register;
+            
+            // Condición especial: marcar para pausar en MOV CL, [BL] cuando esté en la etapa correspondiente al paso 4
+            if (
+              currentInstructionName === "MOV" &&
+              executeStageCounter === 2 &&
+              currentInstructionOperands &&
+              currentInstructionOperands.length >= 2 &&
+              currentInstructionOperands[0] === "CL" &&
+              currentInstructionOperands[1] === "[BL]" &&
+              sourceRegister === "ri" &&
+              status.until === "cycle-change"
+            ) {
+              console.log("🛑 Marcando pausa especial: MOV CL, [BL] en paso 4 (executeStageCounter=2) - se pausará al final del evento");
+              shouldPauseAfterEvent = true;
+            }
+
             // let showRI = false;
             // const showRI2 = false;
 
@@ -2231,6 +2251,14 @@ async function startThread(generator: EventGenerator): Promise<void> {
       }
       console.log(`Ciclos ejecutados: ${cycleCount}`);
       store.set(cycleCountAtom, cycleCount);
+
+      // Verificar si se debe pausar después del evento
+      if (shouldPauseAfterEvent && status.until === "cycle-change") {
+        console.log("🛑 Ejecutando pausa especial después del evento");
+        shouldPauseAfterEvent = false; // Resetear la bandera
+        pauseSimulation();
+        continue; // Continuar el bucle para procesar la pausa
+      }
 
       const eventInstruction = new CustomEvent("instructionChange", {
         detail: {
