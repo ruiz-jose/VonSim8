@@ -15,7 +15,6 @@ export function DataLines() {
     .join(" ");
 
   const dataPath = [
-    // Elimino la línea "M 635 249 H 800" que conecta el borde derecho del MBR con la memoria
     "M 645 249 V 222 H 615 V 233", // Path para lectura: CPU boundary -> sube más arriba -> centro MBR -> baja hasta entrada superior
     "M 615 274 V 285 H 645 V 249 H 800", // Path para escritura: desde parte inferior MBR -> baja más -> sale horizontalmente -> memoria
     devices.pic && "M 765 249 V 790 H 450",
@@ -40,6 +39,11 @@ export function DataLines() {
     <svg className="pointer-events-none absolute inset-0 z-[25] size-full">
       {/* Data lines */}
       <path className="fill-none stroke-stone-700 stroke-bus" strokeLinejoin="round" d={dataPath} />
+      
+      {/* Círculo del nodo MBR top - siempre visible, definido aquí para estar por encima del bus gris */}
+      <circle cx={615} cy={222} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
+      <circle cx={615} cy={285} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
+      
       {/* Línea animada del bus de datos - usando path dinámico del spring */}
       <animated.path
         d={path}

@@ -18,13 +18,13 @@ import {
 } from "@/computer/shared/animate";
 import type { RegisterKey, SimplePathKey } from "@/computer/shared/springs";
 import type { SimulatorEvent } from "@/computer/shared/types";
-import { finishSimulation, pauseSimulation } from "@/computer/simulation";
+import { finishSimulation, pauseSimulation, simulationAtom } from "@/computer/simulation";
 import { highlightCurrentInstruction } from "@/editor/methods";
 import { store } from "@/lib/jotai";
 import { getSettings } from "@/lib/settings";
 import { colors } from "@/lib/tailwind";
 
-import { DataRegister, generateDataPath, generateSimultaneousLeftRightPath } from "./DataBus";
+import { DataRegister, generateDataPath, generateSimultaneousLeftRightPath, generateMBRtoMARPath } from "./DataBus";
 import { aluOperationAtom, cycleAtom, MARAtom, MBRAtom, registerAtoms } from "./state";
 
 console.log("🔧 generateDataPath importado:", typeof generateDataPath);
@@ -39,6 +39,11 @@ let pendingRightTransfer: { from: DataRegister; instruction: string; mode: strin
 // Variables para rastrear el contexto actual de la instrucción
 let currentExecuteStageCounter = 0;
 let currentInstructionName = "";
+
+// Exportar función para obtener el contador actual
+export function getCurrentExecuteStageCounter(): number {
+  return currentExecuteStageCounter;
+}
 
 // Función para actualizar el contexto de la instrucción desde simulation.ts
 export function updateInstructionContext(executeStageCounter: number, instructionName: string) {
@@ -868,7 +873,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       }
 
       const path = isFromMBR
-        ? "M 594 249 H 550 V 348 H 610" // path especial, siempre desde el MBR
+        ? generateMBRtoMARPath() // path especial, siempre desde el MBR
         : generateAddressPath(regNorm as MARRegister); // path normal
       console.log(
         "[cpu:mar.set] event.register:",
@@ -1047,7 +1052,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         // Mostrar SIEMPRE el bus de direcciones (azul) para MBR → MAR aquí
         await anim(
           [
-            { key: "cpu.internalBus.address.path", from: "M 594 249 H 550 V 348 H 610" },
+            { key: "cpu.internalBus.address.path", from: generateMBRtoMARPath() },
             { key: "cpu.internalBus.address.opacity", from: 1 },
             { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
           ],
@@ -1229,7 +1234,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
             console.log("📘 Animación de direcciones (mbr.get directo): MBR → MAR (bus azul)");
             await anim(
               [
-                { key: "cpu.internalBus.address.path", from: "M 594 249 H 550 V 348 H 610" },
+                { key: "cpu.internalBus.address.path", from: generateMBRtoMARPath() },
                 { key: "cpu.internalBus.address.opacity", from: 1 },
                 { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
               ],
@@ -1317,6 +1322,32 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
     case "cpu:mbr.set": {
       // Normalizar el nombre del registro para evitar problemas con subniveles
       const normalizedRegister = normalize(event.register);
+
+      // Contabilizar el paso 7 para instrucciones MOV cuando el origen es un registro de 8 bits
+      const isRegisterTo8BitMOV = instructionName === "MOV" && 
+        ["AL", "BL", "CL", "DL"].includes(normalizedRegister) &&
+        currentExecuteStageCounter === 5; // Paso 6 + 1 = Paso 7
+
+      if (isRegisterTo8BitMOV) {
+        console.log(`🎯 cpu:mbr.set: Registrando paso 7 para ${instructionName} x, ${normalizedRegister}`);
+        console.log(`📊 Estado antes: executeStageCounter=${currentExecuteStageCounter}, register=${event.register}`);
+        
+        // Incrementar el contador de etapas para registrar el paso 7
+        currentExecuteStageCounter++;
+        console.log(`📊 Execute Stage Counter incrementado a: ${currentExecuteStageCounter} (Paso 7)`);
+        
+        // Si se está ejecutando por ciclo, pausar la simulación después de este paso
+        const simulationStatus = store.get(simulationAtom);
+        console.log(`🔍 Estado de simulación:`, simulationStatus);
+        if (simulationStatus.type === "running" && simulationStatus.until === "cycle-change") {
+          console.log("⏸️ Pausando simulación después del paso 7 (cpu:mbr.set) - ejecución por ciclo");
+          setTimeout(() => {
+            pauseSimulation();
+          }, 100); // Pequeño delay para asegurar que la animación se complete
+        }
+      } else {
+        console.log(`ℹ️ No se activó contabilización paso 7: instructionName=${instructionName}, register=${normalizedRegister}, executeStageCounter=${currentExecuteStageCounter}`);
+      }
 
       // Si el registro destino es IP, animar ambos juntos
       if (normalizedRegister === "IP") {

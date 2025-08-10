@@ -30,6 +30,7 @@ const dataBus = new UndirectedGraph<Node>({ allowSelfLoops: false });
 dataBus.addNode("MBR", { position: [615, 249] }); // Actualizado centro del MBR a x=615
 dataBus.addNode("MBR top", { position: [615, 233] }); // Nodo de entrada superior - coincide con línea gris estática
 dataBus.addNode("MBR bottom", { position: [615, 274] }); // Nodo de salida inferior - coincide con línea gris estática
+dataBus.addNode("MBR reg input", { position: [595, 249] }); // Nodo de entrada desde registros al MBR (1cm antes del MBR)
 dataBus.addNode("AL", { position: [455, 45] }); // Ajustado para el centro del registro de 8 bits
 dataBus.addNode("BL", { position: [455, 85] }); // Ajustado para el centro del registro de 8 bits
 dataBus.addNode("CL", { position: [455, 125] }); // Ajustado para el centro del registro de 8 bits
@@ -65,6 +66,21 @@ dataBus.addNode("CL join", { position: [425, 125] }); // Ajustado para conectar 
 dataBus.addNode("DL join", { position: [425, 165] }); // Ajustado para conectar con el registro de 8 bits
 dataBus.addNode("id join", { position: [425, 205] }); // Alineado con AL join
 dataBus.addNode("data mbr join", { position: [390, 250] });
+// Nodos intermedios para conexión con ángulos de 90 grados desde registros al MBR
+dataBus.addNode("mbr approach horizontal", { position: [580, 250] }); // Punto horizontal antes del MBR (1cm antes)
+dataBus.addNode("mbr approach vertical", { position: [580, 233] }); // Punto vertical para subir hacia MBR top
+dataBus.addNode("mbr top approach", { position: [600, 233] }); // Punto de aproximación hacia la entrada superior (más a la derecha)
+dataBus.addNode("mbr top entry", { position: [615, 233] }); // Punto de entrada específico a MBR top (coincide con MBR top)
+// Nodos para la ruta MBR bottom → IR siguiendo el camino del bus gris
+dataBus.addNode("mbr bottom exit", { position: [615, 285] }); // Punto de salida inferior (siguiendo bus gris)
+dataBus.addNode("mbr to bus horizontal", { position: [580, 285] }); // Punto donde se conecta con el bus horizontal
+dataBus.addNode("mbr to bus join", { position: [580, 250] }); // Punto donde sube al bus principal horizontal
+dataBus.addNode("mbr to cpu center", { position: [390, 250] }); // Punto en el centro de la CPU (data mbr join)
+dataBus.addNode("mbr to ir horizontal", { position: [250, 250] }); // Punto horizontal hacia IR (siguiendo línea gris 390->250)
+dataBus.addNode("mbr to ir vertical end", { position: [250, 272] }); // Final de la línea gris vertical
+dataBus.addNode("mbr to ir approach", { position: [250, 275] }); // Punto de aproximación a IR (directamente al centro del registro IR)
+// Nodos para la ruta MBR bottom → ri siguiendo el mismo camino inicial que MBR→IR
+dataBus.addNode("mbr to ri vertical", { position: [390, 388] }); // Punto donde baja hacia ri desde el centro de CPU
 dataBus.addNode("SP join", { position: [390, 309] });
 dataBus.addNode("IP join", { position: [390, 349] }); // Alineado con data mbr join y NodoRegIn
 dataBus.addNode("ri join", { position: [390, 388] });
@@ -112,6 +128,7 @@ dataBus.addUndirectedEdge("SP", "SP out");
 // Crear las aristas necesarias para conectar estos nodos de unión con los buses de salida
 dataBus.addUndirectedEdge("AL out", "AL out join");
 dataBus.addUndirectedEdge("BL out", "BL out join");
+dataBus.addUndirectedEdge("BL out", "mbr approach horizontal"); // Conexión directa para ruta BL→MBR evitando NodoRegIn
 dataBus.addUndirectedEdge("CL out", "CL out join");
 dataBus.addUndirectedEdge("DL out", "DL out join");
 dataBus.addUndirectedEdge("id out", "id out join");
@@ -135,6 +152,7 @@ dataBus.addUndirectedEdge("IP out join", "outr mbr join");
 dataBus.addUndirectedEdge("ri out join", "outr mbr join");
 dataBus.addUndirectedEdge("SP out join", "outr mbr join");
 dataBus.addUndirectedEdge("SP out join", "MAR join2");
+dataBus.addUndirectedEdge("outr mbr join", "MAR join2"); // Conexión directa para animación MBR→MAR por bus gris
 
 /*
   dataBus.addUndirectedEdge("AL out join", "left");
@@ -143,7 +161,6 @@ dataBus.addUndirectedEdge("SP out join", "MAR join2");
   dataBus.addUndirectedEdge("DL out join", "left");
 dataBus.addUndirectedEdge("id out join", "left");
 */
-dataBus.addUndirectedEdge("outr mbr join", "mbr reg join");
 dataBus.addUndirectedEdge("outr mbr join", "data mbr join"); // Conexión directa para evitar FLAGS
 dataBus.addUndirectedEdge("MBR", "outr mbr join");
 dataBus.addUndirectedEdge("MBR", "MBR out");
@@ -175,6 +192,25 @@ dataBus.addUndirectedEdge("id join", "data mbr join");
 dataBus.addUndirectedEdge("MBR", "data mbr join");
 dataBus.addUndirectedEdge("MBR", "MBR top"); // Conectar MBR centro con MBR superior
 dataBus.addUndirectedEdge("MBR", "MBR bottom"); // Conectar MBR centro con MBR inferior
+dataBus.addUndirectedEdge("MBR", "MBR reg input"); // Conectar MBR centro con entrada desde registros
+// Conexiones para entrada al MBR por la parte superior (simplificado)
+dataBus.addUndirectedEdge("outr mbr join", "mbr approach horizontal"); // Desde outr mbr join hacia el punto horizontal
+dataBus.addUndirectedEdge("mbr approach horizontal", "mbr approach vertical"); // Ángulo 90° hacia arriba
+dataBus.addUndirectedEdge("mbr approach vertical", "mbr top approach"); // Ángulo 90° hacia la derecha
+dataBus.addUndirectedEdge("mbr top approach", "mbr top entry"); // Conectar con el punto de entrada
+dataBus.addUndirectedEdge("mbr top entry", "MBR top"); // Conexión final a MBR top
+// Conexiones para salida del MBR por la parte inferior hacia IR (siguiendo bus gris)
+dataBus.addUndirectedEdge("MBR bottom", "mbr bottom exit"); // Desde MBR bottom hacia punto de salida
+dataBus.addUndirectedEdge("mbr bottom exit", "mbr to bus horizontal"); // Línea horizontal hacia conexión con bus
+dataBus.addUndirectedEdge("mbr to bus horizontal", "mbr to bus join"); // Línea vertical hacia bus principal
+dataBus.addUndirectedEdge("mbr to bus join", "mbr to cpu center"); // Línea horizontal hacia centro de CPU (580->390)
+dataBus.addUndirectedEdge("mbr to cpu center", "mbr to ir horizontal"); // Línea horizontal desde centro hacia IR (390->250)
+dataBus.addUndirectedEdge("mbr to ir horizontal", "mbr to ir vertical end"); // Línea vertical siguiendo bus gris hasta Y=272
+dataBus.addUndirectedEdge("mbr to ir vertical end", "mbr to ir approach"); // Pequeña extensión hasta centro de IR
+dataBus.addUndirectedEdge("mbr to ir approach", "IR"); // Conexión final a IR
+// Conexión adicional para ruta MBR→ri usando el mismo camino inicial
+dataBus.addUndirectedEdge("mbr to cpu center", "mbr to ri vertical"); // Desde centro CPU baja hacia ri
+dataBus.addUndirectedEdge("mbr to ri vertical", "ri"); // Conexión final a ri
 dataBus.addUndirectedEdge("data mbr join", "NodoRegIn");
 
 dataBus.addUndirectedEdge("IP", "IP join");
@@ -440,8 +476,8 @@ export function generateDataPath(
         dataBus.addNode(rightNode, { position: [125, 300] });
         dataBus.addUndirectedEdge(downNode, rightNode);
       }
-      // Finalmente subir a right
-      path = ["MBR", downNode, rightNode, "right", "right end"];
+      // Finalmente subir a right (iniciando desde MBR bottom)
+      path = ["MBR bottom", "MBR", downNode, rightNode, "right", "right end"];
     } else {
       path = [
         normalizedFrom,
@@ -463,16 +499,22 @@ export function generateDataPath(
     path = ["BL", "BL out", "BL out join", "NodoRegOut", "outr mbr join", "MAR join2", "MAR"];
   } else if (normalizedFrom === "MBR" && normalizedTo === "id") {
     // Caso específico: MBR → id (ruta completa con id join alineado)
-    // Ruta: MBR → MBR out → outr mbr join → mbr reg join → NodoRegIn → id join → id
+    // Ruta: MBR bottom → MBR → mbr reg join → NodoRegIn → id join → id (salida desde parte inferior)
     console.log("🎯 Caso específico MBR → id detectado");
-    path = ["MBR", "MBR out", "outr mbr join", "mbr reg join", "NodoRegIn", "id join", "id"];
+    path = ["MBR bottom", "MBR", "mbr reg join", "NodoRegIn", "id join", "id"];
     console.log("🎯 Path definido para MBR → id:", path);
   } else if (normalizedFrom === "MBR" && ["AL", "BL", "CL", "DL"].includes(normalizedTo)) {
     // Caso específico: MBR → {AL, BL, CL, DL} (evitar pasar por NodoRegOut)
-    // Ruta directa: MBR → mbr reg join → NodoRegIn → registro join → registro
+    // Ruta directa: MBR bottom → MBR → mbr reg join → NodoRegIn → registro join → registro (salida desde parte inferior)
     console.log(`🎯 Caso específico MBR → ${normalizedTo} detectado - evitando NodoRegOut`);
-    path = ["MBR", "mbr reg join", "NodoRegIn", `${normalizedTo} join`, normalizedTo];
+    path = ["MBR bottom", "MBR", "mbr reg join", "NodoRegIn", `${normalizedTo} join`, normalizedTo];
     console.log(`🎯 Path definido para MBR → ${normalizedTo}:`, path);
+  } else if (normalizedFrom === "BL" && normalizedTo === "MBR") {
+    // Caso específico: BL → MBR (evitar NodoRegIn y mbr reg join)
+    // Ruta directa: BL → BL out → mbr approach horizontal → mbr approach vertical → mbr top approach → mbr top entry → MBR top → MBR
+    console.log("🎯 Caso específico BL → MBR detectado - evitando NodoRegIn y mbr reg join");
+    path = ["BL", "BL out", "mbr approach horizontal", "mbr approach vertical", "mbr top approach", "mbr top entry", "MBR top", "MBR"];
+    console.log("🎯 Path definido para BL → MBR:", path);
   } else if (registers.includes(normalizedFrom) && registers.includes(normalizedTo)) {
     // Si el destino es SP, IP o ri, pasar por NodoRegIn
     if (["SP", "IP", "ri"].includes(normalizedTo)) {
@@ -502,27 +544,32 @@ export function generateDataPath(
       ];
     }
   } else if (registers.includes(normalizedFrom) && normalizedTo === "MBR") {
-    // Caso específico: registro → MBR
-    // Ruta: registro → registro out → registro out join → NodoRegOut → outr mbr join → MBR
+    // Caso específico: registro → MBR entrando por la parte superior (como memoria → MBR)
+    // Ruta: registro → registro out → registro out join → NodoRegOut → outr mbr join → mbr approach horizontal → mbr approach vertical → mbr top approach → mbr top entry → MBR top → MBR
     path = [
       normalizedFrom,
       `${normalizedFrom} out`,
       `${normalizedFrom} out join`,
       "NodoRegOut",
       "outr mbr join",
+      "mbr approach horizontal",
+      "mbr approach vertical", 
+      "mbr top approach",
+      "mbr top entry",
+      "MBR top",
       "MBR",
     ];
   } else if (normalizedFrom === "MBR" && normalizedTo === "ri") {
     // Casos específicos para MBR -> ri según instrucción y modo
     if (["JMP", "JC", "JZ"].includes(instruction ?? "")) {
-      // Para saltos, animar MBR -> IP pasando por IP join
-      path = ["MBR", "mbr reg join", "IP join", "IP"];
+      // Para saltos, animar MBR bottom -> salida inferior -> centro CPU -> IP (usando misma ruta inicial que MBR→IR)
+      path = ["MBR bottom", "mbr bottom exit", "mbr to bus horizontal", "mbr to bus join", "mbr to cpu center", "IP join", "IP"];
     } else if ((instruction === "MOV" || instruction === "INT") && mode === "mem<-imd") {
-      // Para instrucciones MOV/INT con modo mem<-imd, usar ruta directa MBR -> ri
-      path = ["MBR", "mbr reg join", "ri join", "ri"];
+      // Para instrucciones MOV/INT con modo mem<-imd, usar ruta desde borde inferior -> centro CPU -> ri
+      path = ["MBR bottom", "mbr bottom exit", "mbr to bus horizontal", "mbr to bus join", "mbr to cpu center", "mbr to ri vertical", "ri"];
     } else if (mode === "mem<-imd" && (instruction === "ADD" || instruction === "SUB")) {
-      // Para instrucciones ADD/SUB con modo mem<-imd, usar ruta directa MBR -> ri
-      path = ["MBR", "mbr reg join", "ri join", "ri"];
+      // Para instrucciones ADD/SUB con modo mem<-imd, usar ruta desde borde inferior -> centro CPU -> ri
+      path = ["MBR bottom", "mbr bottom exit", "mbr to bus horizontal", "mbr to bus join", "mbr to cpu center", "mbr to ri vertical", "ri"];
     } else {
       // Para otros casos, usar la ruta del AddressBus (showpath2): MBR -> MAR
       return "M 594 249 H 550 V 348 H 580";
@@ -536,10 +583,17 @@ export function generateDataPath(
     }
     return d;
   } else if (normalizedFrom === "MBR" && normalizedTo === "IR") {
-    const start = dataBus.getNodeAttribute("MBR", "position");
-    const end = dataBus.getNodeAttribute("IR", "position");
-    // Línea horizontal hasta la X de IR, luego vertical hasta el centro exacto de IR
-    return `M ${start[0]} ${start[1]} L ${end[0]} ${start[1]} L ${end[0]} ${end[1]}`;
+    // Usar la nueva ruta que sigue exactamente el camino del bus gris pasando por el centro de la CPU: 
+    // MBR bottom → mbr bottom exit → mbr to bus horizontal → mbr to bus join → mbr to cpu center → mbr to ir horizontal → mbr to ir vertical end → mbr to ir approach → IR
+    path = ["MBR bottom", "mbr bottom exit", "mbr to bus horizontal", "mbr to bus join", "mbr to cpu center", "mbr to ir horizontal", "mbr to ir vertical end", "mbr to ir approach", "IR"];
+    // Generar el path SVG
+    const start = dataBus.getNodeAttribute(path[0], "position");
+    let d = `M ${start[0]} ${start[1]}`;
+    for (let i = 1; i < path.length; i++) {
+      const [x, y] = dataBus.getNodeAttribute(path[i], "position");
+      d += ` L ${x} ${y}`;
+    }
+    return d;
   } else {
     try {
       path = bidirectional(dataBus, normalizedFrom, normalizedTo) || [];
@@ -554,11 +608,12 @@ export function generateDataPath(
     normalizedFrom === "MBR" &&
     normalizedTo === "IP"
   ) {
-    const start = dataBus.getNodeAttribute("MBR", "position");
+    const start = dataBus.getNodeAttribute("MBR bottom", "position");
+    const mbrCenter = dataBus.getNodeAttribute("MBR", "position");
     const mid = dataBus.getNodeAttribute("mbr reg join", "position");
     const end = dataBus.getNodeAttribute("IP", "position");
-    // Línea recta a mbr reg join, luego baja en 90° y entra recto a IP
-    return `M ${start[0]} ${start[1]} L ${mid[0]} ${mid[1]} L ${mid[0]} ${end[1]} L ${end[0]} ${end[1]}`;
+    // Línea desde MBR bottom -> MBR centro -> mbr reg join, luego baja en 90° y entra recto a IP
+    return `M ${start[0]} ${start[1]} L ${mbrCenter[0]} ${mbrCenter[1]} L ${mid[0]} ${mid[1]} L ${mid[0]} ${end[1]} L ${end[0]} ${end[1]}`;
   }
 
   // (Deshabilitado) Path especial: ri -> IP (no mostrar animación por ahora)
@@ -599,7 +654,7 @@ export function generateDataPath(
   }
 
   if (normalizedFrom === "MBR" && normalizedTo === "ri" && instruction === "CALL") {
-    path = ["MBR", "mbr reg join", "NodoRegIn", "ri join", "ri"];
+    path = ["MBR bottom", "mbr bottom exit", "mbr to bus horizontal", "mbr to bus join", "mbr to cpu center", "mbr to ri vertical", "ri"];
   }
 
   if (
@@ -607,7 +662,8 @@ export function generateDataPath(
     normalizedTo === "MBR" &&
     (instruction === "INT" || instruction === "CALL")
   ) {
-    return "M 510 349 H 550 V 250 H 580";
+    // Ruta IP → MBR entrando por la parte superior (como memoria → MBR)
+    return "M 510 349 H 550 V 233 H 615 V 249";
   }
 
   if (path.length === 0) {
@@ -639,6 +695,25 @@ export function generateDataPath(
     console.log("🎯 Path SVG generado para MBR → id:", d);
   }
   return d;
+}
+
+/**
+ * Genera la ruta MBR→MAR desde el punto de salida inferior del MBR
+ * Para mantener consistencia con otras animaciones que salen del MBR
+ * Sigue exactamente el bus gris de la CPU sin salirse de él
+ */
+export function generateMBRtoMARPath(): string {
+  // Ruta: MBR bottom → mbr bottom exit → mbr to bus horizontal → mbr to bus join → outr mbr join → MAR join2 → MAR
+  // Esta ruta sigue exactamente el camino del bus gris interno de la CPU
+  const mbrBottom = [615, 274]; // MBR bottom
+  const mbrBottomExit = [615, 285]; // mbr bottom exit
+  const mbrToBusHorizontal = [580, 285]; // mbr to bus horizontal
+  const mbrToBusJoin = [580, 250]; // mbr to bus join (punto donde sube al bus principal)
+  const outrMbrJoin = [550, 250]; // outr mbr join (nodo central del bus)
+  const marJoin2 = [550, 349]; // MAR join2 
+  const mar = [665, 349]; // MAR (movido 17px a la izquierda - aproximadamente 1 cm)
+  
+  return `M ${mbrBottom[0]} ${mbrBottom[1]} L ${mbrBottomExit[0]} ${mbrBottomExit[1]} L ${mbrToBusHorizontal[0]} ${mbrToBusHorizontal[1]} L ${mbrToBusJoin[0]} ${mbrToBusJoin[1]} L ${outrMbrJoin[0]} ${outrMbrJoin[1]} L ${marJoin2[0]} ${marJoin2[1]} L ${mar[0]} ${mar[1]}`;
 }
 
 type DataBusProps = {
@@ -677,7 +752,7 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
   };
 
   return (
-    <svg viewBox="0 0 650 500" className="pointer-events-none absolute inset-0 z-20">
+    <svg viewBox="0 0 650 500" className="pointer-events-none absolute inset-0 z-30">
       <path
         className="fill-none stroke-stone-700 stroke-bus"
         strokeLinejoin="round"
@@ -688,6 +763,8 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
           "M 90 145 H 90", // right
           "M 272 115 H 390", // result (más a la derecha, sin bajar)
           "M 250 225 V 250", // flags
+          "M 580 250 H 390", // Línea horizontal desde el final del bus principal hasta el centro de la CPU
+          "M 390 250 H 250", // Línea horizontal desde el centro de la CPU hasta el área de IR
           // Internal ALU
           //"M 85 85 H 220", // left
           //"M 85 145 H 220", // right
@@ -733,6 +810,11 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
           "M 550 115 L 525 125 L 445 125", // línea recta de NodoRegOut a CL out join y luego a CL out
           "M 550 115 L 525 165 L 445 165", // línea recta de NodoRegOut a DL out join y luego a DL out
           showid ? "M 550 115 L 521 205 L 441 205" : "", // línea recta de NodoRegOut a id out join y luego a id out
+          // Nueva ruta con ángulos de 90 grados hacia el MBR (entrada superior)
+          "M 550 250 H 585 V 222 H 615", // Línea desde outr mbr join hacia MBR top con ángulos de 90 grados
+          // Nueva ruta con ángulos de 90 grados desde el MBR (salida inferior)
+          "M 550 250 H 585 V 285 H 700", // Línea desde MBR bottom hacia MBR out join con ángulos de 90 grados
+
           // Elimino cualquier línea que conecte outr mbr join (x=540,250) y outr mbr join left (x=560,250)
         ].join(" ")}
       />
@@ -747,7 +829,6 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
 
       {/* Círculo del nodo IP join - solo visible cuando showri es true */}
       {showri && <circle cx={390} cy={349} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />}
-
       {/* Path animado del bus de datos (verde/violeta según fase) */}
       <animated.path
         d={path}

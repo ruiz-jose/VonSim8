@@ -728,10 +728,13 @@ async function startThread(generator: EventGenerator): Promise<void> {
       if (event.done) break;
       if (event.value && typeof event.value !== "undefined") {
         // Actualizar el contexto de la instrucción en events.ts
-        const { updateInstructionContext } = await import("@/computer/cpu/events");
+        const { updateInstructionContext, getCurrentExecuteStageCounter } = await import("@/computer/cpu/events");
         updateInstructionContext(executeStageCounter, currentInstructionName || "");
 
         await handleEvent(event.value);
+        
+        // Después del evento, sincronizar el contador con el valor actualizado en events.ts
+        executeStageCounter = getCurrentExecuteStageCounter();
       } else {
         continue;
       }
