@@ -165,6 +165,8 @@ function resetState(state: ComputerState, clearRegisters = false) {
 
   cycleCount = 0;
   instructionCount = 0;
+  fetchStageCounter = 0;
+  executeStageCounter = 0;
   store.set(cycleCountAtom, cycleCount);
   store.set(instructionCountAtom, instructionCount);
   store.set(messageAtom, ""); // Limpiar el mensaje actual
@@ -704,6 +706,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
       if (programModified) {
         console.log("El programa ha sido modificado. Deteniendo y recargando...");
         store.set(programModifiedAtom, false); // Marcar como no modificado
+        // Reinicializar contadores al modificar el programa
+        fetchStageCounter = 0;
+        executeStageCounter = 0;
         finishSimulation(); // Detener la simulación actual
         break; // Salir del bucle
       }
