@@ -2230,6 +2230,28 @@ async function startThread(generator: EventGenerator): Promise<void> {
               cycleCount++;
               currentInstructionCycleCount++;
               store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+            } else if (
+              // Para instrucciones MOV de registro a memoria - paso 7
+              // Cuando el registro origen se copia al MBR para escribir en memoria
+              currentInstructionName === "MOV" &&
+              executeStageCounter === 6 &&
+              ["AL", "BL", "CL", "DL", "AH", "BH", "CH", "DH"].includes(sourceRegister) &&
+              !currentInstructionModeri && // No es direccionamiento directo
+              !currentInstructionModeid   // No es direccionamiento inmediato
+            ) {
+              // Para MOV [memoria], registro - el paso 7 es el registro → MBR
+              console.log(`🎯 MOV paso 7 detectado: ${sourceRegister} → MBR`);
+              store.set(messageAtom, `Ejecución: MBR ← ${sourceRegister}`);
+              
+              if (status.until === "cycle-change") {
+                pauseSimulation();
+              }
+              executeStageCounter++;
+              cycleCount++;
+              currentInstructionCycleCount++;
+              store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+              
+              // No retornar aquí para permitir que events.ts maneje también la animación
             } else if (event.value.register === "result.l") {
               // Caso especial para cuando se copia el resultado de la ALU al MBR
               const displayMessage = `Ejecución: MBR ← ${sourceRegister.replace("; write(FLAGS)", " ; update(FLAGS)")}`;

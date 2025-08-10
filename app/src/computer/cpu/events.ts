@@ -1348,15 +1348,16 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       // Normalizar el nombre del registro para evitar problemas con subniveles
       const normalizedRegister = normalize(event.register);
 
-      // Contabilizar el paso 7 para instrucciones MOV cuando el origen es un registro de 8 bits
-      const isRegisterTo8BitMOV =
+      // Contabilizar el paso 7 para instrucciones MOV cuando se está copiando un registro al MBR para escritura en memoria
+      // Para MOV [memoria], registro - el paso 7 es cuando el registro origen va al MBR
+      const isRegisterToMemoryMOV =
         instructionName === "MOV" &&
-        ["AL", "BL", "CL", "DL"].includes(normalizedRegister) &&
+        ["AL", "BL", "CL", "DL", "AH", "BH", "CH", "DH"].includes(normalizedRegister) &&
         currentExecuteStageCounter === 5; // Paso 6 + 1 = Paso 7
 
-      if (isRegisterTo8BitMOV) {
+      if (isRegisterToMemoryMOV) {
         console.log(
-          `🎯 cpu:mbr.set: Registrando paso 7 para ${instructionName} x, ${normalizedRegister}`,
+          `🎯 cpu:mbr.set: Registrando paso 7 para ${instructionName} [memoria], ${normalizedRegister}`,
         );
         console.log(
           `📊 Estado antes: executeStageCounter=${currentExecuteStageCounter}, register=${event.register}`,
@@ -1393,6 +1394,12 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       else {
         // Normalizar el nombre del registro origen para evitar error de tipo
         const normalizedSrc = event.register.replace(/\.(l|h)$/, "") as DataRegister;
+        
+        // Debug adicional para verificar la animación
+        console.log(`🔍 Animación MBR.set: ${normalizedSrc} → MBR para ${instructionName}`);
+        console.log(`🔍 Event.register original: ${event.register}`);
+        console.log(`🔍 Normalized source: ${normalizedSrc}`);
+        
         await drawDataPath(normalizedSrc, "MBR", instructionName, mode);
         store.set(MBRAtom, store.get(registerAtoms[event.register]));
         await resetDataPath();

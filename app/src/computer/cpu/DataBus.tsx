@@ -193,6 +193,7 @@ dataBus.addUndirectedEdge("MBR", "data mbr join");
 dataBus.addUndirectedEdge("MBR", "MBR top"); // Conectar MBR centro con MBR superior
 dataBus.addUndirectedEdge("MBR", "MBR bottom"); // Conectar MBR centro con MBR inferior
 dataBus.addUndirectedEdge("MBR", "MBR reg input"); // Conectar MBR centro con entrada desde registros
+dataBus.addUndirectedEdge("NodoRegOut", "MBR reg input"); // Conexión directa para escritura de registros a memoria
 // Conexiones para entrada al MBR por la parte superior (simplificado)
 dataBus.addUndirectedEdge("outr mbr join", "mbr approach horizontal"); // Desde outr mbr join hacia el punto horizontal
 dataBus.addUndirectedEdge("mbr approach horizontal", "mbr approach vertical"); // Ángulo 90° hacia arriba
@@ -357,6 +358,16 @@ export function generateDataPath(
     "left end",
     "right end",
   ];
+
+  console.log("🔍 Debug inicial:", {
+    normalizedFrom,
+    normalizedTo,
+    instruction,
+    mode,
+    isFromRegister: registers.includes(normalizedFrom),
+    isToMBR: normalizedTo === "MBR",
+    condition: registers.includes(normalizedFrom) && normalizedTo === "MBR"
+  });
 
   let path: string[] = [];
 
@@ -585,21 +596,43 @@ export function generateDataPath(
       ];
     }
   } else if (registers.includes(normalizedFrom) && normalizedTo === "MBR") {
-    // Caso específico: registro → MBR entrando por la parte superior (como memoria → MBR)
-    // Ruta: registro → registro out → registro out join → NodoRegOut → outr mbr join → mbr approach horizontal → mbr approach vertical → mbr top approach → mbr top entry → MBR top → MBR
-    path = [
-      normalizedFrom,
-      `${normalizedFrom} out`,
-      `${normalizedFrom} out join`,
-      "NodoRegOut",
-      "outr mbr join",
-      "mbr approach horizontal",
-      "mbr approach vertical",
-      "mbr top approach",
-      "mbr top entry",
-      "MBR top",
-      "MBR",
-    ];
+    // Caso específico: registro → MBR
+    console.log("🔍 Debug registro → MBR:", { instruction, mode, normalizedFrom, normalizedTo });
+    
+    // Para MOV de registro a memoria (escritura), usar ruta por la parte superior del MBR
+  if (instruction?.toUpperCase() === "MOV") {
+      console.log("🎯 Usando ruta superior para MOV de registro a memoria (sin importar mode)");
+      // Ruta por la parte superior del MBR: registro → registro out → registro out join → NodoRegOut → outr mbr join → mbr approach horizontal → mbr approach vertical → mbr top approach → mbr top entry → MBR top → MBR
+      path = [
+        normalizedFrom,
+        `${normalizedFrom} out`,
+        `${normalizedFrom} out join`,
+        "NodoRegOut",
+        "outr mbr join",
+        "mbr approach horizontal",
+        "mbr approach vertical",
+        "mbr top approach",
+        "mbr top entry",
+        "MBR top",
+        "MBR",
+      ];
+    } else {
+      console.log("🔍 Usando ruta normal para registro → MBR");
+      // Ruta normal para otros casos: registro → MBR entrando por la parte superior (como memoria → MBR)
+      path = [
+        normalizedFrom,
+        `${normalizedFrom} out`,
+        `${normalizedFrom} out join`,
+        "NodoRegOut",
+        "outr mbr join",
+        "mbr approach horizontal",
+        "mbr approach vertical",
+        "mbr top approach",
+        "mbr top entry",
+        "MBR top",
+        "MBR",
+      ];
+    }
   } else if (normalizedFrom === "MBR" && normalizedTo === "ri") {
     // Casos específicos para MBR -> ri según instrucción y modo
     if (["JMP", "JC", "JZ"].includes(instruction ?? "")) {
