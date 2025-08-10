@@ -313,7 +313,9 @@ function ReadBusAnimation({ pathRef }: ReadBusAnimationProps) {
       const startTime = Date.now();
       // Usar la duración del sistema de springs (executionUnit) para sincronizar
       const MAX_EXECUTION_UNIT_MS = 250;
-      const duration = settings.animations ? Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS) : 1; // Misma duración que drawRDControlPath
+      const duration = settings.animations
+        ? Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS)
+        : 1; // Misma duración que drawRDControlPath
 
       const animate = () => {
         const elapsed = Date.now() - startTime;
@@ -403,7 +405,9 @@ function WriteBusAnimation({ pathRef }: WriteBusAnimationProps) {
       const startTime = Date.now();
       // Usar la duración del sistema de springs (executionUnit) para sincronizar
       const MAX_EXECUTION_UNIT_MS = 250;
-      const duration = settings.animations ? Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS) : 1; // Misma duración que drawWRControlPath
+      const duration = settings.animations
+        ? Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS)
+        : 1; // Misma duración que drawWRControlPath
 
       const animate = () => {
         const elapsed = Date.now() - startTime;

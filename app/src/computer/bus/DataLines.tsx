@@ -39,11 +39,11 @@ export function DataLines() {
     <svg className="pointer-events-none absolute inset-0 z-[25] size-full">
       {/* Data lines */}
       <path className="fill-none stroke-stone-700 stroke-bus" strokeLinejoin="round" d={dataPath} />
-      
+
       {/* Círculo del nodo MBR top - siempre visible, definido aquí para estar por encima del bus gris */}
       <circle cx={615} cy={222} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
       <circle cx={615} cy={285} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
-      
+
       {/* Línea animada del bus de datos - usando path dinámico del spring */}
       <animated.path
         d={path}

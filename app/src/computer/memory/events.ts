@@ -25,12 +25,9 @@ import { memoryAtom, operatingAddressAtom } from "./state";
  */
 function generateExternalDataPath(direction: "memory-to-mbr" | "mbr-to-memory"): string {
   // Coordenadas que coinciden exactamente con las líneas grises estáticas en DataLines.tsx
-  const mbrX = 635; // Coordenada x del borde derecho del MBR (para escritura)
-  const mbrY = 249; // Coordenada y del centro del MBR
-  
+
   // Coordenadas exactas que coinciden con las líneas grises estáticas en DataLines.tsx
   const mbrCenterX = 615; // Coordenada x del centro exacto del MBR
-  const mbrCenterY = 249; // Coordenada y del centro exacto del MBR
   const mbrTopY = 233; // Coordenada y de entrada superior (coincide con línea gris)
   const mbrBottomY = 274; // Coordenada y de la parte inferior del MBR (coincide con línea gris)
   const mbrUpperY = 222; // Coordenada y más arriba para la ruta de entrada (coincide con línea gris)

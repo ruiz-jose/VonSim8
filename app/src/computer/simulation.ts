@@ -728,11 +728,13 @@ async function startThread(generator: EventGenerator): Promise<void> {
       if (event.done) break;
       if (event.value && typeof event.value !== "undefined") {
         // Actualizar el contexto de la instrucción en events.ts
-        const { updateInstructionContext, getCurrentExecuteStageCounter } = await import("@/computer/cpu/events");
+        const { updateInstructionContext, getCurrentExecuteStageCounter } = await import(
+          "@/computer/cpu/events"
+        );
         updateInstructionContext(executeStageCounter, currentInstructionName || "");
 
         await handleEvent(event.value);
-        
+
         // Después del evento, sincronizar el contador con el valor actualizado en events.ts
         executeStageCounter = getCurrentExecuteStageCounter();
       } else {
@@ -1206,9 +1208,23 @@ async function startThread(generator: EventGenerator): Promise<void> {
             // Las excepciones son: casos ri → MAR que se omiten completamente
             // Para instrucciones indirectas, sí pausar si es la transferencia BL/BX → MAR (blBxToRiProcessed)
             if (status.until === "cycle-change") {
+              // Condición especial para MOV CL, [BL] en el paso 4 (MAR ← ri)
+              if (
+                currentInstructionName === "MOV" &&
+                sourceRegister === "ri" &&
+                executeStageCounter === 4 &&
+                !currentInstructionModeri &&
+                !currentInstructionModeid &&
+                currentInstructionOperands.length === 2 &&
+                currentInstructionOperands[1].startsWith("[") &&
+                currentInstructionOperands[1].endsWith("]")
+              ) {
+                console.log("🔍 MOV CL, [BL] paso 4 detectado - pausando en mar.set");
+                pauseSimulation();
+              }
               // Solo omitir la pausa para ri → MAR que se omiten completamente
               // Para instrucciones indirectas con BL/BX → MAR, SÍ pausar porque es un evento visible
-              if (!isRiToMARSkipCycle && !(isIndirectInstruction && !blBxToRiProcessed)) {
+              else if (!isRiToMARSkipCycle && !(isIndirectInstruction && !blBxToRiProcessed)) {
                 pauseSimulation();
               }
             }

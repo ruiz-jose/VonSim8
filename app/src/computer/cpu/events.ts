@@ -24,7 +24,12 @@ import { store } from "@/lib/jotai";
 import { getSettings } from "@/lib/settings";
 import { colors } from "@/lib/tailwind";
 
-import { DataRegister, generateDataPath, generateSimultaneousLeftRightPath, generateMBRtoMARPath } from "./DataBus";
+import {
+  DataRegister,
+  generateDataPath,
+  generateMBRtoMARPath,
+  generateSimultaneousLeftRightPath,
+} from "./DataBus";
 import { aluOperationAtom, cycleAtom, MARAtom, MBRAtom, registerAtoms } from "./state";
 
 console.log("🔧 generateDataPath importado:", typeof generateDataPath);
@@ -84,7 +89,9 @@ const drawDataPath = (from: DataRegister, to: DataRegister, instruction: string,
     // Usar la configuración de velocidad de animación
     const settings = getSettings();
     const MAX_EXECUTION_UNIT_MS = 250;
-    const duration = settings.animations ? Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS) : 1;
+    const duration = settings.animations
+      ? Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS)
+      : 1;
 
     return anim(
       [
@@ -110,7 +117,9 @@ const drawSimultaneousLeftRightPath = (from: DataRegister, instruction: string, 
     // Usar la configuración de velocidad de animación
     const settings = getSettings();
     const MAX_EXECUTION_UNIT_MS = 250;
-    const duration = settings.animations ? Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS) : 1;
+    const duration = settings.animations
+      ? Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS)
+      : 1;
 
     return anim(
       [
@@ -239,7 +248,9 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       // Usar la configuración de velocidad de animación
       const settings = getSettings();
       const MAX_EXECUTION_UNIT_MS = 250;
-      const duration = settings.animations ? Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS) : 1;
+      const duration = settings.animations
+        ? Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS)
+        : 1;
       const pathsDrawConfig = {
         duration,
         easing: "easeInOutSine",
@@ -545,8 +556,6 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       const regNorm = normalize(event.register); // NO toLowerCase
       const isFromMBR = regNorm === "MBR";
 
-
-
       // Detectar transferencias IP→MAR para animación simultánea con MBR→ID
       if (regNorm === "IP") {
         console.log(`🔄 Detectando transferencia IP→MAR para animación simultánea`);
@@ -814,7 +823,9 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         // Usar la configuración de velocidad de animación
         const settings = getSettings();
         const MAX_EXECUTION_UNIT_MS = 250;
-        const duration = settings.animations ? Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS) : 1;
+        const duration = settings.animations
+          ? Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS)
+          : 1;
 
         console.log("🚌 Iniciando animación del bus de direcciones BL → MAR");
         console.log("📊 Iniciando animación del bus de datos MBR → ID");
@@ -894,7 +905,10 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       // IMPORTANTE: isRiToMARSkipAnimation solo debe aplicarse cuando regNorm === "ri"
       const isDirectAddressingForRi =
         regNorm === "ri" &&
-        (instructionName === "MOV" || instructionName === "ADD" || instructionName === "SUB" || instructionName === "CMP") &&
+        (instructionName === "MOV" ||
+          instructionName === "ADD" ||
+          instructionName === "SUB" ||
+          instructionName === "CMP") &&
         mode !== "mem<-imd";
 
       if (
@@ -933,7 +947,10 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         console.log("[cpu:mar.set] ri detectado, mode:", mode, "instructionName:", instructionName);
         // Para direccionamiento directo (MOV/ADD/SUB/CMP), NO mostrar bus aquí (se mostró en mbr.get)
         if (
-          (instructionName === "MOV" || instructionName === "ADD" || instructionName === "SUB" || instructionName === "CMP") &&
+          (instructionName === "MOV" ||
+            instructionName === "ADD" ||
+            instructionName === "SUB" ||
+            instructionName === "CMP") &&
           mode !== "mem<-imd"
         ) {
           // Solo actualizar MAR sin animación de bus
@@ -1048,7 +1065,10 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         (normalizedRegister === "MAR" || normalizedRegister.startsWith("MAR.")) &&
         !skipMBRtoMAR
       ) {
-        console.log("Animando bus de direcciones (azul): MBR → MAR en mbr.get", { instructionName, mode });
+        console.log("Animando bus de direcciones (azul): MBR → MAR en mbr.get", {
+          instructionName,
+          mode,
+        });
         // Mostrar SIEMPRE el bus de direcciones (azul) para MBR → MAR aquí
         await anim(
           [
@@ -1122,7 +1142,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
                     { key: "cpu.internalBus.address.opacity", from: 1 },
                     { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
                   ],
-                 { duration: 300, easing: "easeInOutSine", forceMs: true },
+                  { duration: 300, easing: "easeInOutSine", forceMs: true },
                 ),
                 // Animación del bus de datos MBR→id
                 drawDataPath("MBR", "id", instructionName, mode),
@@ -1229,7 +1249,10 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
           if (
             normalizedRegister === "ri" &&
             mode !== "mem<-imd" &&
-            (instructionName === "MOV" || instructionName === "ADD" || instructionName === "SUB" || instructionName === "CMP")
+            (instructionName === "MOV" ||
+              instructionName === "ADD" ||
+              instructionName === "SUB" ||
+              instructionName === "CMP")
           ) {
             console.log("📘 Animación de direcciones (mbr.get directo): MBR → MAR (bus azul)");
             await anim(
@@ -1246,14 +1269,16 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
               { duration: 100, easing: "easeInSine", forceMs: true },
             );
             // No dibujar bus de datos MBR→ri aquí
-            console.log("⏭️ Omitiendo animación de datos MBR → ri en direccionamiento directo (mbr.get)");
+            console.log(
+              "⏭️ Omitiendo animación de datos MBR → ri en direccionamiento directo (mbr.get)",
+            );
           } else {
-          // Omitir animación MBR → ri en direccionamiento directo (no inmediato)
-          if (normalizedRegister === "ri" && mode !== "mem<-imd") {
-            console.log("⏭️ Omitiendo animación MBR → ri para direccionamiento directo");
-          } else {
-            await drawDataPath("MBR", normalizedRegister as DataRegister, instructionName, mode);
-          }
+            // Omitir animación MBR → ri en direccionamiento directo (no inmediato)
+            if (normalizedRegister === "ri" && mode !== "mem<-imd") {
+              console.log("⏭️ Omitiendo animación MBR → ri para direccionamiento directo");
+            } else {
+              await drawDataPath("MBR", normalizedRegister as DataRegister, instructionName, mode);
+            }
           }
         }
       }
@@ -1324,29 +1349,40 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       const normalizedRegister = normalize(event.register);
 
       // Contabilizar el paso 7 para instrucciones MOV cuando el origen es un registro de 8 bits
-      const isRegisterTo8BitMOV = instructionName === "MOV" && 
+      const isRegisterTo8BitMOV =
+        instructionName === "MOV" &&
         ["AL", "BL", "CL", "DL"].includes(normalizedRegister) &&
         currentExecuteStageCounter === 5; // Paso 6 + 1 = Paso 7
 
       if (isRegisterTo8BitMOV) {
-        console.log(`🎯 cpu:mbr.set: Registrando paso 7 para ${instructionName} x, ${normalizedRegister}`);
-        console.log(`📊 Estado antes: executeStageCounter=${currentExecuteStageCounter}, register=${event.register}`);
-        
+        console.log(
+          `🎯 cpu:mbr.set: Registrando paso 7 para ${instructionName} x, ${normalizedRegister}`,
+        );
+        console.log(
+          `📊 Estado antes: executeStageCounter=${currentExecuteStageCounter}, register=${event.register}`,
+        );
+
         // Incrementar el contador de etapas para registrar el paso 7
         currentExecuteStageCounter++;
-        console.log(`📊 Execute Stage Counter incrementado a: ${currentExecuteStageCounter} (Paso 7)`);
-        
+        console.log(
+          `📊 Execute Stage Counter incrementado a: ${currentExecuteStageCounter} (Paso 7)`,
+        );
+
         // Si se está ejecutando por ciclo, pausar la simulación después de este paso
         const simulationStatus = store.get(simulationAtom);
         console.log(`🔍 Estado de simulación:`, simulationStatus);
         if (simulationStatus.type === "running" && simulationStatus.until === "cycle-change") {
-          console.log("⏸️ Pausando simulación después del paso 7 (cpu:mbr.set) - ejecución por ciclo");
+          console.log(
+            "⏸️ Pausando simulación después del paso 7 (cpu:mbr.set) - ejecución por ciclo",
+          );
           setTimeout(() => {
             pauseSimulation();
           }, 100); // Pequeño delay para asegurar que la animación se complete
         }
       } else {
-        console.log(`ℹ️ No se activó contabilización paso 7: instructionName=${instructionName}, register=${normalizedRegister}, executeStageCounter=${currentExecuteStageCounter}`);
+        console.log(
+          `ℹ️ No se activó contabilización paso 7: instructionName=${instructionName}, register=${normalizedRegister}, executeStageCounter=${currentExecuteStageCounter}`,
+        );
       }
 
       // Si el registro destino es IP, animar ambos juntos
