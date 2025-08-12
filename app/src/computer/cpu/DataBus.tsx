@@ -68,8 +68,8 @@ dataBus.addNode("id join", { position: [425, 205] }); // Alineado con AL join
 dataBus.addNode("data mbr join", { position: [390, 250] });
 // Nodos intermedios para conexión con ángulos de 90 grados desde registros al MBR
 dataBus.addNode("mbr approach horizontal", { position: [580, 250] }); // Punto horizontal antes del MBR (1cm antes)
-dataBus.addNode("mbr approach vertical", { position: [580, 233] }); // Punto vertical para subir hacia MBR top
-dataBus.addNode("mbr top approach", { position: [600, 233] }); // Punto de aproximación hacia la entrada superior (más a la derecha)
+dataBus.addNode("mbr approach vertical", { position: [580, 215] }); // Punto vertical para subir hacia MBR top
+dataBus.addNode("mbr top approach", { position: [600, 215] }); // Punto de aproximación hacia la entrada superior (más a la derecha)
 dataBus.addNode("mbr top entry", { position: [615, 215] }); // Punto de entrada específico a MBR top (coincide con MBR top)
 // Nodos para la ruta MBR bottom → IR siguiendo el camino del bus gris
 dataBus.addNode("mbr bottom exit", { position: [615, 285] }); // Punto de salida inferior (siguiendo bus gris)
