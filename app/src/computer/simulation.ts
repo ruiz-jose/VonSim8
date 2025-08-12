@@ -310,6 +310,12 @@ function handleDirectImmediateMOV(sourceRegister: string, executeStage: number):
         shouldDisplay: true,
         shouldPause: true,
       };
+    case 5:
+      return {
+        message: "Ejecución: MAR ← IP | ri ← MBR",
+        shouldDisplay: true,
+        shouldPause: true,
+      };
     default:
       return {
         message: `Ejecución: MAR ← ${sourceRegister}`,
@@ -448,6 +454,23 @@ function generateRegisterUpdateMessage(
     return handleINTRegisterUpdate(sourceRegister);
   }
 
+  // Casos especiales para instrucciones MOV con direccionamiento indirecto e inmediato (ej: MOV [BL], 4)
+  if (
+    name === "MOV" &&
+    modeId &&
+    modeRi &&
+    currentInstructionOperands &&
+    currentInstructionOperands.length === 2 &&
+    /^\[([A-Z]{2})\]$/i.test(currentInstructionOperands[0]) &&
+    /^([0-9A-F]+h?)$/i.test(currentInstructionOperands[1]) &&
+    (executeStage === 4 || executeStage === 5)
+  ) {
+    return {
+      message: "",
+      shouldDisplay: false,
+      shouldPause: false,
+    };
+  }
   // Casos especiales para instrucciones MOV con direccionamiento directo e inmediato
   if (name === "MOV" && modeId && modeRi) {
     return handleDirectImmediateMOVUpdate();
@@ -590,6 +613,21 @@ function handleINTRegisterUpdate(sourceRegister: string): MessageConfig {
 
 // Función específica para actualizaciones de registros en MOV con direccionamiento directo e inmediato
 function handleDirectImmediateMOVUpdate(): MessageConfig {
+  // Si el contexto es transferencia BL/BX→ri (indirecto-inmediato), no mostrar mensaje en register.copy ni mar.set
+  if (
+    currentInstructionName === "MOV" &&
+    currentInstructionOperands &&
+    currentInstructionOperands.length === 2 &&
+    /^\[([A-Z]{2})\]$/i.test(currentInstructionOperands[0]) &&
+    /^([0-9A-F]+h?)$/i.test(currentInstructionOperands[1]) &&
+    (executeStageCounter === 4 || executeStageCounter === 5)
+  ) {
+    return {
+      message: "",
+      shouldDisplay: false,
+      shouldPause: false,
+    };
+  }
   return {
     message: "Ejecución: MBR ← read(Memoria[MAR]) | IP ← IP + 1",
     shouldDisplay: true,
@@ -1037,53 +1075,26 @@ async function startThread(generator: EventGenerator): Promise<void> {
               }
 
               // Manejar casos especiales que requieren lógica adicional
-              if (resultmbrimar) {
-                store.set(messageAtom, displayMessageresultmbr);
-              } else if (
+              // Priorizar el mensaje especial para MOV x, 5 (directo-inmediato) en ciclo 5
+              if (
                 sourceRegister === "IP" &&
-                (currentInstructionName === "MOV" ||
-                  currentInstructionName === "ADD" ||
-                  currentInstructionName === "SUB" ||
-                  currentInstructionName === "CMP" ||
-                  currentInstructionName === "AND" ||
-                  currentInstructionName === "OR" ||
-                  currentInstructionName === "XOR") &&
+                currentInstructionName === "MOV" &&
                 currentInstructionModeri &&
                 currentInstructionModeid &&
-                executeStageCounter === 4 &&
+                cycleCount === 6 &&
                 currentInstructionOperands.length === 2 &&
-                currentInstructionOperands[0].startsWith("[") &&
-                currentInstructionOperands[0].endsWith("]") &&
+                !currentInstructionOperands[0].startsWith("[") &&
+                !currentInstructionOperands[0].endsWith("]") &&
                 !currentInstructionOperands[1].startsWith("[") &&
                 !currentInstructionOperands[1].endsWith("]") &&
                 (/^\d+$/.test(currentInstructionOperands[1]) ||
                   /^\d+h$/i.test(currentInstructionOperands[1]))
               ) {
-                // Caso especial para MOV/ADD/SUB/CMP/AND/OR/XOR con direccionamiento directo + valor inmediato:
-                // mostrar el mensaje especial cuando IP va al MAR y simultáneamente MBR va a ri
-                console.log(
-                  `🎯 CONDICIÓN ESPECIAL DETECTADA - ${currentInstructionName} con direccionamiento directo + valor inmediato`,
-                );
-                console.log("🔍 Operandos:", currentInstructionOperands);
-                console.log("🔍 Segundo operando:", currentInstructionOperands[1]);
-                console.log("🔍 Es número:", /^\d+$/.test(currentInstructionOperands[1]));
-
-                // Mensaje con prefijo "Ejecución:" y sufijo con ícono animado de simultaneidad
+                // Mostrar el mensaje especial de simultaneidad solo en el ciclo 6 para MOV x, 5 (directo-inmediato)
                 store.set(messageAtom, "Ejecución: MAR ← IP | ri ← MBR");
-
-                // Contabilizar el ciclo para el mensaje simultáneo
-                cycleCount++;
-                currentInstructionCycleCount++;
-                store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
-                console.log(
-                  "🔢 Ciclo contabilizado para mensaje simultáneo - cycleCount:",
-                  cycleCount,
-                  "currentInstructionCycleCount:",
-                  currentInstructionCycleCount,
-                );
-
-                // Marcar que ya se contabilizó el ciclo para evitar doble contabilización
                 simultaneousCycleCounted = true;
+              } else if (resultmbrimar) {
+                store.set(messageAtom, displayMessageresultmbr);
               } else if (mbridirmar && !isRiToMARSkipCycle) {
                 // Para MOV con direccionamiento directo e inmediato, mostrar el mensaje correcto
                 if (
@@ -1690,8 +1701,16 @@ async function startThread(generator: EventGenerator): Promise<void> {
             ) {
               const isBLorBXToRi =
                 (sourceRegister === "BL" || sourceRegister === "BX") && destRegister === "ri";
+              // Detectar caso MOV [BL], 4 (indirecto-inmediato)
+              const isIndirectImmediate =
+                currentInstructionName === "MOV" &&
+                destRegister === "ri" &&
+                currentInstructionOperands &&
+                currentInstructionOperands.length === 2 &&
+                /^\[([A-Z]{2})\]$/i.test(currentInstructionOperands[0]) &&
+                /^([0-9A-F]+h?)$/i.test(currentInstructionOperands[1]);
 
-              if (!isBLorBXToRi) {
+              if (!isBLorBXToRi && !isIndirectImmediate) {
                 store.set(messageAtom, displayMessage);
                 cycleCount++;
                 currentInstructionCycleCount++;
@@ -1704,7 +1723,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 );
               } else {
                 console.log(
-                  `⏭️ Ciclo NO contabilizado para ${currentInstructionName} register.copy (BL/BX→ri) - se contabilizará en cpu:mar.set`,
+                  `⏭️ Ciclo NO contabilizado para ${currentInstructionName} register.copy (BL/BX→ri o indirecto-inmediato) - se contabilizará en cpu:mar.set`,
                 );
               }
             } else if (
