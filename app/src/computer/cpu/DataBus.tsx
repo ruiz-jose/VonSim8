@@ -546,12 +546,35 @@ export function generateDataPath(
     console.log("🎯 Caso específico MBR → id detectado");
     path = ["MBR bottom", "MBR", "mbr reg join", "NodoRegIn", "id join", "id"];
     console.log("🎯 Path definido para MBR → id:", path);
-  } else if (normalizedFrom === "MBR" && ["AL", "BL", "CL", "DL"].includes(normalizedTo)) {
-    // Caso específico: MBR → {AL, BL, CL, DL} (evitar pasar por NodoRegOut)
-    // Ruta directa: MBR bottom → MBR → mbr reg join → NodoRegIn → registro join → registro (salida desde parte inferior)
-    console.log(`🎯 Caso específico MBR → ${normalizedTo} detectado - evitando NodoRegOut`);
-    path = ["MBR bottom", "MBR", "mbr reg join", "NodoRegIn", `${normalizedTo} join`, normalizedTo];
-    console.log(`🎯 Path definido para MBR → ${normalizedTo}:`, path);
+  } else if (normalizedFrom === "MBR" && normalizedTo === "BL") {
+    // Caso especial: MBR → BL, animación parte desde MBR bottom y sigue el bus gris horizontal y vertical hasta BL
+    // Ruta: MBR bottom → mbr bottom exit → mbr to bus horizontal → mbr to bus join → outr mbr join → NodoRegOut → BL out join → BL out → BL
+    path = [
+      "MBR bottom",
+      "mbr bottom exit",
+      "mbr to bus horizontal",
+      "mbr to bus join",
+      "outr mbr join",
+      "mbr reg join",
+      "NodoRegIn",
+      "BL join",
+      "BL"
+    ];
+    console.log("🎯 Path definido para MBR → BL (animación desde MBR bottom, ingresando por mbr reg join, NodoRegIn, BL join):", path);
+  } else if (normalizedFrom === "MBR" && ["AL", "BL", "CL", "DL", "id"].includes(normalizedTo)) {
+    // Caso unificado: MBR → AL, BL, CL, DL, id. Para animación, comienza desde MBR bottom, pasa por mbr bottom exit, mbr to bus horizontal, mbr to bus join, outr mbr join, mbr reg join, NodoRegIn, registro join, registro
+    path = [
+      "MBR bottom",
+      "mbr bottom exit",
+      "mbr to bus horizontal",
+      "mbr to bus join",
+      "outr mbr join",
+      "mbr reg join",
+      "NodoRegIn",
+      `${normalizedTo} join`,
+      normalizedTo
+    ];
+    console.log(`🎯 Path definido para MBR → ${normalizedTo} (animación desde MBR bottom, pasando por bus gris y nodos de entrada):`, path);
   } else if (normalizedFrom === "BL" && normalizedTo === "MBR") {
     // Caso específico: BL → MBR (evitar NodoRegIn y mbr reg join)
     // Ruta directa: BL → BL out → mbr approach horizontal → mbr approach vertical → mbr top approach → mbr top entry → MBR top → MBR
