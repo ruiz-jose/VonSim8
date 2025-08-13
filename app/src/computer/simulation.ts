@@ -1078,21 +1078,13 @@ async function startThread(generator: EventGenerator): Promise<void> {
               // Priorizar el mensaje especial para MOV x, 5 (directo-inmediato) en ciclo 5
               if (
                 sourceRegister === "IP" &&
-                currentInstructionName === "MOV" &&
                 currentInstructionModeri &&
-                currentInstructionModeid &&
-                cycleCount === 6 &&
-                currentInstructionOperands.length === 2 &&
-                !currentInstructionOperands[0].startsWith("[") &&
-                !currentInstructionOperands[0].endsWith("]") &&
-                !currentInstructionOperands[1].startsWith("[") &&
-                !currentInstructionOperands[1].endsWith("]") &&
-                (/^\d+$/.test(currentInstructionOperands[1]) ||
-                  /^\d+h$/i.test(currentInstructionOperands[1]))
+                cycleCount === 5 &&
+                currentInstructionOperands.length === 2
               ) {
                 // Mostrar el mensaje especial de simultaneidad solo en el ciclo 6 para MOV x, 5 (directo-inmediato)
                 store.set(messageAtom, "Ejecución: MAR ← IP | ri ← MBR");
-                simultaneousCycleCounted = true;
+                simultaneousCycleCounted = false;
               } else if (resultmbrimar) {
                 store.set(messageAtom, displayMessageresultmbr);
               } else if (mbridirmar && !isRiToMARSkipCycle) {
