@@ -461,8 +461,8 @@ function generateRegisterUpdateMessage(
     modeRi &&
     currentInstructionOperands &&
     currentInstructionOperands.length === 2 &&
-    /^\[([A-Z]{2})\]$/i.test(currentInstructionOperands[0]) &&
-    /^([0-9A-F]+h?)$/i.test(currentInstructionOperands[1]) &&
+    /^\[[A-Z]{2}\]$/i.test(currentInstructionOperands[0]) &&
+    /^[0-9A-F]+h?$/i.test(currentInstructionOperands[1]) &&
     (executeStage === 4 || executeStage === 5)
   ) {
     return {
@@ -618,8 +618,8 @@ function handleDirectImmediateMOVUpdate(): MessageConfig {
     currentInstructionName === "MOV" &&
     currentInstructionOperands &&
     currentInstructionOperands.length === 2 &&
-    /^\[([A-Z]{2})\]$/i.test(currentInstructionOperands[0]) &&
-    /^([0-9A-F]+h?)$/i.test(currentInstructionOperands[1]) &&
+    /^\[[A-Z]{2}\]$/i.test(currentInstructionOperands[0]) &&
+    /^[0-9A-F]+h?$/i.test(currentInstructionOperands[1]) &&
     (executeStageCounter === 4 || executeStageCounter === 5)
   ) {
     return {
@@ -938,7 +938,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
 
           if (event.value.type === "cpu:mar.set") {
             const sourceRegister = event.value.register;
-            
+
             // Condición especial: marcar para pausar en MOV CL, [BL] cuando esté en la etapa correspondiente al paso 4
             if (
               currentInstructionName === "MOV" &&
@@ -950,14 +950,16 @@ async function startThread(generator: EventGenerator): Promise<void> {
               sourceRegister === "ri" &&
               status.until === "cycle-change"
             ) {
-              console.log("🛑 Marcando pausa especial: MOV CL, [BL] en paso 4 (executeStageCounter=2) - se pausará al final del evento");
+              console.log(
+                "🛑 Marcando pausa especial: MOV CL, [BL] en paso 4 (executeStageCounter=2) - se pausará al final del evento",
+              );
               shouldPauseAfterEvent = true;
             }
 
-              // Pausar siempre en cpu:mar.set si está en modo ciclo a ciclo
-              if (status.until === "cycle-change") {
-                pauseSimulation();
-              }
+            // Pausar siempre en cpu:mar.set si está en modo ciclo a ciclo
+            if (status.until === "cycle-change") {
+              pauseSimulation();
+            }
 
             // let showRI = false;
             // const showRI2 = false;
@@ -1699,8 +1701,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 destRegister === "ri" &&
                 currentInstructionOperands &&
                 currentInstructionOperands.length === 2 &&
-                /^\[([A-Z]{2})\]$/i.test(currentInstructionOperands[0]) &&
-                /^([0-9A-F]+h?)$/i.test(currentInstructionOperands[1]);
+                /^\[[A-Z]{2}\]$/i.test(currentInstructionOperands[0]) &&
+                /^[0-9A-F]+h?$/i.test(currentInstructionOperands[1]);
 
               if (!isBLorBXToRi && !isIndirectImmediate) {
                 store.set(messageAtom, displayMessage);
@@ -2250,22 +2252,22 @@ async function startThread(generator: EventGenerator): Promise<void> {
               // Para instrucciones MOV de registro a memoria - paso 5
               // Cuando el registro origen se copia al MBR para escribir en memoria
               currentInstructionName === "MOV" &&
-                (executeStageCounter === 5 || executeStageCounter === 3) &&
+              (executeStageCounter === 5 || executeStageCounter === 3) &&
               ["AL", "BL", "CL", "DL", "AH", "BH", "CH", "DH"].includes(sourceRegister) &&
               !currentInstructionModeri && // No es direccionamiento directo
-              !currentInstructionModeid   // No es direccionamiento inmediato
+              !currentInstructionModeid // No es direccionamiento inmediato
             ) {
-                // Para MOV [memoria], registro - el paso 5 (o 3 en algunos microciclos) es el registro → MBR
-                console.log(`🎯 MOV paso 5/3 detectado: ${sourceRegister} → MBR`);
-                store.set(messageAtom, `Ejecución: MBR ← ${sourceRegister}`);
-                cycleCount++;
-                currentInstructionCycleCount++;
-                store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
-                executeStageCounter++;
-                // Pausar aquí si se ejecuta por ciclos
-                if (status.until === "cycle-change") {
-                  pauseSimulation();
-                }
+              // Para MOV [memoria], registro - el paso 5 (o 3 en algunos microciclos) es el registro → MBR
+              console.log(`🎯 MOV paso 5/3 detectado: ${sourceRegister} → MBR`);
+              store.set(messageAtom, `Ejecución: MBR ← ${sourceRegister}`);
+              cycleCount++;
+              currentInstructionCycleCount++;
+              store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+              executeStageCounter++;
+              // Pausar aquí si se ejecuta por ciclos
+              if (status.until === "cycle-change") {
+                pauseSimulation();
+              }
             } else if (event.value.register === "result.l") {
               // Caso especial para cuando se copia el resultado de la ALU al MBR
               const displayMessage = `Ejecución: MBR ← ${sourceRegister.replace("; write(FLAGS)", " ; update(FLAGS)")}`;

@@ -366,7 +366,7 @@ export function generateDataPath(
     mode,
     isFromRegister: registers.includes(normalizedFrom),
     isToMBR: normalizedTo === "MBR",
-    condition: registers.includes(normalizedFrom) && normalizedTo === "MBR"
+    condition: registers.includes(normalizedFrom) && normalizedTo === "MBR",
   });
 
   let path: string[] = [];
@@ -558,9 +558,12 @@ export function generateDataPath(
       "mbr reg join",
       "NodoRegIn",
       "BL join",
-      "BL"
+      "BL",
     ];
-    console.log("🎯 Path definido para MBR → BL (animación desde MBR bottom, ingresando por mbr reg join, NodoRegIn, BL join):", path);
+    console.log(
+      "🎯 Path definido para MBR → BL (animación desde MBR bottom, ingresando por mbr reg join, NodoRegIn, BL join):",
+      path,
+    );
   } else if (normalizedFrom === "MBR" && ["AL", "BL", "CL", "DL", "id"].includes(normalizedTo)) {
     // Caso unificado: MBR → AL, BL, CL, DL, id. Para animación, comienza desde MBR bottom, pasa por mbr bottom exit, mbr to bus horizontal, mbr to bus join, outr mbr join, mbr reg join, NodoRegIn, registro join, registro
     path = [
@@ -572,9 +575,12 @@ export function generateDataPath(
       "mbr reg join",
       "NodoRegIn",
       `${normalizedTo} join`,
-      normalizedTo
+      normalizedTo,
     ];
-    console.log(`🎯 Path definido para MBR → ${normalizedTo} (animación desde MBR bottom, pasando por bus gris y nodos de entrada):`, path);
+    console.log(
+      `🎯 Path definido para MBR → ${normalizedTo} (animación desde MBR bottom, pasando por bus gris y nodos de entrada):`,
+      path,
+    );
   } else if (normalizedFrom === "BL" && normalizedTo === "MBR") {
     // Caso específico: BL → MBR (evitar NodoRegIn y mbr reg join)
     // Ruta directa: BL → BL out → mbr approach horizontal → mbr approach vertical → mbr top approach → mbr top entry → MBR top → MBR
@@ -590,9 +596,15 @@ export function generateDataPath(
       "MBR",
     ];
     console.log("🎯 Path definido para BL → MBR:", path);
-  } else if (registers.includes(normalizedFrom) && normalizedTo === "MBR" && instruction?.toUpperCase() === "MOV") {
+  } else if (
+    registers.includes(normalizedFrom) &&
+    normalizedTo === "MBR" &&
+    instruction?.toUpperCase() === "MOV"
+  ) {
     // Prioridad: MOV registro→MBR debe usar la ruta corta por la parte superior
-    console.log("🎯 Usando ruta prioritaria para MOV registro→MBR (evitando NodoRegOut y NodoRegIn)");
+    console.log(
+      "🎯 Usando ruta prioritaria para MOV registro→MBR (evitando NodoRegOut y NodoRegIn)",
+    );
     path = [
       normalizedFrom,
       `${normalizedFrom} out`,

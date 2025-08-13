@@ -1394,12 +1394,12 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       else {
         // Normalizar el nombre del registro origen para evitar error de tipo
         const normalizedSrc = event.register.replace(/\.(l|h)$/, "") as DataRegister;
-        
+
         // Debug adicional para verificar la animación
         console.log(`🔍 Animación MBR.set: ${normalizedSrc} → MBR para ${instructionName}`);
         console.log(`🔍 Event.register original: ${event.register}`);
         console.log(`🔍 Normalized source: ${normalizedSrc}`);
-        
+
         await drawDataPath(normalizedSrc, "MBR", instructionName, mode);
         store.set(MBRAtom, store.get(registerAtoms[event.register]));
         await resetDataPath();
