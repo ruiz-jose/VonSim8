@@ -540,7 +540,7 @@ export function generateDataPath(
     // Caso específico: BL → ri (pero la animación va a MAR)
     // Ruta especial: BL → BL out → BL out join → NodoRegOut → outr mbr join → MAR join2 → MAR
     path = ["BL", "BL out", "BL out join", "NodoRegOut", "outr mbr join", "MAR join2", "MAR"];
-  } else if (normalizedFrom === "MBR" && normalizedTo === "id") {
+  } else if (normalizedFrom === "MBR" && normalizedTo === "id"  && "mem<-imd") {
     // Caso específico: MBR → id (ruta completa con id join alineado)
     // Ruta: MBR bottom → MBR → mbr reg join → NodoRegIn → id join → id (salida desde parte inferior)
     console.log("🎯 Caso específico MBR → id detectado");
