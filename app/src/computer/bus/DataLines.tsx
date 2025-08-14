@@ -5,7 +5,7 @@ export function DataLines() {
   const { devices } = useSimulation();
 
   const addressPath = [
-    "M 645 250 H 645 V 249 H 800", // Path para escritura: desde parte inferior MBR -> baja más -> sale horizontalmente -> memoria
+
     "M 645 349 H 800", // Comienza desde el borde derecho del registro MAR
     devices.pic && "M 725 349 V 770 H 450",
     devices.pio && "M 725 349 V 770 H 900",
@@ -16,7 +16,7 @@ export function DataLines() {
     .join(" ");
 
   const dataPath = [
-
+    "M 645 250 H 645 V 249 H 800", // Path para escritura: desde parte inferior MBR -> baja más -> sale horizontalmente -> memoria
 
     devices.pic && "M 765 249 V 790 H 450",
     devices.pio && "M 765 249 V 790 H 900",
