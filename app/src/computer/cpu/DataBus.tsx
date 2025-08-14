@@ -938,22 +938,21 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
           // Elimino cualquier línea que conecte outr mbr join (x=540,250) y outr mbr join left (x=560,250)
         ].join(" ")}
       />
-
       {/* Círculos de los nodos (ANTES de las animaciones para que queden DEBAJO) */}
-
-  {/* Círculos de los nodos principales, siempre detrás de las animaciones */}
-  <circle cx={390} cy={115} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
-  <circle cx={550} cy={115} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
-  <circle cx={250} cy={250} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
-  <circle cx={390} cy={250} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
-  <circle cx={550} cy={250} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
-  <circle cx={550} cy={348} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
-  {/* Círculos de MBR top y MBR bottom, siempre detrás de las animaciones */}
-  <circle cx={615} cy={222} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} /> {/* MBR top */}
-  <circle cx={615} cy={287} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} /> {/* MBR bottom */}
-  {/* Círculo del nodo IP join - solo visible cuando showri es true */}
-  {showri && <circle cx={390} cy={349} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />}
-
+      {/* Círculos de los nodos principales, siempre detrás de las animaciones */}
+      <circle cx={390} cy={115} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
+      <circle cx={550} cy={115} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
+      <circle cx={250} cy={250} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
+      <circle cx={390} cy={250} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
+      <circle cx={550} cy={250} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
+      <circle cx={550} cy={348} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />
+      {/* Círculos de MBR top y MBR bottom, siempre detrás de las animaciones */}
+      <circle cx={615} cy={222} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />{" "}
+      {/* MBR top */}
+      <circle cx={615} cy={287} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />{" "}
+      {/* MBR bottom */}
+      {/* Círculo del nodo IP join - solo visible cuando showri es true */}
+      {showri && <circle cx={390} cy={349} r={8} fill="#292524" stroke="#44403c" strokeWidth={2} />}
       {/* Path animado del bus de datos (verde/violeta según fase) - DESPUÉS para estar ENCIMA */}
       <animated.path
         d={path}
@@ -963,7 +962,6 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
         strokeDasharray={1}
         style={style}
       />
-
       {/* Efecto de brillo adicional para el bus de datos interno */}
       <animated.path
         d={path}
@@ -973,7 +971,6 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
         strokeDasharray={1}
         style={style}
       />
-
       {/* Path animado del bus de dirección (MBR→MAR) SIEMPRE visible y encima del gris */}
       <animated.path
         d={addressPath}

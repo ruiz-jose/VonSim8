@@ -999,13 +999,11 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 currentInstructionName === "ADD" ||
                 currentInstructionName === "SUB") &&
               sourceRegister === "ri" &&
-                (executeStageCounter === 3 || blBxToRiProcessed) && // Ampliada: también cuando blBxToRiProcessed es true
-                (
-                  // Indirecto puro: no es directo ni inmediato
-                  (!currentInstructionModeid && !currentInstructionModeri)
-                  // Indirecto-inmediato: es inmediato pero no directo
-                  || (currentInstructionModeid && !currentInstructionModeri)
-                );
+              (executeStageCounter === 3 || blBxToRiProcessed) && // Ampliada: también cuando blBxToRiProcessed es true
+              // Indirecto puro: no es directo ni inmediato
+              ((!currentInstructionModeid && !currentInstructionModeri) ||
+                // Indirecto-inmediato: es inmediato pero no directo
+                (currentInstructionModeid && !currentInstructionModeri));
 
             // Detectar si es un caso donde ri → MAR no debe contabilizar ciclo ni mostrarse
             // porque la dirección ya está almacenada en MAR (para operaciones de escritura
@@ -1707,7 +1705,6 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 currentInstructionOperands.length === 2 &&
                 /^\[[A-Z]{2}\]$/i.test(currentInstructionOperands[0]) &&
                 /^[0-9A-F]+h?$/i.test(currentInstructionOperands[1]);
-
 
               if (!isBLorBXToRi && !isIndirectImmediate) {
                 store.set(messageAtom, displayMessage);

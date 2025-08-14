@@ -5,7 +5,6 @@ export function DataLines() {
   const { devices } = useSimulation();
 
   const addressPath = [
-
     "M 645 349 H 800", // Comienza desde el borde derecho del registro MAR
     devices.pic && "M 725 349 V 770 H 450",
     devices.pio && "M 725 349 V 770 H 900",
@@ -40,8 +39,6 @@ export function DataLines() {
     <svg className="pointer-events-none absolute inset-0 z-[25] size-full">
       {/* Data lines */}
       <path className="fill-none stroke-stone-700 stroke-bus" strokeLinejoin="round" d={dataPath} />
-
-
 
       {/* Línea animada del bus de datos - usando path dinámico del spring */}
       <animated.path
