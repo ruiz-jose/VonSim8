@@ -3,6 +3,18 @@
  * This file exposes methods/state that the UI uses to interact with the simulator.
  */
 import { assemble } from "@vonsim/assembler";
+
+// Extend the Window type to include generateDataPath
+declare global {
+  interface Window {
+    generateDataPath?: (
+      from: string,
+      to: string,
+      instruction: string,
+      mode: string,
+    ) => void;
+  }
+}
 import { Byte } from "@vonsim/common/byte";
 import { ComputerState, EventGenerator, Simulator, SimulatorError } from "@vonsim/simulator";
 import { atom, useAtomValue } from "jotai";
@@ -1148,8 +1160,18 @@ async function startThread(generator: EventGenerator): Promise<void> {
                   blBxToRiProcessed = false; // También resetear esta bandera
                   blBxRegisterName = ""; // Limpiar el nombre almacenado
                 } else {
-                  // Caso especial para instrucciones ALU con direccionamiento directo e inmediato
-                  // cuando se copia MBR a id: preparar mensaje combinado id ← MBR; MAR ← ri
+                  // Para instrucciones aritméticas (ADD, SUB, CMP, AND, OR, XOR) con registro y memoria,
+                  // NO mostrar animación del bus (MBR → id), solo mostrar MBR → MAR como en MOV al, x
+                  if (
+                    ["ADD", "SUB", "CMP", "AND", "OR", "XOR"].includes(currentInstructionName) &&
+                    currentInstructionModeri && // registro-memoria
+                    !currentInstructionModeid &&
+                    sourceRegister === "ri"
+                  ) {
+                    // Solo mostrar MAR ← MBR, nunca MBR → id
+                    store.set(messageAtom, "Ejecución: MAR ← MBR");
+                    return; // Evita que se muestre cualquier animación de id
+                  }
                   if (idToMbrCombinedMessage) {
                     store.set(messageAtom, "Ejecución: id ← MBR |  MAR ← ri");
                     idToMbrCombinedMessage = false; // Reset the flag after use
