@@ -39,7 +39,7 @@ dataBus.addNode("SP", { position: [451, 309] });
 dataBus.addNode("IP", { position: [455, 349] }); // Más centrado visualmente respecto al registro IP
 dataBus.addNode("ri", { position: [455, 388] });
 dataBus.addNode("ri out", { position: [480, 388] }); // Nodo salida de ri
-dataBus.addNode("MAR", { position: [645, 349] }); // Movido más a la izquierda para centrar en el registro MAR
+dataBus.addNode("MAR", { position: [630, 349] }); // Movido más a la izquierda para centrar en el registro MAR
 dataBus.addNode("result", { position: [272, 115] });
 dataBus.addNode("NodoRegIn", { position: [390, 115] }); // Antes: [370, 115]
 dataBus.addNode("NodoRegOut", { position: [550, 115] }); // Nodo de unión para salidas de registros
@@ -830,7 +830,7 @@ export function generateMBRtoMARPath(): string {
   const mbrToBusJoin = [580, 250]; // mbr to bus join (punto donde sube al bus principal)
   const outrMbrJoin = [550, 250]; // outr mbr join (nodo central del bus)
   const marJoin2 = [550, 349]; // MAR join2
-  const mar = [645, 349]; // MAR (centrado en el registro MAR)
+  const mar = [630, 349]; // MAR (centrado en el registro MAR)
 
   return `M ${mbrBottom[0]} ${mbrBottom[1]} L ${mbrBottomExit[0]} ${mbrBottomExit[1]} L ${mbrToBusHorizontal[0]} ${mbrToBusHorizontal[1]} L ${mbrToBusJoin[0]} ${mbrToBusJoin[1]} L ${outrMbrJoin[0]} ${outrMbrJoin[1]} L ${marJoin2[0]} ${marJoin2[1]} L ${mar[0]} ${mar[1]}`;
 }
