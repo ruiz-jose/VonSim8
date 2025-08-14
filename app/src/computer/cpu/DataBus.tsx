@@ -544,7 +544,7 @@ export function generateDataPath(
     // Caso específico: MBR → id (ruta completa con id join alineado)
     // Ruta: MBR bottom → MBR → mbr reg join → NodoRegIn → id join → id (salida desde parte inferior)
     console.log("🎯 Caso específico MBR → id detectado");
-    path = ["MBR bottom", "MBR", "mbr reg join", "NodoRegIn", "id join", "id"];
+    //path = ["MBR bottom", "MBR", "mbr reg join", "NodoRegIn", "id join", "id"];
     console.log("🎯 Path definido para MBR → id:", path);
   } else if (normalizedFrom === "MBR" && normalizedTo === "BL") {
     // Caso especial: MBR → BL, animación parte desde MBR bottom y sigue el bus gris horizontal y vertical hasta BL
