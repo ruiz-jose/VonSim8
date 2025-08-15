@@ -2276,7 +2276,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
               // Para instrucciones MOV de registro a memoria - paso 5
               // Cuando el registro origen se copia al MBR para escribir en memoria
               currentInstructionName === "MOV" &&
-              (executeStageCounter === 5 || executeStageCounter === 3) &&
+              (executeStageCounter === 5 || executeStageCounter === 6 || executeStageCounter === 3) &&
               ["AL", "BL", "CL", "DL", "AH", "BH", "CH", "DH"].includes(sourceRegister) &&
               !currentInstructionModeri && // No es direccionamiento directo
               !currentInstructionModeid // No es direccionamiento inmediato
