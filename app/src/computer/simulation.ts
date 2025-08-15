@@ -849,12 +849,14 @@ async function startThread(generator: EventGenerator): Promise<void> {
           if (event.value.type === "cpu:halt") {
             // Para HLT, incrementar a executeStageCounter = 4 antes de mostrar el mensaje
             // ya que los pasos 1-3 fueron para captación y el paso 4 es la ejecución de HLT
-            executeStageCounter = 4;
+            //executeStageCounter = 4;
+            console.log("🔄 fetchStageCounter", fetchStageCounter);
             cycleCount++;
-            currentInstructionCycleCount++;
-            store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+
             store.set(cycleCountAtom, cycleCount);
             store.set(messageAtom, "Ejecución: Detenido");
+            currentInstructionCycleCount++;
+            store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
             console.log(
               "🛑 HLT ejecutado - executeStageCounter establecido a 4, cycleCount:",
               cycleCount,
