@@ -3,18 +3,6 @@
  * This file exposes methods/state that the UI uses to interact with the simulator.
  */
 import { assemble } from "@vonsim/assembler";
-
-// Extend the Window type to include generateDataPath
-declare global {
-  interface Window {
-    generateDataPath?: (
-      from: string,
-      to: string,
-      instruction: string,
-      mode: string,
-    ) => void;
-  }
-}
 import { Byte } from "@vonsim/common/byte";
 import { ComputerState, EventGenerator, Simulator, SimulatorError } from "@vonsim/simulator";
 import { atom, useAtomValue } from "jotai";
@@ -53,6 +41,14 @@ import { resetScreenState } from "./screen/state";
 import { anim, pauseAllAnimations, resumeAllAnimations, stopAllAnimations } from "./shared/animate";
 import { resetSwitchesState, switchesAtom } from "./switches/state";
 import { resetTimerState } from "./timer/state";
+
+// Extend the Window type to include generateDataPath
+declare global {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+  interface Window {
+    generateDataPath?: (from: string, to: string, instruction: string, mode: string) => void;
+  }
+}
 
 const simulator = new Simulator();
 
@@ -2278,7 +2274,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
               // Para instrucciones MOV de registro a memoria - paso 5
               // Cuando el registro origen se copia al MBR para escribir en memoria
               currentInstructionName === "MOV" &&
-              (executeStageCounter === 5 || executeStageCounter === 6 || executeStageCounter === 3) &&
+              (executeStageCounter === 5 ||
+                executeStageCounter === 6 ||
+                executeStageCounter === 3) &&
               ["AL", "BL", "CL", "DL", "AH", "BH", "CH", "DH"].includes(sourceRegister) &&
               !currentInstructionModeri && // No es direccionamiento directo
               !currentInstructionModeid // No es direccionamiento inmediato
