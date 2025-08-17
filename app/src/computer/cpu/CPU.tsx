@@ -23,13 +23,15 @@ function IPPlusOneAnimation() {
       setIsVisible(true);
       setAnimationKey(prev => prev + 1);
 
-      // Hide the animation after the same duration as updateRegisterWithGlow (~3 seconds)
+      // Usar la velocidad de animación global (executionUnit)
+      const settings = getSettings();
+      const animationDuration = settings.executionUnit * 10;
+
       setTimeout(() => {
         setIsVisible(false);
-      }, 3000);
+      }, animationDuration);
     };
 
-    // Listen for IP register updates
     window.addEventListener("ip-register-update", handleIPUpdate);
 
     return () => {
@@ -50,15 +52,15 @@ function IPPlusOneAnimation() {
           }
           30% {
             opacity: 1;
-            transform: translateY(-30px);
+            transform: translateY(-20px);
           }
           70% {
             opacity: 1;
-            transform: translateY(-30px);
+            transform: translateY(-20px);
           }
           100% {
             opacity: 0;
-            transform: translateY(-50px);
+            transform: translateY(-40px);
           }
         }
       `}</style>
@@ -68,12 +70,12 @@ function IPPlusOneAnimation() {
         <div
           key={animationKey}
           className={clsx(
-            "pointer-events-none absolute left-[435px] top-[342px]",
+            "pointer-events-none absolute left-[435px] top-[332px]",
             "font-mono text-xs font-bold",
           )}
           style={{
             color: "#ff6347",
-            animation: "slideUpAndFade 3s ease-out forwards",
+            animation: `slideUpAndFade ${getSettings().executionUnit *10}ms ease-out forwards`,
           }}
         >
           +1
