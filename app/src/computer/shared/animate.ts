@@ -53,6 +53,10 @@ export async function anim(
   },
 ): Promise<unknown> {
   const status = store.get(simulationAtom);
+  if (!getSettings().animations) {
+    // Si las animaciones están deshabilitadas, retorna una promesa resuelta
+    return Promise.resolve();
+  }
 
   // Don't run if simulation is stopped
   if (status.type === "stopped") return null;
@@ -265,6 +269,7 @@ export async function updateRegisterWithGlow(key: RegisterKey) {
     if (key === "cpu.MBR" && window.__nextTransferMBRtoIP) {
       return;
     }
+
     const settings = getSettings();
     const registerColor = getRegisterColor(key);
 
@@ -519,3 +524,5 @@ declare global {
     __nextTransferMBRtoIP?: boolean;
   }
 }
+export { getSettings };
+

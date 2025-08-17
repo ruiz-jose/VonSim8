@@ -11,6 +11,7 @@ import { Control } from "./Control";
 import { DataBus } from "./DataBus";
 import type { PhysicalRegister } from "./state";
 import { registerAtoms, showSPAtom } from "./state";
+import { getSettings } from "@/lib/settings";
 
 // Add IPPlusOneAnimation component
 function IPPlusOneAnimation() {
@@ -36,7 +37,8 @@ function IPPlusOneAnimation() {
     };
   }, []);
 
-  if (!isVisible) return null;
+  // No mostrar si las animaciones están desactivadas
+  if (!isVisible ) return null;
 
   return (
     <>
@@ -61,20 +63,22 @@ function IPPlusOneAnimation() {
         }
       `}</style>
 
-      {/* +1 Text */}
-      <div
-        key={animationKey}
-        className={clsx(
-          "pointer-events-none absolute left-[425px] top-[342px]",
-          "font-mono text-lg font-bold",
-        )}
-        style={{
-          color: "#ff6347",
-          animation: "slideUpAndFade 3s ease-out forwards",
-        }}
-      >
-        +1
-      </div>
+      {/* +1 Text solo si las animaciones están activadas */}
+      {getSettings().animations && (
+        <div
+          key={animationKey}
+          className={clsx(
+            "pointer-events-none absolute left-[435px] top-[342px]",
+            "font-mono text-xs font-bold",
+          )}
+          style={{
+            color: "#ff6347",
+            animation: "slideUpAndFade 3s ease-out forwards",
+          }}
+        >
+          +1
+        </div>
+      )}
     </>
   );
 }
