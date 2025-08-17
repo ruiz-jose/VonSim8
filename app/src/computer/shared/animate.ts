@@ -525,4 +525,3 @@ declare global {
   }
 }
 export { getSettings };
-

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import { Register } from "@/computer/shared/Register";
 import { useTranslate } from "@/lib/i18n";
+import { getSettings } from "@/lib/settings";
 
 import { AddressBus } from "./AddressBus";
 import { ALU } from "./ALU";
@@ -11,7 +12,6 @@ import { Control } from "./Control";
 import { DataBus } from "./DataBus";
 import type { PhysicalRegister } from "./state";
 import { registerAtoms, showSPAtom } from "./state";
-import { getSettings } from "@/lib/settings";
 
 // Add IPPlusOneAnimation component
 function IPPlusOneAnimation() {
@@ -40,7 +40,7 @@ function IPPlusOneAnimation() {
   }, []);
 
   // No mostrar si las animaciones están desactivadas
-  if (!isVisible ) return null;
+  if (!isVisible) return null;
 
   return (
     <>
@@ -75,7 +75,7 @@ function IPPlusOneAnimation() {
           )}
           style={{
             color: "#ff6347",
-            animation: `slideUpAndFade ${getSettings().executionUnit *10}ms ease-out forwards`,
+            animation: `slideUpAndFade ${getSettings().executionUnit * 10}ms ease-out forwards`,
           }}
         >
           +1

@@ -89,9 +89,7 @@ const drawDataPath = (from: DataRegister, to: DataRegister, instruction: string,
     // Usar la configuración de velocidad de animación
     const settings = getSettings();
 
-    const duration = settings.animations
-      ? settings.executionUnit
-      : 1;
+    const duration = settings.animations ? settings.executionUnit : 1;
 
     return anim(
       [
@@ -116,9 +114,7 @@ const drawSimultaneousLeftRightPath = (from: DataRegister, instruction: string, 
 
     // Usar la configuración de velocidad de animación
     const settings = getSettings();
-    const duration = settings.animations
-      ? settings.executionUnit
-      : 1;
+    const duration = settings.animations ? settings.executionUnit : 1;
 
     return anim(
       [
