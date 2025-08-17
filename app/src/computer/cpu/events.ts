@@ -88,9 +88,9 @@ const drawDataPath = (from: DataRegister, to: DataRegister, instruction: string,
 
     // Usar la configuración de velocidad de animación
     const settings = getSettings();
-    const MAX_EXECUTION_UNIT_MS = 250;
+
     const duration = settings.animations
-      ? Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS)
+      ? settings.executionUnit
       : 1;
 
     return anim(
@@ -116,9 +116,8 @@ const drawSimultaneousLeftRightPath = (from: DataRegister, instruction: string, 
 
     // Usar la configuración de velocidad de animación
     const settings = getSettings();
-    const MAX_EXECUTION_UNIT_MS = 250;
     const duration = settings.animations
-      ? Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS)
+      ? settings.executionUnit
       : 1;
 
     return anim(
@@ -335,11 +334,12 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
 
       // AHORA mostrar el texto del resultado después de actualizar FLAGS
       console.log("💜 Mostrando texto del resultado después de actualizar FLAGS...");
-      showALUResultText();
+      if (settings.animations) {
+        showALUResultText();
 
-      // Pequeña pausa para que se vea el texto
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
+        // Pequeña pausa para que se vea el texto
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
       // Ocultar el texto y el bus simultáneamente
       await Promise.all([
         anim({ key: "cpu.alu.results.opacity", to: 0 }, { duration: 1, easing: "easeInSine" }),
@@ -1070,13 +1070,15 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
           mode,
         });
         // Mostrar SIEMPRE el bus de direcciones (azul) para MBR → MAR aquí
+        const settings = getSettings();
+        const duration = settings.animations ? settings.executionUnit : 1;
         await anim(
           [
             { key: "cpu.internalBus.address.path", from: generateMBRtoMARPath() },
             { key: "cpu.internalBus.address.opacity", from: 1 },
             { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
           ],
-          { duration: 300, easing: "easeInOutSine", forceMs: true },
+          { duration, easing: "easeInOutSine", forceMs: true },
         );
       } else if (["AL", "BL", "CL", "DL", "ri", "id"].includes(normalizedRegister)) {
         // Para instrucciones ADD, SUB, CMP con memoria, mostrar animación MBR → ri o MBR → id
