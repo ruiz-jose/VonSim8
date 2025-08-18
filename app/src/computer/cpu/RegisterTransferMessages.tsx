@@ -335,21 +335,15 @@ export function RegisterTransferMessages() {
         <div className="rounded-t-xl border-b-2 border-stone-600/50 bg-gradient-to-r from-stone-700 to-stone-800 px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="relative">
-                <span className="animate-spin-slow text-xl">🔄</span>
-                <div className="absolute -right-1 -top-1 size-2 rounded-full bg-green-400"></div>
-              </div>
+              {/* Eliminado icono a la izquierda del título */}
               <div>
-                <h3 className="bg-gradient-to-r from-stone-200 to-stone-300 bg-clip-text text-sm font-bold text-transparent">
-                  Ciclo de Instrucción
-                </h3>
-                <p className="text-xs text-stone-400">Seguimiento paso a paso</p>
+                <span className="text-sm font-bold uppercase tracking-wide text-mantis-400">
+                  Ciclo de instrucción
+                </span>
+                {/* Eliminado texto 'Seguimiento paso a paso' */}
               </div>
             </div>
-            <div className="flex items-center gap-2 rounded-full border border-green-400/30 bg-gradient-to-r from-green-500/20 to-emerald-500/20 px-3 py-1.5">
-              <div className="size-2 rounded-full bg-green-400 shadow-lg shadow-green-400/50"></div>
-              <span className="text-xs font-medium text-green-300">Activo</span>
-            </div>
+            {/* Eliminado el mensaje de 'Activo' del header, se moverá al pie */}
           </div>
         </div>
 
@@ -472,8 +466,8 @@ export function RegisterTransferMessages() {
               Ciclos: {store.get(currentInstructionCycleCountAtom)}
             </span>
             <span className="flex items-center gap-2">
-              <span className="size-2 rounded-full bg-green-400"></span>
-              Monitor en tiempo real
+              <span className="size-2 rounded-full bg-green-400 shadow-lg shadow-green-400/50"></span>
+              <span className="text-xs font-medium text-green-300">Activo</span>
             </span>
           </div>
         </div>
