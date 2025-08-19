@@ -1119,6 +1119,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
                   // para que aparezca como ciclo 4 (después de MBR ← read que fue ciclo 3)
                   cycleCount++;
                   currentInstructionCycleCount++;
+                  store.set(messageAtom, `Ejecución: MAR ← ${blBxRegisterName}`);
                   store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
                   console.log(
                     "🔢 Ciclo incrementado ANTES de mostrar MAR ← BL/BX - cycleCount:",
@@ -1129,7 +1130,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
                   // Marcar que ya se contabilizó el ciclo para evitar doble contabilización
                   simultaneousCycleCounted = true;
                   // Ahora mostrar el mensaje usando el registro almacenado
-                  store.set(messageAtom, `Ejecución: MAR ← ${blBxRegisterName}`);
+
                   mbridirmar = false;
                   blBxToRiProcessed = false; // También resetear esta bandera
                   blBxRegisterName = ""; // Limpiar el nombre almacenado
