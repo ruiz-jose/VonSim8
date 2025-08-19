@@ -850,7 +850,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
             cycleCount++;
 
             store.set(cycleCountAtom, cycleCount);
-            store.set(messageAtom, prev => prev ? "Ejecución: Detenido" : "Ejecución: Detenido");
+            store.set(messageAtom, prev => (prev ? "Ejecución: Detenido" : "Ejecución: Detenido"));
             currentInstructionCycleCount++;
             store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
             console.log(

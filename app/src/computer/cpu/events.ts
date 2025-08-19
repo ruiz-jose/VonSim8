@@ -90,6 +90,9 @@ const drawDataPath = (from: DataRegister, to: DataRegister, instruction: string,
     const settings = getSettings();
 
     const duration = settings.animations ? settings.executionUnit : 1;
+    console.log("🔧 settings.animations:", settings.animations);
+    console.log("🔧 settings.executionUnit:", settings.executionUnit);
+    console.log("🔧 Duración de la animación:", duration);
 
     return anim(
       [
