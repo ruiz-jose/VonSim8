@@ -804,6 +804,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
         store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
         // Resetear la bandera de pausa al iniciar nueva instrucción
         shouldPauseAfterEvent = false;
+        cycleCount = 0; // Reinicia el contador de ciclos al iniciar cada instrucción
         console.log(
           "🔄 Nueva instrucción iniciada:",
           currentInstructionName,
