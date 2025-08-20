@@ -1615,7 +1615,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
                     : sourceRegister;
               // Para instrucciones aritméticas, el formato correcto es: MBR ADD id
               // No importa el orden de sourceRegister y fuenteALU, siempre debe ser MBR [operación] id
-              MBRALU = `MBR ${currentInstructionName} id` + "; update(FLAGS)";
+              MBRALU = `MBR ${currentInstructionName} ${currentInstructionOperands[1]}` + "; update(FLAGS)";
             }
             if (currentInstructionName === "CMP" && String(destRegister) === "right") {
               fuenteALU = sourceRegister;
