@@ -815,7 +815,9 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
           currentInstructionName === "XOR") &&
         currentExecuteStageCounter === 4; // Paso 6 según el log
 
-      if (isALUIndirectImmediateStep6) {
+      if (isALUIndirectImmediateStep6 &&
+          mode === "mem<-imd" // Solo para modo inmediato
+        ) {
         console.log(`🎯 Caso especial detectado: ${currentInstructionName} [BL], n - paso 6`);
         console.log("🎬 Ejecutando animaciones simultáneas: BL → MAR + MBR → ID");
 
@@ -935,9 +937,11 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         } else {
           console.log("⏭️ Animación de bus y registro MAR diferida para ri → MAR simultáneo");
         }
-        // Aún actualizar el valor del MAR sin animación (si no es simultáneo)
+        // Actualizar el valor del MAR y mostrar destello aunque se omita la animación de bus
         if (!isRiToMARSimultaneous) {
           store.set(MARAtom, store.get(registerAtoms[regNorm]));
+          await activateRegister("cpu.MAR", colors.blue[500]);
+          await deactivateRegister("cpu.MAR");
         }
       }
 
