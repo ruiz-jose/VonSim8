@@ -287,7 +287,14 @@ function generateRegisterTransferMessage(
   }
 
   // Casos especiales para instrucciones aritméticas (ADD, SUB, CMP, AND, OR, XOR)
-  if (["ADD", "SUB", "CMP", "AND", "OR", "XOR"].includes(name) && sourceRegister === "ri") {
+  if (["ADD", "SUB", "CMP", "AND", "OR", "XOR"].includes(name) && sourceRegister === "ri" ) {
+    if (executeStage===5) {
+          return {
+          message: "",
+          shouldDisplay: false,
+          shouldPause: false,
+          };
+    }
     return {
       message: "Ejecución: MAR ← MBR",
       shouldDisplay: true,
@@ -1036,6 +1043,11 @@ async function startThread(generator: EventGenerator): Promise<void> {
                   !currentInstructionModeri &&
                   currentInstructionModeid));
 
+            // Declarar isArithmeticRegToDirectStep5 antes de su uso
+            const isArithmeticRegToDirectStep5 =
+              (["ADD", "SUB", "CMP", "AND", "OR", "XOR"].includes(currentInstructionName)) &&
+              executeStageCounter === 5;
+
             // Usar las nuevas funciones auxiliares para generar mensajes
             const instructionContext = createInstructionContext();
 
@@ -1088,6 +1100,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
                   );
                 }
               }
+
 
               // Manejar casos especiales que requieren lógica adicional
               // Priorizar el mensaje especial para MOV x, 5 (directo-inmediato) en ciclo 5
@@ -1169,7 +1182,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
                     sourceRegister === "ri"
                   ) {
                     // Solo mostrar MAR ← MBR, nunca MBR → id
-                    store.set(messageAtom, "Ejecución: MAR ← MBR");
+                    if (!isArithmeticRegToDirectStep5) {
+                      store.set(messageAtom, "Ejecución: MAR ← MBR");
+                    }
                     return; // Evita que se muestre cualquier animación de id
                   }
                   if (idToMbrCombinedMessage) {
@@ -1179,6 +1194,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
                     store.set(messageAtom, `Ejecución: id ← MBR | MAR ← IP`);
                   }
                 }
+
               } else if (
                 sourceRegister === "ri" &&
                 currentInstructionName === "MOV" &&
@@ -1186,6 +1202,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
               ) {
                 // Caso especial para MOV con direccionamiento directo: copiar directamente del MBR al MAR
                 store.set(messageAtom, "Ejecución: MAR ← MBR");
+
               } else if (
                 // Caso especial para instrucciones ALU con direccionamiento indirecto e inmediato
                 // cuando se copia el contenido de BL al MAR - paso 6 de ADD [BL], 6
@@ -1203,8 +1220,10 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 !isRiToMARSkipCycle // NUEVA CONDICIÓN: Solo mostrar si NO se debe omitir
               ) {
                 // Mensaje simultáneo: MAR ← BL | id ← MBR
+
                 store.set(messageAtom, "Ejecución: MAR ← BL | id ← MBR");
                 console.log("🎯 Paso 6 de ADD [BL], 6 - Mensaje simultáneo: MAR ← BL | id ← MBR");
+
               } else if (isRiToMARSkipCycle && sourceRegister === "ri") {
                 // Caso especial: ri → MAR se debe omitir completamente (no mostrar mensaje ni contabilizar)
                 console.log(
@@ -1238,13 +1257,17 @@ async function startThread(generator: EventGenerator): Promise<void> {
             // PERO cuando blBxToRiProcessed era true, ya se contabilizó el ciclo arriba antes de mostrar el mensaje
             // También skip cuando ri → MAR en instrucciones aritméticas en etapas avanzadas
             // Y skip cuando ya se contabilizó para el mensaje simultáneo
+            // Nueva lógica: instrucciones aritméticas fuente registro y destino directo en mar.set y executeStageCounter === 5
+
             const skipCycleCount =
-              isIndirectInstruction || isRiToMARSkipCycle || simultaneousCycleCounted;
+              isIndirectInstruction || isRiToMARSkipCycle || simultaneousCycleCounted || isArithmeticRegToDirectStep5;
 
             if (!skipCycleCount) {
               cycleCount++;
               currentInstructionCycleCount++;
-              store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+              if (!isArithmeticRegToDirectStep5) {
+                store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+              }
               console.log(
                 "🔢 Ciclo contabilizado en cpu:mar.set - cycleCount:",
                 cycleCount,
@@ -1259,6 +1282,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 isIndirectInstruction,
                 "isRiToMARSkipCycle:",
                 isRiToMARSkipCycle,
+                "isArithmeticRegToDirectStep5:",
+                isArithmeticRegToDirectStep5,
                 "(dirección ya almacenada en MAR)",
               );
             }
@@ -1818,7 +1843,21 @@ async function startThread(generator: EventGenerator): Promise<void> {
               currentInstructionName === "OR" ||
               currentInstructionName === "XOR"
             ) {
-              messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";
+              // Condición especial: ADD/SUB/etc [mem], reg en ciclo 6 (escritura)
+              if (
+                !currentInstructionModeri && // No es directo
+                !currentInstructionModeid && // No es inmediato
+                executeStageCounter === 6 &&
+                currentInstructionOperands.length === 2 &&
+                currentInstructionOperands[0].startsWith("[") &&
+                currentInstructionOperands[0].endsWith("]") &&
+                /^[0-9A-F]+h?$/i.test(currentInstructionOperands[0].replace(/\[|\]/g, "")) &&
+                /^[A-Z]+$/i.test(currentInstructionOperands[1]) // El segundo operando es registro
+              ) {
+                messageReadWrite = "Ejecución: write(Memoria[MAR]) ← MBR";
+              } else {
+                messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";
+              }
             }
 
             if (currentInstructionName === "RET") {
