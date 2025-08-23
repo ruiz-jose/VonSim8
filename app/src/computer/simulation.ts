@@ -953,7 +953,6 @@ async function startThread(generator: EventGenerator): Promise<void> {
             store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
             executeStageCounter++;
           }
-
           if (event.value.type === "cpu:mar.set") {
             const sourceRegister = event.value.register;
 
@@ -1854,8 +1853,10 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 /^[0-9A-F]+h?$/i.test(currentInstructionOperands[0].replace(/\[|\]/g, "")) &&
                 /^[A-Z]+$/i.test(currentInstructionOperands[1]) // El segundo operando es registro
               ) {
+               
                 messageReadWrite = "Ejecución: write(Memoria[MAR]) ← MBR";
               } else {
+                console.log("hola2");
                 messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";
               }
             }
@@ -1929,30 +1930,6 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 currentInstructionName === "OR" ||
                 currentInstructionName === "XOR") &&
               currentInstructionModeid &&
-              !currentInstructionModeri
-            ) {
-              // Caso general para instrucciones ALU con direccionamiento indirecto e inmediato
-              // Verificar si la última operación de memoria fue de escritura
-              if (lastMemoryOperationWasWrite) {
-                // Es escritura del resultado a memoria (writeback)
-                messageReadWrite = "Ejecución: write(Memoria[MAR]) ← MBR";
-                console.log(
-                  "🎯 ADD [BL], 2 - Escritura del resultado a memoria:",
-                  messageReadWrite,
-                );
-              } else {
-                // Es lectura del operando de memoria (fetch-operands)
-                messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";
-                console.log("🎯 ADD [BL], 2 - Lectura del operando de memoria:", messageReadWrite);
-              }
-            } else if (
-              (currentInstructionName === "ADD" ||
-                currentInstructionName === "SUB" ||
-                currentInstructionName === "CMP" ||
-                currentInstructionName === "AND" ||
-                currentInstructionName === "OR" ||
-                currentInstructionName === "XOR") &&
-              currentInstructionModeid &&
               currentInstructionModeri &&
               executeStageCounter === 8
             ) {
@@ -1981,8 +1958,10 @@ async function startThread(generator: EventGenerator): Promise<void> {
               !currentInstructionModeid &&
               !currentInstructionModeri
             ) {
+              if (!lastMemoryOperationWasWrite) {
               // Para otras instrucciones ALU que no tengan el caso específico
               messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";
+              }
             }
             let ContinuarSinGuardar = false;
             // Identificar si este bus:reset es el último paso antes del cycle.end
