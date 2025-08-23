@@ -815,9 +815,10 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
           currentInstructionName === "XOR") &&
         currentExecuteStageCounter === 4; // Paso 6 según el log
 
-      if (isALUIndirectImmediateStep6 &&
-          mode === "mem<-imd" // Solo para modo inmediato
-        ) {
+      if (
+        isALUIndirectImmediateStep6 &&
+        mode === "mem<-imd" // Solo para modo inmediato
+      ) {
         console.log(`🎯 Caso especial detectado: ${currentInstructionName} [BL], n - paso 6`);
         console.log("🎬 Ejecutando animaciones simultáneas: BL → MAR + MBR → ID");
 

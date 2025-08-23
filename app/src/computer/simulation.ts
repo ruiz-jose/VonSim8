@@ -287,13 +287,13 @@ function generateRegisterTransferMessage(
   }
 
   // Casos especiales para instrucciones aritméticas (ADD, SUB, CMP, AND, OR, XOR)
-  if (["ADD", "SUB", "CMP", "AND", "OR", "XOR"].includes(name) && sourceRegister === "ri" ) {
-    if (executeStage===5) {
-          return {
-          message: "",
-          shouldDisplay: false,
-          shouldPause: false,
-          };
+  if (["ADD", "SUB", "CMP", "AND", "OR", "XOR"].includes(name) && sourceRegister === "ri") {
+    if (executeStage === 5) {
+      return {
+        message: "",
+        shouldDisplay: false,
+        shouldPause: false,
+      };
     }
     return {
       message: "Ejecución: MAR ← MBR",
@@ -1044,7 +1044,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
 
             // Declarar isArithmeticRegToDirectStep5 antes de su uso
             const isArithmeticRegToDirectStep5 =
-              (["ADD", "SUB", "CMP", "AND", "OR", "XOR"].includes(currentInstructionName)) &&
+              ["ADD", "SUB", "CMP", "AND", "OR", "XOR"].includes(currentInstructionName) &&
               executeStageCounter === 5;
 
             // Usar las nuevas funciones auxiliares para generar mensajes
@@ -1099,7 +1099,6 @@ async function startThread(generator: EventGenerator): Promise<void> {
                   );
                 }
               }
-
 
               // Manejar casos especiales que requieren lógica adicional
               // Priorizar el mensaje especial para MOV x, 5 (directo-inmediato) en ciclo 5
@@ -1193,7 +1192,6 @@ async function startThread(generator: EventGenerator): Promise<void> {
                     store.set(messageAtom, `Ejecución: id ← MBR | MAR ← IP`);
                   }
                 }
-
               } else if (
                 sourceRegister === "ri" &&
                 currentInstructionName === "MOV" &&
@@ -1201,7 +1199,6 @@ async function startThread(generator: EventGenerator): Promise<void> {
               ) {
                 // Caso especial para MOV con direccionamiento directo: copiar directamente del MBR al MAR
                 store.set(messageAtom, "Ejecución: MAR ← MBR");
-
               } else if (
                 // Caso especial para instrucciones ALU con direccionamiento indirecto e inmediato
                 // cuando se copia el contenido de BL al MAR - paso 6 de ADD [BL], 6
@@ -1222,7 +1219,6 @@ async function startThread(generator: EventGenerator): Promise<void> {
 
                 store.set(messageAtom, "Ejecución: MAR ← BL | id ← MBR");
                 console.log("🎯 Paso 6 de ADD [BL], 6 - Mensaje simultáneo: MAR ← BL | id ← MBR");
-
               } else if (isRiToMARSkipCycle && sourceRegister === "ri") {
                 // Caso especial: ri → MAR se debe omitir completamente (no mostrar mensaje ni contabilizar)
                 console.log(
@@ -1259,7 +1255,10 @@ async function startThread(generator: EventGenerator): Promise<void> {
             // Nueva lógica: instrucciones aritméticas fuente registro y destino directo en mar.set y executeStageCounter === 5
 
             const skipCycleCount =
-              isIndirectInstruction || isRiToMARSkipCycle || simultaneousCycleCounted || isArithmeticRegToDirectStep5;
+              isIndirectInstruction ||
+              isRiToMARSkipCycle ||
+              simultaneousCycleCounted ||
+              isArithmeticRegToDirectStep5;
 
             if (!skipCycleCount) {
               cycleCount++;
@@ -1639,7 +1638,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
                     : sourceRegister;
               // Para instrucciones aritméticas, el formato correcto es: MBR ADD id
               // No importa el orden de sourceRegister y fuenteALU, siempre debe ser MBR [operación] id
-              MBRALU = `MBR ${currentInstructionName} ${currentInstructionOperands[1]}` + "; update(FLAGS)";
+              MBRALU =
+                `MBR ${currentInstructionName} ${currentInstructionOperands[1]}` +
+                "; update(FLAGS)";
             }
             if (currentInstructionName === "CMP" && String(destRegister) === "right") {
               fuenteALU = sourceRegister;
@@ -1853,7 +1854,6 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 /^[0-9A-F]+h?$/i.test(currentInstructionOperands[0].replace(/\[|\]/g, "")) &&
                 /^[A-Z]+$/i.test(currentInstructionOperands[1]) // El segundo operando es registro
               ) {
-               
                 messageReadWrite = "Ejecución: write(Memoria[MAR]) ← MBR";
               } else {
                 console.log("hola2");
@@ -1959,8 +1959,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
               !currentInstructionModeri
             ) {
               if (!lastMemoryOperationWasWrite) {
-              // Para otras instrucciones ALU que no tengan el caso específico
-              messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";
+                // Para otras instrucciones ALU que no tengan el caso específico
+                messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";
               }
             }
             let ContinuarSinGuardar = false;
