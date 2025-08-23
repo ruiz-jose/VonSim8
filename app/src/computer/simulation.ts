@@ -1856,7 +1856,6 @@ async function startThread(generator: EventGenerator): Promise<void> {
               ) {
                 messageReadWrite = "Ejecución: write(Memoria[MAR]) ← MBR";
               } else {
-                console.log("hola2");
                 messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";
               }
             }
@@ -1895,15 +1894,15 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 currentInstructionName === "XOR") &&
               currentInstructionModeid &&
               !currentInstructionModeri &&
-              executeStageCounter === 7
+              executeStageCounter === 5
             ) {
               // Para instrucciones ALU con direccionamiento indirecto e inmediato en el paso 7 (lectura del operando de memoria)
               // Este paso solo trae el operando de memoria sin incrementar el IP
-              messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";
-              console.log(
-                "🎯 Paso 7 ADD [BL], 2 - Estableciendo mensaje sin incremento IP:",
-                messageReadWrite,
-              );
+              if (lastMemoryOperationWasWrite) {
+                messageReadWrite = "Ejecución: write(Memoria[MAR]) ← MBR";
+              } else {
+                messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";
+              }
             } else if (
               (currentInstructionName === "ADD" ||
                 currentInstructionName === "SUB" ||
@@ -1958,8 +1957,9 @@ async function startThread(generator: EventGenerator): Promise<void> {
               !currentInstructionModeid &&
               !currentInstructionModeri
             ) {
-              if (!lastMemoryOperationWasWrite) {
-                // Para otras instrucciones ALU que no tengan el caso específico
+              if (lastMemoryOperationWasWrite) {
+                messageReadWrite = "Ejecución: write(Memoria[MAR]) ← MBR";
+              } else {
                 messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";
               }
             }
@@ -1988,20 +1988,12 @@ async function startThread(generator: EventGenerator): Promise<void> {
               }
               // Direccionamiento indirecto (modeRi = false, modeId = false): último paso en executeStageCounter === 5
               else if (
-                !currentInstructionModeri &&
                 !currentInstructionModeid &&
                 executeStageCounter === 5
               ) {
                 isLastStepBeforeCycleEnd = true;
               }
-              // Direccionamiento indirecto con inmediato (ADD [BL], 2): último paso en executeStageCounter === 9
-              else if (
-                !currentInstructionModeri &&
-                currentInstructionModeid &&
-                executeStageCounter === 9
-              ) {
-                isLastStepBeforeCycleEnd = true;
-              }
+
               // Direccionamiento directo con inmediato (ADD [04], 02h): último paso en executeStageCounter === 8
               else if (
                 currentInstructionModeri &&
