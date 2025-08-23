@@ -1987,10 +1987,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 isLastStepBeforeCycleEnd = true;
               }
               // Direccionamiento indirecto (modeRi = false, modeId = false): último paso en executeStageCounter === 5
-              else if (
-                !currentInstructionModeid &&
-                executeStageCounter === 5
-              ) {
+              else if (!currentInstructionModeid && executeStageCounter === 5) {
                 isLastStepBeforeCycleEnd = true;
               }
 
