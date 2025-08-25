@@ -34,8 +34,8 @@ dataBus.addNode("AL", { position: [455, 45] }); // Ajustado para el centro del r
 dataBus.addNode("BL", { position: [455, 85] }); // Ajustado para el centro del registro de 8 bits
 dataBus.addNode("CL", { position: [455, 125] }); // Ajustado para el centro del registro de 8 bits
 dataBus.addNode("DL", { position: [455, 165] }); // Ajustado para el centro del registro de 8 bits
-dataBus.addNode("id", { position: [451, 205] });
-dataBus.addNode("SP", { position: [451, 309] });
+dataBus.addNode("id", { position: [455, 205] });
+dataBus.addNode("SP", { position: [455, 309] });
 dataBus.addNode("IP", { position: [455, 349] }); // Más centrado visualmente respecto al registro IP
 dataBus.addNode("ri", { position: [455, 388] });
 dataBus.addNode("ri out", { position: [480, 388] }); // Nodo salida de ri
