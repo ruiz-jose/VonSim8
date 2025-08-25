@@ -544,8 +544,22 @@ export function generateDataPath(
     // Caso específico: MBR → id (ruta completa con id join alineado)
     // Ruta: MBR bottom → MBR → mbr reg join → NodoRegIn → id join → id (salida desde parte inferior)
     console.log("🎯 Caso específico MBR → id detectado");
-    //path = ["MBR bottom", "MBR", "mbr reg join", "NodoRegIn", "id join", "id"];
-    console.log("🎯 Path definido para MBR → id:", path);
+    const pathNodes = [
+      "MBR bottom",
+      "MBR",
+      "mbr reg join",
+      "NodoRegIn",
+      "id join",
+      "id",
+    ];
+    const start = dataBus.getNodeAttribute(pathNodes[0], "position");
+    let d = `M ${start[0]} ${start[1]}`;
+    for (let i = 1; i < pathNodes.length; i++) {
+      const [x, y] = dataBus.getNodeAttribute(pathNodes[i], "position");
+      d += ` L ${x} ${y}`;
+    }
+    console.log("🎯 Path definido para MBR → id:", d);
+    return d;
   } else if (normalizedFrom === "MBR" && normalizedTo === "BL") {
     // Caso especial: MBR → BL, animación parte desde MBR bottom y sigue el bus gris horizontal y vertical hasta BL
     // Ruta: MBR bottom → mbr bottom exit → mbr to bus horizontal → mbr to bus join → outr mbr join → NodoRegOut → BL out join → BL out → BL

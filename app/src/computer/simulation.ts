@@ -1186,7 +1186,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
                     return; // Evita que se muestre cualquier animación de id
                   }
                   if (idToMbrCombinedMessage) {
-                    store.set(messageAtom, "Ejecución: id ← MBR |  MAR ← ri");
+                    store.set(messageAtom, "Ejecución: MAR ← ri | id ← MBR");
                     idToMbrCombinedMessage = false; // Reset the flag after use
                   } else {
                     store.set(messageAtom, `Ejecución: id ← MBR | MAR ← IP`);
