@@ -1190,8 +1190,8 @@ async function startThread(generator: EventGenerator): Promise<void> {
                     store.set(messageAtom, "Ejecución: MAR ← ri | id ← MBR");
                     idToMbrCombinedMessage = false; // Reset the flag after use
                   } else {
-                    // Animación combinada especial: IP → MAR (direcciones) + MBR → id (datos)
-                    store.set(messageAtom, `Ejecución: MAR ← IP | id ← MBR`);
+                    // Animación combinada especial: BL → MAR (direcciones) + MBR → id (datos)
+                    store.set(messageAtom, `Ejecución: MAR ← BL | id ← MBR`);
                     if (
                       currentInstructionName &&
                       ["ADD", "SUB", "CMP", "AND", "OR", "XOR"].includes(currentInstructionName) &&
@@ -1203,7 +1203,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
                         // Animación del bus de direcciones IP → MAR
                         anim(
                           [
-                            { key: "cpu.internalBus.address.path", from: generateDataPath("IP", "MAR", currentInstructionName) },
+                            { key: "cpu.internalBus.address.path", from: generateDataPath("BL", "MAR", currentInstructionName) },
                             { key: "cpu.internalBus.address.opacity", from: 1 },
                             { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
                           ],
