@@ -18,7 +18,7 @@
   "devDependencies": {
     "@types/node": "^20.10.8",
     "@vonsim/tsconfig": "workspace:^",
-    "eslint": "^8.56.0",
+    "eslint": "^9.34.0",
     "eslint-config-vonsim": "workspace:^",
     "prettier": "^3.5.3",
     "typescript": "~5.3.3"
