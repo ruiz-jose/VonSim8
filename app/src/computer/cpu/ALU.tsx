@@ -65,6 +65,14 @@ export function ALU() {
       /XOR\s+([[\]A-Z0-9]+),\s*([[\]A-Z0-9]+)/,
     ];
 
+    // Detectar instrucciones aritméticas con destino en memoria (directo o indirecto) y fuente inmediato (decimal o hexadecimal)
+    // Ejemplo: ADD [1000], 5   | ADD [BX], 02h   | ADD 1000h, 5   | ADD [BX], 0x02
+    const aluMemImmediatePattern = /^(ADD|SUB|CMP|AND|OR|XOR)\s+(\[[^\]]+\]|[0-9A-F]+h?)\s*,\s*([0-9A-F]+h?|0x[0-9A-F]+|\d+)$/i;
+    const matchMemImmediate = instruction.match(aluMemImmediatePattern);
+    if (matchMemImmediate) {
+      // left: id (valor de memoria), right: ri (valor inmediato), destino: id
+      return { left: "id", right: "ri", destination: "id" };
+    }
     for (const pattern of patterns) {
       const match = instruction.match(pattern);
       if (match) {
