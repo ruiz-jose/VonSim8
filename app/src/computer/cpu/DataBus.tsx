@@ -100,7 +100,7 @@ dataBus.addNode("AL out", { position: [483, 45] }); // Lado izquierdo del regist
 dataBus.addNode("BL out", { position: [483, 85] }); // Lado izquierdo del registro BL
 dataBus.addNode("CL out", { position: [483, 125] }); // Lado izquierdo del registro CL
 dataBus.addNode("DL out", { position: [483, 165] }); // Lado izquierdo del registro DL
-dataBus.addNode("id out", { position: [441, 205] }); // Lado izquierdo del registro id
+dataBus.addNode("id out", { position: [483, 205] }); // Lado izquierdo del registro id
 dataBus.addNode("MBR out", { position: [626, 249] }); // Nodo de salida de MBR
 dataBus.addNode("MBR out join", { position: [550, 250] }); // Nodo de unión de salida de MBR
 dataBus.addNode("SP out", { position: [510, 309] });

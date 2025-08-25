@@ -200,7 +200,7 @@ export function CPU() {
       </div>
       {showid && (
         <div className="absolute left-[450px] top-[190px] z-10">
-          <Reg name="id" className="border-cyan-400" />
+          <Reg name="id" className="border-cyan-400 pt-1" />
           <span className="absolute left-0 top-0 z-30 select-none rounded-full border border-cyan-400 bg-cyan-800 px-1 py-0 font-mono text-xs font-bold tracking-widest text-cyan-400">
             id
           </span>
