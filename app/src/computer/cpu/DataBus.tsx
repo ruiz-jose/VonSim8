@@ -338,7 +338,17 @@ export function generateDataPath(
     let base = reg.replace(/\.(l|h)$/, "");
     // Solo normalizar a mayúsculas los registros que están en el grafo en mayúsculas
     const upperCaseRegisters = [
-      "MBR", "AL", "BL", "CL", "DL", "SP", "IP", "MAR", "FLAGS", "IR", "RESULT"
+      "MBR",
+      "AL",
+      "BL",
+      "CL",
+      "DL",
+      "SP",
+      "IP",
+      "MAR",
+      "FLAGS",
+      "IR",
+      "RESULT",
     ];
     if (upperCaseRegisters.includes(base.toUpperCase())) {
       base = base.toUpperCase();
