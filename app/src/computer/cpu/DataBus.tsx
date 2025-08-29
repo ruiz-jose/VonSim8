@@ -335,7 +335,16 @@ export function generateDataPath(
   // Normalizar nombres de registros para evitar subniveles
   const normalizeRegister = (reg: string): string => {
     // Eliminar sufijos como .l, .h para usar el registro base
-    return reg.replace(/\.(l|h)$/, "");
+    let base = reg.replace(/\.(l|h)$/, "");
+    // Solo normalizar a mayúsculas los registros que están en el grafo en mayúsculas
+    const upperCaseRegisters = [
+      "MBR", "AL", "BL", "CL", "DL", "SP", "IP", "MAR", "FLAGS", "IR", "RESULT"
+    ];
+    if (upperCaseRegisters.includes(base.toUpperCase())) {
+      base = base.toUpperCase();
+    }
+    // Los registros que están en minúsculas en el grafo deben mantenerse así
+    return base;
   };
 
   const normalizedFrom = normalizeRegister(from);
