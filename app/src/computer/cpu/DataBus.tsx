@@ -544,14 +544,7 @@ export function generateDataPath(
     // Caso específico: MBR → id (ruta completa con id join alineado)
     // Ruta: MBR bottom → MBR → mbr reg join → NodoRegIn → id join → id (salida desde parte inferior)
     console.log("🎯 Caso específico MBR → id detectado");
-    const pathNodes = [
-      "MBR bottom",
-      "MBR",
-      "mbr reg join",
-      "NodoRegIn",
-      "id join",
-      "id",
-    ];
+    const pathNodes = ["MBR bottom", "MBR", "mbr reg join", "NodoRegIn", "id join", "id"];
     const start = dataBus.getNodeAttribute(pathNodes[0], "position");
     let d = `M ${start[0]} ${start[1]}`;
     for (let i = 1; i < pathNodes.length; i++) {

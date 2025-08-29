@@ -18,6 +18,7 @@ import { posthog } from "@/lib/posthog";
 import { getSettings, settingsAtom, useDevices } from "@/lib/settings";
 import { toast } from "@/lib/toast";
 
+import { generateDataPath } from "./cpu/DataBus";
 import {
   connectScreenAndKeyboardAtom,
   currentInstructionCycleCountAtom,
@@ -41,7 +42,6 @@ import { resetScreenState } from "./screen/state";
 import { anim, pauseAllAnimations, resumeAllAnimations, stopAllAnimations } from "./shared/animate";
 import { resetSwitchesState, switchesAtom } from "./switches/state";
 import { resetTimerState } from "./timer/state";
-import { generateDataPath } from "./cpu/DataBus";
 
 // Extend the Window type to include generateDataPath
 declare global {
@@ -1191,19 +1191,25 @@ async function startThread(generator: EventGenerator): Promise<void> {
                     idToMbrCombinedMessage = false; // Reset the flag after use
                   } else {
                     // Animación combinada especial: BL → MAR (direcciones) + MBR → id (datos)
+                    cycleCount++;
+                    currentInstructionCycleCount++;
                     store.set(messageAtom, `Ejecución: MAR ← BL | id ← MBR`);
                     if (
                       currentInstructionName &&
                       ["ADD", "SUB", "CMP", "AND", "OR", "XOR"].includes(currentInstructionName) &&
                       currentInstructionModeid && // destino indirecto
                       !currentInstructionModeri && // fuente inmediato
-                      typeof anim === "function" && typeof generateDataPath === "function"
+                      typeof anim === "function" &&
+                      typeof generateDataPath === "function"
                     ) {
                       await Promise.all([
                         // Animación del bus de direcciones IP → MAR
                         anim(
                           [
-                            { key: "cpu.internalBus.address.path", from: generateDataPath("BL", "MAR", currentInstructionName) },
+                            {
+                              key: "cpu.internalBus.address.path",
+                              from: generateDataPath("BL", "MAR", currentInstructionName),
+                            },
                             { key: "cpu.internalBus.address.opacity", from: 1 },
                             { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
                           ],
@@ -1212,7 +1218,15 @@ async function startThread(generator: EventGenerator): Promise<void> {
                         // Animación del bus de datos MBR → id
                         anim(
                           [
-                            { key: "cpu.internalBus.data.path", from: generateDataPath("MBR", "id", currentInstructionName, "mem<-imd") },
+                            {
+                              key: "cpu.internalBus.data.path",
+                              from: generateDataPath(
+                                "MBR",
+                                "id",
+                                currentInstructionName,
+                                "mem<-imd",
+                              ),
+                            },
                             { key: "cpu.internalBus.data.opacity", from: 1 },
                             { key: "cpu.internalBus.data.strokeDashoffset", from: 1, to: 0 },
                           ],
