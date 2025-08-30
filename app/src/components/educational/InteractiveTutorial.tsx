@@ -50,6 +50,201 @@ type InteractiveTutorialProps = {
 // Tutoriales disponibles
 export const AVAILABLE_TUTORIALS: Tutorial[] = [
   {
+    id: "cpu-components",
+    title: "Componentes de la CPU",
+    description: "Aprende sobre los componentes principales de la CPU: ALU, Unidad de Control y registros",
+    difficulty: "beginner",
+    estimatedTime: 12,
+    steps: [
+      {
+        id: "intro",
+        title: "Introducción a la CPU",
+        description: "¿Qué es una CPU y para qué sirve?",
+        content:
+          "La CPU (Unidad Central de Procesamiento) es el cerebro de la computadora. Se encarga de ejecutar instrucciones y procesar datos. En VonSim8, se basa en el procesador Intel 8086 de 16 bits, pero por simplicidad usamos registros de 8 bits.",
+        type: "explanation",
+        completed: false,
+      },
+      {
+        id: "alu",
+        title: "ALU (Unidad Aritmético-Lógica)",
+        description: "El componente que ejecuta operaciones matemáticas y lógicas",
+        content:
+          "La ALU ejecuta operaciones aritméticas (como ADD + y SUB —) y lógicas. Es el componente que realiza los cálculos dentro de la CPU. En el diagrama, puedes ver la ALU representada como un bloque azul con un ícono de engranaje.",
+        type: "explanation",
+        completed: false,
+      },
+      {
+        id: "control-unit",
+        title: "Unidad de Control (UC)",
+        description: "Coordina el funcionamiento de todos los componentes",
+        content:
+          "La Unidad de Control coordina el funcionamiento de todos los componentes internos de la CPU. Contiene el decodificador que interpreta las instrucciones y genera las señales de control necesarias para ejecutar cada operación.",
+        type: "explanation",
+        completed: false,
+      },
+      {
+        id: "flags",
+        title: "Registro de Flags",
+        description: "Indicadores del estado de las operaciones",
+        content:
+          "El registro FLAGS contiene indicadores del estado de las operaciones. Los flags más importantes son C (Carry) y Z (Zero). El flag Carry indica si hubo acarreo en una operación, y el flag Zero indica si el resultado fue cero.",
+        type: "explanation",
+        completed: false,
+      },
+      {
+        id: "cpu-quiz",
+        title: "Evaluación: Componentes de la CPU",
+        description: "Pon a prueba tu conocimiento sobre los componentes de la CPU",
+        type: "quiz",
+        content: "",
+        exercise: {
+          question: "¿Cuál de estos componentes ejecuta las operaciones aritméticas y lógicas en la CPU?",
+          options: ["Unidad de Control", "ALU", "Registros", "Memoria"],
+          correctAnswer: 1,
+          explanation: "La ALU (Unidad Aritmético-Lógica) es específicamente la responsable de ejecutar operaciones matemáticas y lógicas dentro de la CPU.",
+        },
+        completed: false,
+      },
+    ],
+  },
+  {
+    id: "registers",
+    title: "Registros de la CPU",
+    description: "Comprende los diferentes tipos de registros y sus funciones",
+    difficulty: "beginner",
+    estimatedTime: 15,
+    steps: [
+      {
+        id: "registers-intro",
+        title: "¿Qué son los Registros?",
+        description: "Memoria rápida dentro de la CPU",
+        content:
+          "Los registros son espacios de almacenamiento (memoria) dentro de la CPU. Son más rápidos que la RAM pero tienen menos capacidad. Se utilizan para almacenar datos temporalmente durante la ejecución de instrucciones.",
+        type: "explanation",
+        completed: false,
+      },
+      {
+        id: "general-purpose",
+        title: "Registros de Propósito General",
+        description: "AL, BL, CL, DL - registros para datos",
+        content:
+          "Los registros de propósito general (AL, BL, CL, DL) son utilizados por las instrucciones como operandos. Pueden almacenar datos, direcciones o resultados de operaciones. En VonSim8, cada uno puede almacenar 8 bits (1 byte).",
+        type: "explanation",
+        completed: false,
+      },
+      {
+        id: "instruction-pointer",
+        title: "Puntero de Instrucción (IP)",
+        description: "Contiene la dirección de la próxima instrucción",
+        content:
+          "El Puntero de Instrucción (IP) contiene la dirección de la próxima instrucción que se ejecutará. Se incrementa automáticamente después de cada instrucción para apuntar a la siguiente en memoria.",
+        type: "explanation",
+        completed: false,
+      },
+      {
+        id: "instruction-register",
+        title: "Registro de Instrucción (IR)",
+        description: "Contiene la instrucción en curso",
+        content:
+          "El Registro de Instrucción (IR) contiene la instrucción en curso para su decodificación y ejecución. Es donde la CPU almacena temporalmente la instrucción que está procesando.",
+        type: "explanation",
+        completed: false,
+      },
+      {
+        id: "memory-registers",
+        title: "Registros de Memoria",
+        description: "MAR y MBR - para comunicación con memoria",
+        content:
+          "MAR (Memory Address Register) contiene la dirección de memoria donde se desea leer o escribir. MBR (Memory Buffer Register) contiene datos que se transfieren hacia o desde la memoria. Estos registros facilitan la comunicación entre la CPU y la memoria RAM.",
+        type: "explanation",
+        completed: false,
+      },
+      {
+        id: "registers-quiz",
+        title: "Evaluación: Registros",
+        description: "Pon a prueba tu conocimiento sobre los registros",
+        type: "quiz",
+        content: "Responde correctamente para continuar con el tutorial.",
+        exercise: {
+          question: "¿Cuál de estos registros contiene la dirección de la próxima instrucción a ejecutar?",
+          options: ["IR", "IP", "MAR", "MBR"],
+          correctAnswer: 1,
+          explanation: "El Puntero de Instrucción (IP) es el registro que contiene la dirección de la próxima instrucción que se ejecutará.",
+        },
+        completed: false,
+      },
+    ],
+  },
+  {
+    id: "memory",
+    title: "Memoria RAM",
+    description: "Comprende cómo funciona la memoria principal y su acceso",
+    difficulty: "beginner",
+    estimatedTime: 10,
+    steps: [
+      {
+        id: "memory-intro",
+        title: "¿Qué es la Memoria RAM?",
+        description: "La memoria de acceso aleatorio",
+        content:
+          "La memoria RAM (Random Access Memory) está compuesta por 256 celdas, cada una de 1 byte. Las direcciones y contenidos están representados en hexadecimal. Es donde se almacenan programas y datos temporalmente durante la ejecución.",
+        type: "explanation",
+        completed: false,
+      },
+      {
+        id: "memory-addressing",
+        title: "Dirección de Memoria",
+        description: "Cómo se forman las direcciones",
+        content:
+          "La dirección de memoria se expresa en hexadecimal y se forma combinando el número de fila y columna. Por ejemplo: la dirección 12h se obtiene de la intersección de la fila 1 y la columna 2 en la matriz de memoria.",
+        type: "explanation",
+        completed: false,
+      },
+      {
+        id: "data-bus",
+        title: "Bus de Datos",
+        description: "Transferencia bidireccional de datos",
+        content:
+          "El bus de datos transfiere información entre la CPU y memoria en ambos sentidos. Es bidireccional, permitiendo tanto la lectura como la escritura de datos en memoria.",
+        type: "explanation",
+        completed: false,
+      },
+      {
+        id: "address-bus",
+        title: "Bus de Direcciones",
+        description: "Envío de direcciones a memoria",
+        content:
+          "El bus de direcciones envía desde la CPU a la memoria la dirección de la celda a leer o escribir. Es unidireccional, ya que solo la CPU puede especificar direcciones de memoria.",
+        type: "explanation",
+        completed: false,
+      },
+      {
+        id: "control-bus",
+        title: "Buses de Control",
+        description: "Señales de control para memoria",
+        content:
+          "Los buses de control transmiten las órdenes de lectura o escritura hacia la memoria. Estas señales indican a la memoria qué operación realizar (leer o escribir) en la dirección especificada.",
+        type: "explanation",
+        completed: false,
+      },
+      {
+        id: "memory-quiz",
+        title: "Evaluación: Memoria",
+        description: "Pon a prueba tu conocimiento sobre memoria",
+        type: "quiz",
+        content: "Responde correctamente para continuar con el tutorial.",
+        exercise: {
+          question: "¿Cuántas celdas de memoria tiene VonSim8 y cuánto almacena cada una?",
+          options: ["128 celdas de 2 bytes", "256 celdas de 1 byte", "512 celdas de 1 byte", "256 celdas de 2 bytes"],
+          correctAnswer: 1,
+          explanation: "VonSim8 tiene 256 celdas de memoria, cada una capaz de almacenar 1 byte (8 bits) de información.",
+        },
+        completed: false,
+      },
+    ],
+  },
+  {
     id: "cpu-basics",
     title: "Fundamentos de la CPU",
     description: "Aprende cómo funciona una CPU y sus componentes principales",
@@ -84,82 +279,8 @@ export const AVAILABLE_TUTORIALS: Tutorial[] = [
         completed: false,
       },
     ],
-  },
-  {
-    id: "memory-basics",
-    title: "Memoria RAM",
-    description: "Comprende cómo funciona la memoria principal",
-    difficulty: "beginner",
-    estimatedTime: 8,
-    steps: [
-      {
-        id: "memory-intro",
-        title: "¿Qué es la Memoria RAM?",
-        description: "La memoria de acceso aleatorio",
-        content:
-          "La RAM almacena programas y datos temporalmente. Cada ubicación tiene una dirección única.",
-        type: "explanation",
-        completed: false,
-      },
-      {
-        id: "memory-access",
-        title: "Acceso a Memoria",
-        description: "Cómo la CPU lee y escribe en memoria",
-        content: "La CPU usa el bus de direcciones para especificar qué celda de memoria acceder.",
-        type: "explanation",
-        completed: false,
-      },
-      {
-        id: "memory-quiz",
-        title: "Quiz: Direccionamiento",
-        description: "Pon a prueba tu conocimiento",
-        content: "Responde correctamente para continuar.",
-        type: "quiz",
-        exercise: {
-          question: "¿Cuántas direcciones de memoria tiene VonSim8?",
-          options: ["128 bytes", "256 bytes", "512 bytes", "1024 bytes"],
-          correctAnswer: 1,
-          explanation: "VonSim8 tiene 256 bytes de memoria (direcciones 00-FF en hexadecimal).",
-        },
-        completed: false,
-      },
-    ],
-  },
-  {
-    id: "instruction-cycle",
-    title: "Ciclo de Instrucción",
-    description: "Ciclo básico de ejecución de instrucciones",
-    difficulty: "intermediate",
-    estimatedTime: 15,
-    steps: [
-      {
-        id: "cycle-intro",
-        title: "El Ciclo de Instrucción",
-        description: "Las dos fases principales",
-        content:
-          "Cada instrucción pasa por dos fases: Fetch (leer) y Execute (ejecutar). La decodificación está incluida en la ejecución.",
-        type: "explanation",
-        completed: false,
-      },
-      {
-        id: "fetch-phase",
-        title: "Fase Fetch",
-        description: "Leer la instrucción de memoria",
-        content: "La CPU lee la instrucción desde la dirección apuntada por el IP.",
-        type: "explanation",
-        completed: false,
-      },
-      {
-        id: "execute-phase",
-        title: "Fase Execute",
-        description: "Ejecutar la operación",
-        content: "La CPU realiza la operación especificada por la instrucción.",
-        type: "explanation",
-        completed: false,
-      },
-      // Se eliminó la opción de visualizaciones y ejercicios relacionados
-    ],
-  },
+  }
+
 ];
 
 export const InteractiveTutorial = memo(
@@ -349,7 +470,7 @@ export const InteractiveTutorial = memo(
                         <input
                           type="radio"
                           name="answer"
-                          value={index}
+                          value={index.toString()}
                           checked={userAnswer === index.toString()}
                           onChange={e => setUserAnswer(e.target.value)}
                           className="text-mantis-400"

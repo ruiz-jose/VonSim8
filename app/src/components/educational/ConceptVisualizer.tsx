@@ -18,13 +18,217 @@ type ConceptVisualizerProps = {
     | "memory-access"
     | "register-transfer"
     | "alu-operation"
-    | "bus-communication";
+    | "bus-communication"
+    | "cpu-components"
+    | "registers-overview"
+    | "memory-structure";
   onClose?: () => void;
   className?: string;
 };
 
 // Definiciones de visualizaciones por concepto
 const VISUALIZATIONS = {
+  "cpu-components": {
+    title: "Componentes de la CPU",
+    description: "Visualiza los componentes principales de la CPU: ALU, Unidad de Control y registros",
+    steps: [
+      {
+        id: "overview",
+        title: "Vista General de la CPU",
+        description: "Estructura general de la CPU VonSim8",
+        duration: 3000,
+        animation: {
+          type: "highlight",
+          targets: ["CPU-container"],
+          data: { 
+            title: "CPU",
+            description: "Se basa en el procesador Intel 8086 de 16 bits, pero por simplicidad usamos registros de 8 bits."
+          },
+        },
+      },
+      {
+        id: "alu",
+        title: "ALU (Unidad Aritmético-Lógica)",
+        description: "Ejecuta operaciones aritméticas y lógicas",
+        duration: 2500,
+        animation: {
+          type: "highlight",
+          targets: ["ALU"],
+          data: { 
+            description: "Ejecuta operaciones aritméticas (como ADD + y SUB —) y lógicas.",
+            icon: "⚙️"
+          },
+        },
+      },
+      {
+        id: "control-unit",
+        title: "Unidad de Control",
+        description: "Coordina el funcionamiento de todos los componentes",
+        duration: 2500,
+        animation: {
+          type: "highlight",
+          targets: ["control-unit"],
+          data: { 
+            description: "Coordina el funcionamiento de todos los componentes internos de la CPU.",
+            components: ["Decodificador", "INSTRUCCIÓN"]
+          },
+        },
+      },
+      {
+        id: "flags",
+        title: "Registro de Flags",
+        description: "Indicadores del estado de las operaciones",
+        duration: 2000,
+        animation: {
+          type: "highlight",
+          targets: ["FLAGS"],
+          data: { 
+            description: "Contiene indicadores del estado: C (Carry) y Z (Zero)",
+            flags: ["C", "Z"]
+          },
+        },
+      },
+    ],
+  },
+  "registers-overview": {
+    title: "Registros de la CPU",
+    description: "Visualiza los diferentes tipos de registros y sus funciones",
+    steps: [
+      {
+        id: "general-purpose",
+        title: "Registros de Propósito General",
+        description: "AL, BL, CL, DL - registros para datos",
+        duration: 2500,
+        animation: {
+          type: "highlight",
+          targets: ["AL", "BL", "CL", "DL"],
+          data: { 
+            description: "Las instrucciones utilizan estos registros como operandos: AL, BL, CL, DL.",
+            registers: ["AL", "BL", "CL", "DL"]
+          },
+        },
+      },
+      {
+        id: "instruction-pointer",
+        title: "Puntero de Instrucción (IP)",
+        description: "Contiene la dirección de la próxima instrucción",
+        duration: 2000,
+        animation: {
+          type: "highlight",
+          targets: ["IP"],
+          data: { 
+            description: "Contiene la dirección de la próxima instrucción que se ejecutará.",
+            color: "red"
+          },
+        },
+      },
+      {
+        id: "instruction-register",
+        title: "Registro de Instrucción (IR)",
+        description: "Contiene la instrucción en curso",
+        duration: 2000,
+        animation: {
+          type: "highlight",
+          targets: ["IR"],
+          data: { 
+            description: "Contiene la instrucción en curso para su decodificación y ejecución.",
+            color: "purple"
+          },
+        },
+      },
+      {
+        id: "memory-registers",
+        title: "Registros de Memoria",
+        description: "MAR y MBR - para comunicación con memoria",
+        duration: 2500,
+        animation: {
+          type: "highlight",
+          targets: ["MAR", "MBR"],
+          data: { 
+            description: "MAR: dirección de memoria. MBR: datos transferidos.",
+            registers: ["MAR", "MBR"]
+          },
+        },
+      },
+    ],
+  },
+  "memory-structure": {
+    title: "Estructura de Memoria",
+    description: "Visualiza la organización de la memoria RAM y los buses",
+    steps: [
+      {
+        id: "memory-grid",
+        title: "Matriz de Memoria",
+        description: "256 celdas organizadas en 16x16",
+        duration: 3000,
+        animation: {
+          type: "highlight",
+          targets: ["memory-grid"],
+          data: { 
+            description: "Compuesta por 256 celdas, cada una de 1 byte. Las direcciones y contenidos están representados en hexadecimal.",
+            size: "16x16",
+            cells: 256
+          },
+        },
+      },
+      {
+        id: "addressing",
+        title: "Dirección de Memoria",
+        description: "Formación de direcciones hexadecimales",
+        duration: 2500,
+        animation: {
+          type: "highlight",
+          targets: ["address-example"],
+          data: { 
+            description: "La dirección 12h se obtiene de la intersección de la fila 1 y la columna 2.",
+            example: "12h = fila 1, columna 2"
+          },
+        },
+      },
+      {
+        id: "data-bus",
+        title: "Bus de Datos",
+        description: "Transferencia bidireccional de datos",
+        duration: 2000,
+        animation: {
+          type: "flow",
+          targets: ["data-bus"],
+          data: { 
+            description: "Transfiere entre CPU y memoria en ambos sentidos. Es bidireccional.",
+            direction: "bidirectional"
+          },
+        },
+      },
+      {
+        id: "address-bus",
+        title: "Bus de Direcciones",
+        description: "Envío de direcciones a memoria",
+        duration: 2000,
+        animation: {
+          type: "flow",
+          targets: ["address-bus"],
+          data: { 
+            description: "Envía desde la CPU a la memoria la dirección de la celda a leer o escribir. Es unidireccional.",
+            direction: "unidirectional"
+          },
+        },
+      },
+      {
+        id: "control-bus",
+        title: "Buses de Control",
+        description: "Señales de control para memoria",
+        duration: 2000,
+        animation: {
+          type: "highlight",
+          targets: ["control-bus"],
+          data: { 
+            description: "Transmiten las órdenes de lectura o escritura hacia la memoria.",
+            signals: ["rd", "wr"]
+          },
+        },
+      },
+    ],
+  },
   "fetch-decode-execute": {
     title: "Ciclo Fetch-Decode-Execute",
     description: "Visualiza las tres fases del ciclo de instrucción",

@@ -1,329 +1,120 @@
-# Componentes Educativos de VonSim8
+# Centro de Aprendizaje VonSim8
 
-Este directorio contiene componentes específicamente diseñados para mejorar la experiencia educativa de VonSim8, un simulador de arquitectura de computadoras Von Neumann.
+El Centro de Aprendizaje de VonSim8 es un sistema educativo interactivo diseñado para enseñar conceptos fundamentales de arquitectura de computadoras y programación en ensamblador.
 
-## 🎯 Objetivo
+## Características Principales
 
-Los componentes educativos están diseñados para:
+### 🎯 Tutoriales Interactivos
+- **Componentes de la CPU**: Aprende sobre ALU, Unidad de Control y registros
+- **Registros de la CPU**: Comprende los diferentes tipos de registros y sus funciones
+- **Memoria RAM**: Entiende el funcionamiento de la memoria principal
+- **Fundamentos de la CPU**: Conceptos básicos de CPU y registros
 
-- **Facilitar la comprensión** de conceptos de arquitectura de computadoras
-- **Proporcionar retroalimentación visual** en tiempo real
-- **Adaptarse a diferentes niveles** de conocimiento (básico, intermedio, avanzado)
-- **Crear una experiencia interactiva** y engaging para estudiantes
-- **Gamificar el aprendizaje** con sistema de progreso y logros
-- **Proporcionar tutoriales interactivos** paso a paso
+### 🏆 Sistema de Progreso
+- **Logros desbloqueables**: Conocedor de Componentes, Experto en Registros, Explorador de Memoria
+- **Niveles de aprendizaje**: Principiante, Intermedio, Avanzado
+- **Puntos de experiencia**: Sistema de recompensas por completar tutoriales
+- **Estadísticas de sesión**: Tiempo de aprendizaje y progreso
 
-## 📚 Componentes Disponibles
+## Estructura de Archivos
 
-### 1. **EducationalTooltip**
-
-Tooltips contextuales con explicaciones pedagógicas adaptadas a diferentes niveles de complejidad.
-
-```tsx
-import { EducationalTooltip } from "@/components/educational";
-
-<EducationalTooltip concept="register" level="beginner">
-  <span>Registro AX</span>
-</EducationalTooltip>;
+```
+educational/
+├── README.md                    # Esta documentación
+├── index.ts                     # Exportaciones de componentes
+├── EducationalMenu.tsx          # Menú principal del centro de aprendizaje
+├── EducationalProgress.tsx      # Sistema de progreso y logros
+├── InteractiveTutorial.tsx      # Tutoriales interactivos
+└── ConceptVisualizer.tsx        # Visualizaciones de conceptos
 ```
 
-**Conceptos disponibles:**
+## Componentes Principales
 
-- `register` - Registros de la CPU
-- `memory` - Memoria RAM
-- `alu` - Unidad Aritmético-Lógica
-- `bus` - Buses de datos y control
-- `instruction` - Instrucciones de máquina
-- `program-counter` - Contador de programa
-- `flags` - Banderas de estado
-- `stack` - Pila de memoria
-- `interrupt` - Sistema de interrupciones
-- `peripheral` - Dispositivos periféricos
-- `assembly` - Lenguaje ensamblador
-- `addressing` - Modos de direccionamiento
+### EducationalMenu
+Menú principal que permite acceder a tutoriales y visualizaciones. Incluye:
+- Lista de tutoriales disponibles con dificultad y duración
+- Visualizaciones interactivas organizadas por categoría
+- Acceso al sistema de progreso educativo
 
-### 2. **EducationalProgress**
+### InteractiveTutorial
+Sistema de tutoriales paso a paso que incluye:
+- Explicaciones detalladas de conceptos
+- Evaluaciones interactivas (quizzes)
+- Progreso automático entre pasos
+- Integración con el sistema de logros
 
-Sistema de progreso educativo con niveles, logros y estadísticas de aprendizaje.
 
-```tsx
-import { EducationalProgress, emitProgressEvent } from "@/components/educational";
 
-// Emitir eventos de progreso
-emitProgressEvent("instructions_executed", 1);
-emitProgressEvent("programs_written", 1);
-emitProgressEvent("concept_mastered", 1);
-
-// El componente se renderiza automáticamente
-```
-
-**Características:**
-
-- Sistema de logros desbloqueables
-- Niveles de aprendizaje progresivos
+### EducationalProgress
+Sistema de gamificación que incluye:
+- Logros desbloqueables por completar tutoriales
+- Niveles de aprendizaje con requisitos de puntos
 - Estadísticas de tiempo de sesión
 - Persistencia de progreso en localStorage
 
-### 3. **InteractiveTutorial**
-
-Tutoriales interactivos paso a paso con ejercicios y quizzes.
-
-```tsx
-import { InteractiveTutorial, AVAILABLE_TUTORIALS } from "@/components/educational";
-
-const tutorial = AVAILABLE_TUTORIALS.find(t => t.id === "cpu-basics");
-
-<InteractiveTutorial
-  tutorial={tutorial}
-  onComplete={tutorialId => {
-    emitProgressEvent("tutorials_completed", 1);
-  }}
-/>;
-```
-
-**Tutoriales disponibles:**
-
-- **Fundamentos de la CPU**: Conceptos básicos de CPU y registros
-- **Memoria RAM**: Funcionamiento de la memoria principal
-- **Ciclo de Instrucción**: Fases fetch-decode-execute
-
-### 4. **ConceptVisualizer**
-
-Visualizaciones interactivas de conceptos complejos con animaciones.
-
-```tsx
-import { ConceptVisualizer } from "@/components/educational";
-
-<ConceptVisualizer concept="fetch-decode-execute" onClose={() => setShowVisualizer(false)} />;
-```
-
-**Conceptos visualizables:**
-
-- `fetch-decode-execute` - Ciclo de instrucción
-- `memory-access` - Acceso a memoria
-- `register-transfer` - Transferencia entre registros
-- `alu-operation` - Operaciones ALU
-- `bus-communication` - Comunicación por bus
-
-### 5. **ExecutionPhases**
-
-Indicador visual mejorado de las fases del ciclo fetch-decode-execute de la CPU.
-
-```tsx
-import { ExecutionPhases } from "@/components/educational";
-
-<ExecutionPhases currentPhase="fetch" />;
-```
-
-**Mejoras:**
-
-- Información detallada al hacer clic
-- Modo interactivo con explicaciones
-- Animaciones mejoradas
-
-### 6. **StepByStepMode**
-
-Modo paso a paso para ejecutar instrucciones con controles de reproducción.
-
-```tsx
-import { StepByStepMode } from "@/components/educational";
-
-const steps = [
-  {
-    id: "step1",
-    phase: "fetch",
-    title: "Leer instrucción",
-    description: "La CPU lee la siguiente instrucción de la memoria",
-    instruction: "MOV AL, 5",
-    registers: { IP: "00", AL: "00" },
-  },
-];
-
-<StepByStepMode steps={steps} onComplete={() => console.log("Completado")} />;
-```
-
-### 7. **DataFlowAnimation**
-
-Animaciones visuales del flujo de datos entre componentes.
-
-```tsx
-import { DataFlowAnimation, useDataFlow } from "@/components/educational";
-
-<DataFlowAnimation from="CPU" to="Memory" data="A1" duration={2000} />;
-
-// O usar el hook para múltiples animaciones
-const { addFlow, flows } = useDataFlow();
-addFlow({ from: "AL", to: "BL", data: "25" });
-```
-
-## 🎮 Uso en la Aplicación
-
-Los componentes educativos están integrados en la aplicación principal:
-
-- **EducationalTooltip**: Aparece al hacer hover sobre elementos con conceptos educativos
-- **EducationalProgress**: Panel flotante en la esquina inferior izquierda
-- **InteractiveTutorial**: Se activa desde el menú de tutoriales
-- **ConceptVisualizer**: Se abre desde botones de visualización
-- **ExecutionPhases**: Se muestra en la interfaz de la CPU
-
-- **DataFlowAnimation**: Se activa durante la ejecución de instrucciones
-
-## 🏆 Sistema de Logros
-
-### Tipos de Logros
-
-- **Primer Programa**: Escribir el primer programa en ensamblador
-- **Maestro de Instrucciones**: Ejecutar 100 instrucciones
-- **Explorador de Memoria**: Comprender el funcionamiento de la memoria RAM
-- **Arquitecto de CPU**: Dominar los conceptos de arquitectura de CPU
-- **Estudiante Persistente**: Pasar 30 minutos aprendiendo
-
-### Niveles de Aprendizaje
-
-- **Principiante**: Conceptos básicos (0 puntos)
-- **Intermedio**: Operaciones aritméticas y lógicas (50 puntos)
-- **Avanzado**: Interrupciones y programación compleja (100 puntos)
-
-## 🎨 Personalización
-
-Cada componente puede personalizarse mediante props:
-
-```tsx
-// Cambiar nivel de complejidad
-<EducationalTooltip concept="register" level="advanced" />
-
-// Personalizar animaciones
-<DataFlowAnimation
-  duration={3000}
-  className="custom-animation"
-/>
-
-
-
-// Personalizar tutoriales
-<InteractiveTutorial
-  tutorial={customTutorial}
-  onComplete={customHandler}
-/>
-```
-
-## 📖 Conceptos Educativos
-
-### Niveles de Complejidad
-
-1. **Básico (Beginner)**: Explicaciones simples con analogías cotidianas
-2. **Intermedio (Intermediate)**: Conceptos técnicos con contexto
-3. **Avanzado (Advanced)**: Detalles técnicos específicos de la arquitectura
-
-### Conceptos Cubiertos
-
-- **Arquitectura de CPU**: Registros de 8 bits (AL, BL, CL, DL), ALU, buses, ciclo de instrucción
-- **Memoria**: RAM de 256 bytes, direccionamiento de 8 bits, acceso a datos
-- **Programación**: Lenguaje ensamblador de 8 bits, instrucciones, operandos
-- **Sistema de I/O**: Periféricos, interrupciones, comunicación
-- **Conceptos Avanzados**: Modos de direccionamiento, interrupciones
-
-## 🔧 Desarrollo
-
-### Agregar Nuevos Conceptos Educativos
-
-1. Agregar el concepto en `EDUCATIONAL_CONTENT` en `EducationalTooltip.tsx`
-2. Crear tooltips en los componentes relevantes
-3. Actualizar la documentación
-
-### Crear Nuevos Tutoriales
-
-1. Definir el tutorial en `AVAILABLE_TUTORIALS` en `InteractiveTutorial.tsx`
-2. Crear pasos con ejercicios y explicaciones
-3. Integrar con el sistema de progreso
-
-### Agregar Nuevas Visualizaciones
-
-1. Definir la visualización en `VISUALIZATIONS` en `ConceptVisualizer.tsx`
-2. Implementar las animaciones correspondientes
-3. Integrar con los eventos de la simulación
-
-### Crear Nuevos Logros
-
-1. Agregar el logro en `ACHIEVEMENTS` en `EducationalProgress.tsx`
-2. Emitir eventos de progreso en los lugares apropiados
-3. Actualizar la documentación
-
-## 🧪 Testing
-
-Los componentes educativos incluyen tests específicos para:
-
-- Funcionalidad de diferentes niveles
-- Accesibilidad
-- Responsividad
-- Integración con el simulador
-
-```bash
-npm run test:educational
-```
-
-## 📈 Métricas Educativas
-
-Los componentes recopilan métricas anónimas para mejorar la experiencia:
-
-- Tiempo de interacción
-- Nivel de complejidad seleccionado
-- Conceptos más consultados
-- Progreso en el modo paso a paso
-- Logros desbloqueados
-- Tiempo de sesión
-
-## 🔧 Configuración
-
-### Personalización de Contenido
-
-```tsx
-// Agregar nuevos conceptos educativos
-const EDUCATIONAL_CONTENT = {
-  "nuevo-concepto": {
-    beginner: "Explicación básica",
-    intermediate: "Explicación intermedia",
-    advanced: "Explicación avanzada",
-  },
-};
-```
-
-### Temas Visuales
-
-```css
-/* Variables CSS para personalización */
-:root {
-  --educational-primary: #10b981;
-  --educational-secondary: #f59e0b;
-  --educational-accent: #8b5cf6;
-}
-```
-
-## 🤝 Contribución
-
-Para contribuir a los componentes educativos:
-
-1. **Mantener enfoque pedagógico**: Cada componente debe tener valor educativo claro
-2. **Seguir patrones de accesibilidad**: WCAG 2.1 AA
-3. **Documentar cambios**: Explicar el impacto educativo
-4. **Incluir tests**: Especialmente para funcionalidad educativa
-5. **Integrar con progreso**: Conectar con el sistema de logros
-
-## 🚀 Próximas Mejoras
-
-- [ ] Sistema de ejercicios interactivos más complejos
-- [ ] Visualizaciones 3D de conceptos arquitectónicos
-- [ ] Modo colaborativo para aprendizaje grupal
-- [ ] Integración con sistemas de gestión de aprendizaje (LMS)
-- [ ] Análisis de progreso y recomendaciones personalizadas
-- [ ] Exportación de certificados de logros
-
-## 📖 Recursos Adicionales
-
-- [Guía de Arquitectura de Computadoras](https://vonsim.github.io/docs)
-- [Tutorial de VonSim8](https://vonsim.github.io/tutorial)
-- [Referencia de Instrucciones](https://vonsim.github.io/instructions)
-
----
-
-_Desarrollado con ❤️ para la educación en arquitectura de computadoras_
+## Conceptos Educativos
+
+### Componentes de la CPU
+- **ALU (Unidad Aritmético-Lógica)**: Ejecuta operaciones aritméticas y lógicas
+- **Unidad de Control**: Coordina el funcionamiento de todos los componentes
+- **Registro de Flags**: Indicadores del estado de las operaciones (C, Z)
+
+### Registros de la CPU
+- **Registros de Propósito General**: AL, BL, CL, DL para datos
+- **Puntero de Instrucción (IP)**: Dirección de la próxima instrucción
+- **Registro de Instrucción (IR)**: Instrucción en curso
+- **Registros de Memoria**: MAR y MBR para comunicación con memoria
+
+### Memoria RAM
+- **Estructura**: 256 celdas de 1 byte cada una
+- **Direccionamiento**: Hexadecimal (00h-FFh)
+- **Buses**: Datos (bidireccional), Direcciones (unidireccional), Control (rd/wr)
+- **Registros**: MAR (dirección) y MBR (datos)
+
+## Uso del Sistema
+
+### Para Estudiantes
+1. Abre el Centro de Aprendizaje desde el menú principal
+2. Selecciona un tutorial según tu nivel de conocimiento
+3. Completa los pasos del tutorial y las evaluaciones
+4. Explora las visualizaciones interactivas
+5. Revisa tu progreso y logros desbloqueados
+
+### Para Desarrolladores
+1. Los tutoriales se definen en `InteractiveTutorial.tsx`
+2. Las visualizaciones se configuran en `ConceptVisualizer.tsx`
+3. El sistema de progreso se maneja en `EducationalProgress.tsx`
+4. Los logros se pueden personalizar en el array `ACHIEVEMENTS`
+
+## Integración con VonSim8
+
+El Centro de Aprendizaje está integrado con el simulador principal:
+- Los tutoriales pueden referenciar componentes reales de la CPU
+- Las visualizaciones muestran el estado actual del simulador
+- El progreso se guarda automáticamente
+- Los logros se desbloquean al completar actividades específicas
+
+## Tecnologías Utilizadas
+
+- **React**: Componentes funcionales con hooks
+- **TypeScript**: Tipado estático para mejor desarrollo
+- **Tailwind CSS**: Estilos y animaciones
+- **FontAwesome**: Iconografía
+- **localStorage**: Persistencia de progreso
+
+## Contribuciones
+
+Para mejorar el Centro de Aprendizaje:
+1. Agrega nuevos tutoriales en `InteractiveTutorial.tsx`
+2. Crea visualizaciones en `ConceptVisualizer.tsx`
+3. Define nuevos logros en `EducationalProgress.tsx`
+4. Actualiza esta documentación
+
+## Próximas Mejoras
+
+- [ ] Animaciones más fluidas en las visualizaciones
+- [ ] Tutoriales avanzados sobre interrupciones
+- [ ] Ejercicios prácticos con el simulador
+- [ ] Sistema de certificaciones
+- [ ] Exportación de progreso
+- [ ] Modo multijugador para competencias
