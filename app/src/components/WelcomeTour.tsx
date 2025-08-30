@@ -24,6 +24,7 @@ type TourStep = {
   position: "top" | "bottom" | "left" | "right";
 };
 
+// Pasos del tour - Los targets deben coincidir exactamente con los data-testid de los componentes
 const tourSteps: TourStep[] = [
   {
     id: "welcome",
@@ -45,7 +46,7 @@ const tourSteps: TourStep[] = [
   },
   {
     id: "controls",
-    target: "controls-container",
+    target: "controls",
     title: "Controles de Simulación",
     content:
       "Controla la simulación: F7 (ejecutar ciclo), F8 (ejecutar instrucción), F4 (ejecución infinita), F9 (resetear). También puedes usar los botones visuales.",
@@ -166,8 +167,18 @@ const useTourState = () => {
   // Verificar si el target existe y manejar apertura/cierre de configuración
   useEffect(() => {
     const step = tourSteps[currentStep];
-    const el = document.querySelector(`[data-testid="${step.target}"]`);
-    setTargetFound(!!el);
+    
+    // Usar un timeout para dar tiempo a que los elementos se rendericen
+    const checkTarget = () => {
+      const el = document.querySelector(`[data-testid="${step.target}"]`);
+      setTargetFound(!!el);
+    };
+
+    // Verificar inmediatamente
+    checkTarget();
+    
+    // Verificar nuevamente después de un breve delay para elementos que se renderizan dinámicamente
+    const timeoutId = setTimeout(checkTarget, 100);
 
     // Abrir configuración automáticamente cuando llegamos al paso del botón
     if (step.id === "settings-button") {
@@ -177,6 +188,8 @@ const useTourState = () => {
     else if (step.id !== "settings-panel" && step.id !== "settings-button") {
       setSettingsOpen(false);
     }
+
+    return () => clearTimeout(timeoutId);
   }, [currentStep, setSettingsOpen]);
 
   return {
@@ -361,12 +374,20 @@ const TourTooltip = memo(
               className="mb-4 text-4xl text-yellow-400"
             />
             <h3 className="mb-2 text-lg font-semibold text-mantis-400">Elemento no encontrado</h3>
-            <p className="mb-4 text-stone-300">
-              No se pudo encontrar el elemento de la interfaz para este paso del tour.
+            <p className="mb-2 text-stone-300">
+              No se pudo encontrar el elemento: <code className="text-mantis-400">{step.target}</code>
             </p>
-            <Button onClick={onSkip} className="bg-mantis-600 hover:bg-mantis-700">
-              Saltar tour
-            </Button>
+            <p className="mb-4 text-xs text-stone-400">
+              Paso {currentStep + 1} de {totalSteps}: {step.title}
+            </p>
+            <div className="flex gap-2">
+              <Button onClick={onPrev} disabled={isFirstStep} variant="outline" size="sm">
+                Anterior
+              </Button>
+              <Button onClick={onSkip} className="bg-mantis-600 hover:bg-mantis-700">
+                Saltar tour
+              </Button>
+            </div>
           </div>
         </div>
       );

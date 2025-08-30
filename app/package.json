@@ -21,6 +21,7 @@
     "audit": "pnpm audit --audit-level moderate",
     "type-check": "tsc --noEmit",
     "clean": "rimraf dist coverage test-results playwright-report",
+    "verify-tour": "node scripts/verify-tour-elements.js",
     "postinstall": "echo 'Dependencies installed successfully'"
   },
   "dependencies": {
