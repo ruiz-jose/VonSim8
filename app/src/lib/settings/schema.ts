@@ -95,7 +95,7 @@ export const settingsSchema = z.object({
 export type Settings = z.infer<typeof settingsSchema>;
 
 // Returns an object with default values (`.catch()`)
-export const defaultSettings = settingsSchema.parse({});
+export const defaultSettings = settingsSchema.parse({ animations: false });
 
 function getDefaultLanguage(): Language {
   // Return browser default language
