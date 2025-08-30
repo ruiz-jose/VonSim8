@@ -357,7 +357,7 @@ function ReadBusAnimation({ pathRef }: ReadBusAnimationProps) {
     checkPath();
   }, [pathRef]);
 
-  if (!visible || !ready) return null;
+  if (!visible || !ready || !settings.animations) return null;
 
   // Calcular coordenadas para llegar hasta la memoria
   // El path va desde CPU (380, 420) hasta Memory (800, 420)
@@ -383,7 +383,7 @@ function ReadBusAnimation({ pathRef }: ReadBusAnimationProps) {
         opacity: visible ? 1 : 0,
       }}
     >
-      Read
+    Read
     </div>
   );
 }
