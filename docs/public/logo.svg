@@ -1,16 +1,185 @@
-<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g clip-path="url(#clip0_110_136)">
-<rect width="256" height="256" rx="51.2" fill="#0C0A09"/>
-<path d="M192 170.667C192 158.885 182.449 149.333 170.667 149.333C158.885 149.333 149.333 158.885 149.333 170.667V192C149.333 203.782 158.885 213.333 170.667 213.333C182.449 213.333 192 203.782 192 192V170.667Z" stroke="white" stroke-width="21.3333" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M106.667 64C106.667 52.2179 97.1154 42.6666 85.3333 42.6666C73.5513 42.6666 64 52.2179 64 64V85.3333C64 97.1154 73.5513 106.667 85.3333 106.667C97.1154 106.667 106.667 97.1154 106.667 85.3333V64Z" stroke="white" stroke-width="21.3333" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M64 213.333H106.667" stroke="#82BD69" stroke-width="21.3333" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M149.333 106.667H192" stroke="#82BD69" stroke-width="21.3333" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M64 149.333H85.3333V213.333" stroke="#82BD69" stroke-width="21.3333" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M149.333 42.6666H170.667V106.667" stroke="#82BD69" stroke-width="21.3333" stroke-linecap="round" stroke-linejoin="round"/>
-</g>
-<defs>
-<clipPath id="clip0_110_136">
-<rect width="256" height="256" fill="white"/>
-</clipPath>
-</defs>
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradiente principal para el fondo -->
+    <radialGradient id="bgGradient" cx="50%" cy="30%" r="80%">
+      <stop offset="0%" style="stop-color:#1e1e1e;stop-opacity:1" />
+      <stop offset="70%" style="stop-color:#2d2d2d;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0d0d0d;stop-opacity:1" />
+    </radialGradient>
+    
+    <!-- Gradiente para V8 - Verde vibrante -->
+    <linearGradient id="v8Gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#66BB6A;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#4CAF50;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2E7D32;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Gradiente para el borde del chip -->
+    <linearGradient id="chipBorder" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4CAF50;stop-opacity:0.8" />
+      <stop offset="50%" style="stop-color:#66BB6A;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#388E3C;stop-opacity:0.8" />
+    </linearGradient>
+    
+    <!-- Sombra interna para profundidad -->
+    <filter id="innerShadow">
+      <feOffset dx="0" dy="1"/>
+      <feGaussianBlur stdDeviation="1" result="offset-blur"/>
+      <feFlood flood-color="#000000" flood-opacity="0.3"/>
+      <feComposite in2="offset-blur" operator="in"/>
+      <feComposite in2="SourceGraphic" operator="over"/>
+    </filter>
+    
+    <!-- Glow efecto para V8 -->
+    <filter id="textGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- Brillo metálico -->
+    <linearGradient id="metallic" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:rgba(255,255,255,0.3);stop-opacity:1" />
+      <stop offset="50%" style="stop-color:rgba(255,255,255,0.1);stop-opacity:1" />
+      <stop offset="100%" style="stop-color:rgba(255,255,255,0);stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Animaciones -->
+    <style>
+      .circuit-line { 
+        stroke-dasharray: 4,2;
+        animation: flow 3s linear infinite;
+        opacity: 0.6;
+      }
+      
+      .power-led { 
+        animation: powerPulse 2s ease-in-out infinite;
+      }
+      
+      .cpu-core {
+        animation: processingPulse 4s ease-in-out infinite;
+      }
+      
+      @keyframes flow {
+        0% { stroke-dashoffset: 0; }
+        100% { stroke-dashoffset: 12; }
+      }
+      
+      @keyframes powerPulse {
+        0%, 100% { opacity: 0.4; fill: #4CAF50; }
+        50% { opacity: 1; fill: #66BB6A; }
+      }
+      
+      @keyframes processingPulse {
+        0%, 100% { opacity: 0.8; }
+        50% { opacity: 1; transform: scale(1.02); }
+      }
+    </style>
+  </defs>
+  
+  <!-- Fondo principal con textura -->
+  <rect x="2" y="2" width="60" height="60" rx="14" ry="14" 
+        fill="url(#bgGradient)" 
+        stroke="#3a3a3a" 
+        stroke-width="0.5"
+        filter="url(#innerShadow)"/>
+  
+  <!-- Capa de brillo metálico -->
+  <rect x="2" y="2" width="60" height="60" rx="14" ry="14" 
+        fill="url(#metallic)" 
+        opacity="0.4"/>
+  
+  <!-- Chip CPU central -->
+  <rect x="10" y="10" width="44" height="44" rx="6" ry="6" 
+        fill="#1a1a1a" 
+        stroke="url(#chipBorder)" 
+        stroke-width="1.5"
+        class="cpu-core"/>
+  
+  <!-- Conectores del chip (pines) -->
+  <g stroke="#4CAF50" stroke-width="1" opacity="0.7">
+    <!-- Pines superiores -->
+    <line x1="18" y1="6" x2="18" y2="10"/>
+    <line x1="24" y1="6" x2="24" y2="10"/>
+    <line x1="32" y1="6" x2="32" y2="10"/>
+    <line x1="40" y1="6" x2="40" y2="10"/>
+    <line x1="46" y1="6" x2="46" y2="10"/>
+    
+    <!-- Pines inferiores -->
+    <line x1="18" y1="54" x2="18" y2="58"/>
+    <line x1="24" y1="54" x2="24" y2="58"/>
+    <line x1="32" y1="54" x2="32" y2="58"/>
+    <line x1="40" y1="54" x2="40" y2="58"/>
+    <line x1="46" y1="54" x2="46" y2="58"/>
+    
+    <!-- Pines laterales -->
+    <line x1="6" y1="18" x2="10" y2="18"/>
+    <line x1="6" y1="24" x2="10" y2="24"/>
+    <line x1="6" y1="32" x2="10" y2="32"/>
+    <line x1="6" y1="40" x2="10" y2="40"/>
+    <line x1="6" y1="46" x2="10" y2="46"/>
+    
+    <line x1="54" y1="18" x2="58" y2="18"/>
+    <line x1="54" y1="24" x2="58" y2="24"/>
+    <line x1="54" y1="32" x2="58" y2="32"/>
+    <line x1="54" y1="40" x2="58" y2="40"/>
+    <line x1="54" y1="46" x2="58" y2="46"/>
+  </g>
+  
+  <!-- Circuitos internos animados -->
+  <g class="circuit-line" stroke="#4CAF50" stroke-width="0.8" fill="none">
+    <path d="M 15 20 L 25 20 L 25 30 L 35 30"/>
+    <path d="M 49 25 L 39 25 L 39 35 L 29 35"/>
+    <path d="M 20 49 L 20 39 L 30 39 L 30 29"/>
+    <path d="M 44 15 L 44 25 L 34 25 L 34 35"/>
+  </g>
+  
+  <!-- Área central para V8 con fondo sutil -->
+  <ellipse cx="32" cy="32" rx="18" ry="12" 
+           fill="rgba(76,175,80,0.08)" 
+           stroke="rgba(76,175,80,0.2)" 
+           stroke-width="0.5"/>
+  
+  <!-- Texto V8 principal en blanco -->
+  <text x="32" y="40" text-anchor="middle" 
+        font-family="'Segoe UI', 'Arial Black', sans-serif" 
+        font-size="24" 
+        font-weight="900" 
+        fill="#ffffff"
+        filter="url(#textGlow)"
+        letter-spacing="-1px">V8</text>
+  
+  <!-- Borde adicional para V8 -->
+  <text x="32" y="40" text-anchor="middle" 
+        font-family="'Segoe UI', 'Arial Black', sans-serif" 
+        font-size="24" 
+        font-weight="900" 
+        fill="none"
+        stroke="#4CAF50"
+        stroke-width="0.8"
+        letter-spacing="-1px"
+        opacity="0.8">V8</text>
+  
+  <!-- LED de estado profesional -->
+  <circle cx="48" cy="16" r="2.5" 
+          fill="#4CAF50" 
+          class="power-led"/>
+  <circle cx="48" cy="16" r="1.2" 
+          fill="#66BB6A" 
+          opacity="0.8"/>
+  
+  <!-- Indicadores de actividad (micro LEDs) -->
+  <g class="power-led">
+    <rect x="14" y="48" width="1.5" height="1.5" rx="0.3" fill="#4CAF50"/>
+    <rect x="17" y="48" width="1.5" height="1.5" rx="0.3" fill="#4CAF50" style="animation-delay: 0.3s"/>
+    <rect x="20" y="48" width="1.5" height="1.5" rx="0.3" fill="#4CAF50" style="animation-delay: 0.6s"/>
+  </g>
+  
+  <!-- Reflejos finales para efecto premium -->
+  <path d="M 16 10 Q 32 8 48 10" 
+        stroke="rgba(255,255,255,0.15)" 
+        stroke-width="1" 
+        fill="none"/>
 </svg>

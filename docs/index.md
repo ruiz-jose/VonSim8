@@ -1,5 +1,4 @@
 # ¿Qué es VonSim8?
-![Simulador de 8 bits](https://raw.githubusercontent.com/ruiz-jose/VonSim8/main/app/public/og.png)
 
 VonSim8 es un simulador interactivo y educativo que te permite aprender, practicar y experimentar los conceptos fundamentales de arquitectura y organización de computadoras. Es ideal para estudiantes, docentes y entusiastas que buscan una herramienta visual, sencilla y potente para comprender cómo funciona una computadora desde adentro. 
 VonSim8 está inspirado en el VonSim, que es una herramienta destinada a la enseñanza y aprendizaje de arquitectura y organización de computadoras. Consta de un entorno para desarrollar programas en [lenguaje ensamblador](./computer/assembly) (Ensambaldor) y de un simulador para los mismos.
