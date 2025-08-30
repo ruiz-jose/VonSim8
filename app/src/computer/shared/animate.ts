@@ -186,7 +186,7 @@ const registerColors = {
 
   // Registros de dirección - usar variaciones de red/mantis
   IP: colors.red[500],
-  SP: "#DC2626", // red 600
+  SP: "#FACC15", // yellow-400 (amarillo)
   MAR: colors.blue[500], // cambiar a azul para consistencia
 
   // Registros especiales - usar el mismo color que MAR (azul)

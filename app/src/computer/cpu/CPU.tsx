@@ -255,7 +255,17 @@ export function CPU() {
 
       <Control />
       {showSP && (
-        <Reg name="SP" emphasis className={clsx("left-[450px] top-[292px]", "border-yellow-400")} />
+        <div className="absolute left-[450px] top-[292px] z-10">
+          <Reg name="SP" emphasis className="border-yellow-400 pt-2" />
+          <span
+            className="absolute left-0 top-0 z-30 select-none rounded-full border border-yellow-400 bg-yellow-800 px-1 py-0 font-mono text-[10px] font-bold tracking-widest text-yellow-200"
+            style={{
+              textShadow: "0 1px 4px #000, 0 0px 2px #fff4",
+            }}
+          >
+            SP
+          </span>
+        </div>
       )}
       {/* Eliminado para evitar duplicado visual del registro IP */}
 
