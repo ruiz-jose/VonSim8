@@ -81,7 +81,7 @@ dataBus.addNode("mbr to ir vertical end", { position: [250, 272] }); // Final de
 dataBus.addNode("mbr to ir approach", { position: [250, 275] }); // Punto de aproximación a IR (directamente al centro del registro IR)
 // Nodos para la ruta MBR bottom → ri siguiendo el mismo camino inicial que MBR→IR
 dataBus.addNode("mbr to ri vertical", { position: [390, 388] }); // Punto donde baja hacia ri desde el centro de CPU
-dataBus.addNode("SP join", { position: [390, 309] });
+dataBus.addNode("SP join", { position: [425, 309] });
 dataBus.addNode("IP join", { position: [390, 349] }); // Alineado con data mbr join y NodoRegIn
 dataBus.addNode("ri join", { position: [390, 388] });
 dataBus.addNode("MAR join1", { position: [550, 388] });
@@ -922,7 +922,7 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
           // "M 430 349 H 421", // ri (eliminado)
           // "V 250", // Long path to MBR, eliminado
           "M 451 349 H 390 V 250", // IP alineado y vertical hasta data mbr join/NodoRegIn
-          showSP ? "M 451 309 H 390" : "M 451 309", // SP alineado
+          showSP ? "M 390 349 L 425 309 L 455 309" : "", // SP alineado, // línea recta de IP join a SP join y luego a SP
           showri ? "M 455 388 H 390 V 300" : "", // ri alineado
           // Data registers - ajustados para conectar con registros más pequeños
           "M 455 45 H 425", // AL - ajustado
@@ -944,7 +944,7 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
           "M 555 10 H 100 V 84", // DX out to left*/
           //"M 510 205 H 60", // id out to left
           "M 390 250 V 115", // línea vertical que conecta el bus central con NodoRegIn
-          "M 390 115 L 425 45 L 455 45", // línea recta de NodoRegIn a AL join y luego a AL
+          "M 390 115 L 425 45 L 455 45", // línea recta de NodoRegIn a AL join y luego a AL          
           "M 390 115 L 425 85 L 455 85", // línea recta de NodoRegIn a BL join y luego a BL
           "M 390 115 L 425 125 L 455 125", // línea recta de NodoRegIn a CL join y luego a CL
           "M 390 115 L 425 165 L 455 165", // línea recta de NodoRegIn a DL join y luego a DL
