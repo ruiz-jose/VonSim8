@@ -51,7 +51,7 @@ export function AddressBus({ showSP, showri }: AddressBusProps) {
   const paths = [
     showSP ? "M 455 309 L 525 309 L 550 348" : "", // SP: línea recta desde SP a SP out y luego a circulo
     "M 400 349 H 550 V 255", // IP (ampliado desde la izquierda)
-  showri ? "M 455 388 L 525 388 L 550 348" : "", // ri: igual que SP, conecta ri, ri out y MAR join1
+    showri ? "M 455 388 L 525 388 L 550 348" : "", // ri: igual que SP, conecta ri, ri out y MAR join1
     "M 400 349 H 610", // Connection to MAR (ampliado desde la izquierda)
     "M 610 349 H 650", // MAR to external address bus (conexión gris)
     "M 390 115 H 250 V 205", // NodoRegIn to id join (conexión gris)

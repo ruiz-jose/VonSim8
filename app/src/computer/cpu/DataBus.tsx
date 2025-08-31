@@ -944,7 +944,7 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
           "M 555 10 H 100 V 84", // DX out to left*/
           //"M 510 205 H 60", // id out to left
           "M 390 250 V 115", // línea vertical que conecta el bus central con NodoRegIn
-          "M 390 115 L 425 45 L 455 45", // línea recta de NodoRegIn a AL join y luego a AL          
+          "M 390 115 L 425 45 L 455 45", // línea recta de NodoRegIn a AL join y luego a AL
           "M 390 115 L 425 85 L 455 85", // línea recta de NodoRegIn a BL join y luego a BL
           "M 390 115 L 425 125 L 455 125", // línea recta de NodoRegIn a CL join y luego a CL
           "M 390 115 L 425 165 L 455 165", // línea recta de NodoRegIn a DL join y luego a DL

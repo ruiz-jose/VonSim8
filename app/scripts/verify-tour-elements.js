@@ -5,13 +5,13 @@
  * Ejecutar con: node scripts/verify-tour-elements.js
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from "fs";
+// import path from "path"; // No se usa
 
 // Elementos que el tour busca
 const tourTargets = [
   "app-container",
-  "header", 
+  "header",
   "controls",
   "panel-editor",
   "panel-computer",
@@ -20,30 +20,30 @@ const tourTargets = [
   "settings-button",
   "panel-settings",
   "footer-links",
-  "cycle-button"
+  "cycle-button",
 ];
 
 // Archivos donde buscar los data-testid
 const filesToCheck = [
-  'app/src/App.tsx',
-  'app/src/components/Header.tsx',
-  'app/src/components/Controls.tsx',
-  'app/src/components/Footer.tsx',
-  'app/src/computer/cpu/CPU.tsx',
-  'app/src/computer/memory/Memory.tsx'
+  "app/src/App.tsx",
+  "app/src/components/Header.tsx",
+  "app/src/components/Controls.tsx",
+  "app/src/components/Footer.tsx",
+  "app/src/computer/cpu/CPU.tsx",
+  "app/src/computer/memory/Memory.tsx",
 ];
 
 function checkFile(filePath) {
   try {
-    const content = fs.readFileSync(filePath, 'utf8');
+    const content = fs.readFileSync(filePath, "utf8");
     const foundTargets = [];
-    
+
     tourTargets.forEach(target => {
       if (content.includes(`data-testid="${target}"`)) {
         foundTargets.push(target);
       }
     });
-    
+
     return foundTargets;
   } catch (error) {
     console.error(`Error reading file ${filePath}:`, error.message);
@@ -52,42 +52,40 @@ function checkFile(filePath) {
 }
 
 function main() {
-  console.log('🔍 Verificando elementos del tour...\n');
-  
+  console.log("🔍 Verificando elementos del tour...\n");
+
   const allFound = new Set();
   const missing = [];
-  
+
   filesToCheck.forEach(filePath => {
     const found = checkFile(filePath);
     found.forEach(target => allFound.add(target));
-    
+
     if (found.length > 0) {
       console.log(`✅ ${filePath}:`);
       found.forEach(target => console.log(`   - ${target}`));
     }
   });
-  
+
   // Verificar elementos faltantes
   tourTargets.forEach(target => {
     if (!allFound.has(target)) {
       missing.push(target);
     }
   });
-  
-  console.log('\n📊 Resumen:');
+
+  console.log("\n📊 Resumen:");
   console.log(`✅ Encontrados: ${allFound.size}/${tourTargets.length}`);
-  
+
   if (missing.length > 0) {
     console.log(`❌ Faltantes: ${missing.length}`);
     missing.forEach(target => console.log(`   - ${target}`));
-    process.exit(1);
+    // En ESM, no usar process.exit. Simplemente lanzar error o finalizar.
+    throw new Error("Faltan elementos del tour");
   } else {
-    console.log('🎉 ¡Todos los elementos del tour están correctamente configurados!');
+    console.log("🎉 ¡Todos los elementos del tour están correctamente configurados!");
   }
 }
 
-if (require.main === module) {
-  main();
-}
-
-module.exports = { tourTargets, checkFile };
+// Ejecutar siempre main()
+main();

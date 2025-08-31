@@ -30,7 +30,8 @@ type ConceptVisualizerProps = {
 const VISUALIZATIONS = {
   "cpu-components": {
     title: "Componentes de la CPU",
-    description: "Visualiza los componentes principales de la CPU: ALU, Unidad de Control y registros",
+    description:
+      "Visualiza los componentes principales de la CPU: ALU, Unidad de Control y registros",
     steps: [
       {
         id: "overview",
@@ -40,9 +41,10 @@ const VISUALIZATIONS = {
         animation: {
           type: "highlight",
           targets: ["CPU-container"],
-          data: { 
+          data: {
             title: "CPU",
-            description: "Se basa en el procesador Intel 8086 de 16 bits, pero por simplicidad usamos registros de 8 bits."
+            description:
+              "Se basa en el procesador Intel 8086 de 16 bits, pero por simplicidad usamos registros de 8 bits.",
           },
         },
       },
@@ -54,9 +56,9 @@ const VISUALIZATIONS = {
         animation: {
           type: "highlight",
           targets: ["ALU"],
-          data: { 
+          data: {
             description: "Ejecuta operaciones aritméticas (como ADD + y SUB —) y lógicas.",
-            icon: "⚙️"
+            icon: "⚙️",
           },
         },
       },
@@ -68,9 +70,9 @@ const VISUALIZATIONS = {
         animation: {
           type: "highlight",
           targets: ["control-unit"],
-          data: { 
+          data: {
             description: "Coordina el funcionamiento de todos los componentes internos de la CPU.",
-            components: ["Decodificador", "INSTRUCCIÓN"]
+            components: ["Decodificador", "INSTRUCCIÓN"],
           },
         },
       },
@@ -82,9 +84,9 @@ const VISUALIZATIONS = {
         animation: {
           type: "highlight",
           targets: ["FLAGS"],
-          data: { 
+          data: {
             description: "Contiene indicadores del estado: C (Carry) y Z (Zero)",
-            flags: ["C", "Z"]
+            flags: ["C", "Z"],
           },
         },
       },
@@ -102,9 +104,10 @@ const VISUALIZATIONS = {
         animation: {
           type: "highlight",
           targets: ["AL", "BL", "CL", "DL"],
-          data: { 
-            description: "Las instrucciones utilizan estos registros como operandos: AL, BL, CL, DL.",
-            registers: ["AL", "BL", "CL", "DL"]
+          data: {
+            description:
+              "Las instrucciones utilizan estos registros como operandos: AL, BL, CL, DL.",
+            registers: ["AL", "BL", "CL", "DL"],
           },
         },
       },
@@ -116,9 +119,9 @@ const VISUALIZATIONS = {
         animation: {
           type: "highlight",
           targets: ["IP"],
-          data: { 
+          data: {
             description: "Contiene la dirección de la próxima instrucción que se ejecutará.",
-            color: "red"
+            color: "red",
           },
         },
       },
@@ -130,9 +133,9 @@ const VISUALIZATIONS = {
         animation: {
           type: "highlight",
           targets: ["IR"],
-          data: { 
+          data: {
             description: "Contiene la instrucción en curso para su decodificación y ejecución.",
-            color: "purple"
+            color: "purple",
           },
         },
       },
@@ -144,9 +147,9 @@ const VISUALIZATIONS = {
         animation: {
           type: "highlight",
           targets: ["MAR", "MBR"],
-          data: { 
+          data: {
             description: "MAR: dirección de memoria. MBR: datos transferidos.",
-            registers: ["MAR", "MBR"]
+            registers: ["MAR", "MBR"],
           },
         },
       },
@@ -164,10 +167,11 @@ const VISUALIZATIONS = {
         animation: {
           type: "highlight",
           targets: ["memory-grid"],
-          data: { 
-            description: "Compuesta por 256 celdas, cada una de 1 byte. Las direcciones y contenidos están representados en hexadecimal.",
+          data: {
+            description:
+              "Compuesta por 256 celdas, cada una de 1 byte. Las direcciones y contenidos están representados en hexadecimal.",
             size: "16x16",
-            cells: 256
+            cells: 256,
           },
         },
       },
@@ -179,9 +183,10 @@ const VISUALIZATIONS = {
         animation: {
           type: "highlight",
           targets: ["address-example"],
-          data: { 
-            description: "La dirección 12h se obtiene de la intersección de la fila 1 y la columna 2.",
-            example: "12h = fila 1, columna 2"
+          data: {
+            description:
+              "La dirección 12h se obtiene de la intersección de la fila 1 y la columna 2.",
+            example: "12h = fila 1, columna 2",
           },
         },
       },
@@ -193,9 +198,9 @@ const VISUALIZATIONS = {
         animation: {
           type: "flow",
           targets: ["data-bus"],
-          data: { 
+          data: {
             description: "Transfiere entre CPU y memoria en ambos sentidos. Es bidireccional.",
-            direction: "bidirectional"
+            direction: "bidirectional",
           },
         },
       },
@@ -207,9 +212,10 @@ const VISUALIZATIONS = {
         animation: {
           type: "flow",
           targets: ["address-bus"],
-          data: { 
-            description: "Envía desde la CPU a la memoria la dirección de la celda a leer o escribir. Es unidireccional.",
-            direction: "unidirectional"
+          data: {
+            description:
+              "Envía desde la CPU a la memoria la dirección de la celda a leer o escribir. Es unidireccional.",
+            direction: "unidirectional",
           },
         },
       },
@@ -221,9 +227,9 @@ const VISUALIZATIONS = {
         animation: {
           type: "highlight",
           targets: ["control-bus"],
-          data: { 
+          data: {
             description: "Transmiten las órdenes de lectura o escritura hacia la memoria.",
-            signals: ["rd", "wr"]
+            signals: ["rd", "wr"],
           },
         },
       },

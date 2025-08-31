@@ -167,7 +167,7 @@ const useTourState = () => {
   // Verificar si el target existe y manejar apertura/cierre de configuración
   useEffect(() => {
     const step = tourSteps[currentStep];
-    
+
     // Usar un timeout para dar tiempo a que los elementos se rendericen
     const checkTarget = () => {
       const el = document.querySelector(`[data-testid="${step.target}"]`);
@@ -176,7 +176,7 @@ const useTourState = () => {
 
     // Verificar inmediatamente
     checkTarget();
-    
+
     // Verificar nuevamente después de un breve delay para elementos que se renderizan dinámicamente
     const timeoutId = setTimeout(checkTarget, 100);
 
@@ -375,7 +375,8 @@ const TourTooltip = memo(
             />
             <h3 className="mb-2 text-lg font-semibold text-mantis-400">Elemento no encontrado</h3>
             <p className="mb-2 text-stone-300">
-              No se pudo encontrar el elemento: <code className="text-mantis-400">{step.target}</code>
+              No se pudo encontrar el elemento:{" "}
+              <code className="text-mantis-400">{step.target}</code>
             </p>
             <p className="mb-4 text-xs text-stone-400">
               Paso {currentStep + 1} de {totalSteps}: {step.title}

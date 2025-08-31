@@ -52,7 +52,8 @@ export const AVAILABLE_TUTORIALS: Tutorial[] = [
   {
     id: "cpu-components",
     title: "Componentes de la CPU",
-    description: "Aprende sobre los componentes principales de la CPU: ALU, Unidad de Control y registros",
+    description:
+      "Aprende sobre los componentes principales de la CPU: ALU, Unidad de Control y registros",
     difficulty: "beginner",
     estimatedTime: 12,
     steps: [
@@ -99,10 +100,12 @@ export const AVAILABLE_TUTORIALS: Tutorial[] = [
         type: "quiz",
         content: "",
         exercise: {
-          question: "¿Cuál de estos componentes ejecuta las operaciones aritméticas y lógicas en la CPU?",
+          question:
+            "¿Cuál de estos componentes ejecuta las operaciones aritméticas y lógicas en la CPU?",
           options: ["Unidad de Control", "ALU", "Registros", "Memoria"],
           correctAnswer: 1,
-          explanation: "La ALU (Unidad Aritmético-Lógica) es específicamente la responsable de ejecutar operaciones matemáticas y lógicas dentro de la CPU.",
+          explanation:
+            "La ALU (Unidad Aritmético-Lógica) es específicamente la responsable de ejecutar operaciones matemáticas y lógicas dentro de la CPU.",
         },
         completed: false,
       },
@@ -167,10 +170,12 @@ export const AVAILABLE_TUTORIALS: Tutorial[] = [
         type: "quiz",
         content: "Responde correctamente para continuar con el tutorial.",
         exercise: {
-          question: "¿Cuál de estos registros contiene la dirección de la próxima instrucción a ejecutar?",
+          question:
+            "¿Cuál de estos registros contiene la dirección de la próxima instrucción a ejecutar?",
           options: ["IR", "IP", "MAR", "MBR"],
           correctAnswer: 1,
-          explanation: "El Puntero de Instrucción (IP) es el registro que contiene la dirección de la próxima instrucción que se ejecutará.",
+          explanation:
+            "El Puntero de Instrucción (IP) es el registro que contiene la dirección de la próxima instrucción que se ejecutará.",
         },
         completed: false,
       },
@@ -236,9 +241,15 @@ export const AVAILABLE_TUTORIALS: Tutorial[] = [
         content: "Responde correctamente para continuar con el tutorial.",
         exercise: {
           question: "¿Cuántas celdas de memoria tiene VonSim8 y cuánto almacena cada una?",
-          options: ["128 celdas de 2 bytes", "256 celdas de 1 byte", "512 celdas de 1 byte", "256 celdas de 2 bytes"],
+          options: [
+            "128 celdas de 2 bytes",
+            "256 celdas de 1 byte",
+            "512 celdas de 1 byte",
+            "256 celdas de 2 bytes",
+          ],
           correctAnswer: 1,
-          explanation: "VonSim8 tiene 256 celdas de memoria, cada una capaz de almacenar 1 byte (8 bits) de información.",
+          explanation:
+            "VonSim8 tiene 256 celdas de memoria, cada una capaz de almacenar 1 byte (8 bits) de información.",
         },
         completed: false,
       },
@@ -279,8 +290,7 @@ export const AVAILABLE_TUTORIALS: Tutorial[] = [
         completed: false,
       },
     ],
-  }
-
+  },
 ];
 
 export const InteractiveTutorial = memo(

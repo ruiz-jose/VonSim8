@@ -10,19 +10,19 @@ El tour de bienvenida es una funcionalidad interactiva que guía a los usuarios 
 
 El tour busca los siguientes elementos en la interfaz usando `data-testid`:
 
-| Elemento | Componente | Descripción |
-|----------|------------|-------------|
-| `app-container` | App.tsx | Contenedor principal de la aplicación |
-| `header` | Header.tsx | Barra de navegación superior |
-| `controls` | Controls.tsx | Controles de simulación |
-| `panel-editor` | App.tsx | Panel del editor de código |
-| `panel-computer` | App.tsx | Panel del simulador de computadora |
-| `cpu-component` | CPU.tsx | Componente de la CPU |
-| `memory-component` | Memory.tsx | Componente de memoria RAM |
-| `settings-button` | Header.tsx | Botón de configuración |
-| `panel-settings` | App.tsx | Panel de configuración |
-| `footer-links` | Footer.tsx | Enlaces del pie de página |
-| `cycle-button` | Controls.tsx | Botón de ejecución por ciclo |
+| Elemento           | Componente   | Descripción                           |
+| ------------------ | ------------ | ------------------------------------- |
+| `app-container`    | App.tsx      | Contenedor principal de la aplicación |
+| `header`           | Header.tsx   | Barra de navegación superior          |
+| `controls`         | Controls.tsx | Controles de simulación               |
+| `panel-editor`     | App.tsx      | Panel del editor de código            |
+| `panel-computer`   | App.tsx      | Panel del simulador de computadora    |
+| `cpu-component`    | CPU.tsx      | Componente de la CPU                  |
+| `memory-component` | Memory.tsx   | Componente de memoria RAM             |
+| `settings-button`  | Header.tsx   | Botón de configuración                |
+| `panel-settings`   | App.tsx      | Panel de configuración                |
+| `footer-links`     | Footer.tsx   | Enlaces del pie de página             |
+| `cycle-button`     | Controls.tsx | Botón de ejecución por ciclo          |
 
 ### Pasos del Tour
 

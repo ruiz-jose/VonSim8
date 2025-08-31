@@ -383,7 +383,7 @@ function ReadBusAnimation({ pathRef }: ReadBusAnimationProps) {
         opacity: visible ? 1 : 0,
       }}
     >
-    Read
+      Read
     </div>
   );
 }

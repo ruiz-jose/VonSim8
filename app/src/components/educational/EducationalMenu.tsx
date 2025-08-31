@@ -70,10 +70,8 @@ export const EducationalMenu = memo(({ isOpen = false, onShowProgress }: Educati
       description: "Funcionamiento de la memoria principal",
       difficulty: "Básico",
       duration: "10 min",
-    }
+    },
   ];
-
-
 
   return (
     <>
@@ -191,8 +189,6 @@ export const EducationalMenu = memo(({ isOpen = false, onShowProgress }: Educati
             />
           );
         })()}
-
-
     </>
   );
 });

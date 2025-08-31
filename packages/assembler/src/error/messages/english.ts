@@ -27,14 +27,14 @@ export const english = {
     "The program is empty or does not contain executable instructions.\n\nRemember: a valid program must have at least one instruction and end with the END directive.\n\nFor example:\n\n    org 1000h\n    mov al, 3\n    hlt\n    end\n\nSee the documentation or examples for more help.",
   "end-must-be-the-last-statement": "END must be the last statement.",
   "equ-not-found": (label: string) => `EQU "${label}" not found.`,
-  "expects-ax": "This operand should be AX or AL.",
-  "expects-dx": "The only valid register is DX.",
+  "expects-ax": "This operand should be AL.",
+  "expects-dx": "The only valid register is DL.",
   "expects-immediate": "This operand should be immediate.",
   "expects-label": "This operand should be a label.",
   "expects-no-operands": "This instruction doesn't expect any operands.",
   "expects-one-operand": "This instruction expects one operand.",
   "expects-two-operands": "This instruction expects two operands.",
-  "expects-word-register": "This instruction expects a 16-bits register as its operand.",
+  "expects-word-register": "This instruction expects a 8-bits register as its operand.",
   "parser.data-block-no-parameters":
     "La directiva .DATA no debe tener parámetros. Solo se permiten comentarios en la misma línea.",
   "parser.code-block-no-parameters":
