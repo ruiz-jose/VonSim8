@@ -50,7 +50,7 @@ export class IOInstruction extends Instruction<"IN" | "OUT"> {
       //yield* computer.cpu.updateWordRegister("ri", Byte.zero(16));
       yield* super.consumeInstruction(computer, "ri.l");
     } else {
-      yield* computer.cpu.copyWordRegister("DX", "ri");
+      yield* computer.cpu.copyByteRegister("DL", "ri.l");
       if (!computer.cpu.getRegister("DX").high.isZero()) {
         yield {
           type: "cpu:error",

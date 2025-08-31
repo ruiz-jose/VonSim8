@@ -201,7 +201,7 @@ export class CPU extends Component {
     const vector = Byte.fromUnsigned(number.unsigned, 8);
     yield* this.updateByteRegister("ri.l", vector);
     //yield* this.getMBR("IP.l");
-    yield* this.copyWordRegister("ri", "IP");
+    yield* this.copyByteRegister("ri.l", "IP.l");
     //console.log("Interrupt vector address:", vector);
     // yield* this.updateByteRegister("id.l", vector);
     //yield* this.copyByteRegister("id.l", "ri.l");
