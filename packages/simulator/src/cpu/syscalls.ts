@@ -130,7 +130,7 @@ export function* handleSyscall(
       let video = 0xd8;
       while (!computer.cpu.getRegister("AL").isZero()) {
         // Read character from [BX]
-        yield* computer.cpu.copyWordRegister("BX", "ri");
+        yield* computer.cpu.copyByteRegister("BL", "ri.l");
         yield* computer.cpu.setMAR("ri");
         if (!(yield* computer.cpu.useBus("mem-read"))) return false; // Error reading from memory
         //yield* computer.cpu.getMBR("id.l");
@@ -152,7 +152,7 @@ export function* handleSyscall(
         video++;
 
         // INC BX
-        yield* computer.cpu.copyWordRegister("BX", "left");
+        yield* computer.cpu.copyByteRegister("BL", "left.l");
         yield* computer.cpu.updateWordRegister("right", Byte.fromUnsigned(1, 16));
         const BX = computer.cpu.getRegister("BX").add(1); // Should always succeed, otherwise the memory would've thrown an error
         yield* computer.cpu.aluExecute("ADD", BX, {
@@ -161,7 +161,7 @@ export function* handleSyscall(
           SF: BX.signed < 0,
           ZF: false, // Never, since max value to add is 0x7FFF + 1 = 0x8000 (max memory address)
         });
-        yield* computer.cpu.copyWordRegister("result", "BX");
+        yield* computer.cpu.copyByteRegister("result.l", "BL");
         // DEC AL
         yield* computer.cpu.copyByteRegister("AL", "left.l");
         yield* computer.cpu.updateByteRegister("right.l", Byte.fromUnsigned(1, 8));

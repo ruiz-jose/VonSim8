@@ -255,34 +255,33 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         forceMs: true,
       } as const;
 
-      // Esperar a que estemos en la fase "executing" o proceder si ya estamos en ella
-      if (currentPhase !== "executing") {
-        console.log("⏳ Esperando fase executing para animación de la ALU...");
-        // _waitingForExecuting = true;
-        await new Promise<void>(resolve => {
-          let timeoutCount = 0;
-          const maxTimeouts = 200; // 10 segundos máximo (200 * 50ms)
+      // Esperar a que estemos en la fase "executing" solo si las animaciones están habilitadas
+      if (settings.animations) {
+        if (currentPhase !== "executing") {
+          console.log("⏳ Esperando fase executing para animación de la ALU...");
+          await new Promise<void>(resolve => {
+            let timeoutCount = 0;
+            const maxTimeouts = 200; // 10 segundos máximo (200 * 50ms)
 
-          const checkPhase = () => {
-            console.log("🔍 Verificando fase actual:", currentPhase);
-            timeoutCount++;
+            const checkPhase = () => {
+              console.log("🔍 Verificando fase actual:", currentPhase);
+              timeoutCount++;
 
-            if (currentPhase === "executing") {
-              // _waitingForExecuting = false;
-              resolve();
-            } else if (timeoutCount >= maxTimeouts) {
-              console.warn("⚠️ Timeout esperando fase executing, procediendo de todas formas");
-              // _waitingForExecuting = false;
-              resolve();
-            } else {
-              setTimeout(checkPhase, 50); // Verificar cada 50ms
-            }
-          };
-          checkPhase();
-        });
-        console.log("✅ Fase executing alcanzada, procediendo con animación de la ALU");
-      } else {
-        console.log("✅ Ya estamos en fase executing, procediendo directamente");
+              if (currentPhase === "executing") {
+                resolve();
+              } else if (timeoutCount >= maxTimeouts) {
+                console.warn("⚠️ Timeout esperando fase executing, procediendo de todas formas");
+                resolve();
+              } else {
+                setTimeout(checkPhase, 50); // Verificar cada 50ms
+              }
+            };
+            checkPhase();
+          });
+          console.log("✅ Fase executing alcanzada, procediendo con animación de la ALU");
+        } else {
+          console.log("✅ Ya estamos en fase executing, procediendo directamente");
+        }
       }
 
       // Mostrar los textos del left y right y animar los operandos simultáneamente
