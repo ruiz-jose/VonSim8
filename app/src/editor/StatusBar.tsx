@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { ejemplos } from "./examples/examples";
 import { atom, useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect } from "react";
 
@@ -59,6 +60,8 @@ export function StatusBar() {
 
   const unsavedChanges = fileHandle && dirty;
 
+
+
   // Sincronizar el estado del programa cuando cambie
   useEffect(() => {
     if (window.codemirror) {
@@ -74,38 +77,52 @@ export function StatusBar() {
     }
   }, []);
 
-  const openFile = useCallback(async () => {
-    if (!supportsNativeFileSystem) {
-      toast({ title: "editor.files.unsupported", variant: "error" });
-      return;
-    }
 
-    if (unsavedChanges) {
-      const discard = confirm("editor.files.unsaved");
-      if (!discard) return;
-    }
-
-    try {
-      const [fileHandle] = await window.showOpenFilePicker({
-        multiple: false,
-        excludeAcceptAllOption: true,
-        types: [{ accept: { "text/plain": [".txt", ".asm", ".vonsim"] } }],
-      });
-      const status = await fileHandle.requestPermission({ mode: "readwrite" });
-      if (status === "granted") {
-        setFileHandle(fileHandle);
-        const file = await fileHandle.getFile();
-        const source = await file.text();
-        setLastSavedProgram(source);
-        window.codemirror!.dispatch({
-          changes: { from: 0, to: window.codemirror!.state.doc.length, insert: source },
-        });
+    // Abrir archivo desde la PC
+    const openFileFromPC = useCallback(async () => {
+      if (!supportsNativeFileSystem) {
+        toast({ title: "editor.files.unsupported", variant: "error" });
+        return;
       }
-    } catch (error) {
-      console.error(error);
-      toast({ title: "editor.files.open-error", variant: "error" });
-    }
-  }, [unsavedChanges, setFileHandle, setLastSavedProgram]);
+      if (unsavedChanges) {
+        const discard = confirm("editor.files.unsaved");
+        if (!discard) return;
+      }
+      try {
+        const [fileHandle] = await window.showOpenFilePicker({
+          multiple: false,
+          excludeAcceptAllOption: true,
+          types: [{ accept: { "text/plain": [".txt", ".asm", ".vonsim"] } }],
+        });
+        const status = await fileHandle.requestPermission({ mode: "readwrite" });
+        if (status === "granted") {
+          setFileHandle(fileHandle);
+          const file = await fileHandle.getFile();
+          const source = await file.text();
+          setLastSavedProgram(source);
+          window.codemirror!.dispatch({
+            changes: { from: 0, to: window.codemirror!.state.doc.length, insert: source },
+          });
+        }
+      } catch (error) {
+        console.error(error);
+        toast({ title: "editor.files.open-error", variant: "error" });
+      }
+    }, [unsavedChanges, setFileHandle, setLastSavedProgram]);
+
+    // Abrir ejemplo
+    const openExample = useCallback((ejemplo: typeof ejemplos[0]) => {
+      if (unsavedChanges) {
+        const discard = confirm("editor.files.unsaved");
+        if (!discard) return;
+      }
+      setFileHandle(null);
+      setLastSavedProgram(ejemplo.contenido);
+      window.codemirror!.dispatch({
+        changes: { from: 0, to: window.codemirror!.state.doc.length, insert: ejemplo.contenido },
+      });
+      toast({ title: `Ejemplo cargado: ${ejemplo.nombre}`, variant: "info" });
+    }, [unsavedChanges, setFileHandle, setLastSavedProgram]);
 
   const saveFile = useCallback(async () => {
     if (!supportsNativeFileSystem) {
@@ -192,44 +209,75 @@ export function StatusBar() {
         {fileHandle && <div className="h-4 w-px bg-stone-600" />}
 
         {/* Iconos de archivo */}
-        <div className="flex items-center gap-2">
-          <Tooltip content="editor.files.open" position="top">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={openFile}
-              className="hover-lift"
-              aria-label="editor.files.open"
-            >
-              <span className="icon-[lucide--folder-open] size-4" />
-            </Button>
-          </Tooltip>
+            <div className="flex items-center gap-2">
+              {/* Popover para abrir archivo o ejemplo */}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="hover-lift"
+                    aria-label="editor.files.open"
+                  >
+                    <span className="icon-[lucide--folder-open] size-4" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent align="start" className="w-64 p-2">
+                  <div className="flex flex-col gap-2 text-left">
+                    <Button
+                      variant="default"
+                      size="sm"
+                      onClick={openFileFromPC}
+                      className="justify-start w-full text-left px-3 hover:bg-mantis-900/30 text-mantis-400"
+                    >
+                      <span className="icon-[lucide--laptop] size-4 mr-2 text-mantis-400" />
+                      <span className="text-left text-mantis-300">Abrir desde la PC</span>
+                    </Button>
+                    <div className="my-2 h-px w-full bg-stone-700/60" />
+                    <div className="mb-1 text-xs text-stone-400 pl-1">Ejemplos:</div>
+                    <div className="rounded-lg bg-stone-800/40 p-1">
+                      {ejemplos.map(ejemplo => (
+                        <Button
+                          key={ejemplo.filename}
+                          variant="ghost"
+                          size="sm"
+                          className="flex w-full items-center px-3 hover:bg-yellow-900/30 text-yellow-400"
+                          onClick={() => openExample(ejemplo)}
+                        >
+                          <span className="icon-[lucide--file-text] size-4 mr-2 text-yellow-400" />
+                          <span className="flex-1 text-left text-yellow-200 whitespace-normal">{ejemplo.nombre}</span>
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
 
-          <Tooltip content="editor.files.save" position="top">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={saveFile}
-              disabled={!fileHandle || !unsavedChanges}
-              className="hover-lift"
-              aria-label="editor.files.save"
-            >
-              <span className="icon-[lucide--save] size-4" />
-            </Button>
-          </Tooltip>
+              <Tooltip content="editor.files.save" position="top">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={saveFile}
+                  disabled={!fileHandle || !unsavedChanges}
+                  className="hover-lift"
+                  aria-label="editor.files.save"
+                >
+                  <span className="icon-[lucide--save] size-4" />
+                </Button>
+              </Tooltip>
 
-          <Tooltip content="editor.files.save-as" position="top">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={saveFileAs}
-              className="hover-lift"
-              aria-label="editor.files.save-as"
-            >
-              <span className="icon-[lucide--save-all] size-4" />
-            </Button>
-          </Tooltip>
-        </div>
+              <Tooltip content="editor.files.save-as" position="top">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={saveFileAs}
+                  className="hover-lift"
+                  aria-label="editor.files.save-as"
+                >
+                  <span className="icon-[lucide--save-all] size-4" />
+                </Button>
+              </Tooltip>
+            </div>
       </div>
 
       {/* Sección derecha - Tamaño de fuente y Errores */}
