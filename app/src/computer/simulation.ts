@@ -1433,8 +1433,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
                 displayMessage = "Ejecución: MBR ← read(Memoria[MAR]) | IP ← IP + 1";
               }
               // Caso especial para instrucciones de salto: JMP, JZ, JNZ, JC, JNC, JO, JNO, JS, JNS, JP, JNP, JGE, JG, JL, JLE, etc.
-              const jumpInstructions = [
-                "JMP", "JZ", "JNZ", "JC", "JNC", "JO", "JNO", "JS", "JNS"];
+              const jumpInstructions = ["JMP", "JZ", "JNZ", "JC", "JNC", "JO", "JNO", "JS", "JNS"];
               if (
                 executeStageCounter === 3 &&
                 sourceRegister === "IP" &&
