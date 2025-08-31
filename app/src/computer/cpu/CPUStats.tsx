@@ -6,7 +6,7 @@ import { Tooltip } from "@/components/ui/Tooltip";
 import { useTranslate } from "@/lib/i18n";
 import { useSettings } from "@/lib/settings";
 
-import { cycleCountAtom, instructionCountAtom } from "./state";
+import { cycleCountAtom, instructionCountAtom, totalCycleCountAtom } from "./state";
 
 type CPUStatsProps = {
   className?: string;
@@ -15,6 +15,7 @@ type CPUStatsProps = {
 export const CPUStats = memo(({ className }: CPUStatsProps) => {
   const translate = useTranslate();
   const cycleCount = useAtomValue(cycleCountAtom);
+  const totalCycleCount = useAtomValue(totalCycleCountAtom);
   const instructionCount = useAtomValue(instructionCountAtom);
   const [settings] = useSettings();
   const [showDetails, setShowDetails] = useState(false);
@@ -141,7 +142,7 @@ export const CPUStats = memo(({ className }: CPUStatsProps) => {
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <div className="text-xs text-stone-300">Ciclos totales del programa</div>
-                <div className="font-mono text-lg text-white">{cycleCount}</div>
+                <div className="font-mono text-lg text-white">{totalCycleCount}</div>
               </div>
               <div>
                 <div className="text-xs text-stone-300">

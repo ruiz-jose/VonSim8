@@ -1,3 +1,4 @@
+import { totalCycleCountAtom } from "./cpu/state";
 /**
  * @fileoverview
  * This file exposes methods/state that the UI uses to interact with the simulator.
@@ -183,6 +184,8 @@ function resetState(state: ComputerState, clearRegisters = false) {
   if (clearRegisters) {
     store.set(messageHistoryAtom, []); // Limpia el historial de mensajes
   }
+  // Resetear el total de ciclos acumulados al reiniciar el programa
+  store.set(totalCycleCountAtom, 0);
 }
 
 let currentInstructionName: string | null = null;

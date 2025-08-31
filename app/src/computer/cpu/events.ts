@@ -352,16 +352,22 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
 
     case "cpu:cycle.end": {
       // Limpiar transferencias pendientes al final del ciclo
-      pendingLeftTransfer = null;
-      pendingRightTransfer = null;
-      pendingMBRtoID = null;
-      pendingMBRtoRI = null;
-      pendingIPtoMARFromRegCopy = null;
-      pendingRiToMAR = null;
-      pendingMBRtoIDStep8 = null;
-      // _waitingForALUCogAnimation = false;
-      // _aluCogAnimationComplete = false;
-      currentPhase = "fetching";
+    pendingLeftTransfer = null;
+    pendingRightTransfer = null;
+    pendingMBRtoID = null;
+    pendingMBRtoRI = null;
+    pendingIPtoMARFromRegCopy = null;
+    pendingRiToMAR = null;
+    pendingMBRtoIDStep8 = null;
+    // _waitingForALUCogAnimation = false;
+    // _aluCogAnimationComplete = false;
+    currentPhase = "fetching";
+    // Sumar los ciclos de la instrucción actual al acumulador total
+    const { store } = await import("@/lib/jotai");
+    const { totalCycleCountAtom, currentInstructionCycleCountAtom } = await import("./state");
+    const ciclosInstruccion = store.get(currentInstructionCycleCountAtom);
+    store.set(totalCycleCountAtom, prev => prev + ciclosInstruccion);
+    return;
       // _waitingForFetchingOperands = false;
       // _waitingForExecuting = false;
       return;
