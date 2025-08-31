@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { registerSW } from "virtual:pwa-register";
 
-import { useNotifications } from "@/components/NotificationCenter";
+// Eliminada referencia a useNotifications
 
 type UpdateInfo = {
   available: boolean;
@@ -10,15 +10,8 @@ type UpdateInfo = {
 };
 
 export const usePWAUpdate = () => {
-  const notifications = useNotifications();
-  const addNotification = useMemo(() => {
-    return (
-      notifications?.addNotification ||
-      (() => {
-        // Función vacía para evitar errores cuando no hay provider
-      })
-    );
-  }, [notifications?.addNotification]);
+  // Eliminada llamada a useNotifications
+  // Eliminada función addNotification
   const [updateInfo, setUpdateInfo] = useState<UpdateInfo>({
     available: false,
     updating: false,
@@ -32,12 +25,7 @@ export const usePWAUpdate = () => {
         setUpdateInfo(prev => ({ ...prev, available: true }));
 
         // Agregar notificación de actualización disponible
-        addNotification({
-          type: "info",
-          title: "Nueva versión disponible",
-          message:
-            "Hay una nueva versión de VonSim8 disponible. Haz clic en 'Actualizar' para aplicar los cambios.",
-        });
+        // Notificación eliminada
 
         // Opcional: Mostrar toast adicional
         if (typeof window !== "undefined" && (window as any).VonSimAddNotification) {
@@ -50,11 +38,7 @@ export const usePWAUpdate = () => {
       },
       onOfflineReady() {
         // Agregar notificación de modo offline
-        addNotification({
-          type: "success",
-          title: "Modo offline disponible",
-          message: "VonSim8 ahora está disponible para uso offline.",
-        });
+        // Notificación eliminada
       },
       onRegistered(swRegistration) {
         console.log("Service Worker registrado:", swRegistration);
@@ -67,12 +51,7 @@ export const usePWAUpdate = () => {
       onRegisterError(error) {
         console.error("Error al registrar Service Worker:", error);
         // Agregar notificación de error
-        addNotification({
-          type: "error",
-          title: "Error de actualización",
-          message:
-            "No se pudo configurar la actualización automática. Algunas funciones pueden no estar disponibles.",
-        });
+        // Notificación eliminada
       },
     });
 
@@ -93,20 +72,12 @@ export const usePWAUpdate = () => {
           }));
 
           // Notificar actualización exitosa
-          addNotification({
-            type: "success",
-            title: "Actualización aplicada",
-            message: "La nueva versión se ha aplicado correctamente.",
-          });
+          // Notificación eliminada
         } catch (error) {
           console.error("Error al actualizar:", error);
           setUpdateInfo(prev => ({ ...prev, updating: false }));
 
-          addNotification({
-            type: "error",
-            title: "Error al actualizar",
-            message: "No se pudo aplicar la actualización. Inténtalo de nuevo.",
-          });
+          // Notificación eliminada
         }
       }
     };
@@ -133,7 +104,7 @@ export const usePWAUpdate = () => {
       delete (window as any).checkVonSim8Updates;
       clearInterval(interval);
     };
-  }, [addNotification]);
+  }, []);
 
   return {
     updateInfo,

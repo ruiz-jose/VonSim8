@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
-import { useNotifications } from "@/components/NotificationCenter";
+// Eliminada referencia a useNotifications
 
 // Declaración de la variable global definida por Vite
 declare const __COMMIT_HASH__: string;
@@ -16,15 +16,8 @@ const STORAGE_KEY = "vonsim8-commit-hash";
 const VERSION_CHECK_INTERVAL = 5 * 60 * 1000; // 5 minutos por defecto
 
 export const useVersionCheck = () => {
-  const notifications = useNotifications();
-  const addNotification = useMemo(() => {
-    return (
-      notifications?.addNotification ||
-      (() => {
-        // Función vacía para evitar errores cuando no hay provider
-      })
-    );
-  }, [notifications?.addNotification]);
+  // Eliminada llamada a useNotifications
+  // Eliminada función addNotification
   const [versionInfo, setVersionInfo] = useState<VersionInfo>({
     currentHash: __COMMIT_HASH__,
     lastKnownHash: null,
@@ -48,11 +41,7 @@ export const useVersionCheck = () => {
       if (lastHash && lastHash !== currentHash) {
         setVersionInfo(prev => ({ ...prev, hasUpdate: true }));
 
-        addNotification({
-          type: "info",
-          title: "Nueva versión detectada",
-          message: `Se ha detectado una nueva versión de VonSim8 (${currentHash.substring(0, 7)}). Recarga la página para actualizar.`,
-        });
+        // Notificación eliminada
 
         return true;
       }
@@ -62,7 +51,7 @@ export const useVersionCheck = () => {
       console.warn("Error checking version update:", error);
       return false;
     }
-  }, [addNotification]);
+  }, []);
 
   const updateToNewVersion = useCallback(() => {
     try {

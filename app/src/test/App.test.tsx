@@ -3,7 +3,7 @@ import { createStore } from "jotai";
 import { Provider as JotaiProvider } from "jotai/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { NotificationProvider } from "../components/NotificationCenter";
+// Eliminada referencia a NotificationProvider
 
 // El mock de @/computer ha sido eliminado para evitar conflicto con el mock global
 
@@ -68,11 +68,7 @@ vi.mock("jotai/react", () => ({
 // Wrapper con providers necesarios
 const TestWrapper = ({ children }: { children: React.ReactNode }) => {
   const store = createStore();
-  return (
-    <JotaiProvider store={store}>
-      <NotificationProvider>{children}</NotificationProvider>
-    </JotaiProvider>
-  );
+  return <JotaiProvider store={store}>{children}</JotaiProvider>;
 };
 
 describe("App Component", () => {

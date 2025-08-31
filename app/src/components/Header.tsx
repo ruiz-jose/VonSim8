@@ -6,7 +6,7 @@ import { memo, useCallback, useEffect, useMemo, useState } from "react";
 
 import { Controls } from "@/components/Controls";
 import { EducationalMenu, EducationalProgress } from "@/components/educational";
-import { NotificationCenter } from "@/components/NotificationCenter";
+// Eliminada referencia a NotificationCenter
 import { settingsOpenAtom } from "@/components/Settings";
 import { IconButton } from "@/components/ui/Button";
 import { Tooltip } from "@/components/ui/Tooltip";
@@ -223,7 +223,7 @@ const ActionButtons = memo(
 
     return (
       <div className="flex items-center gap-1">
-        <NotificationCenter />
+        {/* Eliminado NotificationCenter */}
 
         <Tooltip content="Centro de aprendizaje" position="bottom">
           <IconButton

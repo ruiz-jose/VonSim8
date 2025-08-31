@@ -7,7 +7,7 @@ import { useMedia } from "react-use";
 import { describe, expect, it, vi } from "vitest";
 
 import App from "./App";
-import { NotificationProvider } from "./components/NotificationCenter";
+// Eliminada referencia a NotificationProvider
 
 (globalThis as any).ResizeObserver = class {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -40,11 +40,7 @@ vi.mock("react-use", async importOriginal => {
 // Wrapper con providers necesarios
 const TestWrapper = ({ children }: { children: React.ReactNode }) => {
   const store = createStore();
-  return (
-    <JotaiProvider store={store}>
-      <NotificationProvider>{children}</NotificationProvider>
-    </JotaiProvider>
-  );
+  return <JotaiProvider store={store}>{children}</JotaiProvider>;
 };
 
 describe("App layout", () => {

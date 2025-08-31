@@ -2,7 +2,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { NotificationProvider } from "@/components/NotificationCenter";
+// Eliminada referencia a NotificationProvider
 import { UpdateBanner } from "@/components/UpdateBanner";
 import { usePWAUpdate } from "@/hooks/usePWAUpdate";
 import { useVersionCheck } from "@/hooks/useVersionCheck";
@@ -69,9 +69,9 @@ describe("Sistema de Actualizaciones", () => {
   describe("UpdateBanner", () => {
     it("debería renderizar sin errores cuando no hay actualizaciones", () => {
       render(
-        <NotificationProvider>
+        <>
           <UpdateBanner />
-        </NotificationProvider>,
+        </>,
       );
 
       expect(screen.queryByText("Nueva versión disponible")).not.toBeInTheDocument();
@@ -84,11 +84,7 @@ describe("Sistema de Actualizaciones", () => {
         checkForUpdates: vi.fn(),
       });
 
-      render(
-        <NotificationProvider>
-          <UpdateBanner />
-        </NotificationProvider>,
-      );
+      render(<UpdateBanner />);
 
       expect(screen.getByText("Nueva versión disponible")).toBeInTheDocument();
     });
@@ -106,11 +102,7 @@ describe("Sistema de Actualizaciones", () => {
         dismissUpdate: vi.fn(),
       });
 
-      render(
-        <NotificationProvider>
-          <UpdateBanner />
-        </NotificationProvider>,
-      );
+      render(<UpdateBanner />);
 
       expect(screen.getByText("Nueva versión disponible")).toBeInTheDocument();
     });
@@ -122,11 +114,7 @@ describe("Sistema de Actualizaciones", () => {
         checkForUpdates: vi.fn(),
       });
 
-      render(
-        <NotificationProvider>
-          <UpdateBanner />
-        </NotificationProvider>,
-      );
+      render(<UpdateBanner />);
 
       expect(screen.getByText("Nueva versión disponible")).toBeInTheDocument();
 
