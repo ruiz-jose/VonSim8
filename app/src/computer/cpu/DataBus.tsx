@@ -83,7 +83,7 @@ dataBus.addNode("mbr to ir approach", { position: [250, 275] }); // Punto de apr
 dataBus.addNode("mbr to ri vertical", { position: [390, 388] }); // Punto donde baja hacia ri desde el centro de CPU
 dataBus.addNode("SP join", { position: [425, 309] });
 dataBus.addNode("IP join", { position: [390, 349] }); // Alineado con data mbr join y NodoRegIn
-dataBus.addNode("ri join", { position: [390, 388] });
+dataBus.addNode("ri join", { position: [425, 388] });
 dataBus.addNode("MAR join1", { position: [550, 388] });
 dataBus.addNode("MAR join2", { position: [550, 349] });
 dataBus.addNode("result mbr join", { position: [370, 250] });
@@ -923,7 +923,7 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
           // "V 250", // Long path to MBR, eliminado
           "M 451 349 H 390 V 250", // IP alineado y vertical hasta data mbr join/NodoRegIn
           showSP ? "M 390 349 L 425 309 L 455 309" : "", // SP alineado, // línea recta de IP join a SP join y luego a SP
-          showri ? "M 455 388 H 390 V 300" : "", // ri alineado
+          showri ? "M 390 349 L 425 388 L 455 388" : "", // ri alineado, igual que SP
           // Data registers - ajustados para conectar con registros más pequeños
           "M 455 45 H 425", // AL - ajustado
           //"V 170", // Long path to MBR, here to get nice joins
@@ -933,7 +933,7 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
           showid ? "M 455 205 H 425" : "", // id - ajustado para conectar con registro redimensionado
           // Output buses - eliminados para evitar redundancia visual
           // Las conexiones ahora se manejan desde NodoRegOut directamente
-          showri ? "M 550 388 H 480" : "", // ri out - ajustado para conectar con registro redimensionado
+          //showri ? "M 550 388 H 480" : "", // ri out - ajustado para conectar con registro redimensionado
           //"M 550 10 V 250", // Vertical join for output buses
           "M 550 40 V 250", // Vertical join for output buses
           // "M 550 45 H 492", // Connect to data mbr join
