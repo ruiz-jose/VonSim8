@@ -106,8 +106,8 @@ dataBus.addNode("MBR out join", { position: [550, 250] }); // Nodo de unión de 
 dataBus.addNode("SP out", { position: [510, 309] });
 dataBus.addNode("IP out", { position: [510, 349] }); // Más a la derecha, borde derecho del registro IP
 dataBus.addNode("IP out join", { position: [550, 349] });
-dataBus.addNode("ri out join", { position: [550, 388] });
-dataBus.addNode("SP out join", { position: [550, 309] });
+dataBus.addNode("ri out join", { position: [525, 388] });
+dataBus.addNode("SP out join", { position: [525, 309] });
 
 // Añadir nodos de unión para los buses de salida en la parte posterior de los registros
 dataBus.addNode("AL out join", { position: [525, 45] }); // 60 unidades a la derecha de AL out
