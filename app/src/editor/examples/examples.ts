@@ -8,7 +8,7 @@ export const ejemplos = [
   {
     nombre: "Sumar Si Iguales",
     filename: "sumarsiiguales.asm",
-    contenido: `; Ejemplo: Sumar Si Iguales x = y\nx DB 1\ny DB 2\nz DB 0\nmov al, x\nsub al, y\n	jz EsIgual\n jmp Fin\nEsIgual: 	mov dl, x\nadd y, dl\nFin:   hlt`,
+    contenido: `; Ejemplo: Sumar Si Iguales x = y\nx DB 1\ny DB 2\nz DB 0\n         mov al, x\n         sub al, y\n         jz EsIgual\n         jmp Fin\nEsIgual: mov dl, x\n         add y, dl\nFin:     hlt`,
   },
   {
     nombre: "Hola Mundo",

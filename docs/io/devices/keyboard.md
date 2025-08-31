@@ -5,10 +5,7 @@ El teclado es un dispositivo de entrada que permite al usuario ingresar caracter
 Con la llamada `INT 6` se detiene la ejecución del código hasta que se presione una tecla en el teclado. El carácter que correspona será guardado en la dirección de memoria almacenada en `BL` según su representación en ASCII.
 
 ```vonsim
-org 10h
 car db 0
-
-org 20h
 mov bl, offset car
 int 6
 ; El usuario escribe un carácter

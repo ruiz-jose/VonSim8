@@ -8,10 +8,7 @@ Con la llamada `INT 7` se escribe una cadena de caracteres en la pantalla. Recib
 - `BL`: dirección de memoria donde empieza la cadena
 
 ```vonsim
-org 10h
 cadena db "Hola!"
-
-org 20h
 mov BL, offset cadena
 mov AL, 5
 int 7
