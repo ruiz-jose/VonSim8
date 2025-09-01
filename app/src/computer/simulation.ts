@@ -845,7 +845,7 @@ async function startThread(generator: EventGenerator): Promise<void> {
         status.until === "end-of-instruction" ||
         status.until === "infinity"
       ) {
-        if (event.value.type === "cpu:cycle.end" || event.value.type === "cpu:halt") {
+        if (event.value.type === "cpu:cycle.end" ) {
           fetchStageCounter = 0;
           executeStageCounter = 0;
           shouldDisplayMessage = true;
@@ -854,25 +854,35 @@ async function startThread(generator: EventGenerator): Promise<void> {
           console.log(`Instrucciones: ${instructionCount}`);
           store.set(instructionCountAtom, instructionCount);
           //store.set(messageAtom, "-");
-          if (event.value.type === "cpu:halt") {
-            // Para HLT, incrementar a executeStageCounter = 4 antes de mostrar el mensaje
+          if (status.until === "cycle-change" || status.until === "end-of-instruction") {
+            pauseSimulation();
+          }
+          continue;
+        } else if (event.value.type === "cpu:halt") {
+
+            instructionCount++;
+            store.set(instructionCountAtom, instructionCount);
+
+          // Para HLT, incrementar a executeStageCounter = 4 antes de mostrar el mensaje
             // ya que los pasos 1-3 fueron para captación y el paso 4 es la ejecución de HLT
             //executeStageCounter = 4;
             console.log("🔄 fetchStageCounter", fetchStageCounter);
             cycleCount++;
 
             store.set(cycleCountAtom, cycleCount);
-            store.set(messageAtom, prev => (prev ? "Ejecución: Detenido" : "Ejecución: Detenido"));
+
+
+            // Actualizar el total de ciclos acumulados
+            const prevTotal = store.get(totalCycleCountAtom);
+            store.set(totalCycleCountAtom, prevTotal + cycleCount);
+            store.set(messageAtom, "Ejecución: Detenido");
+
             currentInstructionCycleCount++;
             store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
             console.log(
               "🛑 HLT ejecutado - executeStageCounter establecido a 4, cycleCount:",
               cycleCount,
             );
-          } else if (status.until === "cycle-change" || status.until === "end-of-instruction") {
-            pauseSimulation();
-          }
-          continue;
         } else if (event.value.type === "cpu:int.6") {
           //store.set(messageAtom, "PILA ← DL; DL ← ASCII; (BL) ← DL; IRET");
           store.set(messageAtom, "Interrupción: Rutina leer caracter del teclado");

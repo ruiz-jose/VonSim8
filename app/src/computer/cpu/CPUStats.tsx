@@ -26,8 +26,8 @@ export const CPUStats = memo(({ className }: CPUStatsProps) => {
 
   if (!settings.showStatsCPU) return null;
 
-  const cpi = instructionCount > 0 ? (cycleCount / instructionCount).toFixed(2) : "-";
-  const cpuTimeMs = cycleCount * cycleTimeMs;
+  const cpi = instructionCount > 0 ? (totalCycleCount / instructionCount).toFixed(2) : "-";
+  const cpuTimeMs = totalCycleCount * cycleTimeMs;
   const cycleTimeSeconds = cycleTimeMs / 1000; // Convertir a segundos para mostrar
 
   // Icono y color para el header
