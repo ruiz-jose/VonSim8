@@ -165,35 +165,37 @@ export function ControlLines() {
             <ControlLine springs="bus.inta" d="M 470 805 V 1015 H 900" />
           </>
         )}
-
-        {devices.pio && (
-          <>
-            <ControlLine springs="bus.int0" d="M 900 815 V 1015 H 900" />
-            <ControlLine springs="bus.int1" d="M 920 815 V 1015 H 900" />
-            <ControlLine springs="bus.int2" d="M 940 815 V 1015 H 900" />
-          </>
-        )}
+        
+        {devices.pio && <ControlLine springs="bus.pio" d="M 612 595 V 730 H 900" />}
 
         {devices.timer && <ControlLine springs="bus.int0" d="M 583 875 V 1015 H 900" />}
 
         {devices.handshake && <ControlLine springs="bus.int0" d="M 900 1015 H 900" />}
 
         {/* Printer connections */}
-        {devices.printer && (
+        {devices.pio === "printer" && (
+        <>
+            <ControlLine springs="bus.printer.strobe" d="M 1120 767 H 1225 V 992 H 1300" />
+            <ControlLine springs="bus.printer.busy" d="M 1300 1007 H 1210 V 782 H 1120" />
+            <ControlLine springs="bus.printer.data" d="M 1120 837 H 1175 V 1062 H 1300" />
+          </>
+        )}
+
+        {devices.handshake === "printer" && (
           <>
-            <ControlLine springs="bus.printer.strobe" d="M 900 1015 H 900" />
-            <ControlLine springs="bus.printer.busy" d="M 920 1015 H 900" />
-            <ControlLine springs="bus.printer.data" d="M 940 1015 H 900" />
+            <ControlLine springs="bus.printer.strobe" d="M 1120 992 H 1300" />
+            <ControlLine springs="bus.printer.busy" d="M 1300 1007 H 1120" />
+            <ControlLine springs="bus.printer.data" d="M 1120 1062 H 1300" />
           </>
         )}
 
         {/* PIO to switches and LEDs */}
         {devices.pio && devices.switches && (
-          <ControlLine springs="bus.switches->pio" d="M 900 815 V 1015 H 900" />
+          <ControlLine springs="bus.switches->pio" d="M 1300 768 H 1120" />
         )}
 
         {devices.pio && devices.leds && (
-          <ControlLine springs="bus.pio->leds" d="M 900 815 V 1015 H 900" />
+          <ControlLine springs="bus.pio->leds" d="M 1300 848 H 1120" />
         )}
       </svg>
     </>
@@ -243,36 +245,46 @@ export function ControlLinesLegends() {
       <ControlLineLegend style={{ left: 385, top: 425 }}>wr</ControlLineLegend>
       {devices.hasIOBus && (
         <>
-          <ControlLineLegend>io/m</ControlLineLegend>
-          <ControlLineLegend>{translate("computer.chip-select.mem")}</ControlLineLegend>
+          <ControlLineLegend style={{ left: 384, top: 443 }}>io/m</ControlLineLegend>
+          <ControlLineLegend style={{ left: 715, top: 538 }}>
+            {translate("computer.chip-select.mem")}
+          </ControlLineLegend>
         </>
       )}
 
       {devices.pic && (
-        <ControlLineLegend>{translate("computer.chip-select.pic")}</ControlLineLegend>
+        <>
+          <ControlLineLegend style={{ left: 510, top: 573 }}>{translate("computer.chip-select.pic")}</ControlLineLegend>
+        </>
       )}
       {devices.timer && (
-        <ControlLineLegend>{translate("computer.chip-select.timer")}</ControlLineLegend>
+        <>
+          <ControlLineLegend style={{ left: 545, top: 573 }}>{translate("computer.chip-select.timer")}</ControlLineLegend>
+        </>
       )}
       {devices.pio && (
-        <ControlLineLegend>{translate("computer.chip-select.pio")}</ControlLineLegend>
+        <>
+          <ControlLineLegend style={{ left: 600, top: 573 }}>{translate("computer.chip-select.pio")}</ControlLineLegend>
+        </>
       )}
       {devices.handshake && (
-        <ControlLineLegend>{translate("computer.chip-select.handshake")}</ControlLineLegend>
+        <>
+          <ControlLineLegend style={{ left: 675, top: 573 }}>{translate("computer.chip-select.handshake")}</ControlLineLegend>
+        </>
       )}
 
       {devices.pic && (
         <>
-          <ControlLineLegend>intr</ControlLineLegend>
-          <ControlLineLegend>inta</ControlLineLegend>
+          <ControlLineLegend className="left-[75px] top-[478px]">intr</ControlLineLegend>
+          <ControlLineLegend className="left-[125px] top-[478px]">inta</ControlLineLegend>
         </>
       )}
 
       {devices.printer && (
         <>
-          <ControlLineLegend>strobe</ControlLineLegend>
-          <ControlLineLegend>busy</ControlLineLegend>
-          <ControlLineLegend>data</ControlLineLegend>
+          <ControlLineLegend className="left-[1310px] top-[983px]">strobe</ControlLineLegend>
+          <ControlLineLegend className="left-[1310px] top-[998px]">busy</ControlLineLegend>
+          <ControlLineLegend className="left-[1310px] top-[1053px]">data</ControlLineLegend>
         </>
       )}
     </>
@@ -282,13 +294,15 @@ export function ControlLinesLegends() {
 function ControlLineLegend({
   children,
   style,
+  className,
 }: {
   children?: React.ReactNode;
   style?: React.CSSProperties;
+  className?: string;
 }) {
   return (
     <span
-      className="pointer-events-none absolute z-[15] block font-mono text-xs font-bold tracking-wider text-stone-400"
+      className={`pointer-events-none absolute z-[15] block font-mono text-xs font-bold tracking-wider text-stone-400${className ? " " + className : ""}`}
       style={style}
     >
       {children}
