@@ -171,20 +171,20 @@ export function ControlLines() {
         {/* Interrupt lines */}
 
         {devices.pic && devices.f10 && <ControlLine springs="bus.int0" d="M 145 950 V 900" />}
-        {devices.pic && devices.timer && <ControlLine springs="bus.int1" d="M 475 955 H 400 V 900" />}
+        {devices.pic && devices.timer && (
+          <ControlLine springs="bus.int1" d="M 475 955 H 400 V 900" />
+        )}
         {devices.pic && devices.handshake && (
           <ControlLine springs="bus.int2" d="M 900 1075 H 300 V 900" />
         )}
 
-        
         {devices.pio && <ControlLine springs="bus.pio" d="M 612 595 V 730 H 900" />}
-       
 
         {devices.handshake && <ControlLine springs="bus.int0" d="M 900 1015 H 900" />}
 
         {/* Printer connections */}
         {devices.pio === "printer" && (
-        <>
+          <>
             <ControlLine springs="bus.printer.strobe" d="M 1120 767 H 1225 V 992 H 1300" />
             <ControlLine springs="bus.printer.busy" d="M 1300 1007 H 1210 V 782 H 1120" />
             <ControlLine springs="bus.printer.data" d="M 1120 837 H 1175 V 1062 H 1300" />
@@ -264,24 +264,30 @@ export function ControlLinesLegends() {
 
       {devices.pic && (
         <>
-        <ControlLineLegend className="left-[510px] top-[573px]">
-          {translate("computer.chip-select.pic")}
-        </ControlLineLegend>
+          <ControlLineLegend className="left-[510px] top-[573px]">
+            {translate("computer.chip-select.pic")}
+          </ControlLineLegend>
         </>
       )}
       {devices.timer && (
         <>
-          <ControlLineLegend className="left-[545px] top-[573px]">{translate("computer.chip-select.timer")}</ControlLineLegend>
+          <ControlLineLegend className="left-[545px] top-[573px]">
+            {translate("computer.chip-select.timer")}
+          </ControlLineLegend>
         </>
       )}
       {devices.pio && (
         <>
-          <ControlLineLegend className="left-[600px] top-[573px]">{translate("computer.chip-select.pio")}</ControlLineLegend>
+          <ControlLineLegend className="left-[600px] top-[573px]">
+            {translate("computer.chip-select.pio")}
+          </ControlLineLegend>
         </>
       )}
       {devices.handshake && (
         <>
-          <ControlLineLegend className="left-[675px] top-[573px]">{translate("computer.chip-select.handshake")}</ControlLineLegend>
+          <ControlLineLegend className="left-[675px] top-[573px]">
+            {translate("computer.chip-select.handshake")}
+          </ControlLineLegend>
         </>
       )}
 
@@ -314,7 +320,7 @@ function ControlLineLegend({
 }) {
   return (
     <span
-      className={`pointer-events-none absolute z-[50] block font-mono text-xs font-bold tracking-wider text-stone-400${className ? " " + className : ""}`}
+      className={`pointer-events-none absolute z-50 block font-mono text-xs font-bold tracking-wider text-stone-400${className ? " " + className : ""}`}
       style={style}
     >
       {children}

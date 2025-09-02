@@ -19,7 +19,8 @@ import { getSettings, settingsAtom, useDevices } from "@/lib/settings";
 import { toast } from "@/lib/toast";
 
 import { generateDataPath } from "./cpu/DataBus";
-import {   connectScreenAndKeyboardAtom,
+import {
+  connectScreenAndKeyboardAtom,
   currentInstructionCycleCountAtom,
   cycleAtom,
   cycleCountAtom,
@@ -29,7 +30,7 @@ import {   connectScreenAndKeyboardAtom,
   resetCPUState,
   showriAtom,
   showSPAtom,
-totalCycleCountAtom ,
+  totalCycleCountAtom,
 } from "./cpu/state";
 import { eventIsRunning, handleEvent } from "./handle-event";
 import { resetHandshakeState } from "./handshake/state";
