@@ -157,18 +157,28 @@ export function ControlLines() {
             />
           </>
         )}
+        {devices.pic && <ControlLine springs="bus.pic" d="M 521 595 V 730 H 450" />}
+        {devices.timer && <ControlLine springs="bus.timer" d="M 563 595 V 875" />}
+        {devices.handshake && <ControlLine springs="bus.handshake" d="M 710 595 V 950 H 900" />}
 
-        {/* Control lines for each device */}
+        {/* CPU/PIC */}
         {devices.pic && (
           <>
-            <ControlLine springs="bus.intr" d="M 450 805 V 1015 H 900" />
-            <ControlLine springs="bus.inta" d="M 470 805 V 1015 H 900" />
+            <ControlLine springs="bus.intr" d="M 110 700 V 470" />
+            <ControlLine springs="bus.inta" d="M 160 470 V 700" />
           </>
         )}
+        {/* Interrupt lines */}
+
+        {devices.pic && devices.f10 && <ControlLine springs="bus.int0" d="M 145 950 V 900" />}
+        {devices.pic && devices.timer && <ControlLine springs="bus.int1" d="M 475 955 H 400 V 900" />}
+        {devices.pic && devices.handshake && (
+          <ControlLine springs="bus.int2" d="M 900 1075 H 300 V 900" />
+        )}
+
         
         {devices.pio && <ControlLine springs="bus.pio" d="M 612 595 V 730 H 900" />}
-
-        {devices.timer && <ControlLine springs="bus.int0" d="M 583 875 V 1015 H 900" />}
+       
 
         {devices.handshake && <ControlLine springs="bus.int0" d="M 900 1015 H 900" />}
 
@@ -254,22 +264,24 @@ export function ControlLinesLegends() {
 
       {devices.pic && (
         <>
-          <ControlLineLegend style={{ left: 510, top: 573 }}>{translate("computer.chip-select.pic")}</ControlLineLegend>
+        <ControlLineLegend className="left-[510px] top-[573px]">
+          {translate("computer.chip-select.pic")}
+        </ControlLineLegend>
         </>
       )}
       {devices.timer && (
         <>
-          <ControlLineLegend style={{ left: 545, top: 573 }}>{translate("computer.chip-select.timer")}</ControlLineLegend>
+          <ControlLineLegend className="left-[545px] top-[573px]">{translate("computer.chip-select.timer")}</ControlLineLegend>
         </>
       )}
       {devices.pio && (
         <>
-          <ControlLineLegend style={{ left: 600, top: 573 }}>{translate("computer.chip-select.pio")}</ControlLineLegend>
+          <ControlLineLegend className="left-[600px] top-[573px]">{translate("computer.chip-select.pio")}</ControlLineLegend>
         </>
       )}
       {devices.handshake && (
         <>
-          <ControlLineLegend style={{ left: 675, top: 573 }}>{translate("computer.chip-select.handshake")}</ControlLineLegend>
+          <ControlLineLegend className="left-[675px] top-[573px]">{translate("computer.chip-select.handshake")}</ControlLineLegend>
         </>
       )}
 
@@ -302,7 +314,7 @@ function ControlLineLegend({
 }) {
   return (
     <span
-      className={`pointer-events-none absolute z-[15] block font-mono text-xs font-bold tracking-wider text-stone-400${className ? " " + className : ""}`}
+      className={`pointer-events-none absolute z-[50] block font-mono text-xs font-bold tracking-wider text-stone-400${className ? " " + className : ""}`}
       style={style}
     >
       {children}
