@@ -36,11 +36,11 @@ export class MiscInstruction extends Instruction<"CLI" | "STI" | "NOP" | "HLT"> 
       yield { type: "cpu:cycle.update", phase: "decoded", next: "execute" };
       yield* computer.cpu.updateFLAGS({ IF: true });
     } else if (this.name === "HLT") {
-  // HLT debe consumir 4 ciclos antes de detenerse, usando la fase 'execute' permitida
-  yield { type: "cpu:cycle.update", phase: "decoded", next: "execute" };
-  yield { type: "cpu:halt" };
-  yield { type: "cpu:cycle.end" };
-  return false;
+      // HLT debe consumir 4 ciclos antes de detenerse, usando la fase 'execute' permitida
+      yield { type: "cpu:cycle.update", phase: "decoded", next: "execute" };
+      yield { type: "cpu:halt" };
+      yield { type: "cpu:cycle.end" };
+      return false;
     }
 
     return true;
