@@ -196,7 +196,7 @@ export const spanish: Locale = {
       },
       pio: {
         label: "PIO",
-        "switches-and-leds": "Llaves y luces",
+        "switches-and-leds": "Llaves y Leds",
         printer: "Impresora",
         null: "Desconectado",
       },

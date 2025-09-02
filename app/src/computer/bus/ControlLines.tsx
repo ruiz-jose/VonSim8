@@ -164,8 +164,8 @@ export function ControlLines() {
         {/* CPU/PIC */}
         {devices.pic && (
           <>
-            <ControlLine springs="bus.intr" d="M 110 700 V 470" />
-            <ControlLine springs="bus.inta" d="M 160 470 V 700" />
+            <ControlLine springs="bus.intr" d="M 110 700 V 482" />
+            <ControlLine springs="bus.inta" d="M 160 482 V 700" />
           </>
         )}
         {/* Interrupt lines */}
@@ -293,8 +293,8 @@ export function ControlLinesLegends() {
 
       {devices.pic && (
         <>
-          <ControlLineLegend className="left-[75px] top-[478px]">intr</ControlLineLegend>
-          <ControlLineLegend className="left-[125px] top-[478px]">inta</ControlLineLegend>
+          <ControlLineLegend className="left-[75px] top-[482px]">intr</ControlLineLegend>
+          <ControlLineLegend className="left-[125px] top-[482px]">inta</ControlLineLegend>
         </>
       )}
 
