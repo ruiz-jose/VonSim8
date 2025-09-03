@@ -45,7 +45,7 @@ export class JumpInstruction extends Instruction<
     yield { type: "cpu:cycle.update", phase: "decoded", next: "fetch-operands" };
 
     // Consume jump address - no mostrar animación MBR→ri hasta evaluar la condición
-    yield* super.consumeInstruction(computer, "ri.l", true);
+    yield* super.consumeInstruction(computer, "ri.l", false);
     // yield* super.consumeInstruction(computer, "ri.h");
 
     yield { type: "cpu:cycle.update", phase: "execute" };

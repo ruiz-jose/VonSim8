@@ -1,11 +1,13 @@
 import { useAtomValue } from "jotai";
 import { useEffect, useRef } from "react";
 
-import { simulationAtom } from "@/computer/simulation";
+import { simulationAtom, useSimulation } from "@/computer/simulation";
 import { programModifiedAtom } from "@/editor/state";
 import { store } from "@/lib/jotai";
 import { useSettings } from "@/lib/settings";
 import { toast } from "@/lib/toast";
+
+
 
 import {
   animationSyncAtom,
@@ -199,6 +201,7 @@ export function RegisterTransferMessages() {
   const messageHistory = useAtomValue(messageHistoryAtom);
   const simulationStatus = useAtomValue(simulationAtom);
   const programModified = useAtomValue(programModifiedAtom);
+  const { devices } = useSimulation();
 
   const [settings] = useSettings();
 
@@ -325,7 +328,7 @@ export function RegisterTransferMessages() {
   }, [messageHistory]);
 
   // Si el usuario desactiva la visibilidad del ciclo de instrucción, no renderizar el componente
-  if (!settings.showInstructionCycle) return null;
+  if (!settings.showInstructionCycle || devices.pic) return null;
 
   return (
     <div className="absolute left-[120px] top-[520px] z-10 h-min w-[420px]">
