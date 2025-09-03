@@ -166,7 +166,7 @@ jobs:
             changelog += `- 📚 [Documentation](https://${context.repo.owner}.github.io/${context.repo.repo}/docs/)\n`;
             changelog += `- 🐛 [Report Issues](https://github.com/${context.repo.owner}/${context.repo.repo}/issues)\n`;
 
-            core.setOutput('changelog', changelog);
+            return changelog;
 
       - name: 🏷️ Create GitHub Release
         id: create_release
@@ -176,7 +176,7 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref_name }}
-          body: ${{ steps.changelog.outputs.changelog }}
+          body: ${{ steps.changelog.outputs.result }}
           draft: false
           prerelease: false
 
