@@ -253,10 +253,10 @@ export function Controls({ className }: { className?: string }) {
           onClick={runInstruction}
           title={translate("control.action.run.end-of-instruction")}
           className={clsx(
-            "group relative flex flex-col items-center rounded-lg transition hover:bg-blue-600/20 focus-visible:ring-2 focus-visible:ring-blue-400 disabled:opacity-50",
+            "group relative flex flex-col items-center rounded-lg transition hover:bg-mantis-600/20 focus-visible:ring-2 focus-visible:ring-mantis-400 disabled:opacity-50",
             status.type === "running" &&
               status.until === "end-of-instruction" &&
-              "animate-pulse-glow-blue", // Azul para instrucción
+              "animate-pulse-glow-mantis", // Verde para instrucción
             screenSize === "mobile" ? "px-1 py-0.5" : "px-1.5 py-0.5",
           )}
         >
@@ -264,7 +264,7 @@ export function Controls({ className }: { className?: string }) {
             <FontAwesomeIcon
               icon={faStepForward}
               size="lg"
-              className="text-blue-400 transition group-hover:scale-110"
+              className="text-mantis-400 transition group-hover:scale-110"
             />
             {showShortcuts && (
               <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
@@ -312,8 +312,8 @@ export function Controls({ className }: { className?: string }) {
           onClick={runInfinity}
           title={translate("control.action.run.infinity")}
           className={clsx(
-            "group relative flex flex-col items-center rounded-lg transition hover:bg-orange-600/20 focus-visible:ring-2 focus-visible:ring-orange-400 disabled:opacity-50",
-            status.type === "running" && status.until === "infinity" && "animate-pulse-glow-orange", // Naranja para infinito
+            "group relative flex flex-col items-center rounded-lg transition hover:bg-mantis-600/20 focus-visible:ring-2 focus-visible:ring-mantis-400 disabled:opacity-50",
+            status.type === "running" && status.until === "infinity" && "animate-pulse-glow-mantis", // Verde para infinito
             screenSize === "mobile" ? "px-1 py-0.5" : "px-1.5 py-0.5",
           )}
         >
@@ -321,7 +321,7 @@ export function Controls({ className }: { className?: string }) {
             <FontAwesomeIcon
               icon={faInfinity}
               size="lg"
-              className="text-orange-400 transition group-hover:scale-110"
+              className="text-mantis-400 transition group-hover:scale-110"
             />
             {showShortcuts && (
               <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
