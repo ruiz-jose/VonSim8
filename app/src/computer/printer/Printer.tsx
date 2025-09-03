@@ -32,7 +32,7 @@ export function Printer() {
             </div>
           </div>
 
-          <div className="grid grid-cols-5 items-center justify-center">
+          <div className="mt-8 grid grid-cols-5 items-center justify-center">
             {bufferIterator.map(i => {
               const char = buffer[i] ? displayCharacter(buffer[i].unsigned) : null;
 
@@ -50,7 +50,7 @@ export function Printer() {
             })}
           </div>
 
-          <div className="mx-auto mt-4 h-1 w-[70%] overflow-hidden rounded-full bg-zinc-600">
+          <div className="mx-auto mt-3 h-1 w-[70%] overflow-hidden rounded-full bg-zinc-600">
             <animated.div
               className="h-full bg-mantis-400"
               style={{

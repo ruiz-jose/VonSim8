@@ -25,7 +25,7 @@
 }
 
 .trailContainer {
-  @apply absolute inset-x-0 -top-14;
+  @apply absolute inset-x-0 -top-4;
 
   .trail {
     @apply mx-auto flex h-16 w-40 items-end bg-zinc-900 px-2 pb-1;
