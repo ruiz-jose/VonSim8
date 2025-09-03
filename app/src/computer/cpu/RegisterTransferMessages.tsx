@@ -7,8 +7,6 @@ import { store } from "@/lib/jotai";
 import { useSettings } from "@/lib/settings";
 import { toast } from "@/lib/toast";
 
-
-
 import {
   animationSyncAtom,
   currentInstructionCycleCountAtom,
