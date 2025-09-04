@@ -1651,7 +1651,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
           regNorm === "ri" ? "cpu.ri" : (`cpu.${regNorm}` as RegisterKey),
         );
       }
-      store.set(registerAtoms[regNorm], event.value);
+      store.set(registerAtoms[event.register], event.value);
       return;
     }
 
