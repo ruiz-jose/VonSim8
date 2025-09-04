@@ -16,7 +16,7 @@ export const ejemplos = [
     contenido: `; Ejemplo: Hola Mundo\ncadena DB "Hola!"\nMOV BL, offset cadena\nMOV AL, 5\nINT 7\nHLT`,
   },
   {
-    nombre: "Ingresar Caracter",
+    nombre: "Ingresar Carácter",
     filename: "ingresar_caracter.asm",
     contenido: `; Ejemplo: Ingresar un carácter por teclado\ncar DB 0\nMOV BL, offset car\nINT 6\nHLT`,
   },
