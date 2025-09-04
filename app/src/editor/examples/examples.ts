@@ -8,11 +8,16 @@ export const ejemplos = [
   {
     nombre: "Sumar Si Iguales",
     filename: "sumarsiiguales.asm",
-    contenido: `; Ejemplo: Sumar Si Iguales x = y\nx DB 1\ny DB 2\nz DB 0\n         mov al, x\n         sub al, y\n         jz EsIgual\n         jmp Fin\nEsIgual: mov dl, x\n         add y, dl\nFin:     hlt`,
+    contenido: `; Ejemplo: Sumar Si Iguales x = y\nx DB 1\ny DB 2\nz DB 0\n         MOV AL, x\n         SUB AL, y\n         JZ EsIgual\n         JMP Fin\nEsIgual: MOV DL, x\n         ADD y, DL\nFin:     HLT`,
   },
   {
     nombre: "Hola Mundo",
     filename: "holamundo.asm",
-    contenido: `; Ejemplo: Hola Mundo\ncadena db "Hola!"\nmov BL, offset cadena\nmov AL, 5\nint 7\nHLT`,
+    contenido: `; Ejemplo: Hola Mundo\ncadena DB "Hola!"\nMOV BL, offset cadena\nMOV AL, 5\nINT 7\nHLT`,
+  },
+  {
+    nombre: "Ingresar Caracter",
+    filename: "ingresar_caracter.asm",
+    contenido: `; Ejemplo: Ingresar un carácter por teclado\ncar DB 0\nMOV BL, offset car\nINT 6\nHLT`,
   },
 ];
