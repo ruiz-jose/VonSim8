@@ -57,7 +57,7 @@ export const Footer = memo(() => {
   return (
     <footer className="bg-black px-3 py-1.5 text-xs text-white" data-testid="footer">
       <div className="flex items-center justify-between">
-        <span className="text-stone-400 text-xs sm:text-sm">
+        <span className="text-xs text-stone-400 sm:text-sm">
           © 2025 — UNLP, UNER — v{__COMMIT_HASH__}
         </span>
 
