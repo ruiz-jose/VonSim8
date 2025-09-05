@@ -222,34 +222,85 @@ export function StatusBar() {
                 <span className="icon-[lucide--folder-open] size-4" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent align="start" className="w-64 p-2">
-              <div className="flex flex-col gap-2 text-left">
-                <Button
-                  variant="default"
-                  size="sm"
-                  onClick={openFileFromPC}
-                  className="w-full justify-start px-3 text-left text-mantis-400 hover:bg-mantis-900/30"
-                >
-                  <span className="icon-[lucide--laptop] mr-2 size-4 text-mantis-400" />
-                  <span className="text-left text-mantis-300">Abrir desde la PC</span>
-                </Button>
-                <div className="my-2 h-px w-full bg-stone-700/60" />
-                <div className="mb-1 pl-1 text-xs text-stone-400">Ejemplos:</div>
-                <div className="rounded-lg bg-stone-800/40 p-1">
-                  {ejemplos.map(ejemplo => (
-                    <Button
-                      key={ejemplo.filename}
-                      variant="ghost"
-                      size="sm"
-                      className="flex w-full items-center px-3 text-yellow-400 hover:bg-yellow-900/30"
-                      onClick={() => openExample(ejemplo)}
-                    >
-                      <span className="icon-[lucide--file-text] mr-2 size-4 text-yellow-400" />
-                      <span className="flex-1 whitespace-normal text-left text-yellow-200">
-                        {ejemplo.nombre}
-                      </span>
-                    </Button>
-                  ))}
+            <PopoverContent align="start" className="w-80 p-0 border-stone-600/50 bg-stone-900/95 backdrop-blur-md">
+              <div className="flex flex-col">
+                {/* Header */}
+                <div className="px-4 py-3 border-b border-stone-700/50 bg-gradient-to-r from-stone-800 to-stone-900">
+                  <div className="flex items-center gap-2">
+                    <span className="icon-[lucide--folder-open] size-5 text-mantis-400" />
+                    <span className="font-semibold text-white">Abrir Archivo</span>
+                  </div>
+                  <p className="text-xs text-stone-400 mt-1">Selecciona un archivo de tu PC o un ejemplo</p>
+                </div>
+
+                {/* Content */}
+                <div className="p-3 space-y-3">
+                  {/* Abrir desde PC */}
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={openFileFromPC}
+                    className="w-full justify-start px-4 py-3 h-auto bg-gradient-to-r from-mantis-600 to-mantis-700 hover:from-mantis-500 hover:to-mantis-600 text-white shadow-sm border-0 transition-all duration-200"
+                  >
+                    <div className="flex items-center gap-3 w-full">
+                      <div className="p-1.5 rounded-lg bg-white/10">
+                        <span className="icon-[lucide--laptop] size-5" />
+                      </div>
+                      <div className="text-left flex-1">
+                        <div className="font-medium">Abrir desde mi PC</div>
+                        <div className="text-xs text-mantis-100/80">Archivos .asm, .txt, .vonsim</div>
+                      </div>
+                      <span className="icon-[lucide--arrow-right] size-4 text-mantis-200" />
+                    </div>
+                  </Button>
+
+                  {/* Divider */}
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-stone-700/60" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-stone-900 px-2 text-stone-500 font-medium tracking-wider">o selecciona un ejemplo</span>
+                    </div>
+                  </div>
+
+                  {/* Ejemplos */}
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 px-1 mb-2">
+                      <span className="icon-[lucide--lightbulb] size-4 text-amber-400" />
+                      <span className="text-sm font-medium text-amber-200">Ejemplos de Programas</span>
+                    </div>
+                    <div className="grid gap-1 max-h-64 overflow-y-auto pr-1 custom-scrollbar">
+                      {ejemplos.map((ejemplo, index) => (
+                        <Button
+                          key={ejemplo.filename}
+                          variant="ghost"
+                          size="sm"
+                          className="w-full justify-start px-2 py-2.5 h-auto text-left hover:bg-stone-800/60 border border-transparent hover:border-stone-600/30 rounded-lg group transition-all duration-200"
+                          onClick={() => openExample(ejemplo)}
+                        >
+                          <div className="flex items-center gap-3 w-full">
+                            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-amber-400/20 to-orange-500/20 border border-amber-500/30 flex items-center justify-center flex-shrink-0">
+                              <span className="text-xs font-bold text-amber-300">{index + 1}</span>
+                            </div>
+                            <div className="flex-1 min-w-0 text-left">
+                              <div className="font-medium text-stone-200 group-hover:text-white transition-colors text-left">
+                                {ejemplo.nombre}
+                              </div>
+                            </div>
+                            <span className="icon-[lucide--chevron-right] size-4 text-stone-500 group-hover:text-amber-400 transition-colors flex-shrink-0" />
+                          </div>
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Footer */}
+                <div className="px-4 py-2 border-t border-stone-700/50 bg-stone-800/30">
+                  <p className="text-xs text-stone-500 text-center">
+                    Los ejemplos te ayudan a aprender la sintaxis de VonSim
+                  </p>
                 </div>
               </div>
             </PopoverContent>
