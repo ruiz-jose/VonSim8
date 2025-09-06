@@ -222,7 +222,10 @@ export function StatusBar() {
                 <span className="icon-[lucide--folder-open] size-4" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent align="start" className="w-80 border-stone-600/50 bg-stone-900/95 p-0 backdrop-blur-md">
+            <PopoverContent
+              align="start"
+              className="w-80 border-stone-600/50 bg-stone-900/95 p-0 backdrop-blur-md"
+            >
               <div className="flex flex-col">
                 {/* Header */}
                 <div className="border-b border-stone-700/50 bg-gradient-to-r from-stone-800 to-stone-900 px-4 py-3">
@@ -230,7 +233,9 @@ export function StatusBar() {
                     <span className="icon-[lucide--folder-open] size-5 text-mantis-400" />
                     <span className="font-semibold text-white">Abrir Archivo</span>
                   </div>
-                  <p className="mt-1 text-xs text-stone-400">Selecciona un archivo de tu PC o un ejemplo</p>
+                  <p className="mt-1 text-xs text-stone-400">
+                    Selecciona un archivo de tu PC o un ejemplo
+                  </p>
                 </div>
 
                 {/* Content */}
@@ -248,7 +253,9 @@ export function StatusBar() {
                       </div>
                       <div className="flex-1 text-left">
                         <div className="font-medium">Abrir desde mi PC</div>
-                        <div className="text-xs text-mantis-100/80">Archivos .asm, .txt, .vonsim</div>
+                        <div className="text-xs text-mantis-100/80">
+                          Archivos .asm, .txt, .vonsim
+                        </div>
                       </div>
                       <span className="icon-[lucide--arrow-right] size-4 text-mantis-200" />
                     </div>
@@ -260,7 +267,9 @@ export function StatusBar() {
                       <div className="w-full border-t border-stone-700/60" />
                     </div>
                     <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-stone-900 px-2 font-medium tracking-wider text-stone-500">o selecciona un ejemplo</span>
+                      <span className="bg-stone-900 px-2 font-medium tracking-wider text-stone-500">
+                        o selecciona un ejemplo
+                      </span>
                     </div>
                   </div>
 
@@ -268,7 +277,9 @@ export function StatusBar() {
                   <div className="space-y-1">
                     <div className="mb-2 flex items-center gap-2 px-1">
                       <span className="icon-[lucide--lightbulb] size-4 text-amber-400" />
-                      <span className="text-sm font-medium text-amber-200">Ejemplos de Programas</span>
+                      <span className="text-sm font-medium text-amber-200">
+                        Ejemplos de Programas
+                      </span>
                     </div>
                     <div className="custom-scrollbar grid max-h-64 gap-1 overflow-y-auto pr-1">
                       {ejemplos.map((ejemplo, index) => (

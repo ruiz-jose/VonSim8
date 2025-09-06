@@ -54,6 +54,31 @@ declare global {
 
 const simulator = new Simulator();
 
+// Listener para recargar automáticamente el programa cuando se active el PIO
+if (typeof window !== "undefined") {
+  window.addEventListener("pioActivated", (event: CustomEvent) => {
+    const { address, registerName, shouldReload } = event.detail;
+
+    if (shouldReload) {
+      console.log(
+        `🔄 Recargando programa debido a activación automática del PIO (${registerName} - ${address.toString(16).toUpperCase()}h)`,
+      );
+
+      // Parar la simulación actual si está corriendo
+      const currentStatus = store.get(simulationAtom);
+      if (currentStatus.type === "running") {
+        finishSimulation();
+      }
+
+      // Esperar un momento para que se complete el finish, luego reiniciar
+      setTimeout(() => {
+        // Reiniciar la ejecución con la nueva configuración
+        dispatch("cpu.run", "infinity");
+      }, 100);
+    }
+  });
+}
+
 type RunUntil = "cycle-change" | "end-of-instruction" | "infinity";
 type SimulationStatus =
   | { type: "running"; until: RunUntil; waitingForInput: boolean }
@@ -2488,13 +2513,13 @@ async function dispatch(...args: Action) {
           return false;
         });
 
-        // Verificar si el programa usa switches (ejemplo: IN AL, 30h o OUT 32h, AL)
-        const usesSwitches = result.instructions.some(instruction => {
+        // Verificar si el programa usa PIO (direcciones 30h-33h: PA, PB, CA, CB)
+        const usesPIO = result.instructions.some(instruction => {
           if (instruction.instruction === "IN" || instruction.instruction === "OUT") {
             return instruction.operands.some((operand: any) => {
               if (operand.type === "number-expression" && typeof operand.value.value === "number") {
-                // 0x30 = 48 decimal (PA), 0x32 = 50 decimal (CA)
-                return operand.value.value === 0x30 || operand.value.value === 0x32;
+                // 0x30-0x33 = 48-51 decimal (PA, PB, CA, CB)
+                return operand.value.value >= 0x30 && operand.value.value <= 0x33;
               }
               return false;
             });
@@ -2593,10 +2618,10 @@ async function dispatch(...args: Action) {
           devices: {
             ...prev.devices,
             keyboardAndScreen: connectScreenAndKeyboard,
-            pio: usesSwitches ? "switches-and-leds" : usesHandshake ? "printer" : prev.devices.pio,
+            pio: usesPIO ? "switches-and-leds" : usesHandshake ? "printer" : prev.devices.pio,
             handshake: usesHandshake ? "printer" : prev.devices.handshake,
             pic: usesPIC || prev.devices.pic,
-            "switches-and-leds": usesSwitches,
+            "switches-and-leds": usesPIO,
           },
         }));
 

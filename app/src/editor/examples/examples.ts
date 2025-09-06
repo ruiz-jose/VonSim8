@@ -40,5 +40,27 @@ export const ejemplos = [
     filename: "control_leds.asm",
     contenido: `; Enciende las luces (una sí, una no): 1010 1010b\n; 31h = PB --> puerto de datos para las luces (LEDs)\n; 33h = CB --> puerto de control para las luces\n\n; Configura todos los bits de PB como salida para controlar las luces\nMOV AL, 0                ; 0000 0000b: todos los bits de PB en modo salida\nOUT 33h, AL              ; Escribe en CB para configurar PB como salida\n\n; Enciende las luces alternadas: 1010 1010b (170 decimal)\nMOV AL, 170              ; 1010 1010b: enciende LEDs pares, apaga impares\nOUT 31h, AL              ; Escribe el valor en PB para actualizar las luces\n\nHLT`,
   },
+  {
+    nombre: "Leer Contraseña",
+    filename: "leer_contrasena.asm",
+    contenido: `; Leer el valor de interruptores como una contraseña hasta que el usuario la adivine
+clave DB 15               ; Contraseña esperada: 00001111 (en decimal 15)
+mensaje_ok DB "Bienvenido!" ; Mensaje a mostrar si la contraseña es correcta
 
+; Configurar PA (Puerto A) como entrada
+MOV AL, 15                ; 00001111b: configura los primeros 4 bits de PA como entrada
+OUT 32h, AL               ; Escribe en CA para configurar PA
+
+bucle:
+    IN AL, 30h            ; Lee el valor actual de las llaves desde PA
+    CMP AL, clave         ; Compara el valor leído con la contraseña
+    JZ Mostrar_Mensaje    ; Si coincide, salta a Mostrar_Mensaje
+    JMP bucle             ; Si no coincide, vuelve a intentar
+
+Mostrar_Mensaje:
+    MOV BL, OFFSET mensaje_ok ; BL apunta al mensaje de éxito
+    MOV AL, 11                ; Longitud del mensaje (Bienvenido! tiene 11 caracteres)
+    INT 7
+    HLT`
+  },
 ];
