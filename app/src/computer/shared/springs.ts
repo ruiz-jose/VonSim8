@@ -113,6 +113,7 @@ const springs = {
       opacity: new SpringValue(0),
       scale: new SpringValue(0.8),
     },
+    progress: { progress: new SpringValue(0), opacity: new SpringValue(1) },
   },
   cpu: {
     internalBus: {

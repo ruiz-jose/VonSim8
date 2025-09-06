@@ -22,7 +22,7 @@ function AnimatedSequencerChip({
   // Número de pines de salida
   const outputs = 8;
 
-  // Animación de opacidad basada en el progreso (misma lógica que memoria de control)
+  // Animación de opacidad basada en el progreso del secuenciador
   const { opacity, filterIntensity } = useSpring({
     opacity: progress.to(p => {
       // Si returnToOriginal está activo, forzar opacidad baja
@@ -30,20 +30,18 @@ function AnimatedSequencerChip({
       // Por defecto semi-transparente (0.4), durante animación completamente visible (1.0)
       if (resetAnimations) return 0.4; // Forzar opaco cuando resetAnimations es true
       if (p === 0) return 0.4;
-      if (p > 0 && p < 1) return 0.4; // Durante animación de memoria de control mantener oscuro
-      if (p === 1) return 1.0; // Solo activo cuando secuenciador está activo (p === 1)
-      // Al finalizar, volver a opaco para resaltar la próxima animación
+      if (p > 0 && p < 1) return 1.0; // Durante la ejecución de instrucción, mostrar activo
+      if (p >= 1) return 0.4; // Al completar, volver a semi-transparente
       return 0.4;
     }),
     filterIntensity: progress.to(p => {
       // Si returnToOriginal está activo, forzar intensidad baja
       if (returnToOriginal) return 0.25;
-      // Intensidad del filtro de sombra basada en el progreso
+      // Intensidad del filtro de sombra basada en el progreso del secuenciador
       if (resetAnimations) return 0.25; // Forzar intensidad baja cuando resetAnimations es true
       if (p === 0) return 0.25;
-      if (p > 0 && p < 1) return 0.25; // Durante animación de memoria de control mantener oscuro
-      if (p === 1) return 0.6; // Solo activo cuando secuenciador está activo (p === 1)
-      // Al finalizar, volver a intensidad baja para resaltar la próxima animación
+      if (p > 0 && p < 1) return 0.6; // Durante la ejecución de instrucción, brillante
+      if (p >= 1) return 0.25; // Al completar, volver a intensidad baja
       return 0.25;
     }),
     config: {
@@ -93,18 +91,20 @@ function AnimatedSequencerChip({
             fill={progress.to(p => {
               // Si returnToOriginal está activo, forzar color oscuro
               if (returnToOriginal) return "#0ea5e9";
-              // Efecto: barrido de encendido - solo cuando secuenciador está activo
+              // Efecto: barrido de encendido - progresivo durante ejecución de instrucción
               if (resetAnimations) return "#0ea5e9"; // Forzar color oscuro cuando resetAnimations es true
-              if (p > 0 && p < 1) return "#0ea5e9"; // Durante animación de memoria de control mantener oscuro
-              return p === 1 ? "#7dd3fc" : "#0ea5e9";
+              // Activar pines progresivamente según el progreso del secuenciador
+              const pinIndex = i / (outputs - 1); // Normalizar índice del pin (0 a 1)
+              return p >= pinIndex ? "#7dd3fc" : "#0ea5e9";
             })}
             style={{
               filter: progress.to(p => {
                 // Si returnToOriginal está activo, forzar sin filtro
                 if (returnToOriginal) return "none";
                 if (resetAnimations) return "none"; // Forzar sin filtro cuando resetAnimations es true
-                if (p > 0 && p < 1) return "none"; // Durante animación de memoria de control mantener sin filtro
-                return p === 1 ? "drop-shadow(0 0 8px #38bdf8)" : "none";
+                // Aplicar brillo a pines activos progresivamente
+                const pinIndex = i / (outputs - 1); // Normalizar índice del pin (0 a 1)
+                return p >= pinIndex ? "drop-shadow(0 0 8px #38bdf8)" : "none";
               }),
             }}
           />
@@ -124,9 +124,9 @@ function AnimatedSequencerChip({
               if (returnToOriginal) return "#0c4a6e";
               if (resetAnimations) return "#0c4a6e"; // Forzar color oscuro cuando resetAnimations es true
               if (p === 0) return "#0c4a6e";
-              if (p > 0 && p < 1) return "#0c4a6e"; // Durante animación de memoria de control mantener oscuro
-              if (p === 1) return "#7dd3fc";
-              return "#0c4a6e";
+              // Activar celdas progresivamente según el progreso del secuenciador
+              const cellIndex = i / 4; // Normalizar índice de la celda (0 a 1)
+              return p >= cellIndex ? "#7dd3fc" : "#0c4a6e";
             })}
             style={{
               filter: progress.to(p => {
@@ -134,9 +134,9 @@ function AnimatedSequencerChip({
                 if (returnToOriginal) return "none";
                 if (resetAnimations) return "none"; // Forzar sin filtro cuando resetAnimations es true
                 if (p === 0) return "none";
-                if (p > 0 && p < 1) return "none"; // Durante animación de memoria de control mantener sin filtro
-                if (p === 1) return "drop-shadow(0 0 6px #38bdf8)";
-                return "none";
+                // Aplicar brillo a celdas activas progresivamente
+                const cellIndex = i / 4; // Normalizar índice de la celda (0 a 1)
+                return p >= cellIndex ? "drop-shadow(0 0 6px #38bdf8)" : "none";
               }),
               transition: "fill 0.7s, filter 0.7s",
             }}
@@ -362,19 +362,18 @@ function AnimatedSequencerBadge({
     opacity: progress.to(p => {
       // Si returnToOriginal está activo, forzar opacidad baja
       if (returnToOriginal) return 0.4;
-      // Por defecto semi-transparente (0.4), durante animación del secuenciador completamente visible (1.0)
+      // Por defecto semi-transparente (0.4), durante ejecución completamente visible (1.0)
       if (p === 0) return 0.4;
-      if (p > 0 && p < 1) return 0.4; // Durante la animación de memoria de control mantener oscuro
-      if (p === 1) return 1.0; // Solo activo cuando secuenciador está activo (p === 1)
-      // Al finalizar, volver a opaco para resaltar la próxima animación
+      if (p > 0 && p < 1) return 1.0; // Durante la ejecución de instrucción, mostrar activo
+      if (p >= 1) return 0.4; // Al completar, volver a semi-transparente
       return 0.4;
     }),
     pulseActive: progress.to(p => {
       // Si returnToOriginal está activo, desactivar el pulso
       if (returnToOriginal) return false;
-      // Activar el pulso solo cuando el secuenciador está activo (p === 1)
+      // Activar el pulso durante la ejecución de la instrucción
       // y cuando la memoria de control está visible
-      return showControlMem && p === 1;
+      return showControlMem && p > 0 && p < 1;
     }),
     config: {
       tension: 280,
@@ -502,7 +501,7 @@ export function Control() {
 
   useEffect(() => {
     let last = 0;
-    const unsub = getSpring("cpu.decoder.progress.progress").to((v: number) => {
+    const unsub = getSpring("sequencer.progress.progress").to((v: number) => {
       // Incrementar memAnimKey cuando comienza una nueva animación (0 -> >0)
       if (last === 0 && v > 0) {
         setMemAnimKey(k => k + 1);
@@ -531,24 +530,23 @@ export function Control() {
   const cycle = useAtomValue(cycleAtom);
   const [showControlMem, setShowControlMem] = useState(false);
 
-  // El progreso de la memoria de control ahora depende del progreso del decodificador
+  // El progreso de la memoria de control ahora depende del progreso del secuenciador
   const [, setSequencerActive] = useState(false);
 
   // Efecto para manejar la secuencia de animación de las barras de progreso
-  // Sincronizar la animación de la memoria de control con la barra progresiva del decodificador
+  // Sincronizar la animación de la memoria de control con la barra progresiva del secuenciador
   useEffect(() => {
     let sequencerTimeout: NodeJS.Timeout | null = null;
     setSequencerActive(false);
     let unsub: (() => void) | undefined;
     if (showControlMem) {
-      // Activar el secuenciador solo después de que termine la animación de la memoria de control
-      unsub = getSpring("cpu.decoder.progress.progress").to(progress => {
-        if (progress === 1) {
-          // Esperar a que termine completamente la animación de la memoria de control antes de activar el secuenciador
-          // La memoria de control tiene una duración de animación de ~1.2s, así que esperamos un poco más
+      // Activar el secuenciador basándose en el progreso del secuenciador
+      unsub = getSpring("sequencer.progress.progress").to(progress => {
+        if (progress >= 0.5) {
+          // Activar cuando el progreso del secuenciador llegue al 50% (fase executing)
           sequencerTimeout = setTimeout(() => {
             setSequencerActive(true);
-          }, 1500); // Aumentar el delay para asegurar que la memoria de control termine completamente
+          }, 500); // Reducir el delay ya que ahora está basado en el progreso real
         } else {
           if (sequencerTimeout) clearTimeout(sequencerTimeout);
           setSequencerActive(false);
@@ -631,12 +629,13 @@ export function Control() {
                 </button>
               </div>
             </div>
+            {/* Barra de progreso del secuenciador */}
             <div className="my-1 h-1 w-full overflow-hidden rounded-full bg-stone-600">
               <animated.div
-                className="h-full bg-mantis-400"
+                className="h-full bg-sky-400"
                 style={{
-                  width: getSpring("cpu.decoder.progress.progress").to(t => `${t * 100}%`),
-                  opacity: getSpring("cpu.decoder.progress.opacity"),
+                  width: getSpring("sequencer.progress.progress").to(t => `${t * 100}%`),
+                  opacity: getSpring("sequencer.progress.opacity"),
                 }}
               />
             </div>
@@ -652,14 +651,14 @@ export function Control() {
                         style={{ minHeight: "18px" }}
                       >
                         <AnimatedControlMemoryBadge
-                          progress={getSpring("cpu.decoder.progress.progress")}
+                          progress={getSpring("sequencer.progress.progress")}
                           showControlMem={showControlMem}
                           returnToOriginal={returnToOriginal}
                         />
                         Memoria de control
                       </span>
                       <AnimatedControlMemory
-                        progress={getSpring("cpu.decoder.progress.progress")}
+                        progress={getSpring("sequencer.progress.progress")}
                         phase={cycle?.phase}
                         memAnimKey={memAnimKey}
                         resetAnimations={resetAnimations}
@@ -673,14 +672,14 @@ export function Control() {
                         style={{ minHeight: "18px" }}
                       >
                         <AnimatedSequencerBadge
-                          progress={getSpring("cpu.decoder.progress.progress")}
+                          progress={getSpring("sequencer.progress.progress")}
                           showControlMem={showControlMem}
                           returnToOriginal={returnToOriginal}
                         />
                         Secuenciador
                       </span>
                       <AnimatedSequencerChip
-                        progress={getSpring("cpu.decoder.progress.progress")}
+                        progress={getSpring("sequencer.progress.progress")}
                         phase={cycle?.phase}
                         memAnimKey={memAnimKey}
                         resetAnimations={resetAnimations}

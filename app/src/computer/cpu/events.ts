@@ -17,6 +17,7 @@ import {
   updateRegisterWithGlow, // Nueva función
 } from "@/computer/shared/animate";
 import type { RegisterKey, SimplePathKey } from "@/computer/shared/springs";
+import { getSpring } from "@/computer/shared/springs";
 import type { SimulatorEvent } from "@/computer/shared/types";
 import { finishSimulation, pauseSimulation, simulationAtom } from "@/computer/simulation";
 import { highlightCurrentInstruction } from "@/editor/methods";
@@ -72,6 +73,93 @@ type CyclePhase =
 let currentPhase: CyclePhase = "fetching";
 // let _waitingForFetchingOperands = false;
 // let _waitingForExecuting = false;
+
+// Función para animar la memoria de control y el secuenciador por cada paso
+// Función para animar solo el secuenciador por cada paso (sin memoria de control)
+const animateSequencerOnly = async (stepProgress: number = 0.1) => {
+  console.log("📊 Animando solo secuenciador - progreso del paso:", stepProgress, "fase actual:", currentPhase);
+  
+  // Ajustar el progreso según la fase actual
+  let actualProgress = stepProgress;
+  
+  if (currentPhase === "fetching") {
+    // Durante la captación de instrucciones, incrementos más grandes
+    actualProgress = 0.15;
+    console.log("📥 Fase de captación - incremento grande:", actualProgress);
+  } else if (currentPhase === "fetching-operands") {
+    // Durante la captación de operandos, incrementos medianos
+    actualProgress = 0.12;
+    console.log("📥 Fase de captación de operandos - incremento mediano:", actualProgress);
+  } else {
+    // Durante ejecución y writeback, incrementos menores
+    actualProgress = Math.min(stepProgress, 0.08);
+    console.log("⚙️ Fase de ejecución/writeback - incremento menor:", actualProgress);
+  }
+  
+  // Solo incrementar el progreso del secuenciador (sin animar memoria de control)
+  const currentProgress = getSpring("sequencer.progress.progress").get();
+  const newProgress = Math.min(currentProgress + actualProgress, 1.0);
+  
+  console.log(`📊 Progreso: ${(currentProgress * 100).toFixed(1)}% → ${(newProgress * 100).toFixed(1)}%`);
+  
+  await anim(
+    { key: "sequencer.progress.progress", to: newProgress },
+    { duration: 150, easing: "easeInOutSine", forceMs: true },
+  );
+};
+
+// Función para animar la memoria de control Y el secuenciador (solo para decodificación)
+const animateControlUnits = async (stepProgress: number = 0.1) => {
+  console.log("🧠 Animando memoria de control + secuenciador - progreso del paso:", stepProgress, "fase actual:", currentPhase);
+  
+  // Ajustar el progreso según la fase actual
+  let actualProgress = stepProgress;
+  
+  if (currentPhase === "fetching") {
+    // Durante la captación de instrucciones, incrementos más grandes (30-40% del total)
+    actualProgress = 0.15; // Incrementos más grandes para la captación
+    console.log("📥 Fase de captación - incremento grande:", actualProgress);
+  } else if (currentPhase === "fetching-operands") {
+    // Durante la captación de operandos, incrementos medianos (30-40% del total)
+    actualProgress = 0.12;
+    console.log("📥 Fase de captación de operandos - incremento mediano:", actualProgress);
+  } else {
+    // Durante ejecución y writeback, incrementos menores
+    actualProgress = Math.min(stepProgress, 0.08);
+    console.log("⚙️ Fase de ejecución/writeback - incremento menor:", actualProgress);
+  }
+  
+  // Animar la memoria de control (lectura de microinstrucciones) - RI → Unidad de Control
+  const controlMemoryDuration = 200;
+  await anim(
+    [
+      { key: "cpu.decoder.path.opacity", from: 1 },
+      { key: "cpu.decoder.path.strokeDashoffset", from: 1, to: 0 },
+    ],
+    { duration: controlMemoryDuration, easing: "easeInOutSine", forceMs: true },
+  );
+  
+  // Incrementar el progreso del secuenciador según la fase
+  const currentProgress = getSpring("sequencer.progress.progress").get();
+  const newProgress = Math.min(currentProgress + actualProgress, 1.0);
+  
+  console.log(`📊 Progreso: ${(currentProgress * 100).toFixed(1)}% → ${(newProgress * 100).toFixed(1)}%`);
+  
+  await anim(
+    { key: "sequencer.progress.progress", to: newProgress },
+    { duration: 150, easing: "easeInOutSine", forceMs: true },
+  );
+  
+  // Fade out de la memoria de control
+  await anim(
+    { key: "cpu.decoder.path.opacity", to: 0 },
+    { duration: 100, easing: "easeInSine", forceMs: true },
+  );
+  
+  
+  
+  console.log(`✅ Unidades de control animadas - nuevo progreso: ${newProgress}`);
+};
 
 const drawDataPath = (from: DataRegister, to: DataRegister, instruction: string, mode: string) => {
   console.log("🎨 drawDataPath llamado con:", { from, to, instruction, mode });
@@ -243,6 +331,10 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
   switch (event.type) {
     case "cpu:alu.execute": {
       console.log("🚀 Evento cpu:alu.execute recibido, fase actual:", currentPhase);
+      
+      // Animar solo el secuenciador para la ejecución de la ALU
+      await animateSequencerOnly(0.12);
+      
       // Usar la configuración de velocidad de animación
       const settings = getSettings();
       const MAX_EXECUTION_UNIT_MS = 250;
@@ -367,9 +459,28 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       const { totalCycleCountAtom, currentInstructionCycleCountAtom } = await import("./state");
       const ciclosInstruccion = store.get(currentInstructionCycleCountAtom);
       store.set(totalCycleCountAtom, prev => prev + ciclosInstruccion);
-      return;
-      // _waitingForFetchingOperands = false;
-      // _waitingForExecuting = false;
+      
+      // Verificar si estamos en modo paso a paso por instrucción
+      const simulationStatus = store.get(simulationAtom);
+      const isStepByStepMode = simulationStatus.type === "running" && simulationStatus.until === "cycle-change";
+      
+      if (isStepByStepMode) {
+        // En modo paso a paso: completar la barra al 100% y mantenerla
+        console.log("🎯 Modo paso a paso: completando barra de progreso al 100%");
+        await anim(
+          { key: "sequencer.progress.progress", to: 1 },
+          { duration: 300, easing: "easeInOutSine", forceMs: true },
+        );
+        console.log("✅ Instrucción completada - barra al 100% (se reiniciará al comenzar la siguiente)");
+      } else {
+        // En modo continuo: reiniciar inmediatamente para la siguiente instrucción
+        console.log("🔄 Modo continuo: reiniciando barra de progreso a cero");
+        void anim(
+          { key: "sequencer.progress.progress", to: 0 },
+          { duration: 200, easing: "easeInOutSine", forceMs: true },
+        );
+      }
+      
       return;
     }
 
@@ -392,6 +503,9 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
     }
 
     case "cpu:cycle.start": {
+      // Animar solo el secuenciador al iniciar ciclo
+      void animateSequencerOnly(0.05);
+      
       instructionName = event.instruction.name; // Obtén el nombre de la instrucción en curso
       mode = event.instruction.willUse.ri ? "mem<-imd" : ""; // Verifica si willUse.ri es true y establece el modo
       console.log(
@@ -428,6 +542,31 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
 
       highlightCurrentInstruction(event.instruction.position.start);
       store.set(cycleAtom, { phase: "fetching", metadata: event.instruction });
+      
+      // Verificar si estamos en modo paso a paso para reiniciar la barra
+      const simulationStatus = store.get(simulationAtom);
+      const isStepByStepMode = simulationStatus.type === "running" && simulationStatus.until === "cycle-change";
+      
+      if (isStepByStepMode) {
+        // En modo paso a paso: la barra estaba al 100%, reiniciarla a cero para la nueva instrucción
+        console.log("Modo paso a paso: reiniciando barra de progreso a cero para nueva instrucción");
+        await anim(
+          { key: "sequencer.progress.progress", to: 0 },
+          { duration: 250, easing: "easeInOutSine", forceMs: true },
+        );
+      }
+      
+      // Siempre reiniciar la barra de progreso del decodificador al iniciar una nueva instrucción
+      // (especialmente importante para modo continuo)
+      console.log("🔄 Asegurando que la barra de progreso del decodificador esté en cero");
+      await anim(
+        { key: "sequencer.progress.progress", to: 0 },
+        { duration: 200, easing: "easeInOutSine", forceMs: true },
+      );
+      
+      // La barra ahora comenzará a incrementarse durante la fase de captación
+      console.log("� Iniciando nueva instrucción - la barra comenzará a incrementarse durante la captación");
+      
       await anim(
         [
           // { key: "cpu.id.opacity", to: event.instruction.willUse.id ? 1 : 0.4 },
@@ -461,6 +600,34 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       currentPhase = newPhase as CyclePhase;
       console.log("🔄 Fase del ciclo actualizada:", currentPhase);
 
+      // Actualizar el progreso del secuenciador basado en la fase
+      let sequencerProgress = 0;
+      switch (newPhase) {
+        case "fetching":
+          sequencerProgress = 0;
+          break;
+        case "fetching-operands":
+          sequencerProgress = 0.25;
+          break;
+        case "executing":
+          sequencerProgress = 0.5;
+          break;
+        case "writeback":
+          sequencerProgress = 0.75;
+          break;
+        case "halting":
+          sequencerProgress = 1;
+          break;
+        default:
+          sequencerProgress = newPhase === "stopped" ? 0 : 0;
+      }
+
+      // Animar el progreso del secuenciador
+      void anim(
+        { key: "sequencer.progress.progress", to: sequencerProgress },
+        { duration: 300, easing: "easeInOutSine", forceMs: true },
+      );
+
       store.set(cycleAtom, prev => {
         if (!("metadata" in prev)) return prev;
         return {
@@ -472,15 +639,11 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
     }
 
     case "cpu:decode": {
-      // No bloquear el ciclo: lanzar animaciones sin await y con duración fija en ms
+      // Animar unidades de control durante decodificación (incluye RI → Unidad de Control)
+      void animateControlUnits(0.1);
+      
+      // Solo animar el progreso del decodificador (sin el path que ya maneja animateControlUnits)
       const durationMs = 150;
-      void anim(
-        [
-          { key: "cpu.decoder.path.opacity", from: 1 },
-          { key: "cpu.decoder.path.strokeDashoffset", from: 1, to: 0 },
-        ],
-        { duration: durationMs, easing: "easeInOutSine", forceMs: true },
-      );
       void anim(
         [
           { key: "cpu.decoder.progress.opacity", from: 1 },
@@ -489,10 +652,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         { duration: durationMs, easing: "easeInOutSine", forceMs: true },
       );
       void anim(
-        [
-          { key: "cpu.decoder.path.opacity", to: 0 },
-          { key: "cpu.decoder.progress.opacity", to: 0 },
-        ],
+        { key: "cpu.decoder.progress.opacity", to: 0 },
         { duration: 80, easing: "easeInSine", forceMs: true },
       );
       return;
@@ -542,6 +702,9 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
 
     case "cpu:rd.on":
     case "cpu:wr.on": {
+      // Animar solo el secuenciador durante operaciones de lectura/escritura
+      void animateSequencerOnly(0.05);
+      
       const line = event.type.slice(4, 6) as "rd" | "wr";
 
       // Animar simultáneamente el bus de control 'write' y el bus de direcciones
@@ -556,6 +719,9 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
     }
 
     case "cpu:mar.set": {
+      // Animar solo el secuenciador en cada paso
+      void animateSequencerOnly(0.05);
+      
       // Detectar si el registro origen es MBR (para animación especial)
       const regNorm = normalize(event.register); // NO toLowerCase
       const isFromMBR = regNorm === "MBR";
@@ -1034,6 +1200,13 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
     }
 
     case "cpu:mbr.get": {
+      // Animar las unidades de control durante la lectura de MBR (obtención de operandos)
+      if (currentPhase === "fetching-operands") {
+        await animateSequencerOnly(0.07);
+      } else {
+        await animateSequencerOnly(0.05);
+      }
+      
       // Normalizar el nombre del registro para evitar problemas con subniveles
       const normalizedRegister = normalize(event.register);
 
@@ -1356,6 +1529,17 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
     }
 
     case "cpu:mbr.set": {
+      // Animar solo el secuenciador en cada paso
+      void animateSequencerOnly(0.05);
+      
+      // Avanzar el progreso del secuenciador durante la escritura a MBR (writeback)
+      if (currentPhase === "writeback") {
+        void anim(
+          { key: "sequencer.progress.progress", to: 0.9 },
+          { duration: 200, easing: "easeInOutSine", forceMs: true },
+        );
+      }
+      
       // Normalizar el nombre del registro para evitar problemas con subniveles
       const normalizedRegister = normalize(event.register);
 
@@ -1425,6 +1609,21 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       console.log(
         `🔄 cpu:register.copy: ${event.src} → ${event.dest} (normalizado: ${src} → ${dest})`,
       );
+
+      // Animar solo el secuenciador por cada operación de copia importante
+      if ((dest === "left" || dest === "right") && currentPhase === "executing") {
+        // Operandos ALU - animar secuenciador con progreso medio
+        await animateSequencerOnly(0.1);
+      } else if (dest === "result" && currentPhase === "writeback") {
+        // Resultado - animar secuenciador con progreso alto
+        await animateSequencerOnly(0.15);
+      } else if ((src === "MBR" || src === "ri") && currentPhase === "fetching-operands") {
+        // Obtención de operandos - animar secuenciador con progreso bajo-medio
+        await animateSequencerOnly(0.08);
+      } else {
+        // Otras operaciones importantes - animar con progreso pequeño
+        await animateSequencerOnly(0.05);
+      }
 
       // Detectar preparación de operandos ALU para ADD [BL], 2 (mem<-imd indirecto)
       const isALUIndirectImmediateADD = instructionName === "ADD" && mode === "mem<-imd";
@@ -1641,6 +1840,9 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
     }
 
     case "cpu:register.update": {
+      // Animar solo el secuenciador en cada paso
+      void animateSequencerOnly(0.05);
+      
       const [reg] = parseRegister(event.register);
       const regNorm = normalize(reg);
       // Si se actualiza MBR o IP, animar ambos juntos
