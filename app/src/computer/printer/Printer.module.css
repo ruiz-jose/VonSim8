@@ -1,39 +1,65 @@
 /* Based on https://www.joshwcomeau.com/animation/3d-button/#mobile-enhancements-8 */
 .printer {
-  @apply relative m-2;
+  position: relative;
+  margin: 0.5rem;
 }
 
 .shadow {
-  @apply absolute inset-0 rounded-xl bg-black/25;
+  position: absolute;
+  inset: 0;
+  border-radius: 0.75rem;
+  background-color: rgba(0, 0, 0, 0.25);
   transform: translateY(2px);
 }
 
 .sides {
-  @apply absolute inset-0 rounded-xl;
+  position: absolute;
+  inset: 0;
+  border-radius: 0.75rem;
   background: linear-gradient(
     to left,
-    theme(colors.zinc.500) 0%,
-    theme(colors.zinc.400) 8%,
-    theme(colors.zinc.400) 92%,
-    theme(colors.zinc.500) 100%
+    #71717a 0%,
+    #a1a1aa 8%,
+    #a1a1aa 92%,
+    #71717a 100%
   );
 }
 
 .front {
-  @apply relative block rounded-xl bg-zinc-300 px-4 py-6;
+  position: relative;
+  display: block;
+  border-radius: 0.75rem;
+  background-color: #d4d4d8;
+  padding: 1.5rem 1rem;
   transform: translateY(-30px);
 }
 
 .trailContainer {
-  @apply absolute inset-x-0 -top-4;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -1rem;
+}
 
-  .trail {
-    @apply mx-auto flex h-16 w-40 items-end bg-zinc-900 px-2 pb-1;
+.trail {
+  margin: 0 auto;
+  display: flex;
+  height: 4rem;
+  width: 10rem;
+  align-items: flex-end;
+  background-color: #111827;
+  padding: 0.5rem 0.5rem 0.25rem 0.5rem;
+}
 
-    .paper {
-      @apply w-full whitespace-pre-wrap break-all bg-zinc-50 font-mono text-lg p-1;
-      color: theme(colors.zinc.900);
-      text-shadow: 0 0 2px theme(colors.zinc.500);
-    }
-  }
+.paper {
+  width: 100%;
+  white-space: pre-wrap;
+  word-break: break-all;
+  background-color: #fafafa;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  padding: 0.25rem;
+  color: #18181b;
+  text-shadow: 0 0 2px #71717a;
 }
