@@ -27,8 +27,14 @@ export function Memory() {
   const deviceSettings = useDevices();
 
   // Determinar si se debe mostrar el vector de interrupciones
-  // Se muestra si hay instrucciones INT o si están activados dispositivos que usan interrupciones
-  const showInterruptVector = hasINT || deviceSettings.pic || deviceSettings.handshake !== null;
+  // Se muestra SOLO si el programa actual usa instrucciones INT o PIC
+  const showInterruptVector = hasINT;
+
+  console.log("🔍 DEBUG Memory - Vector de Interrupciones:", {
+    hasINT,
+    showInterruptVector,
+    deviceSettings: { pic: deviceSettings.pic, handshake: deviceSettings.handshake }
+  });
 
   const renderMemoryRows = () => {
     const rows = [];
@@ -197,7 +203,7 @@ function MemoryCell({
                 : "",
             // Cambiar fondos de colores sólidos por fondo oscuro consistente
             "bg-stone-800",
-            isInterruptVector && !isSP && !isStackData ? "border-l-4 border-purple-500" : "",
+            isInterruptVector && !isSP && !isStackData ? "border-l-4 border-orange-500" : "",
             isProgramAddress && !isSP && !isStackData && !isInterruptVector
               ? "border-l-4 border-blue-500"
               : "",
@@ -222,7 +228,7 @@ function MemoryCell({
           {/* Iconos para instrucciones, datos y vector de interrupciones */}
           {isInterruptVector && !isSP && !isStackData && (
             <span
-              className="pointer-events-none absolute left-0.5 top-0.5 rounded bg-stone-900/80 px-0.5 text-[10px] text-purple-400"
+              className="pointer-events-none absolute left-0.5 top-0.5 rounded bg-stone-900/80 px-0.5 text-[10px] text-orange-400"
               title="Vector de interrupción"
               style={{ lineHeight: 1 }}
             >

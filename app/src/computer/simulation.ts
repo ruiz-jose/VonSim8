@@ -2669,7 +2669,13 @@ async function dispatch(...args: Action) {
         // Actualizar el estado showSP en consecuencia
         store.set(showSPAtom, hasSPInstruction);
 
-        const hasINT = instructions.includes("INT");
+        const hasINT = result.instructions.some(instruction => instruction.instruction === "INT");
+        console.log(`🔍 Verificación INT:`, {
+          totalInstructions: result.instructions.length,
+          intInstructions: result.instructions.filter(i => i.instruction === "INT"),
+          hasINT,
+          instructionNames: result.instructions.map(i => i.instruction)
+        });
 
         // Verificar si el programa contiene INT 6 o INT 7
         const connectScreenAndKeyboard = result.instructions.some(instruction => {
