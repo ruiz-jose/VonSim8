@@ -97,18 +97,29 @@ export class CPU extends Component {
     // Verificar si el programa contiene la directiva ORG específicamente ORG 20h al inicio
     const hasORG20hAtStart = options.hasORG20hAtStart ?? false;
     
-    // Verificar si el programa usa vector de interrupciones (INT o dispositivos de interrupción)
+    // Verificar si el programa usa vector de interrupciones (SOLO INT o PIC)
     const hasINTOrInterruptDevices = options.hasINTOrInterruptDevices ?? hasINT;
+    const hasPICConfig = options.devices.pic;
+
+    // Detectar donde realmente empieza el código mirando las instrucciones
+    const firstInstruction = options.program.instructions.length > 0 ? 
+      options.program.instructions[0] : null;
+    const firstInstructionAddress = firstInstruction ? 
+      (typeof firstInstruction.start === 'number' ? firstInstruction.start : firstInstruction.start.value) : 0;
 
     console.log("DEBUG CPU:", { 
       hasINT, 
       hasORG20hAtStart, 
       hasORG: options.hasORG,
       hasINTOrInterruptDevices,
+      hasPICConfig,
+      firstInstructionAddress: '0x' + firstInstructionAddress.toString(16).padStart(2, '0'),
+      devices: options.devices,
       instructionsCount: options.program.instructions.length,
       firstFewInstructions: options.program.instructions.slice(0, 3).map(i => ({
         type: i.type,
-        instruction: i.isInstruction() ? i.instruction : 'not-instruction'
+        instruction: i.isInstruction() ? i.instruction : 'not-instruction',
+        start: '0x' + (typeof i.start === 'number' ? i.start : i.start.value).toString(16).padStart(2, '0')
       }))
     });
 
@@ -117,12 +128,14 @@ export class CPU extends Component {
     if (hasORG20hAtStart) {
       initialIP = 0x20;
       console.log("IP set to 0x20 (hasORG20hAtStart)");
-    } else if (hasINTOrInterruptDevices) {
+    } else if ((hasINTOrInterruptDevices || hasPICConfig) && firstInstructionAddress >= 8) {
+      // Si usa INT/PIC Y el código está cargado en 0x08 o superior, usar 0x08
       initialIP = 0x08;
-      console.log("IP set to 0x08 (hasINTOrInterruptDevices)");
+      console.log("IP set to 0x08 (INT/PIC + code at 08h+)");
     } else {
-      initialIP = 0x00;
-      console.log("IP set to 0x00 (default)");
+      // Si no usa INT/PIC O el código está en 0x00, usar donde está el código
+      initialIP = firstInstructionAddress;
+      console.log(`IP set to 0x${initialIP.toString(16).padStart(2, '0')} (first instruction address)`);
     }
     this.#registers.IP = Byte.fromUnsigned(initialIP, 16);
 

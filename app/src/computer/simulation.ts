@@ -252,6 +252,10 @@ function resetState(state: ComputerState, clearRegisters = false) {
   resetScreenState(state);
   resetSwitchesState(state);
 
+  // Reset del vector de interrupciones cuando se limpia el programa
+  console.log("🧹 RESET: Vector de interrupciones deshabilitado");
+  store.set(hasINTInstructionAtom, false);
+
   cycleCount = 0;
   instructionCount = 0;
   fetchStageCounter = 0;
@@ -2666,7 +2670,6 @@ async function dispatch(...args: Action) {
         store.set(showSPAtom, hasSPInstruction);
 
         const hasINT = instructions.includes("INT");
-        store.set(hasINTInstructionAtom, hasINT);
 
         // Verificar si el programa contiene INT 6 o INT 7
         const connectScreenAndKeyboard = result.instructions.some(instruction => {
@@ -2818,11 +2821,24 @@ async function dispatch(...args: Action) {
         store.set(connectScreenAndKeyboardAtom, connectScreenAndKeyboard);
 
         // Determinar si se necesita mostrar el vector de interrupciones
-        // Se muestra si hay INT, o si se usan dispositivos que pueden generar interrupciones
-        const hasINTOrInterruptDevices =
-          hasINT || usesPIC || usesHandshake || usesTimer || connectScreenAndKeyboard || 
-          getSettings().devices.pic; // También considerar la configuración del PIC
+        // Se muestra SOLO si hay INT o si se usa PIC (no otros dispositivos como Handshake, Timer)
+        // Y SOLO si realmente hay instrucciones en el programa
+        const hasActualInstructions = result.instructions && result.instructions.length > 0;
+        const hasINTOrInterruptDevices = hasActualInstructions && (hasINT || usesPIC);
         store.set(hasINTInstructionAtom, hasINTOrInterruptDevices);
+
+        console.log("🔍 DEBUG Vector de Interrupciones:", {
+          hasActualInstructions,
+          instructionCount: result.instructions?.length || 0,
+          hasINT,
+          usesPIC,
+          usesHandshake,
+          usesTimer,
+          connectScreenAndKeyboard,
+          hasINTOrInterruptDevices,
+          currentHandshakeConfig: getSettings().devices.handshake,
+          currentPICConfig: getSettings().devices.pic,
+        });
 
         console.log(
           "Detectado - PIC:",

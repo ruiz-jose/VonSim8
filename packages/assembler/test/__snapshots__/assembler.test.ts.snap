@@ -10,7 +10,7 @@ exports[`Fixtures > should match snapshot of dividir.asm 1`] = `
         771,
         777,
       ],
-      "start": 44,
+      "start": 36,
       "type": "data-directive",
       "values": [
         255,
@@ -23,7 +23,7 @@ exports[`Fixtures > should match snapshot of dividir.asm 1`] = `
         838,
         842,
       ],
-      "start": 45,
+      "start": 37,
       "type": "data-directive",
       "values": [
         2,
@@ -36,7 +36,7 @@ exports[`Fixtures > should match snapshot of dividir.asm 1`] = `
         903,
         907,
       ],
-      "start": 46,
+      "start": 38,
       "type": "data-directive",
       "values": [
         "?",
@@ -49,7 +49,7 @@ exports[`Fixtures > should match snapshot of dividir.asm 1`] = `
         978,
         982,
       ],
-      "start": 47,
+      "start": 39,
       "type": "data-directive",
       "values": [
         "?",
@@ -57,6 +57,7 @@ exports[`Fixtures > should match snapshot of dividir.asm 1`] = `
     },
   ],
   "hasORG": true,
+  "hasORG20hAtStart": false,
   "instructions": [
     {
       "instruction": "MOV",
@@ -69,10 +70,10 @@ exports[`Fixtures > should match snapshot of dividir.asm 1`] = `
       ],
       "size": 8,
       "src": {
-        "address": 44,
+        "address": 36,
         "mode": "direct",
       },
-      "start": 8,
+      "start": 0,
       "type": "instruction",
     },
     {
@@ -86,10 +87,10 @@ exports[`Fixtures > should match snapshot of dividir.asm 1`] = `
       ],
       "size": 8,
       "src": {
-        "address": 45,
+        "address": 37,
         "mode": "direct",
       },
-      "start": 10,
+      "start": 2,
       "type": "instruction",
     },
     {
@@ -103,7 +104,7 @@ exports[`Fixtures > should match snapshot of dividir.asm 1`] = `
       ],
       "size": 8,
       "src": 0,
-      "start": 12,
+      "start": 4,
       "type": "instruction",
     },
     {
@@ -117,18 +118,18 @@ exports[`Fixtures > should match snapshot of dividir.asm 1`] = `
       ],
       "size": 8,
       "src": 0,
-      "start": 14,
+      "start": 6,
       "type": "instruction",
     },
     {
-      "address": 37,
+      "address": 29,
       "instruction": "JZ",
       "label": null,
       "position": [
         1471,
         1487,
       ],
-      "start": 16,
+      "start": 8,
       "type": "instruction",
     },
     {
@@ -142,18 +143,18 @@ exports[`Fixtures > should match snapshot of dividir.asm 1`] = `
       ],
       "size": 8,
       "src": "BL",
-      "start": 18,
+      "start": 10,
       "type": "instruction",
     },
     {
-      "address": 32,
+      "address": 24,
       "instruction": "JC",
       "label": null,
       "position": [
         1626,
         1647,
       ],
-      "start": 19,
+      "start": 11,
       "type": "instruction",
     },
     {
@@ -167,7 +168,7 @@ exports[`Fixtures > should match snapshot of dividir.asm 1`] = `
       ],
       "size": 8,
       "src": "BL",
-      "start": 21,
+      "start": 13,
       "type": "instruction",
     },
     {
@@ -180,7 +181,7 @@ exports[`Fixtures > should match snapshot of dividir.asm 1`] = `
       ],
       "reg": "CL",
       "size": 8,
-      "start": 22,
+      "start": 14,
       "type": "instruction",
     },
     {
@@ -194,40 +195,40 @@ exports[`Fixtures > should match snapshot of dividir.asm 1`] = `
       ],
       "size": 8,
       "src": "BL",
-      "start": 23,
+      "start": 15,
       "type": "instruction",
     },
     {
-      "address": 32,
+      "address": 24,
       "instruction": "JC",
       "label": null,
       "position": [
         2002,
         2023,
       ],
-      "start": 24,
+      "start": 16,
       "type": "instruction",
     },
     {
-      "address": 30,
+      "address": 22,
       "instruction": "JZ",
       "label": null,
       "position": [
         2072,
         2085,
       ],
-      "start": 26,
+      "start": 18,
       "type": "instruction",
     },
     {
-      "address": 21,
+      "address": 13,
       "instruction": "JMP",
       "label": null,
       "position": [
         2153,
         2171,
       ],
-      "start": 28,
+      "start": 20,
       "type": "instruction",
     },
     {
@@ -241,7 +242,7 @@ exports[`Fixtures > should match snapshot of dividir.asm 1`] = `
       ],
       "size": 8,
       "src": "BL",
-      "start": 30,
+      "start": 22,
       "type": "instruction",
     },
     {
@@ -254,7 +255,7 @@ exports[`Fixtures > should match snapshot of dividir.asm 1`] = `
       ],
       "reg": "CL",
       "size": 8,
-      "start": 31,
+      "start": 23,
       "type": "instruction",
     },
     {
@@ -262,7 +263,7 @@ exports[`Fixtures > should match snapshot of dividir.asm 1`] = `
       "label": "GUARDAR_RESULTADOS",
       "mode": "mem<-reg",
       "out": {
-        "address": 46,
+        "address": 38,
         "mode": "direct",
       },
       "position": [
@@ -271,7 +272,7 @@ exports[`Fixtures > should match snapshot of dividir.asm 1`] = `
       ],
       "size": 8,
       "src": "CL",
-      "start": 32,
+      "start": 24,
       "type": "instruction",
     },
     {
@@ -279,7 +280,7 @@ exports[`Fixtures > should match snapshot of dividir.asm 1`] = `
       "label": null,
       "mode": "mem<-reg",
       "out": {
-        "address": 47,
+        "address": 39,
         "mode": "direct",
       },
       "position": [
@@ -288,7 +289,7 @@ exports[`Fixtures > should match snapshot of dividir.asm 1`] = `
       ],
       "size": 8,
       "src": "AL",
-      "start": 34,
+      "start": 26,
       "type": "instruction",
     },
     {
@@ -298,7 +299,7 @@ exports[`Fixtures > should match snapshot of dividir.asm 1`] = `
         2610,
         2613,
       ],
-      "start": 36,
+      "start": 28,
       "type": "instruction",
     },
     {
@@ -306,7 +307,7 @@ exports[`Fixtures > should match snapshot of dividir.asm 1`] = `
       "label": "GUARDAR_ERROR",
       "mode": "mem<-imd",
       "out": {
-        "address": 46,
+        "address": 38,
         "mode": "direct",
       },
       "position": [
@@ -315,7 +316,7 @@ exports[`Fixtures > should match snapshot of dividir.asm 1`] = `
       ],
       "size": 8,
       "src": 255,
-      "start": 37,
+      "start": 29,
       "type": "instruction",
     },
     {
@@ -323,7 +324,7 @@ exports[`Fixtures > should match snapshot of dividir.asm 1`] = `
       "label": null,
       "mode": "mem<-imd",
       "out": {
-        "address": 47,
+        "address": 39,
         "mode": "direct",
       },
       "position": [
@@ -332,7 +333,7 @@ exports[`Fixtures > should match snapshot of dividir.asm 1`] = `
       ],
       "size": 8,
       "src": 255,
-      "start": 40,
+      "start": 32,
       "type": "instruction",
     },
     {
@@ -342,7 +343,7 @@ exports[`Fixtures > should match snapshot of dividir.asm 1`] = `
         2847,
         2850,
       ],
-      "start": 43,
+      "start": 35,
       "type": "instruction",
     },
   ],
@@ -360,7 +361,7 @@ exports[`Fixtures > should match snapshot of fibonacci.asm 1`] = `
         725,
         732,
       ],
-      "start": 46,
+      "start": 38,
       "type": "data-directive",
       "values": [
         0,
@@ -374,7 +375,7 @@ exports[`Fixtures > should match snapshot of fibonacci.asm 1`] = `
         806,
         824,
       ],
-      "start": 48,
+      "start": 40,
       "type": "data-directive",
       "values": [
         0,
@@ -389,6 +390,7 @@ exports[`Fixtures > should match snapshot of fibonacci.asm 1`] = `
     },
   ],
   "hasORG": true,
+  "hasORG20hAtStart": false,
   "instructions": [
     {
       "instruction": "MOV",
@@ -401,7 +403,7 @@ exports[`Fixtures > should match snapshot of fibonacci.asm 1`] = `
       ],
       "size": 8,
       "src": 18,
-      "start": 8,
+      "start": 0,
       "type": "instruction",
     },
     {
@@ -415,7 +417,7 @@ exports[`Fixtures > should match snapshot of fibonacci.asm 1`] = `
       ],
       "size": 8,
       "src": 0,
-      "start": 10,
+      "start": 2,
       "type": "instruction",
     },
     {
@@ -429,7 +431,7 @@ exports[`Fixtures > should match snapshot of fibonacci.asm 1`] = `
       ],
       "size": 8,
       "src": 1,
-      "start": 12,
+      "start": 4,
       "type": "instruction",
     },
     {
@@ -443,7 +445,7 @@ exports[`Fixtures > should match snapshot of fibonacci.asm 1`] = `
       ],
       "size": 8,
       "src": 2,
-      "start": 14,
+      "start": 6,
       "type": "instruction",
     },
     {
@@ -457,40 +459,40 @@ exports[`Fixtures > should match snapshot of fibonacci.asm 1`] = `
       ],
       "size": 8,
       "src": 10,
-      "start": 16,
+      "start": 8,
       "type": "instruction",
     },
     {
-      "address": 24,
+      "address": 16,
       "instruction": "JC",
       "label": null,
       "position": [
         1523,
         1541,
       ],
-      "start": 18,
+      "start": 10,
       "type": "instruction",
     },
     {
-      "address": 45,
+      "address": 37,
       "instruction": "JZ",
       "label": null,
       "position": [
         1601,
         1616,
       ],
-      "start": 20,
+      "start": 12,
       "type": "instruction",
     },
     {
-      "address": 45,
+      "address": 37,
       "instruction": "JMP",
       "label": null,
       "position": [
         1670,
         1686,
       ],
-      "start": 22,
+      "start": 14,
       "type": "instruction",
     },
     {
@@ -504,7 +506,7 @@ exports[`Fixtures > should match snapshot of fibonacci.asm 1`] = `
       ],
       "size": 8,
       "src": "DL",
-      "start": 24,
+      "start": 16,
       "type": "instruction",
     },
     {
@@ -518,18 +520,18 @@ exports[`Fixtures > should match snapshot of fibonacci.asm 1`] = `
       ],
       "size": 8,
       "src": "AL",
-      "start": 25,
+      "start": 17,
       "type": "instruction",
     },
     {
-      "address": 41,
+      "address": 33,
       "instruction": "JC",
       "label": null,
       "position": [
         2084,
         2101,
       ],
-      "start": 26,
+      "start": 18,
       "type": "instruction",
     },
     {
@@ -545,7 +547,7 @@ exports[`Fixtures > should match snapshot of fibonacci.asm 1`] = `
       ],
       "size": 8,
       "src": "CL",
-      "start": 28,
+      "start": 20,
       "type": "instruction",
     },
     {
@@ -559,7 +561,7 @@ exports[`Fixtures > should match snapshot of fibonacci.asm 1`] = `
       ],
       "size": 8,
       "src": "DL",
-      "start": 29,
+      "start": 21,
       "type": "instruction",
     },
     {
@@ -573,7 +575,7 @@ exports[`Fixtures > should match snapshot of fibonacci.asm 1`] = `
       ],
       "size": 8,
       "src": "CL",
-      "start": 30,
+      "start": 22,
       "type": "instruction",
     },
     {
@@ -586,7 +588,7 @@ exports[`Fixtures > should match snapshot of fibonacci.asm 1`] = `
       ],
       "reg": "BL",
       "size": 8,
-      "start": 31,
+      "start": 23,
       "type": "instruction",
     },
     {
@@ -599,7 +601,7 @@ exports[`Fixtures > should match snapshot of fibonacci.asm 1`] = `
       ],
       "reg": "CH",
       "size": 8,
-      "start": 32,
+      "start": 24,
       "type": "instruction",
     },
     {
@@ -613,40 +615,40 @@ exports[`Fixtures > should match snapshot of fibonacci.asm 1`] = `
       ],
       "size": 8,
       "src": 10,
-      "start": 33,
+      "start": 25,
       "type": "instruction",
     },
     {
-      "address": 24,
+      "address": 16,
       "instruction": "JC",
       "label": null,
       "position": [
         2824,
         2842,
       ],
-      "start": 35,
+      "start": 27,
       "type": "instruction",
     },
     {
-      "address": 45,
+      "address": 37,
       "instruction": "JZ",
       "label": null,
       "position": [
         2894,
         2909,
       ],
-      "start": 37,
+      "start": 29,
       "type": "instruction",
     },
     {
-      "address": 45,
+      "address": 37,
       "instruction": "JMP",
       "label": null,
       "position": [
         2963,
         2979,
       ],
-      "start": 39,
+      "start": 31,
       "type": "instruction",
     },
     {
@@ -662,18 +664,18 @@ exports[`Fixtures > should match snapshot of fibonacci.asm 1`] = `
       ],
       "size": 8,
       "src": 255,
-      "start": 41,
+      "start": 33,
       "type": "instruction",
     },
     {
-      "address": 45,
+      "address": 37,
       "instruction": "JMP",
       "label": null,
       "position": [
         3133,
         3149,
       ],
-      "start": 43,
+      "start": 35,
       "type": "instruction",
     },
     {
@@ -683,7 +685,7 @@ exports[`Fixtures > should match snapshot of fibonacci.asm 1`] = `
         3223,
         3226,
       ],
-      "start": 45,
+      "start": 37,
       "type": "instruction",
     },
   ],
@@ -701,7 +703,7 @@ exports[`Fixtures > should match snapshot of multiplicar.asm 1`] = `
         702,
         707,
       ],
-      "start": 24,
+      "start": 16,
       "type": "data-directive",
       "values": [
         25,
@@ -714,7 +716,7 @@ exports[`Fixtures > should match snapshot of multiplicar.asm 1`] = `
         778,
         782,
       ],
-      "start": 25,
+      "start": 17,
       "type": "data-directive",
       "values": [
         4,
@@ -727,7 +729,7 @@ exports[`Fixtures > should match snapshot of multiplicar.asm 1`] = `
         855,
         859,
       ],
-      "start": 26,
+      "start": 18,
       "type": "data-directive",
       "values": [
         "?",
@@ -735,6 +737,7 @@ exports[`Fixtures > should match snapshot of multiplicar.asm 1`] = `
     },
   ],
   "hasORG": true,
+  "hasORG20hAtStart": false,
   "instructions": [
     {
       "instruction": "MOV",
@@ -747,7 +750,7 @@ exports[`Fixtures > should match snapshot of multiplicar.asm 1`] = `
       ],
       "size": 8,
       "src": 0,
-      "start": 8,
+      "start": 0,
       "type": "instruction",
     },
     {
@@ -761,10 +764,10 @@ exports[`Fixtures > should match snapshot of multiplicar.asm 1`] = `
       ],
       "size": 8,
       "src": {
-        "address": 25,
+        "address": 17,
         "mode": "direct",
       },
-      "start": 10,
+      "start": 2,
       "type": "instruction",
     },
     {
@@ -778,18 +781,18 @@ exports[`Fixtures > should match snapshot of multiplicar.asm 1`] = `
       ],
       "size": 8,
       "src": 0,
-      "start": 12,
+      "start": 4,
       "type": "instruction",
     },
     {
-      "address": 21,
+      "address": 13,
       "instruction": "JZ",
       "label": null,
       "position": [
         1347,
         1367,
       ],
-      "start": 14,
+      "start": 6,
       "type": "instruction",
     },
     {
@@ -803,10 +806,10 @@ exports[`Fixtures > should match snapshot of multiplicar.asm 1`] = `
       ],
       "size": 8,
       "src": {
-        "address": 24,
+        "address": 16,
         "mode": "direct",
       },
-      "start": 16,
+      "start": 8,
       "type": "instruction",
     },
     {
@@ -819,18 +822,18 @@ exports[`Fixtures > should match snapshot of multiplicar.asm 1`] = `
       ],
       "reg": "BL",
       "size": 8,
-      "start": 18,
+      "start": 10,
       "type": "instruction",
     },
     {
-      "address": 16,
+      "address": 8,
       "instruction": "JNZ",
       "label": null,
       "position": [
         1690,
         1704,
       ],
-      "start": 19,
+      "start": 11,
       "type": "instruction",
     },
     {
@@ -838,7 +841,7 @@ exports[`Fixtures > should match snapshot of multiplicar.asm 1`] = `
       "label": "GUARDAR_RESULTADO",
       "mode": "mem<-reg",
       "out": {
-        "address": 26,
+        "address": 18,
         "mode": "direct",
       },
       "position": [
@@ -847,7 +850,7 @@ exports[`Fixtures > should match snapshot of multiplicar.asm 1`] = `
       ],
       "size": 8,
       "src": "AL",
-      "start": 21,
+      "start": 13,
       "type": "instruction",
     },
     {
@@ -857,7 +860,7 @@ exports[`Fixtures > should match snapshot of multiplicar.asm 1`] = `
         1906,
         1909,
       ],
-      "start": 23,
+      "start": 15,
       "type": "instruction",
     },
   ],
@@ -875,7 +878,7 @@ exports[`Fixtures > should match snapshot of rotar.asm 1`] = `
         785,
         797,
       ],
-      "start": 17,
+      "start": 9,
       "type": "data-directive",
       "values": [
         128,
@@ -888,7 +891,7 @@ exports[`Fixtures > should match snapshot of rotar.asm 1`] = `
         860,
         864,
       ],
-      "start": 18,
+      "start": 10,
       "type": "data-directive",
       "values": [
         3,
@@ -901,7 +904,7 @@ exports[`Fixtures > should match snapshot of rotar.asm 1`] = `
         938,
         942,
       ],
-      "start": 19,
+      "start": 11,
       "type": "data-directive",
       "values": [
         "?",
@@ -909,6 +912,7 @@ exports[`Fixtures > should match snapshot of rotar.asm 1`] = `
     },
   ],
   "hasORG": true,
+  "hasORG20hAtStart": false,
   "instructions": [
     {
       "instruction": "MOV",
@@ -921,10 +925,10 @@ exports[`Fixtures > should match snapshot of rotar.asm 1`] = `
       ],
       "size": 8,
       "src": {
-        "address": 17,
+        "address": 9,
         "mode": "direct",
       },
-      "start": 8,
+      "start": 0,
       "type": "instruction",
     },
     {
@@ -938,10 +942,10 @@ exports[`Fixtures > should match snapshot of rotar.asm 1`] = `
       ],
       "size": 8,
       "src": {
-        "address": 18,
+        "address": 10,
         "mode": "direct",
       },
-      "start": 10,
+      "start": 2,
       "type": "instruction",
     },
     {
@@ -952,7 +956,7 @@ exports[`Fixtures > should match snapshot of rotar.asm 1`] = `
         1281,
         1299,
       ],
-      "start": 12,
+      "start": 4,
       "type": "instruction",
     },
     {
@@ -960,7 +964,7 @@ exports[`Fixtures > should match snapshot of rotar.asm 1`] = `
       "label": null,
       "mode": "mem<-reg",
       "out": {
-        "address": 19,
+        "address": 11,
         "mode": "direct",
       },
       "position": [
@@ -969,7 +973,7 @@ exports[`Fixtures > should match snapshot of rotar.asm 1`] = `
       ],
       "size": 8,
       "src": "AL",
-      "start": 14,
+      "start": 6,
       "type": "instruction",
     },
     {
@@ -979,7 +983,7 @@ exports[`Fixtures > should match snapshot of rotar.asm 1`] = `
         1437,
         1440,
       ],
-      "start": 16,
+      "start": 8,
       "type": "instruction",
     },
     {
@@ -1303,7 +1307,7 @@ exports[`Fixtures > should match snapshot of suma.asm 1`] = `
         103,
         107,
       ],
-      "start": 15,
+      "start": 7,
       "type": "data-directive",
       "values": [
         3,
@@ -1316,7 +1320,7 @@ exports[`Fixtures > should match snapshot of suma.asm 1`] = `
         114,
         118,
       ],
-      "start": 16,
+      "start": 8,
       "type": "data-directive",
       "values": [
         2,
@@ -1329,7 +1333,7 @@ exports[`Fixtures > should match snapshot of suma.asm 1`] = `
         125,
         129,
       ],
-      "start": 17,
+      "start": 9,
       "type": "data-directive",
       "values": [
         0,
@@ -1337,6 +1341,7 @@ exports[`Fixtures > should match snapshot of suma.asm 1`] = `
     },
   ],
   "hasORG": false,
+  "hasORG20hAtStart": false,
   "instructions": [
     {
       "instruction": "MOV",
@@ -1349,10 +1354,10 @@ exports[`Fixtures > should match snapshot of suma.asm 1`] = `
       ],
       "size": 8,
       "src": {
-        "address": 15,
+        "address": 7,
         "mode": "direct",
       },
-      "start": 8,
+      "start": 0,
       "type": "instruction",
     },
     {
@@ -1366,10 +1371,10 @@ exports[`Fixtures > should match snapshot of suma.asm 1`] = `
       ],
       "size": 8,
       "src": {
-        "address": 16,
+        "address": 8,
         "mode": "direct",
       },
-      "start": 10,
+      "start": 2,
       "type": "instruction",
     },
     {
@@ -1377,7 +1382,7 @@ exports[`Fixtures > should match snapshot of suma.asm 1`] = `
       "label": null,
       "mode": "mem<-reg",
       "out": {
-        "address": 17,
+        "address": 9,
         "mode": "direct",
       },
       "position": [
@@ -1386,7 +1391,7 @@ exports[`Fixtures > should match snapshot of suma.asm 1`] = `
       ],
       "size": 8,
       "src": "AL",
-      "start": 12,
+      "start": 4,
       "type": "instruction",
     },
     {
@@ -1396,7 +1401,7 @@ exports[`Fixtures > should match snapshot of suma.asm 1`] = `
         172,
         175,
       ],
-      "start": 14,
+      "start": 6,
       "type": "instruction",
     },
   ],
@@ -1414,7 +1419,7 @@ exports[`Fixtures > should match snapshot of sumador_de_tablas.asm 1`] = `
         709,
         728,
       ],
-      "start": 31,
+      "start": 23,
       "type": "data-directive",
       "values": [
         25,
@@ -1431,7 +1436,7 @@ exports[`Fixtures > should match snapshot of sumador_de_tablas.asm 1`] = `
         783,
         802,
       ],
-      "start": 36,
+      "start": 28,
       "type": "data-directive",
       "values": [
         4,
@@ -1448,7 +1453,7 @@ exports[`Fixtures > should match snapshot of sumador_de_tablas.asm 1`] = `
         862,
         878,
       ],
-      "start": 41,
+      "start": 33,
       "type": "data-directive",
       "values": [
         "?",
@@ -1460,6 +1465,7 @@ exports[`Fixtures > should match snapshot of sumador_de_tablas.asm 1`] = `
     },
   ],
   "hasORG": true,
+  "hasORG20hAtStart": false,
   "instructions": [
     {
       "instruction": "MOV",
@@ -1472,7 +1478,7 @@ exports[`Fixtures > should match snapshot of sumador_de_tablas.asm 1`] = `
       ],
       "size": 8,
       "src": 5,
-      "start": 8,
+      "start": 0,
       "type": "instruction",
     },
     {
@@ -1485,7 +1491,7 @@ exports[`Fixtures > should match snapshot of sumador_de_tablas.asm 1`] = `
       ],
       "reg": "CL",
       "size": 8,
-      "start": 10,
+      "start": 2,
       "type": "instruction",
     },
     {
@@ -1498,8 +1504,8 @@ exports[`Fixtures > should match snapshot of sumador_de_tablas.asm 1`] = `
         1271,
       ],
       "size": 8,
-      "src": 31,
-      "start": 11,
+      "src": 23,
+      "start": 3,
       "type": "instruction",
     },
     {
@@ -1513,7 +1519,7 @@ exports[`Fixtures > should match snapshot of sumador_de_tablas.asm 1`] = `
       ],
       "size": 8,
       "src": "CL",
-      "start": 13,
+      "start": 5,
       "type": "instruction",
     },
     {
@@ -1529,7 +1535,7 @@ exports[`Fixtures > should match snapshot of sumador_de_tablas.asm 1`] = `
       "src": {
         "mode": "indirect",
       },
-      "start": 14,
+      "start": 6,
       "type": "instruction",
     },
     {
@@ -1542,8 +1548,8 @@ exports[`Fixtures > should match snapshot of sumador_de_tablas.asm 1`] = `
         1495,
       ],
       "size": 8,
-      "src": 36,
-      "start": 15,
+      "src": 28,
+      "start": 7,
       "type": "instruction",
     },
     {
@@ -1557,7 +1563,7 @@ exports[`Fixtures > should match snapshot of sumador_de_tablas.asm 1`] = `
       ],
       "size": 8,
       "src": "CL",
-      "start": 17,
+      "start": 9,
       "type": "instruction",
     },
     {
@@ -1573,7 +1579,7 @@ exports[`Fixtures > should match snapshot of sumador_de_tablas.asm 1`] = `
       "src": {
         "mode": "indirect",
       },
-      "start": 18,
+      "start": 10,
       "type": "instruction",
     },
     {
@@ -1586,8 +1592,8 @@ exports[`Fixtures > should match snapshot of sumador_de_tablas.asm 1`] = `
         1739,
       ],
       "size": 8,
-      "src": 41,
-      "start": 19,
+      "src": 33,
+      "start": 11,
       "type": "instruction",
     },
     {
@@ -1601,7 +1607,7 @@ exports[`Fixtures > should match snapshot of sumador_de_tablas.asm 1`] = `
       ],
       "size": 8,
       "src": "CL",
-      "start": 21,
+      "start": 13,
       "type": "instruction",
     },
     {
@@ -1617,7 +1623,7 @@ exports[`Fixtures > should match snapshot of sumador_de_tablas.asm 1`] = `
       ],
       "size": 8,
       "src": "AL",
-      "start": 22,
+      "start": 14,
       "type": "instruction",
     },
     {
@@ -1631,18 +1637,18 @@ exports[`Fixtures > should match snapshot of sumador_de_tablas.asm 1`] = `
       ],
       "size": 8,
       "src": 0,
-      "start": 23,
+      "start": 15,
       "type": "instruction",
     },
     {
-      "address": 30,
+      "address": 22,
       "instruction": "JZ",
       "label": null,
       "position": [
         2083,
         2098,
       ],
-      "start": 25,
+      "start": 17,
       "type": "instruction",
     },
     {
@@ -1655,18 +1661,18 @@ exports[`Fixtures > should match snapshot of sumador_de_tablas.asm 1`] = `
       ],
       "reg": "CL",
       "size": 8,
-      "start": 27,
+      "start": 19,
       "type": "instruction",
     },
     {
-      "address": 11,
+      "address": 3,
       "instruction": "JMP",
       "label": null,
       "position": [
         2241,
         2259,
       ],
-      "start": 28,
+      "start": 20,
       "type": "instruction",
     },
     {
@@ -1676,7 +1682,7 @@ exports[`Fixtures > should match snapshot of sumador_de_tablas.asm 1`] = `
         2345,
         2348,
       ],
-      "start": 30,
+      "start": 22,
       "type": "instruction",
     },
   ],
@@ -1688,6 +1694,7 @@ exports[`Fixtures > should match snapshot of test_new_org.asm 1`] = `
 {
   "data": [],
   "hasORG": true,
+  "hasORG20hAtStart": false,
   "instructions": [
     {
       "instruction": "MOV",
@@ -1812,6 +1819,7 @@ exports[`Fixtures > should match snapshot of timer.asm 1`] = `
     },
   ],
   "hasORG": true,
+  "hasORG20hAtStart": false,
   "instructions": [
     {
       "instruction": "MOV",
@@ -2121,6 +2129,7 @@ exports[`Fixtures > should match snapshot of timer-cac.asm 1`] = `
     },
   ],
   "hasORG": true,
+  "hasORG20hAtStart": false,
   "instructions": [
     {
       "instruction": "MOV",
@@ -2444,6 +2453,7 @@ exports[`Fixtures > should match snapshot of vocales.asm 1`] = `
     },
   ],
   "hasORG": true,
+  "hasORG20hAtStart": true,
   "instructions": [
     {
       "instruction": "MOV",

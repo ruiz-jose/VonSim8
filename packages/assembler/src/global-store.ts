@@ -134,10 +134,114 @@ export class GlobalStore {
       throw new AssemblerError("missing-org").at(statements[0].position);
     }
 
+    // Verificar si el programa contiene la instrucción INT
+    const hasINTInstruction = statements.some(stmt => 
+      stmt.isInstruction() && stmt.instruction === "INT"
+    );
+
+    // Detectar si el programa puede usar PIC (SOLO PIC, no otros dispositivos)
+    // Buscar instrucciones IN/OUT que usen direcciones PIC (0x20-0x2B)
+    const mayUsePIC = statements.some(stmt => {
+      if (!stmt.isInstruction() || (stmt.instruction !== "IN" && stmt.instruction !== "OUT")) {
+        return false;
+      }
+      // Verificar si usa direcciones PIC específicamente
+      const usesPICAddresses = stmt.operands.some((operand: any) => {
+        // Caso 1: Número directo
+        if (operand.type === "number-expression" && typeof operand.value?.value === "number") {
+          const addr = operand.value.value;
+          // Solo PIC: 0x20-0x2B
+          const isPIC = addr >= 0x20 && addr <= 0x2B;
+          if (isPIC) {
+            console.log(`🎯 ASSEMBLER: Detectado uso de PIC (directo) - ${stmt.instruction} ${addr.toString(16)}h`);
+          }
+          return isPIC;
+        }
+        // Caso 2: Label/Identificador como número
+        if (operand.type === "number-expression" && operand.value?.type === "label") {
+          const constName = operand.value.value;
+          
+          // Constantes PIC conocidas (nombres estándar)
+          const picConstants = {
+            'IMR': 0x21, 'EOI': 0x20, 'INT0': 0x24, 'INT1': 0x25, 'INT2': 0x26, 
+            'INT3': 0x27, 'INT4': 0x28, 'INT5': 0x29, 'INT6': 0x2A, 'INT7': 0x2B
+          };
+          
+          if (picConstants.hasOwnProperty(constName)) {
+            const addr = picConstants[constName as keyof typeof picConstants];
+            console.log(`🎯 ASSEMBLER: Detectado uso de PIC (constante conocida ${constName}) - ${stmt.instruction} ${constName}(${addr.toString(16)}h)`);
+            return true;
+          }
+          
+          // Buscar constantes EQU definidas por el usuario
+          const equStatement = statements.find(s => 
+            s.isDataDirective() && 
+            s.directive === "EQU" && 
+            s.label === constName
+          );
+          
+          if (equStatement) {
+            // Para constantes EQU definidas por el usuario, intentar obtener el valor
+            try {
+              // Las constantes EQU deben tener exactamente un valor numérico
+              const equStmt = equStatement as any; // Type assertion para acceder a las propiedades
+              const firstValue = equStmt.values?.[0];
+              if (firstValue && firstValue.type === "number-expression" && 
+                  typeof firstValue.value?.value === "number") {
+                const addr = firstValue.value.value;
+                const isPIC = addr >= 0x20 && addr <= 0x2B;
+                if (isPIC) {
+                  console.log(`🎯 ASSEMBLER: Detectado uso de PIC (EQU definido por usuario ${constName}) - ${stmt.instruction} ${constName}(${addr.toString(16)}h)`);
+                }
+                return isPIC;
+              }
+            } catch (e) {
+              // Silenciar errores de evaluación de constantes
+            }
+          }
+        }
+        // Caso 3: Identificador directo (solo para compatibilidad con otros formatos)
+        if (operand.type === "identifier") {
+          const constName = operand.value;
+          
+          // Constantes PIC conocidas (nombres estándar)
+          const picConstants = {
+            'IMR': 0x21, 'EOI': 0x20, 'INT0': 0x24, 'INT1': 0x25, 'INT2': 0x26, 
+            'INT3': 0x27, 'INT4': 0x28, 'INT5': 0x29, 'INT6': 0x2A, 'INT7': 0x2B
+          };
+          
+          if (picConstants.hasOwnProperty(constName)) {
+            const addr = picConstants[constName as keyof typeof picConstants];
+            console.log(`🎯 ASSEMBLER: Detectado uso de PIC (constante conocida ${constName}) - ${stmt.instruction} ${constName}(${addr.toString(16)}h)`);
+            return true;
+          }
+        }
+        return false;
+      });
+      return usesPICAddresses;
+    });
+
     // Determinar la dirección inicial del código principal
     // Si hay ORG 20h al inicio específicamente, usar 0x20
-    // En todos los otros casos (incluso con INT), usar 0x08
-    let mainCodePointer = hasORG20hAtStart ? 0x20 : 0x08;
+    // Si tiene instrucción INT O puede usar PIC, usar 0x08
+    // En todos los otros casos, usar 0x00
+    let mainCodePointer: number;
+    if (hasORG20hAtStart) {
+      mainCodePointer = 0x20;
+    } else if (hasINTInstruction || mayUsePIC) {
+      mainCodePointer = 0x08;
+    } else {
+      mainCodePointer = 0x00;
+    }
+
+    console.log("DEBUG ASSEMBLER mainCodePointer:", { 
+      hasORG20hAtStart, 
+      hasINTInstruction, 
+      mayUsePIC,
+      mainCodePointer: '0x' + mainCodePointer.toString(16).padStart(2, '0'),
+      strategy: hasORG20hAtStart ? "ORG 20h" : 
+                (hasINTInstruction || mayUsePIC) ? "reserve interrupt space (INT/PIC)" : "start at 00h"
+    });
     let codePointer = mainCodePointer;
     let dataPointer: number | null = null;
     let lastCodeAddress: number = mainCodePointer;
