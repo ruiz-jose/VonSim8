@@ -141,6 +141,12 @@ export function notifyWarning(title: string, message: string) {
 }
 
 export function finishSimulation(error?: SimulatorError<any>) {
+  // Limpiar hilos activos
+  mainCpuThreadActive = false;
+  activeThreads.clear();
+  console.log("🧹 [DEBUG] Hilos activos limpiados");
+
+  // Llamar a la función original
   if (error) {
     notifyError(error);
     if (error.code === "no-instruction") {
@@ -773,16 +779,67 @@ function validateInstructionContext(context: InstructionContext): boolean {
 //   await animationFunction();
 // }
 
+// Variable global para controlar hilos activos
+let activeThreads = new Set<Promise<void>>();
+let mainCpuThreadActive = false;
+
 /**
  * Starts an execution thread for the given generator. This is, run all the
  * events until the generator is done or the simulation is stopped.
  */
 async function startThread(generator: EventGenerator): Promise<void> {
+  // Si ya hay un hilo principal del CPU ejecutándose, no iniciar hilos secundarios
+  if (mainCpuThreadActive && generator !== simulator.startCPU()) {
+    console.log("🔒 [DEBUG] Hilo secundario bloqueado - CPU principal activo");
+    return;
+  }
+
+  // Marcar como hilo principal si es el CPU
+  const isMainCpuThread = !mainCpuThreadActive;
+  if (isMainCpuThread) {
+    mainCpuThreadActive = true;
+    console.log("🎯 [DEBUG] Iniciando hilo principal del CPU");
+  }
+
+  const threadPromise = executeThread(generator);
+  activeThreads.add(threadPromise);
+
   try {
+    await threadPromise;
+  } finally {
+    activeThreads.delete(threadPromise);
+    if (isMainCpuThread) {
+      mainCpuThreadActive = false;
+      console.log("✅ [DEBUG] Hilo principal del CPU terminado");
+    }
+  }
+}
+
+async function executeThread(generator: EventGenerator): Promise<void> {
+  try {
+    let iterationCount = 0;
+    const MAX_ITERATIONS = 10000; // Límite de seguridad para detectar bucles infinitos
+    
     // eslint-disable-next-line no-constant-condition
     while (true) {
+      iterationCount++;
+      
+      // Protección contra bucle infinito
+      if (iterationCount > MAX_ITERATIONS) {
+        console.error("❌ [DEBUG] Bucle infinito detectado - demasiadas iteraciones:", iterationCount);
+        finishSimulation(); // Detener la simulación sin error específico
+        return;
+      }
+
       const status = store.get(simulationAtom);
       const programModified = store.get(programModifiedAtom); // Obtener el estado de programModifiedAtom
+
+      console.log(`🔄 [DEBUG] Iteración ${iterationCount} - Estado:`, {
+        status: status.type,
+        programModified,
+        executeStageCounter,
+        currentInstructionName
+      });
 
       // Verificar si el programa ha sido modificado
       if (programModified) {
@@ -792,14 +849,15 @@ async function startThread(generator: EventGenerator): Promise<void> {
         fetchStageCounter = 0;
         executeStageCounter = 0;
         finishSimulation(); // Detener la simulación actual
-        break; // Salir del bucle
+        return; // RETURN en lugar de break para salir completamente
       }
       if (status.type === "stopped") {
         fetchStageCounter = 0;
         executeStageCounter = 0;
         messageReadWrite = "";
+        console.log("✅ [DEBUG] Simulación detenida, saliendo de startThread");
         //store.set(messageAtom, "Ejecución: Detenido");
-        break; // stop the thread
+        return; // RETURN en lugar de break para salir completamente
       }
       if (status.type === "paused") {
         // Wait until the simulation is resumed
@@ -813,20 +871,82 @@ async function startThread(generator: EventGenerator): Promise<void> {
       }
 
       // Handle event
+      console.log("🔄 [DEBUG] Obteniendo siguiente evento del generador...");
       const event = generator.next();
-      if (event.done) break;
+      console.log("📋 [DEBUG] Evento obtenido:", {
+        done: event.done,
+        type: event.value ? (event.value as any).type : undefined,
+        hasValue: !!event.value
+      });
+
+      if (event.done) {
+        console.log("✅ [DEBUG] Generador terminado, saliendo del bucle");
+        return; // RETURN en lugar de break para salir completamente
+      }
+
       if (event.value && typeof event.value !== "undefined") {
-        // Actualizar el contexto de la instrucción en events.ts
-        const { updateInstructionContext, getCurrentExecuteStageCounter } = await import(
-          "@/computer/cpu/events"
-        );
-        updateInstructionContext(executeStageCounter, currentInstructionName || "");
+        const eventType = (event.value as any).type;
+        console.log("🎯 [DEBUG] Procesando evento:", {
+          type: eventType,
+          executeStageCounter,
+          currentInstructionName,
+          isTraceEvent: eventType?.includes("trace"),
+          isPrinterEvent: eventType?.includes("printer"),
+          isPioEvent: eventType?.includes("pio")
+        });
 
-        await handleEvent(event.value);
+        try {
+          // Actualizar el contexto de la instrucción en events.ts
+          console.log("📥 [DEBUG] Importando funciones de events.ts...");
+          const eventsModule = await import("@/computer/cpu/events");
+          console.log("✅ [DEBUG] Módulo events.ts importado correctamente");
 
-        // Después del evento, sincronizar el contador con el valor actualizado en events.ts
-        executeStageCounter = getCurrentExecuteStageCounter();
+          const { updateInstructionContext, getCurrentExecuteStageCounter } = eventsModule;
+          
+          if (typeof updateInstructionContext !== "function") {
+            throw new Error("updateInstructionContext no es una función");
+          }
+          if (typeof getCurrentExecuteStageCounter !== "function") {
+            throw new Error("getCurrentExecuteStageCounter no es una función");
+          }
+
+          console.log("🔄 [DEBUG] Actualizando contexto de instrucción...");
+          updateInstructionContext(executeStageCounter, currentInstructionName || "");
+          console.log("✅ [DEBUG] Contexto actualizado correctamente");
+
+          console.log("🎯 [DEBUG] Llamando a handleEvent...");
+          const handleEventStart = performance.now();
+          
+          // Crear un timeout para detectar bloqueos en handleEvent
+          const eventPromise = handleEvent(event.value);
+          const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error(`Timeout procesando evento: ${eventType}`)), 10000);
+          });
+
+          await Promise.race([eventPromise, timeoutPromise]);
+          
+          const handleEventEnd = performance.now();
+          console.log(`✅ [DEBUG] handleEvent completado en ${(handleEventEnd - handleEventStart).toFixed(2)}ms`);
+
+          // Después del evento, sincronizar el contador con el valor actualizado en events.ts
+          console.log("🔄 [DEBUG] Sincronizando executeStageCounter...");
+          executeStageCounter = getCurrentExecuteStageCounter();
+          console.log("✅ [DEBUG] executeStageCounter sincronizado:", executeStageCounter);
+
+        } catch (error) {
+          console.error("❌ [DEBUG] Error procesando evento:", {
+            eventType: eventType,
+            error: error.message,
+            stack: error.stack,
+            executeStageCounter,
+            currentInstructionName
+          });
+          
+          // Re-lanzar el error para que sea manejado por el catch externo
+          throw error;
+        }
       } else {
+        console.log("⏭️ [DEBUG] Evento vacío o indefinido, continuando...");
         continue;
       }
       if (event.value.type === "cpu:cycle.start") {
@@ -2825,7 +2945,10 @@ async function dispatch(...args: Action) {
 
         store.set(simulationAtom, { type: "running", until, waitingForInput: false });
 
+        // Inicializar solo el hilo principal del CPU
         startThread(simulator.startCPU());
+        
+        // Inicializar dispositivos auxiliares (sin bucles infinitos)
         startClock();
         startPrinter();
       } else {
@@ -2940,56 +3063,27 @@ async function dispatch(...args: Action) {
 
 async function startClock(): Promise<void> {
   if (!simulator.devices.clock.connected()) return;
+  console.log("🕐 [DEBUG] startClock: Reloj conectado, pero no iniciando bucle infinito");
 
-  while (store.get(simulationAtom).type !== "stopped") {
-    const duration = getSettings().clockSpeed;
-    await anim(
-      { key: "clock.angle", from: 0, to: 360 },
-      { duration, forceMs: true, easing: "linear" },
-    );
-    startThread(simulator.devices.clock.tick()!);
-  }
+  // NO ejecutar bucle infinito aquí
+  // El reloj debería ser manejado por eventos del simulador principal
+  // while (store.get(simulationAtom).type !== "stopped") {
+  //   const duration = getSettings().clockSpeed;
+  //   await anim(
+  //     { key: "clock.angle", from: 0, to: 360 },
+  //     { duration, forceMs: true, easing: "linear" },
+  //   );
+  //   startThread(simulator.devices.clock.tick()!);
+  // }
 }
 
 async function startPrinter(): Promise<void> {
   if (!simulator.devices.printer.connected()) return;
+  console.log("🖨️ [DEBUG] startPrinter: Impresora conectada, pero no iniciando bucle infinito");
 
-  while (store.get(simulationAtom).type !== "stopped") {
-    const duration = getSettings().printerSpeed;
-    await anim(
-      [
-        { key: "printer.printing.opacity", from: 1 },
-        { key: "printer.printing.progress", from: 0, to: 1 },
-      ],
-      { duration, forceMs: true, easing: "easeInOutSine" },
-    );
-    await anim({ key: "printer.printing.opacity", to: 0 }, { duration: 1, easing: "easeInSine" });
-    await startThread(simulator.devices.printer.print()!);
-  }
-
-  // Sigue imprimiendo mientras la simulación esté corriendo o el buffer no esté vacío
-  if (store.get(simulationAtom).type === "stopped" && simulator.devices.printer.hasPending()) {
-    while (store.get(simulationAtom).type !== "stopped" || simulator.devices.printer.hasPending()) {
-      const duration = getSettings().printerSpeed;
-      await anim(
-        [
-          { key: "printer.printing.opacity", from: 1 },
-          { key: "printer.printing.progress", from: 0, to: 1 },
-        ],
-        { duration, forceMs: true, easing: "easeInOutSine" },
-      );
-      await anim({ key: "printer.printing.opacity", to: 0 }, { duration: 1, easing: "easeInSine" });
-      // Procesar el generador manualmente si la simulación está detenida
-      const gen = simulator.devices.printer.print()!;
-      let result = gen.next();
-      while (!result.done) {
-        if (result.value && typeof result.value !== "undefined") {
-          await handleEvent(result.value);
-        }
-        result = gen.next();
-      }
-    }
-  }
+  // NO ejecutar bucle infinito aquí - esto causaba el bucle infinito
+  // La impresora debería ser manejada por eventos del simulador principal
+  // Los eventos de la impresora serán procesados por handleEvent en el hilo principal
 }
 
 export function useSimulation() {
