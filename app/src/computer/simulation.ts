@@ -161,6 +161,8 @@ export function finishSimulation(error?: SimulatorError<any>) {
   store.set(simulationAtom, { type: "stopped", error });
   store.set(cycleAtom, { phase: "stopped", error });
   stopAllAnimations();
+  
+  console.log("✅ [DEBUG] Simulación finalizada - todos los hilos y procesos limpiados");
 }
 
 export function pauseSimulation() {
@@ -3079,11 +3081,47 @@ async function startClock(): Promise<void> {
 
 async function startPrinter(): Promise<void> {
   if (!simulator.devices.printer.connected()) return;
-  console.log("🖨️ [DEBUG] startPrinter: Impresora conectada, pero no iniciando bucle infinito");
+  console.log("🖨️ [DEBUG] startPrinter: Impresora conectada, iniciando procesamiento de buffer");
 
-  // NO ejecutar bucle infinito aquí - esto causaba el bucle infinito
-  // La impresora debería ser manejada por eventos del simulador principal
-  // Los eventos de la impresora serán procesados por handleEvent en el hilo principal
+  // Procesar buffer de impresora periódicamente sin bucle infinito
+  const processPrinterBuffer = async () => {
+    if (store.get(simulationAtom).type === "stopped") return;
+    
+    // Solo procesar si hay caracteres pendientes en el buffer
+    if (simulator.devices.printer.hasPending()) {
+      console.log("🖨️ [DEBUG] Procesando caracteres pendientes en buffer de impresora");
+      
+      const duration = getSettings().printerSpeed;
+      await anim(
+        [
+          { key: "printer.printing.opacity", from: 1 },
+          { key: "printer.printing.progress", from: 0, to: 1 },
+        ],
+        { duration, forceMs: true, easing: "easeInOutSine" },
+      );
+      await anim({ key: "printer.printing.opacity", to: 0 }, { duration: 1, easing: "easeInSine" });
+      
+      // Procesar un carácter del buffer
+      const printGenerator = simulator.devices.printer.print();
+      if (printGenerator) {
+        let result = printGenerator.next();
+        while (!result.done) {
+          if (result.value && typeof result.value !== "undefined") {
+            await handleEvent(result.value);
+          }
+          result = printGenerator.next();
+        }
+      }
+    }
+    
+    // Programar el siguiente procesamiento si la simulación sigue activa
+    if (store.get(simulationAtom).type !== "stopped") {
+      setTimeout(processPrinterBuffer, getSettings().printerSpeed);
+    }
+  };
+
+  // Iniciar el procesamiento
+  processPrinterBuffer();
 }
 
 export function useSimulation() {
