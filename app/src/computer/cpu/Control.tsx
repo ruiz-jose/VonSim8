@@ -718,7 +718,7 @@ export function Control() {
             </div>
 
             {/* Instrucción actual */}
-            <div className="mb-0.5 rounded border border-stone-600 bg-stone-900/80 p-0.5">
+            <div className="mb-0.5 p-0.5">
               <div className="min-w-0 flex-1 text-center">
                 {cycle && "metadata" in cycle && cycle.metadata ? (
                   <div className="truncate text-xs text-stone-300">

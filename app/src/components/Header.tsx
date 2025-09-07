@@ -13,6 +13,7 @@ import { Tooltip } from "@/components/ui/Tooltip";
 import { cycleAtom } from "@/computer/cpu/state";
 import { useSimulation } from "@/computer/simulation";
 import { useTranslate } from "@/lib/i18n";
+import { useSettings } from "@/lib/settings";
 
 // Hook personalizado para manejar el tour
 const useTourControl = () => {
@@ -34,6 +35,7 @@ const useTourControl = () => {
 const SimulationStatus = memo(
   ({ status, isMobile, isCompact }: { status: any; isMobile: boolean; isCompact?: boolean }) => {
     const cycle = useAtomValue(cycleAtom);
+    const [settings] = useSettings();
     const [previousPhase, setPreviousPhase] = useState<string | null>(null);
     const [isAnimating, setIsAnimating] = useState(false);
 
@@ -76,6 +78,9 @@ const SimulationStatus = memo(
     // Función para obtener el texto de la fase
     const getPhaseText = useMemo(() => {
       if (!cycle || (status.type !== "running" && cycle.phase !== "halting")) return "";
+      
+      // Solo mostrar el texto de la fase si las animaciones están activadas
+      if (!settings.animations) return "";
 
       switch (cycle.phase) {
         case "fetching":
@@ -98,32 +103,32 @@ const SimulationStatus = memo(
         default:
           return "";
       }
-    }, [cycle, status.type]);
+    }, [cycle, status.type, settings.animations]);
 
-    // Función para obtener el color de la fase (igual que en Control.tsx)
+    // Función para obtener el color de la fase (estilo distintivo con borde izquierdo)
     const getPhaseColor = useMemo(() => {
       if (!cycle || (status.type !== "running" && cycle.phase !== "halting")) return "";
 
       switch (cycle.phase) {
         case "fetching":
-          return "bg-blue-500/20 text-blue-400 border-blue-500/30";
+          return "bg-slate-800/70 text-blue-300 border-l-blue-400";
         case "fetching-operands":
-          return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
+          return "bg-slate-800/70 text-yellow-300 border-l-yellow-400";
         case "fetching-operands-completed":
-          return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
+          return "bg-slate-800/70 text-yellow-300 border-l-yellow-400";
         case "executing":
-          return "bg-green-500/20 text-green-400 border-green-500/30";
+          return "bg-slate-800/70 text-green-300 border-l-green-400";
         case "writeback":
-          return "bg-purple-500/20 text-purple-400 border-purple-500/30";
+          return "bg-slate-800/70 text-purple-300 border-l-purple-400";
         case "interrupt":
-          return "bg-red-500/20 text-red-400 border-red-500/30";
+          return "bg-slate-800/70 text-red-300 border-l-red-400";
         case "int6":
         case "int7":
-          return "bg-orange-500/20 text-orange-400 border-orange-500/30";
+          return "bg-slate-800/70 text-orange-300 border-l-orange-400";
         case "halting":
-          return "bg-red-500/20 text-red-400 border-red-500/30";
+          return "bg-slate-800/70 text-red-300 border-l-red-400";
         default:
-          return "bg-stone-500/20 text-stone-400 border-stone-500/30";
+          return "bg-slate-800/70 text-stone-300 border-l-stone-400";
       }
     }, [cycle, status.type]);
 
@@ -180,18 +185,18 @@ const SimulationStatus = memo(
           {!isMobile && !isCompact && statusText}
         </div>
 
-        {/* Fase actual - mostrar en móvil también pero más compacta */}
+        {/* Fase actual - con estilo distintivo y moderno */}
         {(status.type === "running" || (cycle && cycle.phase === "halting")) && getPhaseText && (
           <div
             className={clsx(
-              "rounded-xl border text-[10px] font-semibold uppercase tracking-wider backdrop-blur-sm transition-all duration-200 ease-in-out",
+              "rounded-lg border-l-4 text-[10px] font-bold lowercase tracking-wide backdrop-blur-sm transition-all duration-300 ease-in-out shadow-sm",
               getPhaseColor,
               getPhaseAnimation, // Aplicar animación solo cuando cambia la fase
               isMobile
-                ? "flex min-h-[20px] items-center justify-center whitespace-nowrap px-2 py-0.5 text-[8px]" // Compacto pero adaptable en móvil
+                ? "flex min-h-[24px] items-center justify-center whitespace-nowrap px-3 py-1 text-[9px]" // Compacto pero adaptable en móvil
                 : isCompact
-                  ? "flex min-h-[18px] items-center justify-center whitespace-nowrap px-1.5 py-0.5 text-[8px]" // Muy compacto
-                  : "px-2 py-1", // Tamaño normal en desktop
+                  ? "flex min-h-[22px] items-center justify-center whitespace-nowrap px-2.5 py-1 text-[9px]" // Muy compacto
+                  : "px-3 py-1.5", // Tamaño normal en desktop
             )}
           >
             {getPhaseText} {/* Mostrar texto completo en móvil y desktop */}
