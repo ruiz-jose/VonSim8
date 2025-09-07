@@ -142,12 +142,38 @@ export class GlobalStore {
 
     // Detectar si el programa puede usar PIC (SOLO PIC, no otros dispositivos)
     // Buscar instrucciones IN/OUT que usen direcciones PIC (0x20-0x2B)
-    const mayUsePIC = statements.some(stmt => {
+    console.log(`🔍 ASSEMBLER: Iniciando detección de PIC. Labels disponibles:`, Array.from(this.labels.keys()));
+    
+    // También detectar definiciones de constantes EQU en rango PIC
+    const hasPICConstants = Array.from(this.labels.entries()).some(([name, data]) => {
+      if (data.type === "EQU") {
+        try {
+          const value = data.constant.evaluate(this);
+          console.log(`🔍 ASSEMBLER: Evaluando constante EQU ${name} = ${value} (tipo: ${typeof value})`);
+          if (typeof value === "number" && value >= 0x20 && value <= 0x2B) {
+            console.log(`🎯 ASSEMBLER: ¡DETECTADA! Constante EQU en rango PIC: ${name} = 0x${value.toString(16)}`);
+            return true;
+          }
+        } catch (e) {
+          console.log(`⚠️ ASSEMBLER: Error evaluando constante EQU ${name}:`, e);
+        }
+      }
+      return false;
+    });
+    
+    console.log(`🔍 ASSEMBLER: hasPICConstants = ${hasPICConstants}`);
+    
+    const mayUsePIC = hasPICConstants || statements.some(stmt => {
       if (!stmt.isInstruction() || (stmt.instruction !== "IN" && stmt.instruction !== "OUT")) {
         return false;
       }
+      
+      console.log(`🔍 ASSEMBLER: Analizando instrucción ${stmt.instruction} con operandos:`, stmt.operands);
+      
       // Verificar si usa direcciones PIC específicamente
       const usesPICAddresses = stmt.operands.some((operand: any) => {
+        console.log(`🔍 ASSEMBLER: Operando tipo ${operand.type}, valor:`, operand.value);
+        
         // Caso 1: Número directo
         if (operand.type === "number-expression" && typeof operand.value?.value === "number") {
           const addr = operand.value.value;
@@ -158,24 +184,48 @@ export class GlobalStore {
           }
           return isPIC;
         }
-        // Caso 2: Identificador (constante EQU) - Solo revisar constantes conocidas
+        // Caso 2: Identificador (constante EQU) - Revisar constantes conocidas Y definidas por usuario
         if (operand.type === "identifier") {
           const constName = operand.value;
-          // Constantes PIC conocidas
+          console.log(`🔍 ASSEMBLER: Verificando identificador ${constName}`);
+          
+          // Primero, constantes PIC conocidas predefinidas
           const picConstants = {
             'IMR': 0x21, 'EOI': 0x20, 'INT0': 0x24, 'INT1': 0x25, 'INT2': 0x26, 
             'INT3': 0x27, 'INT4': 0x28, 'INT5': 0x29, 'INT6': 0x2A, 'INT7': 0x2B
           };
-          if (picConstants.hasOwnProperty(constName)) {
+          if (Object.hasOwnProperty.call(picConstants, constName)) {
             const addr = picConstants[constName as keyof typeof picConstants];
             console.log(`🎯 ASSEMBLER: Detectado uso de PIC (constante conocida ${constName}) - ${stmt.instruction} ${constName}(${addr.toString(16)}h)`);
             return true;
+          }
+          
+          // Segundo, constantes EQU definidas por el usuario
+          const labelData = this.labels.get(constName);
+          console.log(`🔍 ASSEMBLER: Datos de etiqueta para ${constName}:`, labelData);
+          if (labelData && labelData.type === "EQU") {
+            try {
+              const value = labelData.constant.evaluate(this);
+              console.log(`🔍 ASSEMBLER: Valor evaluado de ${constName}: ${value}`);
+              if (typeof value === "number") {
+                const isPIC = value >= 0x20 && value <= 0x2B;
+                if (isPIC) {
+                  console.log(`🎯 ASSEMBLER: Detectado uso de PIC (constante EQU usuario ${constName}=${value.toString(16)}h) - ${stmt.instruction} ${constName}`);
+                  return true;
+                }
+              }
+            } catch (e) {
+              // Ignorar errores de evaluación por ahora
+              console.log(`⚠️ ASSEMBLER: No se pudo evaluar constante ${constName} para detección PIC:`, e);
+            }
           }
         }
         return false;
       });
       return usesPICAddresses;
     });
+
+    console.log(`🔍 ASSEMBLER: Resultado detección PIC: ${mayUsePIC}`);
 
     // Almacenar la información sobre el uso del PIC
     this._mayUsePIC = mayUsePIC;
