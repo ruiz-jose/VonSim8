@@ -252,10 +252,6 @@ function resetState(state: ComputerState, clearRegisters = false) {
   resetScreenState(state);
   resetSwitchesState(state);
 
-  // Reset del vector de interrupciones cuando se limpia el programa
-  console.log("🧹 RESET: Vector de interrupciones deshabilitado");
-  store.set(hasINTInstructionAtom, false);
-
   cycleCount = 0;
   instructionCount = 0;
   fetchStageCounter = 0;
@@ -2669,13 +2665,7 @@ async function dispatch(...args: Action) {
         // Actualizar el estado showSP en consecuencia
         store.set(showSPAtom, hasSPInstruction);
 
-        const hasINT = result.instructions.some(instruction => instruction.instruction === "INT");
-        console.log(`🔍 Verificación INT:`, {
-          totalInstructions: result.instructions.length,
-          intInstructions: result.instructions.filter(i => i.instruction === "INT"),
-          hasINT,
-          instructionNames: result.instructions.map(i => i.instruction)
-        });
+        const hasINT = instructions.includes("INT");
 
         // Verificar si el programa contiene INT 6 o INT 7
         const connectScreenAndKeyboard = result.instructions.some(instruction => {
@@ -2828,14 +2818,10 @@ async function dispatch(...args: Action) {
 
         // Determinar si se necesita mostrar el vector de interrupciones
         // Se muestra SOLO si hay INT o si se usa PIC (no otros dispositivos como Handshake, Timer)
-        // Y SOLO si realmente hay instrucciones en el programa
-        const hasActualInstructions = result.instructions && result.instructions.length > 0;
-        const hasINTOrInterruptDevices = hasActualInstructions && (hasINT || usesPIC);
+        const hasINTOrInterruptDevices = hasINT || usesPIC;
         store.set(hasINTInstructionAtom, hasINTOrInterruptDevices);
 
         console.log("🔍 DEBUG Vector de Interrupciones:", {
-          hasActualInstructions,
-          instructionCount: result.instructions?.length || 0,
           hasINT,
           usesPIC,
           usesHandshake,

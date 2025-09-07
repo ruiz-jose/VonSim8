@@ -157,59 +157,14 @@ export class GlobalStore {
           }
           return isPIC;
         }
-        // Caso 2: Label/Identificador como número
-        if (operand.type === "number-expression" && operand.value?.type === "label") {
-          const constName = operand.value.value;
-          
-          // Constantes PIC conocidas (nombres estándar)
-          const picConstants = {
-            'IMR': 0x21, 'EOI': 0x20, 'INT0': 0x24, 'INT1': 0x25, 'INT2': 0x26, 
-            'INT3': 0x27, 'INT4': 0x28, 'INT5': 0x29, 'INT6': 0x2A, 'INT7': 0x2B
-          };
-          
-          if (picConstants.hasOwnProperty(constName)) {
-            const addr = picConstants[constName as keyof typeof picConstants];
-            console.log(`🎯 ASSEMBLER: Detectado uso de PIC (constante conocida ${constName}) - ${stmt.instruction} ${constName}(${addr.toString(16)}h)`);
-            return true;
-          }
-          
-          // Buscar constantes EQU definidas por el usuario
-          const equStatement = statements.find(s => 
-            s.isDataDirective() && 
-            s.directive === "EQU" && 
-            s.label === constName
-          );
-          
-          if (equStatement) {
-            // Para constantes EQU definidas por el usuario, intentar obtener el valor
-            try {
-              // Las constantes EQU deben tener exactamente un valor numérico
-              const equStmt = equStatement as any; // Type assertion para acceder a las propiedades
-              const firstValue = equStmt.values?.[0];
-              if (firstValue && firstValue.type === "number-expression" && 
-                  typeof firstValue.value?.value === "number") {
-                const addr = firstValue.value.value;
-                const isPIC = addr >= 0x20 && addr <= 0x2B;
-                if (isPIC) {
-                  console.log(`🎯 ASSEMBLER: Detectado uso de PIC (EQU definido por usuario ${constName}) - ${stmt.instruction} ${constName}(${addr.toString(16)}h)`);
-                }
-                return isPIC;
-              }
-            } catch (e) {
-              // Silenciar errores de evaluación de constantes
-            }
-          }
-        }
-        // Caso 3: Identificador directo (solo para compatibilidad con otros formatos)
+        // Caso 2: Identificador (constante EQU) - Solo revisar constantes conocidas
         if (operand.type === "identifier") {
           const constName = operand.value;
-          
-          // Constantes PIC conocidas (nombres estándar)
+          // Constantes PIC conocidas
           const picConstants = {
             'IMR': 0x21, 'EOI': 0x20, 'INT0': 0x24, 'INT1': 0x25, 'INT2': 0x26, 
             'INT3': 0x27, 'INT4': 0x28, 'INT5': 0x29, 'INT6': 0x2A, 'INT7': 0x2B
           };
-          
           if (picConstants.hasOwnProperty(constName)) {
             const addr = picConstants[constName as keyof typeof picConstants];
             console.log(`🎯 ASSEMBLER: Detectado uso de PIC (constante conocida ${constName}) - ${stmt.instruction} ${constName}(${addr.toString(16)}h)`);
