@@ -2702,14 +2702,22 @@ async function dispatch(...args: Action) {
               if (operand.type === "number-expression") {
                 // Verificar valores directos
                 if (typeof operand.value.value === "number") {
-                  return operand.value.value >= 0x20 && operand.value.value <= 0x2b;
+                  const isPIC = operand.value.value >= 0x20 && operand.value.value <= 0x2b;
+                  if (isPIC) {
+                    console.log(`🎯 PIC detectado: ${instruction.instruction} con operando ${operand.value.value.toString(16)}h`);
+                  }
+                  return isPIC;
                 }
                 // Verificar expresiones que se resuelven a direcciones PIC
                 try {
                   if (operand.value && typeof operand.value.resolve === "function") {
                     const resolvedValue = operand.value.resolve();
                     if (typeof resolvedValue === "number") {
-                      return resolvedValue >= 0x20 && resolvedValue <= 0x2b;
+                      const isPIC = resolvedValue >= 0x20 && resolvedValue <= 0x2b;
+                      if (isPIC) {
+                        console.log(`🎯 PIC detectado: ${instruction.instruction} con operando resuelto ${resolvedValue.toString(16)}h`);
+                      }
+                      return isPIC;
                     }
                   }
                 } catch (error) {
@@ -2721,6 +2729,19 @@ async function dispatch(...args: Action) {
             });
           }
           return false;
+        });
+        
+        console.log(`🔍 Análisis de instrucciones para PIC:`, {
+          totalInstructions: result.instructions.length,
+          inOutInstructions: result.instructions.filter(i => i.instruction === "IN" || i.instruction === "OUT").length,
+          usesPIC,
+          firstFewInstructions: result.instructions.slice(0, 5).map(i => ({
+            instruction: i.instruction,
+            operands: i.operands?.map((op: any) => ({
+              type: op.type,
+              value: op.type === "number-expression" ? op.value.value : op.value
+            }))
+          }))
         });
 
         // Verificar si el programa usa Handshake (registros 0x40-0x41)
@@ -2799,7 +2820,8 @@ async function dispatch(...args: Action) {
         // Determinar si se necesita mostrar el vector de interrupciones
         // Se muestra si hay INT, o si se usan dispositivos que pueden generar interrupciones
         const hasINTOrInterruptDevices =
-          hasINT || usesPIC || usesHandshake || usesTimer || connectScreenAndKeyboard;
+          hasINT || usesPIC || usesHandshake || usesTimer || connectScreenAndKeyboard || 
+          getSettings().devices.pic; // También considerar la configuración del PIC
         store.set(hasINTInstructionAtom, hasINTOrInterruptDevices);
 
         console.log(
@@ -2811,6 +2833,8 @@ async function dispatch(...args: Action) {
           usesTimer,
           "INT:",
           hasINT,
+          "PIC Config:",
+          getSettings().devices.pic,
         );
         console.log("Habilitando vector de interrupciones:", hasINTOrInterruptDevices);
 
@@ -2825,6 +2849,8 @@ async function dispatch(...args: Action) {
             handshake: getSettings().devices.handshake ?? null,
           },
           hasORG: result.hasORG, // Pass the hasORG flag
+          hasORG20hAtStart: result.hasORG20hAtStart, // Pass the hasORG20hAtStart flag
+          hasINTOrInterruptDevices, // Pass interrupt vector information
         });
         console.log("result:", result);
 

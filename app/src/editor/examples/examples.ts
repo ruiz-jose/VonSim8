@@ -108,11 +108,9 @@ fin:
 ; PROGRAMA: Impresión de string usando Handshake con interrupciones
 ; DESCRIPCIÓN: Imprime el string "hola" en la impresora utilizando el módulo
 ;              Handshake con interrupciones por hardware (INT2)
-; AUTOR: VonSim
 ; ===============================================================================
 
 ; --- SECCIÓN DE DATOS ---
-org 10h
 mensaje     db "Hola", 0    ; String a imprimir, terminado en carácter nulo
 restantes   db 4           ; Contador de caracteres restantes por imprimir
 puntero     db 0           ; Puntero al siguiente carácter (8 bits)
@@ -126,11 +124,10 @@ ID          EQU 2          ; ID de la interrupción para Handshake (0-7)
 IMR         EQU 21h        ; Registro de máscara de interrupciones del PIC
 EOI         EQU 20h        ; Puerto para enviar End Of Interrupt al PIC
 INT2        EQU 26h        ; Puerto para configurar la línea INT2
-
 ; ===============================================================================
 ; PROGRAMA PRINCIPAL
 ; ===============================================================================
-org 20h
+
 
 ; --- 1) CONFIGURACIÓN INICIAL ---
 cli                        ; Deshabilitar interrupciones globales

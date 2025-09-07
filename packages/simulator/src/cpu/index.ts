@@ -94,17 +94,35 @@ export class CPU extends Component {
       statement => statement.isInstruction() && statement.instruction === "INT",
     );
 
-    // Verificar si el programa contiene la directiva ORG
-    const hasORG = options.hasORG ?? false;
+    // Verificar si el programa contiene la directiva ORG específicamente ORG 20h al inicio
+    const hasORG20hAtStart = options.hasORG20hAtStart ?? false;
+    
+    // Verificar si el programa usa vector de interrupciones (INT o dispositivos de interrupción)
+    const hasINTOrInterruptDevices = options.hasINTOrInterruptDevices ?? hasINT;
+
+    console.log("DEBUG CPU:", { 
+      hasINT, 
+      hasORG20hAtStart, 
+      hasORG: options.hasORG,
+      hasINTOrInterruptDevices,
+      instructionsCount: options.program.instructions.length,
+      firstFewInstructions: options.program.instructions.slice(0, 3).map(i => ({
+        type: i.type,
+        instruction: i.isInstruction() ? i.instruction : 'not-instruction'
+      }))
+    });
 
     // Determinar la dirección inicial del registro IP
     let initialIP: number;
-    if (hasORG) {
+    if (hasORG20hAtStart) {
       initialIP = 0x20;
-    } else if (hasINT) {
+      console.log("IP set to 0x20 (hasORG20hAtStart)");
+    } else if (hasINTOrInterruptDevices) {
       initialIP = 0x08;
+      console.log("IP set to 0x08 (hasINTOrInterruptDevices)");
     } else {
       initialIP = 0x00;
+      console.log("IP set to 0x00 (default)");
     }
     this.#registers.IP = Byte.fromUnsigned(initialIP, 16);
 

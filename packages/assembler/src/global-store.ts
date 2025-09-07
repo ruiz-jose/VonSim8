@@ -49,6 +49,7 @@ export class GlobalStore {
   private readonly codeMemory = new Set<number>();
   private readonly labels: LabelsMap = new Map();
   private hasORG = false; // Nueva propiedad para almacenar si tiene la directiva ORG
+  private _hasORG20hAtStart = false; // Nueva propiedad para almacenar si tiene ORG 20h al inicio
 
   #statementsLoaded = false;
   #computedAddresses = false;
@@ -113,18 +114,34 @@ export class GlobalStore {
     // Verificar si el programa contiene la directiva ORG
     this.hasORG = statements.some(statement => statement.isOriginChange());
 
-    // Validar si `this.hasORG` es `true` pero la primera línea no es una directiva ORG
-    if (this.hasORG && !statements[0].isOriginChange()) {
+    // NUEVA LÓGICA: Permitir rutinas específicas con ORG sin requerir ORG al inicio
+    const hasSpecificORG = statements.some((statement, index) => 
+      statement.isOriginChange() && index > 0
+    );
+
+    // Verificar si hay ORG 20h específicamente al inicio
+    const hasORG20hAtStart = statements[0]?.isOriginChange() && statements[0].newAddress === 0x20;
+    this._hasORG20hAtStart = hasORG20hAtStart;
+
+    console.log("DEBUG ASSEMBLER:", { 
+      hasORG: this.hasORG, 
+      hasORG20hAtStart, 
+      firstStatement: statements[0]?.isOriginChange() ? statements[0].newAddress : "no ORG" 
+    });
+
+    // Solo validar ORG al inicio si no hay rutinas específicas con ORG Y no hay ORG 20h al inicio
+    if (this.hasORG && !hasSpecificORG && !statements[0].isOriginChange()) {
       throw new AssemblerError("missing-org").at(statements[0].position);
     }
 
-    // Determinar la dirección inicial del código
-    // Si hay INT pero no ORG, comienza en 0x08 (después del vector de interrupciones)
-    // Si hay ORG, se maneja por la directiva ORG (por defecto 0x20)
-    // Si no hay INT ni ORG, comienza en 0x00
-    let codePointer = hasINT && !this.hasORG ? 0x08 : this.hasORG ? 0x20 : 0x00;
+    // Determinar la dirección inicial del código principal
+    // Si hay ORG 20h al inicio específicamente, usar 0x20
+    // En todos los otros casos (incluso con INT), usar 0x08
+    let mainCodePointer = hasORG20hAtStart ? 0x20 : 0x08;
+    let codePointer = mainCodePointer;
     let dataPointer: number | null = null;
-    let lastCodeAddress: number = codePointer;
+    let lastCodeAddress: number = mainCodePointer;
+    let mainCodeEndAddress: number = mainCodePointer; // Rastrea el final del código principal
 
     // Separar las instrucciones y los datos
     const instructionStatements: Statement[] = [];
@@ -141,15 +158,64 @@ export class GlobalStore {
       }
     }
 
-    if (this.hasORG) {
+    // NUEVA LÓGICA: Manejar rutinas con ORG específico
+    if (hasSpecificORG || this.hasORG) {
       const errors: AssemblerError<any>[] = [];
       // --- NUEVO: Guardar rangos de secciones para detectar solapamientos ---
       type SectionRange = { start: number; end: number; statement: Statement };
       const sectionRanges: SectionRange[] = [];
       // --- FIN NUEVO ---
 
+      // Si no hay ORG al inicio, comenzar con el puntero principal
+      if (!statements[0]?.isOriginChange()) {
+        codePointer = mainCodePointer;
+      }
+
+      // Procesar en el siguiente orden para separar código principal de rutinas específicas:
+      // 1. Instrucciones del código principal (incluyendo las que vienen después de ORG 20h inicial)
+      // 2. Datos (después del código principal)
+      // 3. Rutinas con ORG específico (ORG que no son 20h al inicio)
+      
+      const mainCodeStatements: Statement[] = [];
+      const dataStatements: Statement[] = [];
+      const orgRoutineStatements: Statement[] = [];
+      
+      let currentlyInMainCode = true; // Empezamos en código principal
+      let hasSeenInitialORG = false;  // Para rastrear si hemos visto el ORG inicial (20h)
+      
+      // Clasificar statements
+      for (const statement of statements) {
+        if (statement.isOriginChange()) {
+          // Si es el primer ORG y es 20h, es parte del código principal
+          if (!hasSeenInitialORG && statement.newAddress === 0x20) {
+            hasSeenInitialORG = true;
+            currentlyInMainCode = true;
+            orgRoutineStatements.push(statement); // El ORG en sí va a las rutinas para el procesamiento
+          } 
+          // Cualquier otro ORG (incluyendo el primero si no es 20h) es una rutina específica
+          else {
+            currentlyInMainCode = false;
+            orgRoutineStatements.push(statement);
+          }
+        } else if (statement.isInstruction()) {
+          if (currentlyInMainCode) {
+            mainCodeStatements.push(statement);
+          } else {
+            orgRoutineStatements.push(statement);
+          }
+        } else if (statement.isDataDirective()) {
+          dataStatements.push(statement); // Todos los datos van después del código principal
+        } else if (statement.isEnd()) {
+          orgRoutineStatements.push(statement);
+        }
+      }
+      
+      // Orden final: código principal → datos → rutinas ORG
+      const orderedStatements: Statement[] = [];
+      orderedStatements.push(...mainCodeStatements, ...dataStatements, ...orgRoutineStatements);
+
       forEachWithErrors(
-        statements,
+        orderedStatements,
         statement => {
           if (statement.isEnd()) return;
           if (statement.isDataDirective() && statement.directive === "EQU") return;
@@ -210,8 +276,19 @@ export class GlobalStore {
             });
           }
           if (statement.isDataDirective() || statement.isInstruction()) {
+            // Si es una instrucción del código principal (no de rutina ORG específica)
+            if (statement.isInstruction() && mainCodeStatements.includes(statement)) {
+              mainCodeEndAddress = codePointer + length;
+            }
+            
+            // Manejar puntero de datos
+            if (statement.isDataDirective() && dataPointer === null) {
+              dataPointer = mainCodeEndAddress; // Los datos van después del código principal
+              codePointer = dataPointer;
+            }
+            
             codePointer += length;
-            lastCodeAddress = Math.max(lastCodeAddress, codePointer); // Actualizar la última dirección usada por el código
+            lastCodeAddress = Math.max(lastCodeAddress, codePointer);
           }
         },
         AssemblerError.from,
@@ -351,5 +428,9 @@ export class GlobalStore {
 
   hasOriginDirective(): boolean {
     return this.hasORG;
+  }
+
+  hasORG20hAtStart(): boolean {
+    return this._hasORG20hAtStart;
   }
 }
