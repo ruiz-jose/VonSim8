@@ -835,18 +835,21 @@ let mainCpuThreadActive = false;
  * Starts an execution thread for the given generator. This is, run all the
  * events until the generator is done or the simulation is stopped.
  */
-async function startThread(generator: EventGenerator): Promise<void> {
+async function startThread(generator: EventGenerator, allowConcurrent = false): Promise<void> {
   // Si ya hay un hilo principal del CPU ejecutándose, no iniciar hilos secundarios
-  if (mainCpuThreadActive && generator !== simulator.startCPU()) {
+  // EXCEPTO si allowConcurrent es true (para dispositivos críticos como el reloj)
+  if (mainCpuThreadActive && generator !== simulator.startCPU() && !allowConcurrent) {
     console.log("🔒 [DEBUG] Hilo secundario bloqueado - CPU principal activo");
     return;
   }
 
   // Marcar como hilo principal si es el CPU
-  const isMainCpuThread = !mainCpuThreadActive;
+  const isMainCpuThread = !mainCpuThreadActive && generator === simulator.startCPU();
   if (isMainCpuThread) {
     mainCpuThreadActive = true;
     console.log("🎯 [DEBUG] Iniciando hilo principal del CPU");
+  } else if (allowConcurrent) {
+    console.log("🕐 [DEBUG] Iniciando hilo concurrente del reloj");
   }
 
   const threadPromise = executeThread(generator);
@@ -964,6 +967,11 @@ async function executeThread(generator: EventGenerator): Promise<void> {
 
           console.log("🎯 [DEBUG] Llamando a handleEvent...");
           const handleEventStart = performance.now();
+          
+          // Log específico para eventos del reloj
+          if (event.value.type.startsWith("clock:")) {
+            console.log("🕐 [DEBUG] Procesando evento del reloj:", event.value);
+          }
           
           // Crear un timeout para detectar bloqueos en handleEvent
           const eventPromise = handleEvent(event.value);
@@ -2816,6 +2824,15 @@ async function dispatch(...args: Action) {
           console.log("🔧 Flag I configurado para mostrarse automáticamente");
         }
         
+        // Notificar si se activa automáticamente el Timer (que requiere PIC)
+        if (usesTimer && !currentSettings.devices.pic) {
+          notifyWarning(
+            "Timer y Reloj activados automáticamente",
+            `Se detectó que el programa utiliza el Timer (direcciones 10h-11h). El módulo PIC se ha activado automáticamente ya que el Timer requiere el PIC para funcionar.`
+          );
+          console.log("🔧 PIC y Timer activados automáticamente debido a detección de uso del Timer en el código");
+        }
+        
         store.set(settingsAtom, (prev: any) => ({
           ...prev,
           devices: {
@@ -2823,11 +2840,11 @@ async function dispatch(...args: Action) {
             keyboardAndScreen: connectScreenAndKeyboard,
             pio: usesPIO ? "switches-and-leds" : usesHandshake ? "printer" : prev.devices.pio,
             handshake: usesHandshake ? "printer" : prev.devices.handshake,
-            pic: shouldActivatePIC || prev.devices.pic,
+            pic: shouldActivatePIC || usesTimer || prev.devices.pic,
             "switches-and-leds": usesPIO,
           },
           // Cambiar automáticamente la visibilidad de flags cuando se active el PIC
-          flagsVisibility: shouldActivatePIC && !currentSettings.devices.pic 
+          flagsVisibility: (shouldActivatePIC || usesTimer) && !currentSettings.devices.pic 
             ? (prev.flagsVisibility === "SF_OF_CF_ZF" ? "IF_SF_OF_CF_ZF" : "IF_CF_ZF")
             : prev.flagsVisibility,
         }));
@@ -2868,16 +2885,18 @@ async function dispatch(...args: Action) {
           getSettings().devices.pic,
         );
         console.log("Habilitando vector de interrupciones:", hasINTOrInterruptDevices);
+        console.log("Timer se activará automáticamente:", usesTimer, "- PIC se activará para soportar Timer:", usesTimer || shouldActivatePIC);
 
-        // Reset the simulator
+        // Reset the simulator - usar settings actualizados después de modificar settingsAtom
+        const updatedSettings = getSettings(); // Obtener settings actualizados después de la modificación
         simulator.loadProgram({
           program: result,
           data: currentSettings.dataOnLoad,
           devices: {
-            keyboardAndScreen: getSettings().devices.keyboardAndScreen ?? false,
-            pic: getSettings().devices.pic ?? false,
-            pio: getSettings().devices.pio ?? null,
-            handshake: getSettings().devices.handshake ?? null,
+            keyboardAndScreen: updatedSettings.devices.keyboardAndScreen ?? false,
+            pic: updatedSettings.devices.pic ?? false,
+            pio: updatedSettings.devices.pio ?? null,
+            handshake: updatedSettings.devices.handshake ?? null,
           },
           hasORG: result.hasORG, // Pass the hasORG flag
           hasORG20hAtStart: result.hasORG20hAtStart, // Pass the hasORG20hAtStart flag
@@ -3055,7 +3074,9 @@ async function dispatch(...args: Action) {
         startThread(simulator.startCPU());
         
         // Inicializar dispositivos auxiliares (sin bucles infinitos)
+        console.log("🕐 [DEBUG] Iniciando reloj...");
         startClock();
+        console.log("🖨️ [DEBUG] Iniciando impresora...");
         startPrinter();
       } else {
         store.set(simulationAtom, { type: "running", until, waitingForInput: false });
@@ -3168,19 +3189,33 @@ async function dispatch(...args: Action) {
 }
 
 async function startClock(): Promise<void> {
-  if (!simulator.devices.clock.connected()) return;
-  console.log("🕐 [DEBUG] startClock: Reloj conectado, pero no iniciando bucle infinito");
+  console.log("🕐 [DEBUG] startClock llamado, verificando conexión...");
+  if (!simulator.devices.clock.connected()) {
+    console.log("🕐 [DEBUG] Reloj NO conectado, saliendo");
+    return;
+  }
+  console.log("🕐 [DEBUG] Reloj conectado, iniciando bucle de ticks");
 
-  // NO ejecutar bucle infinito aquí
-  // El reloj debería ser manejado por eventos del simulador principal
-  // while (store.get(simulationAtom).type !== "stopped") {
-  //   const duration = getSettings().clockSpeed;
-  //   await anim(
-  //     { key: "clock.angle", from: 0, to: 360 },
-  //     { duration, forceMs: true, easing: "linear" },
-  //   );
-  //   startThread(simulator.devices.clock.tick()!);
-  // }
+  // Ejecutar bucle de ticks del reloj
+  while (store.get(simulationAtom).type !== "stopped") {
+    const duration = getSettings().clockSpeed;
+    console.log("🕐 [DEBUG] Esperando", duration, "ms antes del próximo tick");
+    
+    // Esperar la duración del reloj
+    await new Promise(resolve => setTimeout(resolve, duration));
+    
+    // Verificar si aún está corriendo antes de hacer tick
+    if (store.get(simulationAtom).type !== "stopped") {
+      console.log("🕐 [DEBUG] Disparando tick del reloj");
+      const clockGenerator = simulator.devices.clock.tick()!;
+      console.log("🕐 [DEBUG] Generador del reloj creado:", clockGenerator);
+      startThread(clockGenerator, true); // allowConcurrent = true para el reloj
+    } else {
+      console.log("🕐 [DEBUG] Simulación detenida, saliendo del bucle de reloj");
+      break;
+    }
+  }
+  console.log("🕐 [DEBUG] Bucle de reloj terminado");
 }
 
 async function startPrinter(): Promise<void> {
