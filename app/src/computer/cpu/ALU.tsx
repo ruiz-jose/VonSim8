@@ -7,7 +7,7 @@ import { animated, getSpring } from "@/computer/shared/springs";
 import { useSettings } from "@/lib/settings";
 
 import { type DataRegister, generateDataPath } from "./DataBus";
-import { aluOperationAtom, connectScreenAndKeyboardAtom, cycleAtom, registerAtoms } from "./state";
+import { aluOperationAtom, connectScreenAndKeyboardAtom, cycleAtom, mayUsePICAtom, registerAtoms } from "./state";
 
 /**
  * ALU component, to be used inside <CPU />
@@ -28,6 +28,7 @@ export function ALU() {
   const [resultDestination, setResultDestination] = useState("");
 
   const connectScreenAndKeyboard = useAtomValue(connectScreenAndKeyboardAtom);
+  const mayUsePIC = useAtomValue(mayUsePICAtom);
   const [settings] = useSettings();
 
   // Obtener la instrucción completa desde el ciclo actual (memorizada)
@@ -403,7 +404,7 @@ export function ALU() {
 
         {/* Contenido centrado en el registro */}
         <div className="mt-3 flex items-center gap-0.5">
-          {connectScreenAndKeyboard && (
+          {(connectScreenAndKeyboard || mayUsePIC || settings.flagsVisibility === "IF_CF_ZF" || settings.flagsVisibility === "IF_SF_OF_CF_ZF") && (
             <span
               className={clsx(
                 "rounded border px-0.5 py-0 text-[10px] font-bold transition-all duration-200",
@@ -416,7 +417,7 @@ export function ALU() {
             </span>
           )}
 
-          {settings.flagsVisibility === "SF_OF_CF_ZF" && (
+          {(settings.flagsVisibility === "SF_OF_CF_ZF" || settings.flagsVisibility === "IF_SF_OF_CF_ZF") && (
             <>
               <span
                 className={clsx(

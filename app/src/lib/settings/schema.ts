@@ -81,7 +81,7 @@ export const settingsSchema = z.object({
    * Flags visibility setting.
    * Controls which flags are visible in the ALU.
    */
-  flagsVisibility: z.enum(["CF_ZF", "SF_OF_CF_ZF"]).catch("CF_ZF"),
+  flagsVisibility: z.enum(["CF_ZF", "SF_OF_CF_ZF", "IF_CF_ZF", "IF_SF_OF_CF_ZF"]).catch("CF_ZF"),
 
   /**
    * CSS filter applied to the page.

@@ -2734,6 +2734,7 @@ async function dispatch(...args: Action) {
           totalInstructions: result.instructions.length,
           inOutInstructions: result.instructions.filter(i => i.instruction === "IN" || i.instruction === "OUT").length,
           usesPIC,
+          mayUsePICFromAssembler: result.mayUsePIC,
           firstFewInstructions: result.instructions.slice(0, 5).map(i => ({
             instruction: i.instruction,
             operands: i.operands?.map((op: any) => ({
@@ -2801,6 +2802,20 @@ async function dispatch(...args: Action) {
 
         // Configurar dispositivos basado en detección
         const currentSettings = getSettings();
+        
+        // Combinar las detecciones: usesPIC (análisis de instrucciones) y result.mayUsePIC (análisis del ensamblador)
+        const shouldActivatePIC = usesPIC || (result.mayUsePIC ?? false);
+        
+        // Notificar si se activa automáticamente el PIC
+        if (shouldActivatePIC && !currentSettings.devices.pic) {
+          notifyWarning(
+            "PIC activado automáticamente",
+            `Se detectó que el programa utiliza el PIC (direcciones 20h-2Bh). El módulo PIC se ha activado automáticamente, se ha reservado espacio para el vector de interrupciones y se ha configurado la visualización del flag I (interrupt flag).`
+          );
+          console.log("🔧 PIC activado automáticamente debido a detección de uso en el código");
+          console.log("🔧 Flag I configurado para mostrarse automáticamente");
+        }
+        
         store.set(settingsAtom, (prev: any) => ({
           ...prev,
           devices: {
@@ -2808,9 +2823,13 @@ async function dispatch(...args: Action) {
             keyboardAndScreen: connectScreenAndKeyboard,
             pio: usesPIO ? "switches-and-leds" : usesHandshake ? "printer" : prev.devices.pio,
             handshake: usesHandshake ? "printer" : prev.devices.handshake,
-            pic: usesPIC || prev.devices.pic,
+            pic: shouldActivatePIC || prev.devices.pic,
             "switches-and-leds": usesPIO,
           },
+          // Cambiar automáticamente la visibilidad de flags cuando se active el PIC
+          flagsVisibility: shouldActivatePIC && !currentSettings.devices.pic 
+            ? (prev.flagsVisibility === "SF_OF_CF_ZF" ? "IF_SF_OF_CF_ZF" : "IF_CF_ZF")
+            : prev.flagsVisibility,
         }));
 
         // Actualizar el átomo con el valor de connectScreenAndKeyboard
@@ -2818,13 +2837,14 @@ async function dispatch(...args: Action) {
 
         // Determinar si se necesita mostrar el vector de interrupciones
         // Se muestra SOLO si hay INT o si se usa PIC (no otros dispositivos como Handshake, Timer)
-        const hasINTOrInterruptDevices = hasINT || usesPIC;
+        const hasINTOrInterruptDevices = hasINT || shouldActivatePIC;
         store.set(hasINTInstructionAtom, hasINTOrInterruptDevices);
         store.set(mayUsePICAtom, result.mayUsePIC ?? false);
 
         console.log("🔍 DEBUG Vector de Interrupciones:", {
           hasINT,
           usesPIC,
+          shouldActivatePIC,
           usesHandshake,
           usesTimer,
           connectScreenAndKeyboard,
@@ -2836,6 +2856,8 @@ async function dispatch(...args: Action) {
         console.log(
           "Detectado - PIC:",
           usesPIC,
+          "shouldActivatePIC:",
+          shouldActivatePIC,
           "Handshake:",
           usesHandshake,
           "Timer:",
