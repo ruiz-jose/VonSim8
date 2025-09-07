@@ -1076,7 +1076,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
           );
         } else if (event.value.type === "cpu:int.6") {
           //store.set(messageAtom, "PILA ← DL; DL ← ASCII; (BL) ← DL; IRET");
-          store.set(messageAtom, "Interrupción: Rutina leer caracter del teclado");
+          store.set(messageAtom, "INT 6: Lectura de carácter del teclado");
           //  if (status.until === "cycle-change") {
           //  pauseSimulation();
           // }
