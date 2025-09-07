@@ -139,9 +139,65 @@ export async function handleBusEvent(event: SimulatorEvent<"bus:">): Promise<voi
             return;
           }
         }
+
+        // Verificar si es una dirección del PIC (20h-2Bh)
+        if (typeof address === "number" && address >= 0x20 && address <= 0x2b) {
+          const currentSettings = getSettings();
+
+          // Si el PIC no está activo, activarlo automáticamente
+          if (!currentSettings.devices.pic) {
+            console.log(
+              `🔧 Detectada operación I/O en dirección PIC ${address.toString(16).toUpperCase()}h. Activando PIC automáticamente.`,
+            );
+
+            // Notificar al usuario
+            const registerNames: Record<number, string> = {
+              0x20: "EOI",
+              0x21: "IMR",
+              0x22: "IRR",
+              0x23: "ISR", 
+              0x24: "INT0",
+              0x25: "INT1",
+              0x26: "INT2",
+              0x27: "INT3",
+              0x28: "INT4",
+              0x29: "INT5",
+              0x2a: "INT6",
+              0x2b: "INT7",
+            };
+            const registerName = registerNames[address] || `PIC_REG_${address.toString(16).toUpperCase()}h`;
+
+            notifyWarning(
+              "PIC activado automáticamente",
+              `Se detectó una operación I/O en la dirección ${address.toString(16).toUpperCase()}h (${registerName}). El PIC se ha activado automáticamente.`,
+            );
+
+            // Actualizar la configuración para activar el PIC
+            store.set(settingsAtom, (prev: any) => ({
+              ...prev,
+              devices: {
+                ...prev.devices,
+                pic: true,
+              },
+            }));
+
+            // Enviar un evento personalizado para recargar el programa
+            const reloadEvent = new CustomEvent("picActivated", {
+              detail: {
+                address,
+                registerName,
+                shouldReload: true,
+              },
+            });
+            window.dispatchEvent(reloadEvent);
+
+            // No continuar con el error, ya que vamos a recargar
+            return;
+          }
+        }
       }
 
-      // Si no es un error de PIO o el PIO ya está activo, continuar con el error normal
+      // Si no es un error de dispositivo I/O o ya está activo, continuar con el error normal
       finishSimulation(event.error);
       return;
     }

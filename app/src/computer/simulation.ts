@@ -100,6 +100,29 @@ if (typeof window !== "undefined") {
       }, 100);
     }
   });
+
+  // Listener para recargar automáticamente el programa cuando se active el PIC
+  window.addEventListener("picActivated", (event: CustomEvent) => {
+    const { address, registerName, shouldReload } = event.detail;
+
+    if (shouldReload) {
+      console.log(
+        `🔄 Recargando programa debido a activación automática del PIC (${registerName} - ${address.toString(16).toUpperCase()}h)`,
+      );
+
+      // Parar la simulación actual si está corriendo
+      const currentStatus = store.get(simulationAtom);
+      if (currentStatus.type === "running") {
+        finishSimulation();
+      }
+
+      // Esperar un momento para que se complete el finish, luego reiniciar
+      setTimeout(() => {
+        // Reiniciar la ejecución con la nueva configuración
+        dispatch("cpu.run", "infinity");
+      }, 100);
+    }
+  });
 }
 
 type RunUntil = "cycle-change" | "end-of-instruction" | "infinity";
