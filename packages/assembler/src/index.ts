@@ -11,7 +11,11 @@ export type Program = {
   instructions: InstructionStatement[];
 };
 
-export type AssembleResultSuccess = { success: true } & Program & { hasORG: boolean; hasORG20hAtStart: boolean; mayUsePIC: boolean };
+export type AssembleResultSuccess = { success: true } & Program & {
+    hasORG: boolean;
+    hasORG20hAtStart: boolean;
+    mayUsePIC: boolean;
+  };
 export type AssembleResultError = {
   success: false;
   errors: AssemblerError<any>[];
@@ -91,7 +95,14 @@ export function assemble(source: string): AssembleResult {
     );
     if (errors.length > 0) return { success: false, errors };
 
-    return { success: true, data, instructions, hasORG: store.hasOriginDirective(), hasORG20hAtStart: store.hasORG20hAtStart(), mayUsePIC: store.mayUsePIC() };
+    return {
+      success: true,
+      data,
+      instructions,
+      hasORG: store.hasOriginDirective(),
+      hasORG20hAtStart: store.hasORG20hAtStart(),
+      mayUsePIC: store.mayUsePIC(),
+    };
   } catch (error) {
     return { success: false, errors: [AssemblerError.from(error)] };
   }

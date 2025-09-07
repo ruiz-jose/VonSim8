@@ -78,7 +78,7 @@ const SimulationStatus = memo(
     // Función para obtener el texto de la fase
     const getPhaseText = useMemo(() => {
       if (!cycle || (status.type !== "running" && cycle.phase !== "halting")) return "";
-      
+
       // Solo mostrar el texto de la fase si las animaciones están activadas
       if (!settings.animations) return "";
 
@@ -189,7 +189,7 @@ const SimulationStatus = memo(
         {(status.type === "running" || (cycle && cycle.phase === "halting")) && getPhaseText && (
           <div
             className={clsx(
-              "rounded-lg border-l-4 text-[10px] font-bold lowercase tracking-wide backdrop-blur-sm transition-all duration-300 ease-in-out shadow-sm",
+              "rounded-lg border-l-4 text-[10px] font-bold lowercase tracking-wide shadow-sm backdrop-blur-sm transition-all duration-300 ease-in-out",
               getPhaseColor,
               getPhaseAnimation, // Aplicar animación solo cuando cambia la fase
               isMobile

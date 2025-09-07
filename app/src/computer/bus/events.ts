@@ -155,7 +155,7 @@ export async function handleBusEvent(event: SimulatorEvent<"bus:">): Promise<voi
               0x20: "EOI",
               0x21: "IMR",
               0x22: "IRR",
-              0x23: "ISR", 
+              0x23: "ISR",
               0x24: "INT0",
               0x25: "INT1",
               0x26: "INT2",
@@ -165,7 +165,8 @@ export async function handleBusEvent(event: SimulatorEvent<"bus:">): Promise<voi
               0x2a: "INT6",
               0x2b: "INT7",
             };
-            const registerName = registerNames[address] || `PIC_REG_${address.toString(16).toUpperCase()}h`;
+            const registerName =
+              registerNames[address] || `PIC_REG_${address.toString(16).toUpperCase()}h`;
 
             notifyWarning(
               "PIC activado automáticamente",

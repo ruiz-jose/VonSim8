@@ -1,9 +1,9 @@
 import type { SimulatorEvent } from "@/computer/shared/types";
 import { simulationAtom } from "@/computer/simulation";
-import { store } from "@/lib/jotai";
-import { toast } from "@/lib/toast";
 import { translate } from "@/lib/i18n";
+import { store } from "@/lib/jotai";
 import { getSettings } from "@/lib/settings";
+import { toast } from "@/lib/toast";
 
 export async function handleKeyboardEvent(event: SimulatorEvent<"keyboard:">): Promise<void> {
   switch (event.type) {
@@ -12,12 +12,12 @@ export async function handleKeyboardEvent(event: SimulatorEvent<"keyboard:">): P
       const language = getSettings().language;
       const title = translate(language, "messages.keyboard-input-required");
       const description = translate(language, "messages.keyboard-input-description");
-      
-      toast({ 
-        title, 
+
+      toast({
+        title,
         description,
         variant: "info",
-        duration: 5000 // Mostrar por 5 segundos
+        duration: 5000, // Mostrar por 5 segundos
       });
 
       // Set state.waitingForInput = true

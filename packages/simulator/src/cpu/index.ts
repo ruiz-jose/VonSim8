@@ -96,31 +96,36 @@ export class CPU extends Component {
 
     // Verificar si el programa contiene la directiva ORG específicamente ORG 20h al inicio
     const hasORG20hAtStart = options.hasORG20hAtStart ?? false;
-    
+
     // Verificar si el programa usa vector de interrupciones (SOLO INT o PIC)
     const hasINTOrInterruptDevices = options.hasINTOrInterruptDevices ?? hasINT;
     const hasPICConfig = options.devices.pic;
 
     // Detectar donde realmente empieza el código mirando las instrucciones
-    const firstInstruction = options.program.instructions.length > 0 ? 
-      options.program.instructions[0] : null;
-    const firstInstructionAddress = firstInstruction ? 
-      (typeof firstInstruction.start === 'number' ? firstInstruction.start : firstInstruction.start.value) : 0;
+    const firstInstruction =
+      options.program.instructions.length > 0 ? options.program.instructions[0] : null;
+    const firstInstructionAddress = firstInstruction
+      ? typeof firstInstruction.start === "number"
+        ? firstInstruction.start
+        : firstInstruction.start.value
+      : 0;
 
-    console.log("DEBUG CPU:", { 
-      hasINT, 
-      hasORG20hAtStart, 
+    console.log("DEBUG CPU:", {
+      hasINT,
+      hasORG20hAtStart,
       hasORG: options.hasORG,
       hasINTOrInterruptDevices,
       hasPICConfig,
-      firstInstructionAddress: '0x' + firstInstructionAddress.toString(16).padStart(2, '0'),
+      firstInstructionAddress: "0x" + firstInstructionAddress.toString(16).padStart(2, "0"),
       devices: options.devices,
       instructionsCount: options.program.instructions.length,
       firstFewInstructions: options.program.instructions.slice(0, 3).map(i => ({
         type: i.type,
-        instruction: i.isInstruction() ? i.instruction : 'not-instruction',
-        start: '0x' + (typeof i.start === 'number' ? i.start : i.start.value).toString(16).padStart(2, '0')
-      }))
+        instruction: i.isInstruction() ? i.instruction : "not-instruction",
+        start:
+          "0x" +
+          (typeof i.start === "number" ? i.start : i.start.value).toString(16).padStart(2, "0"),
+      })),
     });
 
     // Determinar la dirección inicial del registro IP
@@ -135,7 +140,9 @@ export class CPU extends Component {
     } else {
       // Si no usa INT/PIC O el código está en 0x00, usar donde está el código
       initialIP = firstInstructionAddress;
-      console.log(`IP set to 0x${initialIP.toString(16).padStart(2, '0')} (first instruction address)`);
+      console.log(
+        `IP set to 0x${initialIP.toString(16).padStart(2, "0")} (first instruction address)`,
+      );
     }
     this.#registers.IP = Byte.fromUnsigned(initialIP, 16);
 

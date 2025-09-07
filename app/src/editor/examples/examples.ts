@@ -61,7 +61,7 @@ Mostrar_Mensaje:
     MOV BL, OFFSET mensaje_ok ; BL apunta al mensaje de éxito
     MOV AL, 11                ; Longitud del mensaje (Bienvenido! tiene 11 caracteres)
     INT 7
-    HLT`
+    HLT`,
   },
   {
     nombre: "Impresora con sondeo",
@@ -99,7 +99,7 @@ ImprimirCadena:
     JMP Sondeo            ; Repite el proceso para el próximo carácter
 
 fin:
-    HLT                   ; Detiene la ejecución`
+    HLT                   ; Detiene la ejecución`,
   },
   {
     nombre: "Impresora por interrupción",
@@ -229,6 +229,6 @@ fin_interrupcion:
     pop al
 
     ; --- RETORNO DE INTERRUPCIÓN ---
-    iret                  ; Retorno de interrupción`
+    iret                  ; Retorno de interrupción`,
   },
 ];

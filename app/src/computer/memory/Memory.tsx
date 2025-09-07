@@ -5,7 +5,12 @@ import { useAtomValue } from "jotai";
 import { useEffect, useRef, useState } from "react";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover";
-import { hasINTInstructionAtom, mayUsePICAtom, registerAtoms, showSPAtom } from "@/computer/cpu/state";
+import {
+  hasINTInstructionAtom,
+  mayUsePICAtom,
+  registerAtoms,
+  showSPAtom,
+} from "@/computer/cpu/state";
 import { dataAddressesAtom, programAddressesAtom } from "@/computer/memory/state";
 import { animated, getSpring } from "@/computer/shared/springs";
 import { useTranslate } from "@/lib/i18n";

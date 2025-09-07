@@ -347,6 +347,7 @@ exports[`Fixtures > should match snapshot of dividir.asm 1`] = `
       "type": "instruction",
     },
   ],
+  "mayUsePIC": false,
   "success": true,
 }
 `;
@@ -689,6 +690,7 @@ exports[`Fixtures > should match snapshot of fibonacci.asm 1`] = `
       "type": "instruction",
     },
   ],
+  "mayUsePIC": false,
   "success": true,
 }
 `;
@@ -864,6 +866,7 @@ exports[`Fixtures > should match snapshot of multiplicar.asm 1`] = `
       "type": "instruction",
     },
   ],
+  "mayUsePIC": false,
   "success": true,
 }
 `;
@@ -1293,6 +1296,7 @@ exports[`Fixtures > should match snapshot of rotar.asm 1`] = `
       "type": "instruction",
     },
   ],
+  "mayUsePIC": false,
   "success": true,
 }
 `;
@@ -1405,6 +1409,7 @@ exports[`Fixtures > should match snapshot of suma.asm 1`] = `
       "type": "instruction",
     },
   ],
+  "mayUsePIC": false,
   "success": true,
 }
 `;
@@ -1686,6 +1691,7 @@ exports[`Fixtures > should match snapshot of sumador_de_tablas.asm 1`] = `
       "type": "instruction",
     },
   ],
+  "mayUsePIC": false,
   "success": true,
 }
 `;
@@ -1781,6 +1787,7 @@ exports[`Fixtures > should match snapshot of test_new_org.asm 1`] = `
       "type": "instruction",
     },
   ],
+  "mayUsePIC": false,
   "success": true,
 }
 `;
@@ -2091,6 +2098,7 @@ exports[`Fixtures > should match snapshot of timer.asm 1`] = `
       "type": "instruction",
     },
   ],
+  "mayUsePIC": true,
   "success": true,
 }
 `;
@@ -2401,6 +2409,7 @@ exports[`Fixtures > should match snapshot of timer-cac.asm 1`] = `
       "type": "instruction",
     },
   ],
+  "mayUsePIC": true,
   "success": true,
 }
 `;
@@ -2815,6 +2824,7 @@ exports[`Fixtures > should match snapshot of vocales.asm 1`] = `
       "type": "instruction",
     },
   ],
+  "mayUsePIC": false,
   "success": true,
 }
 `;

@@ -116,18 +116,18 @@ export class GlobalStore {
     this.hasORG = statements.some(statement => statement.isOriginChange());
 
     // NUEVA LÓGICA: Permitir rutinas específicas con ORG sin requerir ORG al inicio
-    const hasSpecificORG = statements.some((statement, index) => 
-      statement.isOriginChange() && index > 0
+    const hasSpecificORG = statements.some(
+      (statement, index) => statement.isOriginChange() && index > 0,
     );
 
     // Verificar si hay ORG 20h específicamente al inicio
     const hasORG20hAtStart = statements[0]?.isOriginChange() && statements[0].newAddress === 0x20;
     this._hasORG20hAtStart = hasORG20hAtStart;
 
-    console.log("DEBUG ASSEMBLER:", { 
-      hasORG: this.hasORG, 
-      hasORG20hAtStart, 
-      firstStatement: statements[0]?.isOriginChange() ? statements[0].newAddress : "no ORG" 
+    console.log("DEBUG ASSEMBLER:", {
+      hasORG: this.hasORG,
+      hasORG20hAtStart,
+      firstStatement: statements[0]?.isOriginChange() ? statements[0].newAddress : "no ORG",
     });
 
     // Solo validar ORG al inicio si no hay rutinas específicas con ORG Y no hay ORG 20h al inicio
@@ -136,22 +136,29 @@ export class GlobalStore {
     }
 
     // Verificar si el programa contiene la instrucción INT
-    const hasINTInstruction = statements.some(stmt => 
-      stmt.isInstruction() && stmt.instruction === "INT"
+    const hasINTInstruction = statements.some(
+      stmt => stmt.isInstruction() && stmt.instruction === "INT",
     );
 
     // Detectar si el programa puede usar PIC (SOLO PIC, no otros dispositivos)
     // Buscar instrucciones IN/OUT que usen direcciones PIC (0x20-0x2B)
-    console.log(`🔍 ASSEMBLER: Iniciando detección de PIC. Labels disponibles:`, Array.from(this.labels.keys()));
-    
+    console.log(
+      `🔍 ASSEMBLER: Iniciando detección de PIC. Labels disponibles:`,
+      Array.from(this.labels.keys()),
+    );
+
     // También detectar definiciones de constantes EQU en rango PIC
     const hasPICConstants = Array.from(this.labels.entries()).some(([name, data]) => {
       if (data.type === "EQU") {
         try {
           const value = data.constant.evaluate(this);
-          console.log(`🔍 ASSEMBLER: Evaluando constante EQU ${name} = ${value} (tipo: ${typeof value})`);
-          if (typeof value === "number" && value >= 0x20 && value <= 0x2B) {
-            console.log(`🎯 ASSEMBLER: ¡DETECTADA! Constante EQU en rango PIC: ${name} = 0x${value.toString(16)}`);
+          console.log(
+            `🔍 ASSEMBLER: Evaluando constante EQU ${name} = ${value} (tipo: ${typeof value})`,
+          );
+          if (typeof value === "number" && value >= 0x20 && value <= 0x2b) {
+            console.log(
+              `🎯 ASSEMBLER: ¡DETECTADA! Constante EQU en rango PIC: ${name} = 0x${value.toString(16)}`,
+            );
             return true;
           }
         } catch (e) {
@@ -160,70 +167,92 @@ export class GlobalStore {
       }
       return false;
     });
-    
+
     console.log(`🔍 ASSEMBLER: hasPICConstants = ${hasPICConstants}`);
-    
-    const mayUsePIC = hasPICConstants || statements.some(stmt => {
-      if (!stmt.isInstruction() || (stmt.instruction !== "IN" && stmt.instruction !== "OUT")) {
-        return false;
-      }
-      
-      console.log(`🔍 ASSEMBLER: Analizando instrucción ${stmt.instruction} con operandos:`, stmt.operands);
-      
-      // Verificar si usa direcciones PIC específicamente
-      const usesPICAddresses = stmt.operands.some((operand: any) => {
-        console.log(`🔍 ASSEMBLER: Operando tipo ${operand.type}, valor:`, operand.value);
-        
-        // Caso 1: Número directo
-        if (operand.type === "number-expression" && typeof operand.value?.value === "number") {
-          const addr = operand.value.value;
-          // Solo PIC: 0x20-0x2B
-          const isPIC = addr >= 0x20 && addr <= 0x2B;
-          if (isPIC) {
-            console.log(`🎯 ASSEMBLER: Detectado uso de PIC (directo) - ${stmt.instruction} ${addr.toString(16)}h`);
-          }
-          return isPIC;
+
+    const mayUsePIC =
+      hasPICConstants ||
+      statements.some(stmt => {
+        if (!stmt.isInstruction() || (stmt.instruction !== "IN" && stmt.instruction !== "OUT")) {
+          return false;
         }
-        // Caso 2: Identificador (constante EQU) - Revisar constantes conocidas Y definidas por usuario
-        if (operand.type === "identifier") {
-          const constName = operand.value;
-          console.log(`🔍 ASSEMBLER: Verificando identificador ${constName}`);
-          
-          // Primero, constantes PIC conocidas predefinidas
-          const picConstants = {
-            'IMR': 0x21, 'EOI': 0x20, 'INT0': 0x24, 'INT1': 0x25, 'INT2': 0x26, 
-            'INT3': 0x27, 'INT4': 0x28, 'INT5': 0x29, 'INT6': 0x2A, 'INT7': 0x2B
-          };
-          if (Object.hasOwnProperty.call(picConstants, constName)) {
-            const addr = picConstants[constName as keyof typeof picConstants];
-            console.log(`🎯 ASSEMBLER: Detectado uso de PIC (constante conocida ${constName}) - ${stmt.instruction} ${constName}(${addr.toString(16)}h)`);
-            return true;
+
+        console.log(
+          `🔍 ASSEMBLER: Analizando instrucción ${stmt.instruction} con operandos:`,
+          stmt.operands,
+        );
+
+        // Verificar si usa direcciones PIC específicamente
+        const usesPICAddresses = stmt.operands.some((operand: any) => {
+          console.log(`🔍 ASSEMBLER: Operando tipo ${operand.type}, valor:`, operand.value);
+
+          // Caso 1: Número directo
+          if (operand.type === "number-expression" && typeof operand.value?.value === "number") {
+            const addr = operand.value.value;
+            // Solo PIC: 0x20-0x2B
+            const isPIC = addr >= 0x20 && addr <= 0x2b;
+            if (isPIC) {
+              console.log(
+                `🎯 ASSEMBLER: Detectado uso de PIC (directo) - ${stmt.instruction} ${addr.toString(16)}h`,
+              );
+            }
+            return isPIC;
           }
-          
-          // Segundo, constantes EQU definidas por el usuario
-          const labelData = this.labels.get(constName);
-          console.log(`🔍 ASSEMBLER: Datos de etiqueta para ${constName}:`, labelData);
-          if (labelData && labelData.type === "EQU") {
-            try {
-              const value = labelData.constant.evaluate(this);
-              console.log(`🔍 ASSEMBLER: Valor evaluado de ${constName}: ${value}`);
-              if (typeof value === "number") {
-                const isPIC = value >= 0x20 && value <= 0x2B;
-                if (isPIC) {
-                  console.log(`🎯 ASSEMBLER: Detectado uso de PIC (constante EQU usuario ${constName}=${value.toString(16)}h) - ${stmt.instruction} ${constName}`);
-                  return true;
+          // Caso 2: Identificador (constante EQU) - Revisar constantes conocidas Y definidas por usuario
+          if (operand.type === "identifier") {
+            const constName = operand.value;
+            console.log(`🔍 ASSEMBLER: Verificando identificador ${constName}`);
+
+            // Primero, constantes PIC conocidas predefinidas
+            const picConstants = {
+              IMR: 0x21,
+              EOI: 0x20,
+              INT0: 0x24,
+              INT1: 0x25,
+              INT2: 0x26,
+              INT3: 0x27,
+              INT4: 0x28,
+              INT5: 0x29,
+              INT6: 0x2a,
+              INT7: 0x2b,
+            };
+            if (Object.hasOwnProperty.call(picConstants, constName)) {
+              const addr = picConstants[constName as keyof typeof picConstants];
+              console.log(
+                `🎯 ASSEMBLER: Detectado uso de PIC (constante conocida ${constName}) - ${stmt.instruction} ${constName}(${addr.toString(16)}h)`,
+              );
+              return true;
+            }
+
+            // Segundo, constantes EQU definidas por el usuario
+            const labelData = this.labels.get(constName);
+            console.log(`🔍 ASSEMBLER: Datos de etiqueta para ${constName}:`, labelData);
+            if (labelData && labelData.type === "EQU") {
+              try {
+                const value = labelData.constant.evaluate(this);
+                console.log(`🔍 ASSEMBLER: Valor evaluado de ${constName}: ${value}`);
+                if (typeof value === "number") {
+                  const isPIC = value >= 0x20 && value <= 0x2b;
+                  if (isPIC) {
+                    console.log(
+                      `🎯 ASSEMBLER: Detectado uso de PIC (constante EQU usuario ${constName}=${value.toString(16)}h) - ${stmt.instruction} ${constName}`,
+                    );
+                    return true;
+                  }
                 }
+              } catch (e) {
+                // Ignorar errores de evaluación por ahora
+                console.log(
+                  `⚠️ ASSEMBLER: No se pudo evaluar constante ${constName} para detección PIC:`,
+                  e,
+                );
               }
-            } catch (e) {
-              // Ignorar errores de evaluación por ahora
-              console.log(`⚠️ ASSEMBLER: No se pudo evaluar constante ${constName} para detección PIC:`, e);
             }
           }
-        }
-        return false;
+          return false;
+        });
+        return usesPICAddresses;
       });
-      return usesPICAddresses;
-    });
 
     console.log(`🔍 ASSEMBLER: Resultado detección PIC: ${mayUsePIC}`);
 
@@ -243,13 +272,16 @@ export class GlobalStore {
       mainCodePointer = 0x00;
     }
 
-    console.log("DEBUG ASSEMBLER mainCodePointer:", { 
-      hasORG20hAtStart, 
-      hasINTInstruction, 
+    console.log("DEBUG ASSEMBLER mainCodePointer:", {
+      hasORG20hAtStart,
+      hasINTInstruction,
       mayUsePIC,
-      mainCodePointer: '0x' + mainCodePointer.toString(16).padStart(2, '0'),
-      strategy: hasORG20hAtStart ? "ORG 20h" : 
-                (hasINTInstruction || mayUsePIC) ? "reserve interrupt space (INT/PIC)" : "start at 00h"
+      mainCodePointer: "0x" + mainCodePointer.toString(16).padStart(2, "0"),
+      strategy: hasORG20hAtStart
+        ? "ORG 20h"
+        : hasINTInstruction || mayUsePIC
+          ? "reserve interrupt space (INT/PIC)"
+          : "start at 00h",
     });
     let codePointer = mainCodePointer;
     let dataPointer: number | null = null;
@@ -288,14 +320,14 @@ export class GlobalStore {
       // 1. Instrucciones del código principal (incluyendo las que vienen después de ORG 20h inicial)
       // 2. Datos (después del código principal)
       // 3. Rutinas con ORG específico (ORG que no son 20h al inicio)
-      
+
       const mainCodeStatements: Statement[] = [];
       const dataStatements: Statement[] = [];
       const orgRoutineStatements: Statement[] = [];
-      
+
       let currentlyInMainCode = true; // Empezamos en código principal
-      let hasSeenInitialORG = false;  // Para rastrear si hemos visto el ORG inicial (20h)
-      
+      let hasSeenInitialORG = false; // Para rastrear si hemos visto el ORG inicial (20h)
+
       // Clasificar statements
       for (const statement of statements) {
         if (statement.isOriginChange()) {
@@ -304,7 +336,7 @@ export class GlobalStore {
             hasSeenInitialORG = true;
             currentlyInMainCode = true;
             orgRoutineStatements.push(statement); // El ORG en sí va a las rutinas para el procesamiento
-          } 
+          }
           // Cualquier otro ORG (incluyendo el primero si no es 20h) es una rutina específica
           else {
             currentlyInMainCode = false;
@@ -322,7 +354,7 @@ export class GlobalStore {
           orgRoutineStatements.push(statement);
         }
       }
-      
+
       // Orden final: código principal → datos → rutinas ORG
       const orderedStatements: Statement[] = [];
       orderedStatements.push(...mainCodeStatements, ...dataStatements, ...orgRoutineStatements);
@@ -393,13 +425,13 @@ export class GlobalStore {
             if (statement.isInstruction() && mainCodeStatements.includes(statement)) {
               mainCodeEndAddress = codePointer + length;
             }
-            
+
             // Manejar puntero de datos
             if (statement.isDataDirective() && dataPointer === null) {
               dataPointer = mainCodeEndAddress; // Los datos van después del código principal
               codePointer = dataPointer;
             }
-            
+
             codePointer += length;
             lastCodeAddress = Math.max(lastCodeAddress, codePointer);
           }

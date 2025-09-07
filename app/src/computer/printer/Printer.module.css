@@ -16,13 +16,7 @@
   position: absolute;
   inset: 0;
   border-radius: 0.75rem;
-  background: linear-gradient(
-    to left,
-    #71717a 0%,
-    #a1a1aa 8%,
-    #a1a1aa 92%,
-    #71717a 100%
-  );
+  background: linear-gradient(to left, #71717a 0%, #a1a1aa 8%, #a1a1aa 92%, #71717a 100%);
 }
 
 .front {
@@ -56,7 +50,8 @@
   white-space: pre-wrap;
   word-break: break-all;
   background-color: #fafafa;
-  font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+  font-family:
+    ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
   font-size: 1.125rem;
   line-height: 1.75rem;
   padding: 0.25rem;

@@ -207,7 +207,7 @@ export function finishSimulation(error?: SimulatorError<any>) {
   store.set(simulationAtom, { type: "stopped", error });
   store.set(cycleAtom, { phase: "stopped", error });
   stopAllAnimations();
-  
+
   console.log("✅ [DEBUG] Simulación finalizada - todos los hilos y procesos limpiados");
 }
 
@@ -828,7 +828,7 @@ function validateInstructionContext(context: InstructionContext): boolean {
 // }
 
 // Variable global para controlar hilos activos
-let activeThreads = new Set<Promise<void>>();
+const activeThreads = new Set<Promise<void>>();
 let mainCpuThreadActive = false;
 
 /**
@@ -870,14 +870,17 @@ async function executeThread(generator: EventGenerator): Promise<void> {
   try {
     let iterationCount = 0;
     const MAX_ITERATIONS = 10000; // Límite de seguridad para detectar bucles infinitos
-    
+
     // eslint-disable-next-line no-constant-condition
     while (true) {
       iterationCount++;
-      
+
       // Protección contra bucle infinito
       if (iterationCount > MAX_ITERATIONS) {
-        console.error("❌ [DEBUG] Bucle infinito detectado - demasiadas iteraciones:", iterationCount);
+        console.error(
+          "❌ [DEBUG] Bucle infinito detectado - demasiadas iteraciones:",
+          iterationCount,
+        );
         finishSimulation(); // Detener la simulación sin error específico
         return;
       }
@@ -889,7 +892,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
         status: status.type,
         programModified,
         executeStageCounter,
-        currentInstructionName
+        currentInstructionName,
       });
 
       // Verificar si el programa ha sido modificado
@@ -927,7 +930,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
       console.log("📋 [DEBUG] Evento obtenido:", {
         done: event.done,
         type: event.value ? (event.value as any).type : undefined,
-        hasValue: !!event.value
+        hasValue: !!event.value,
       });
 
       if (event.done) {
@@ -943,7 +946,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
           currentInstructionName,
           isTraceEvent: eventType?.includes("trace"),
           isPrinterEvent: eventType?.includes("printer"),
-          isPioEvent: eventType?.includes("pio")
+          isPioEvent: eventType?.includes("pio"),
         });
 
         try {
@@ -953,7 +956,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
           console.log("✅ [DEBUG] Módulo events.ts importado correctamente");
 
           const { updateInstructionContext, getCurrentExecuteStageCounter } = eventsModule;
-          
+
           if (typeof updateInstructionContext !== "function") {
             throw new Error("updateInstructionContext no es una función");
           }
@@ -967,12 +970,12 @@ async function executeThread(generator: EventGenerator): Promise<void> {
 
           console.log("🎯 [DEBUG] Llamando a handleEvent...");
           const handleEventStart = performance.now();
-          
+
           // Log específico para eventos del reloj
           if (event.value.type.startsWith("clock:")) {
             console.log("🕐 [DEBUG] Procesando evento del reloj:", event.value);
           }
-          
+
           // Crear un timeout para detectar bloqueos en handleEvent
           const eventPromise = handleEvent(event.value);
           const timeoutPromise = new Promise((_, reject) => {
@@ -980,24 +983,25 @@ async function executeThread(generator: EventGenerator): Promise<void> {
           });
 
           await Promise.race([eventPromise, timeoutPromise]);
-          
+
           const handleEventEnd = performance.now();
-          console.log(`✅ [DEBUG] handleEvent completado en ${(handleEventEnd - handleEventStart).toFixed(2)}ms`);
+          console.log(
+            `✅ [DEBUG] handleEvent completado en ${(handleEventEnd - handleEventStart).toFixed(2)}ms`,
+          );
 
           // Después del evento, sincronizar el contador con el valor actualizado en events.ts
           console.log("🔄 [DEBUG] Sincronizando executeStageCounter...");
           executeStageCounter = getCurrentExecuteStageCounter();
           console.log("✅ [DEBUG] executeStageCounter sincronizado:", executeStageCounter);
-
         } catch (error) {
           console.error("❌ [DEBUG] Error procesando evento:", {
             eventType: eventType,
             error: error.message,
             stack: error.stack,
             executeStageCounter,
-            currentInstructionName
+            currentInstructionName,
           });
-          
+
           // Re-lanzar el error para que sea manejado por el catch externo
           throw error;
         }
@@ -2711,7 +2715,9 @@ async function dispatch(...args: Action) {
                 if (typeof operand.value.value === "number") {
                   const isPIC = operand.value.value >= 0x20 && operand.value.value <= 0x2b;
                   if (isPIC) {
-                    console.log(`🎯 PIC detectado: ${instruction.instruction} con operando ${operand.value.value.toString(16)}h`);
+                    console.log(
+                      `🎯 PIC detectado: ${instruction.instruction} con operando ${operand.value.value.toString(16)}h`,
+                    );
                   }
                   return isPIC;
                 }
@@ -2722,7 +2728,9 @@ async function dispatch(...args: Action) {
                     if (typeof resolvedValue === "number") {
                       const isPIC = resolvedValue >= 0x20 && resolvedValue <= 0x2b;
                       if (isPIC) {
-                        console.log(`🎯 PIC detectado: ${instruction.instruction} con operando resuelto ${resolvedValue.toString(16)}h`);
+                        console.log(
+                          `🎯 PIC detectado: ${instruction.instruction} con operando resuelto ${resolvedValue.toString(16)}h`,
+                        );
                       }
                       return isPIC;
                     }
@@ -2737,19 +2745,21 @@ async function dispatch(...args: Action) {
           }
           return false;
         });
-        
+
         console.log(`🔍 Análisis de instrucciones para PIC:`, {
           totalInstructions: result.instructions.length,
-          inOutInstructions: result.instructions.filter(i => i.instruction === "IN" || i.instruction === "OUT").length,
+          inOutInstructions: result.instructions.filter(
+            i => i.instruction === "IN" || i.instruction === "OUT",
+          ).length,
           usesPIC,
           mayUsePICFromAssembler: result.mayUsePIC,
           firstFewInstructions: result.instructions.slice(0, 5).map(i => ({
             instruction: i.instruction,
             operands: i.operands?.map((op: any) => ({
               type: op.type,
-              value: op.type === "number-expression" ? op.value.value : op.value
-            }))
-          }))
+              value: op.type === "number-expression" ? op.value.value : op.value,
+            })),
+          })),
         });
 
         // Verificar si el programa usa Handshake (registros 0x40-0x41)
@@ -2810,29 +2820,31 @@ async function dispatch(...args: Action) {
 
         // Configurar dispositivos basado en detección
         const currentSettings = getSettings();
-        
+
         // Combinar las detecciones: usesPIC (análisis de instrucciones) y result.mayUsePIC (análisis del ensamblador)
         const shouldActivatePIC = usesPIC || (result.mayUsePIC ?? false);
-        
+
         // Notificar si se activa automáticamente el PIC
         if (shouldActivatePIC && !currentSettings.devices.pic) {
           notifyWarning(
             "PIC activado automáticamente",
-            `Se detectó que el programa utiliza el PIC (direcciones 20h-2Bh). El módulo PIC se ha activado automáticamente, se ha reservado espacio para el vector de interrupciones y se ha configurado la visualización del flag I (interrupt flag).`
+            `Se detectó que el programa utiliza el PIC (direcciones 20h-2Bh). El módulo PIC se ha activado automáticamente, se ha reservado espacio para el vector de interrupciones y se ha configurado la visualización del flag I (interrupt flag).`,
           );
           console.log("🔧 PIC activado automáticamente debido a detección de uso en el código");
           console.log("🔧 Flag I configurado para mostrarse automáticamente");
         }
-        
+
         // Notificar si se activa automáticamente el Timer (que requiere PIC)
         if (usesTimer && !currentSettings.devices.pic) {
           notifyWarning(
             "Timer y Reloj activados automáticamente",
-            `Se detectó que el programa utiliza el Timer (direcciones 10h-11h). El módulo PIC se ha activado automáticamente ya que el Timer requiere el PIC para funcionar.`
+            `Se detectó que el programa utiliza el Timer (direcciones 10h-11h). El módulo PIC se ha activado automáticamente ya que el Timer requiere el PIC para funcionar.`,
           );
-          console.log("🔧 PIC y Timer activados automáticamente debido a detección de uso del Timer en el código");
+          console.log(
+            "🔧 PIC y Timer activados automáticamente debido a detección de uso del Timer en el código",
+          );
         }
-        
+
         store.set(settingsAtom, (prev: any) => ({
           ...prev,
           devices: {
@@ -2844,9 +2856,12 @@ async function dispatch(...args: Action) {
             "switches-and-leds": usesPIO,
           },
           // Cambiar automáticamente la visibilidad de flags cuando se active el PIC
-          flagsVisibility: (shouldActivatePIC || usesTimer) && !currentSettings.devices.pic 
-            ? (prev.flagsVisibility === "SF_OF_CF_ZF" ? "IF_SF_OF_CF_ZF" : "IF_CF_ZF")
-            : prev.flagsVisibility,
+          flagsVisibility:
+            (shouldActivatePIC || usesTimer) && !currentSettings.devices.pic
+              ? prev.flagsVisibility === "SF_OF_CF_ZF"
+                ? "IF_SF_OF_CF_ZF"
+                : "IF_CF_ZF"
+              : prev.flagsVisibility,
         }));
 
         // Actualizar el átomo con el valor de connectScreenAndKeyboard
@@ -2885,7 +2900,12 @@ async function dispatch(...args: Action) {
           getSettings().devices.pic,
         );
         console.log("Habilitando vector de interrupciones:", hasINTOrInterruptDevices);
-        console.log("Timer se activará automáticamente:", usesTimer, "- PIC se activará para soportar Timer:", usesTimer || shouldActivatePIC);
+        console.log(
+          "Timer se activará automáticamente:",
+          usesTimer,
+          "- PIC se activará para soportar Timer:",
+          usesTimer || shouldActivatePIC,
+        );
 
         // Reset the simulator - usar settings actualizados después de modificar settingsAtom
         const updatedSettings = getSettings(); // Obtener settings actualizados después de la modificación
@@ -3072,7 +3092,7 @@ async function dispatch(...args: Action) {
 
         // Inicializar solo el hilo principal del CPU
         startThread(simulator.startCPU());
-        
+
         // Inicializar dispositivos auxiliares (sin bucles infinitos)
         console.log("🕐 [DEBUG] Iniciando reloj...");
         startClock();
@@ -3200,10 +3220,10 @@ async function startClock(): Promise<void> {
   while (store.get(simulationAtom).type !== "stopped") {
     const duration = getSettings().clockSpeed;
     console.log("🕐 [DEBUG] Esperando", duration, "ms antes del próximo tick");
-    
+
     // Esperar la duración del reloj
     await new Promise(resolve => setTimeout(resolve, duration));
-    
+
     // Verificar si aún está corriendo antes de hacer tick
     if (store.get(simulationAtom).type !== "stopped") {
       console.log("🕐 [DEBUG] Disparando tick del reloj");
@@ -3225,11 +3245,11 @@ async function startPrinter(): Promise<void> {
   // Procesar buffer de impresora periódicamente sin bucle infinito
   const processPrinterBuffer = async () => {
     if (store.get(simulationAtom).type === "stopped") return;
-    
+
     // Solo procesar si hay caracteres pendientes en el buffer
     if (simulator.devices.printer.hasPending()) {
       console.log("🖨️ [DEBUG] Procesando caracteres pendientes en buffer de impresora");
-      
+
       const duration = getSettings().printerSpeed;
       await anim(
         [
@@ -3239,7 +3259,7 @@ async function startPrinter(): Promise<void> {
         { duration, forceMs: true, easing: "easeInOutSine" },
       );
       await anim({ key: "printer.printing.opacity", to: 0 }, { duration: 1, easing: "easeInSine" });
-      
+
       // Procesar un carácter del buffer
       const printGenerator = simulator.devices.printer.print();
       if (printGenerator) {
@@ -3252,7 +3272,7 @@ async function startPrinter(): Promise<void> {
         }
       }
     }
-    
+
     // Programar el siguiente procesamiento si la simulación sigue activa
     if (store.get(simulationAtom).type !== "stopped") {
       setTimeout(processPrinterBuffer, getSettings().printerSpeed);
