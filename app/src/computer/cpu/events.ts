@@ -359,22 +359,35 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         forceMs: true,
       } as const;
 
+      // Solo esperar la fase "executing" para operaciones de instrucciones principales
+      // No esperar para operaciones internas del sistema (como ADD durante INT)
+      const isInternalOperation = currentInstructionName === "INT" && currentPhase === "fetching";
+      
       // Esperar a que estemos en la fase "executing" solo si las animaciones están habilitadas
-      if (settings.animations) {
+      // y no es una operación interna del sistema
+      if (settings.animations && !isInternalOperation) {
         if (currentPhase !== "executing") {
           console.log("⏳ Esperando fase executing para animación de la ALU...");
           await new Promise<void>(resolve => {
             let timeoutCount = 0;
-            const maxTimeouts = 200; // 10 segundos máximo (200 * 50ms)
+            const maxTimeouts = 40; // 2 segundos máximo (40 * 50ms) - reducido de 10s
+            let lastLogCount = 0;
 
             const checkPhase = () => {
-              console.log("🔍 Verificando fase actual:", currentPhase);
               timeoutCount++;
 
+              // Solo loggear cada 10 intentos para reducir spam de logs
+              if (timeoutCount % 10 === 0 || timeoutCount !== lastLogCount + 1) {
+                console.log(`🔍 Verificando fase actual: ${currentPhase} (intento ${timeoutCount}/${maxTimeouts})`);
+                lastLogCount = timeoutCount;
+              }
+
               if (currentPhase === "executing") {
+                console.log("✅ Fase executing alcanzada");
                 resolve();
               } else if (timeoutCount >= maxTimeouts) {
-                console.warn("⚠️ Timeout esperando fase executing, procediendo de todas formas");
+                console.warn("⚠️ Timeout esperando fase executing después de 2s, procediendo de todas formas");
+                console.warn(`🔍 Fase final: ${currentPhase}, se esperaba: executing`);
                 resolve();
               } else {
                 setTimeout(checkPhase, 50); // Verificar cada 50ms
@@ -386,6 +399,8 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         } else {
           console.log("✅ Ya estamos en fase executing, procediendo directamente");
         }
+      } else if (isInternalOperation) {
+        console.log("🔧 Operación interna detectada durante INT, saltando espera de fase");
       }
 
       // Mostrar los textos del left y right y animar los operandos simultáneamente
