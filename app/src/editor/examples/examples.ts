@@ -63,4 +63,42 @@ Mostrar_Mensaje:
     INT 7
     HLT`
   },
+  {
+    nombre: "Impresora con sondeo",
+    filename: "impresora_sondeo.asm",
+    contenido: `; Imprime el string "Hola" en la impresora usando sondeo
+
+dato DB "Hola", 0         ; String a imprimir, terminado en 0 (carácter nulo)
+
+HS_DATA   EQU 40h         ; Dirección del registro de datos del Handshake
+HS_STATUS EQU 41h         ; Dirección del registro de estado del Handshake
+
+; --- Deshabilita las interrupciones del Handshake (bit 7 en 0) ---
+IN  AL, HS_STATUS
+AND AL, 01111111b         ; Fuerza el bit 7 a 0 (sin interrupciones)
+OUT HS_STATUS, AL
+
+; --- Inicializa el puntero al string ---
+MOV BL, OFFSET dato       ; BL apunta al primer carácter del string
+
+; --- Bucle principal: espera espacio en el buffer e imprime ---
+Sondeo:
+    IN  AL, HS_STATUS
+    AND AL, 00000001b     ; Lee el flag busy (bit 0): 1=lleno, 0=libre
+    JZ  ImprimirCadena   ; Si busy=0, hay espacio y puede imprimir
+    JMP Sondeo            ; Si busy=1, espera hasta que haya espacio
+
+ImprimirCadena:
+    MOV AL, [BL]          ; Carga el siguiente carácter del string
+    CMP AL, 0             ; ¿Es el final del string? (carácter nulo)
+    JZ fin                ; Si sí, termina el programa
+
+    OUT HS_DATA, AL       ; Envía el carácter al registro de datos del Handshake
+
+    INC BL                ; Avanza al siguiente carácter del string
+    JMP Sondeo            ; Repite el proceso para el próximo carácter
+
+fin:
+    HLT                   ; Detiene la ejecución`
+  },
 ];

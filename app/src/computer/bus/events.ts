@@ -45,6 +45,7 @@ export async function handleBusEvent(event: SimulatorEvent<"bus:">): Promise<voi
           }
         }
 
+        // Verificar si es una dirección del PIO (30h-33h)
         if (typeof address === "number" && address >= 0x30 && address <= 0x33) {
           const currentSettings = getSettings();
 
@@ -80,6 +81,52 @@ export async function handleBusEvent(event: SimulatorEvent<"bus:">): Promise<voi
 
             // Enviar un evento personalizado para recargar el programa
             const reloadEvent = new CustomEvent("pioActivated", {
+              detail: {
+                address,
+                registerName,
+                shouldReload: true,
+              },
+            });
+            window.dispatchEvent(reloadEvent);
+
+            // No continuar con el error, ya que vamos a recargar
+            return;
+          }
+        }
+
+        // Verificar si es una dirección del Handshake (40h-41h)
+        if (typeof address === "number" && address >= 0x40 && address <= 0x41) {
+          const currentSettings = getSettings();
+
+          // Si el Handshake no está activo, activarlo automáticamente con impresora
+          if (!currentSettings.devices.handshake) {
+            console.log(
+              `🔧 Detectada operación I/O en dirección Handshake ${address.toString(16).toUpperCase()}h. Activando impresora con Handshake automáticamente.`,
+            );
+
+            // Notificar al usuario
+            const registerNames = {
+              0x40: "HS_DATA",
+              0x41: "HS_STATUS",
+            };
+            const registerName = registerNames[address as keyof typeof registerNames] || "Unknown";
+
+            notifyWarning(
+              "Impresora (Handshake) activada automáticamente",
+              `Se detectó una operación I/O en la dirección ${address.toString(16).toUpperCase()}h (${registerName}). La impresora con Handshake se ha activado automáticamente.`,
+            );
+
+            // Actualizar la configuración para activar el Handshake con impresora
+            store.set(settingsAtom, (prev: any) => ({
+              ...prev,
+              devices: {
+                ...prev.devices,
+                handshake: "printer",
+              },
+            }));
+
+            // Enviar un evento personalizado para recargar el programa
+            const reloadEvent = new CustomEvent("handshakeActivated", {
               detail: {
                 address,
                 registerName,
