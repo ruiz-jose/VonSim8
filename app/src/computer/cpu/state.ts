@@ -40,7 +40,8 @@ export const messageHistoryAtom = atom<{ cycle: number; stage: string; action: s
 export const connectScreenAndKeyboardAtom = atom(false);
 export const showInstructionCycleAtom = atom(true); // Por defecto, visible
 export const showCPUStatsAtom = atom(true); // Por defecto, visible
-export const hasINTInstructionAtom = atom(false);
+export const hasINTInstructionAtom = atom(false); // Nueva bandera que indica si el programa tiene instrucciones INT
+export const mayUsePICAtom = atom(false); // Nueva bandera que indica si el programa puede usar el PIC
 // Átomo para controlar la sincronización de animaciones con mensajes
 export const animationSyncAtom = atom<{ canAnimate: boolean; pendingMessage: string | null }>({
   canAnimate: true,

@@ -5,30 +5,36 @@ import { useAtomValue } from "jotai";
 import { useEffect, useRef, useState } from "react";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover";
-import { hasINTInstructionAtom, registerAtoms, showSPAtom } from "@/computer/cpu/state";
+import { hasINTInstructionAtom, mayUsePICAtom, registerAtoms, showSPAtom } from "@/computer/cpu/state";
 import { dataAddressesAtom, programAddressesAtom } from "@/computer/memory/state";
 import { animated, getSpring } from "@/computer/shared/springs";
 import { useTranslate } from "@/lib/i18n";
-import { useDevices } from "@/lib/settings";
 
-import { memoryShownAtom, operatingAddressAtom } from "./state";
+import { memoryShownAtom, operatingAddressAtom, writtenAddressesAtom } from "./state";
 
 export function Memory() {
   const translate = useTranslate();
 
   const memory = useAtomValue(memoryShownAtom);
-  // Nuevo: animación global de fade-in al cargar el programa
   const ip = useAtomValue(registerAtoms.IP);
   const programAddresses = useAtomValue(programAddressesAtom);
   const dataAddresses = useAtomValue(dataAddressesAtom);
   const sp = useAtomValue(registerAtoms.SP);
   const showSP = useAtomValue(showSPAtom);
   const hasINT = useAtomValue(hasINTInstructionAtom);
-  const deviceSettings = useDevices();
+  const mayUsePIC = useAtomValue(mayUsePICAtom);
+  const writtenAddresses = useAtomValue(writtenAddressesAtom);
 
   // Determinar si se debe mostrar el vector de interrupciones
-  // Se muestra si hay instrucciones INT o si están activados dispositivos que usan interrupciones
-  const showInterruptVector = hasINT || deviceSettings.pic || deviceSettings.handshake !== null;
+  // Solo mostrar si hay instrucciones INT o si el programa usa PIC
+  const showInterruptVector = hasINT || mayUsePIC;
+
+  // Nueva condición: no renderizar celdas si la memoria está vacía
+  const isMemoryEmpty = memory.length === 0;
+
+  if (isMemoryEmpty) {
+    return null; // No renderizar nada si la memoria está vacía
+  }
 
   const renderMemoryRows = () => {
     const rows = [];
@@ -39,12 +45,9 @@ export function Memory() {
     return rows;
   };
 
-  // Calcular fila y columna donde apunta el IP
   const COLUMNS = 16;
   const ipRow = Math.floor(Number(ip.valueOf()) / COLUMNS);
   const ipCol = Number(ip.valueOf()) % COLUMNS;
-
-  // const memoryCells = useAtomValue(memoryShownAtom) as { address: MemoryAddress; value: Byte<8>; }[];
 
   return (
     <div
@@ -121,6 +124,7 @@ export function Memory() {
                         cell.address.valueOf() >= 0 &&
                         cell.address.valueOf() <= 7
                       }
+                      isWritten={writtenAddresses.has(cell.address.valueOf())}
                       label={
                         programAddresses.find(entry => entry.address === cell.address.value)
                           ?.name ||
@@ -152,6 +156,7 @@ function MemoryCell({
   isProgramAddress,
   isDataAddress,
   isInterruptVector,
+  isWritten,
   label,
   length,
 }: {
@@ -163,6 +168,7 @@ function MemoryCell({
   isProgramAddress: boolean;
   isDataAddress: boolean;
   isInterruptVector?: boolean;
+  isWritten?: boolean;
   label: string | null;
   length: string | null;
 }) {
@@ -197,7 +203,9 @@ function MemoryCell({
                 : "",
             // Cambiar fondos de colores sólidos por fondo oscuro consistente
             "bg-stone-800",
-            isInterruptVector && !isSP && !isStackData ? "border-l-4 border-purple-500" : "",
+            // Subrayado para celdas escritas recientemente
+            isWritten ? "underline decoration-red-400 decoration-2 underline-offset-1" : "",
+            isInterruptVector && !isSP && !isStackData ? "border-l-4 border-orange-500" : "",
             isProgramAddress && !isSP && !isStackData && !isInterruptVector
               ? "border-l-4 border-blue-500"
               : "",
@@ -222,7 +230,7 @@ function MemoryCell({
           {/* Iconos para instrucciones, datos y vector de interrupciones */}
           {isInterruptVector && !isSP && !isStackData && (
             <span
-              className="pointer-events-none absolute left-0.5 top-0.5 rounded bg-stone-900/80 px-0.5 text-[10px] text-purple-400"
+              className="pointer-events-none absolute left-0.5 top-0.5 rounded bg-stone-900/80 px-0.5 text-[10px] text-orange-400"
               title="Vector de interrupción"
               style={{ lineHeight: 1 }}
             >

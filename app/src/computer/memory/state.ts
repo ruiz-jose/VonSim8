@@ -17,6 +17,9 @@ export const memoryAtom = atom(
 export const operatingAddressAtom = atom<MemoryAddress>(MemoryAddress.from(0x0020));
 export const fixedAddressAtom = atom<MemoryAddress | null>(null);
 
+// Atom para rastrear direcciones escritas recientemente
+export const writtenAddressesAtom = atom<Set<number>>(new Set<number>());
+
 type MemoryShown = { address: MemoryAddress; value: Byte<8> }[];
 const CELLS = 256;
 
@@ -60,4 +63,6 @@ export function resetMemoryState(computer: ComputerState, resetMemoryState = fal
   }
   // Reiniciar la dirección de operación a 0x0020
   store.set(operatingAddressAtom, MemoryAddress.from(0x0020));
+  // Limpiar las direcciones escritas recientemente
+  store.set(writtenAddressesAtom, new Set<number>());
 }

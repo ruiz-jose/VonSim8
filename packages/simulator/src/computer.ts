@@ -11,6 +11,7 @@ export type ComputerOptions = {
   hasORG?: boolean; // Add this property
   hasORG20hAtStart?: boolean; // Add this property for specific ORG 20h detection
   hasINTOrInterruptDevices?: boolean; // Add this property for interrupt vector detection
+  mayUsePIC?: boolean; // Add this property for PIC access detection
 } & ({ data: "clean" | "randomize" } | { data: "unchanged"; previous: Computer });
 
 export type DevicesConfiguration = {

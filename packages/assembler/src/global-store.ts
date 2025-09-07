@@ -50,6 +50,7 @@ export class GlobalStore {
   private readonly labels: LabelsMap = new Map();
   private hasORG = false; // Nueva propiedad para almacenar si tiene la directiva ORG
   private _hasORG20hAtStart = false; // Nueva propiedad para almacenar si tiene ORG 20h al inicio
+  private _mayUsePIC = false; // Nueva propiedad para almacenar si puede usar PIC
 
   #statementsLoaded = false;
   #computedAddresses = false;
@@ -175,6 +176,9 @@ export class GlobalStore {
       });
       return usesPICAddresses;
     });
+
+    // Almacenar la información sobre el uso del PIC
+    this._mayUsePIC = mayUsePIC;
 
     // Determinar la dirección inicial del código principal
     // Si hay ORG 20h al inicio específicamente, usar 0x20
@@ -491,5 +495,9 @@ export class GlobalStore {
 
   hasORG20hAtStart(): boolean {
     return this._hasORG20hAtStart;
+  }
+
+  mayUsePIC(): boolean {
+    return this._mayUsePIC;
   }
 }

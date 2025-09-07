@@ -8,7 +8,7 @@ import { ComputerState, EventGenerator, Simulator, SimulatorError } from "@vonsi
 import { atom, useAtomValue } from "jotai";
 import { useMemo } from "react";
 
-import { hasINTInstructionAtom } from "@/computer/cpu/state";
+import { hasINTInstructionAtom, mayUsePICAtom } from "@/computer/cpu/state";
 import { dataAddressesAtom, programAddressesAtom } from "@/computer/memory/state";
 import { highlightCurrentInstruction, highlightLine, setReadOnly } from "@/editor/methods";
 import { programModifiedAtom } from "@/editor/state"; // Importar programModifiedAtom
@@ -2820,6 +2820,7 @@ async function dispatch(...args: Action) {
         // Se muestra SOLO si hay INT o si se usa PIC (no otros dispositivos como Handshake, Timer)
         const hasINTOrInterruptDevices = hasINT || usesPIC;
         store.set(hasINTInstructionAtom, hasINTOrInterruptDevices);
+        store.set(mayUsePICAtom, result.mayUsePIC ?? false);
 
         console.log("🔍 DEBUG Vector de Interrupciones:", {
           hasINT,
@@ -2859,6 +2860,7 @@ async function dispatch(...args: Action) {
           hasORG: result.hasORG, // Pass the hasORG flag
           hasORG20hAtStart: result.hasORG20hAtStart, // Pass the hasORG20hAtStart flag
           hasINTOrInterruptDevices, // Pass interrupt vector information
+          mayUsePIC: result.mayUsePIC, // Pass the mayUsePIC flag
         });
         console.log("result:", result);
 

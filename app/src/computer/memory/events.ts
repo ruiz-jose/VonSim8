@@ -17,7 +17,7 @@ import { store } from "@/lib/jotai";
 import { getSettings } from "@/lib/settings";
 import { colors } from "@/lib/tailwind";
 
-import { memoryAtom, operatingAddressAtom } from "./state";
+import { memoryAtom, operatingAddressAtom, writtenAddressesAtom } from "./state";
 
 /**
  * Genera el path SVG para el bus de datos externo (memoria ↔ MBR)
@@ -340,6 +340,22 @@ export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promi
         event.value,
         ...arr.slice(event.address.value + 1),
       ]);
+
+      // Marcar esta dirección como escrita recientemente
+      store.set(writtenAddressesAtom, prev => {
+        const newSet = new Set(prev);
+        newSet.add(event.address.value);
+        return newSet;
+      });
+
+      // Programar la eliminación de la marca después de unos segundos
+      setTimeout(() => {
+        store.set(writtenAddressesAtom, prev => {
+          const newSet = new Set(prev);
+          newSet.delete(event.address.value);
+          return newSet;
+        });
+      }, 3000); // 3 segundos
 
       // Resetear animaciones
       await Promise.all([
