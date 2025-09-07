@@ -170,8 +170,8 @@ export function Controls({ className }: { className?: string }) {
           onClick={handlePause}
           title={translate("control.action.pause")}
           className={clsx(
-            "group relative flex flex-col items-center rounded-lg transition hover:bg-purple-600/20 focus-visible:ring-2 focus-visible:ring-purple-400",
-            "animate-pulse-glow-purple", // Púrpura para pausar
+            "group relative flex flex-col items-center rounded-lg transition hover:bg-orange-600/20 focus-visible:ring-2 focus-visible:ring-orange-400",
+ // Púrpura para pausar
             screenSize === "mobile" ? "px-1 py-0.5" : "px-1.5 py-0.5",
           )}
         >
@@ -179,7 +179,7 @@ export function Controls({ className }: { className?: string }) {
             <FontAwesomeIcon
               icon={faPause}
               size="lg"
-              className="text-purple-400 transition group-hover:scale-110"
+              className="text-orange-400 transition group-hover:scale-110"
             />
             {showShortcuts && (
               <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
@@ -227,8 +227,8 @@ export function Controls({ className }: { className?: string }) {
           onClick={handlePause}
           title={translate("control.action.pause")}
           className={clsx(
-            "group relative flex flex-col items-center rounded-lg transition hover:bg-purple-600/20 focus-visible:ring-2 focus-visible:ring-purple-400",
-            "animate-pulse-glow-purple", // Púrpura para pausar
+            "group relative flex flex-col items-center rounded-lg transition hover:bg-orange-600/20 focus-visible:ring-2 focus-visible:ring-orange-400",
+ // Púrpura para pausar
             screenSize === "mobile" ? "px-1 py-0.5" : "px-1.5 py-0.5",
           )}
         >
@@ -236,7 +236,7 @@ export function Controls({ className }: { className?: string }) {
             <FontAwesomeIcon
               icon={faPause}
               size="lg"
-              className="text-purple-400 transition group-hover:scale-110"
+              className="text-orange-400 transition group-hover:scale-110"
             />
             {showShortcuts && (
               <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
@@ -286,8 +286,8 @@ export function Controls({ className }: { className?: string }) {
           onClick={handlePause}
           title={translate("control.action.pause")}
           className={clsx(
-            "group relative flex flex-col items-center rounded-lg transition hover:bg-purple-600/20 focus-visible:ring-2 focus-visible:ring-purple-400",
-            "animate-pulse-glow-purple", // Púrpura para pausar
+            "group relative flex flex-col items-center rounded-lg transition hover:bg-orange-600/20 focus-visible:ring-2 focus-visible:ring-orange-400",
+ // Púrpura para pausar
             screenSize === "mobile" ? "px-1 py-0.5" : "px-1.5 py-0.5",
           )}
         >
@@ -295,7 +295,7 @@ export function Controls({ className }: { className?: string }) {
             <FontAwesomeIcon
               icon={faPause}
               size="lg"
-              className="text-purple-400 transition group-hover:scale-110"
+              className="text-orange-400 transition group-hover:scale-110"
             />
             {showShortcuts && (
               <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
