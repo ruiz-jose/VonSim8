@@ -102,5 +102,5 @@ cinco   ; Constantes definidas con la directiva EQU y etiquetas a instrucciones
 offset etq ; Dirección de memoria de la etiqueta 'etq'
 ```
 
-Tantos los caracteres (`'a'`) como las cadenas de texto (`"texto"`) se convierten a su valor ASCII según la [tabla ASCII utilizada por VonSim](../reference/ascii).
+Tantos los caracteres (`'a'`) como las cadenas de texto (`"texto"`) se convierten a su valor ASCII según la [tabla ASCII utilizada por VonSim8](../reference/ascii).
 
