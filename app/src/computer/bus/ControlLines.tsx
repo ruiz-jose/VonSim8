@@ -170,9 +170,9 @@ export function ControlLines() {
         )}
         {/* Interrupt lines */}
 
-        {devices.pic && devices.f10 && <ControlLine springs="bus.int0" d="M 145 950 V 900" />}
+        {devices.pic && devices.f10 && <ControlLine springs="bus.int0" d="M 70 950 V 900" />}
         {devices.pic && devices.timer && (
-          <ControlLine springs="bus.int1" d="M 475 955 H 400 V 900" />
+          <ControlLine springs="bus.int1" d="M 475 955 H 180 V 900" />
         )}
         {devices.pic && devices.handshake && (
           <ControlLine springs="bus.int2" d="M 900 1075 H 300 V 900" />

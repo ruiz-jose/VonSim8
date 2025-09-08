@@ -45,7 +45,7 @@ export function PIC() {
       <hr className="mb-2 border-stone-600" />
 
       <div className="grid size-full grid-cols-4 items-center">
-        {linesAtoms.map((atom, i) => (
+        {linesAtoms.slice(0, 4).map((atom, i) => (
           <Register
             key={i}
             name={`INT${i}`}
