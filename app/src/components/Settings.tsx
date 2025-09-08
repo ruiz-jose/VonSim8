@@ -244,7 +244,7 @@ export function Settings({ className }: { className?: string }) {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {PIO_CONNECTIONS.map(value => (
+            {PIO_CONNECTIONS.filter(value => value !== "printer").map(value => (
               <SelectItem key={value} value={value}>
                 {translate(`settings.devices.pio.${value}`)}
               </SelectItem>
@@ -270,7 +270,7 @@ export function Settings({ className }: { className?: string }) {
               },
             }))
           }
-          disabled={status.type !== "stopped"}
+          //disabled={status.type !== "stopped"}
         >
           <SelectTrigger className="w-52 min-w-[theme(width.52)]">
             <SelectValue />
@@ -286,7 +286,7 @@ export function Settings({ className }: { className?: string }) {
       </Setting>
 
       {/* Velocidad de impresión - Solo visible si hay impresora seleccionada */}
-      {(settings.devices.pio === "printer" || settings.devices.handshake === "printer") && (
+      {( settings.devices.handshake === "printer") && (
         <Setting>
           <SettingInfo>
             <SettingTitle>
