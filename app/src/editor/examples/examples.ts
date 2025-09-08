@@ -231,4 +231,110 @@ fin_interrupcion:
     ; --- RETORNO DE INTERRUPCIÓN ---
     iret                  ; Retorno de interrupción`,
   },
+  {
+    nombre: "Contador F10",
+    filename: "contador_f10.asm",
+    contenido: `; Programa: Contador de pulsaciones de la tecla F10 usando interrupciones
+
+;-----------------------------------------------
+; 1) Definiciones y variables
+;-----------------------------------------------
+
+cantidad db 0          ; Variable: almacena la cantidad de veces que se presionó F10
+
+ID   EQU 1             ; ID de la interrupción para F10 (puede ser 0-7)
+IMR  EQU 21h           ; Dirección del registro IMR (máscara de interrupciones)
+EOI  EQU 20h           ; Dirección para enviar End Of Interrupt al PIC
+INT0 EQU 24h           ; Dirección para configurar la línea INT0 (F10)
+
+;-----------------------------------------------
+; 2) Inicialización del PIC y vector de interrupción
+;-----------------------------------------------
+
+; 2.1) Habilitar solo la interrupción de F10 (INT0)
+mov al, 11111110b      ; Habilita solo INT0 (bit 0 en 0), el resto deshabilitado
+out IMR, al
+
+; 2.2) Configurar el ID de la interrupción para INT0
+mov al, ID             ; Cargar el ID elegido para F10
+out INT0, al
+
+; 2.3) Asociar el vector de interrupción con la subrutina atenderf10
+mov bl, ID             ; BL = ID de la interrupción
+mov [bl], atenderf10   ; Vector de interrupción: dirección de la rutina
+
+;-----------------------------------------------
+; 3) Bucle principal (espera activa)
+;-----------------------------------------------
+
+loop: jmp loop         ; Espera indefinida (el programa queda esperando interrupciones)
+
+hlt                    ; (Opcional) Detiene la CPU si sale del bucle
+
+;-----------------------------------------------
+; 4) Rutina de atención de la interrupción F10
+;-----------------------------------------------
+
+org 50h                ; Dirección de la subrutina de atención
+
+atenderf10:
+    inc cantidad       ; Incrementa el contador cada vez que se presiona F10
+    mov al, 20h        ; Código de End Of Interrupt (EOI)
+    out EOI, al        ; Notifica al PIC que terminó la atención
+    iret               ; Retorna de la interrupción`,
+  },
+  {
+    nombre: "Timer con mensaje",
+    filename: "timer_mensaje.asm",
+    contenido: `; Programa: Imprime "Hola" a los 10 segundos de iniciado y luego termina.
+; Utiliza la interrupción del TIMER (ID = 5).
+
+mensaje db "hola"        ; Mensaje a imprimir
+imprimio db 0            ; Flag para saber si ya imprimió
+
+; Definición de direcciones de registros de dispositivos
+CONT equ 10h             ; Registro de conteo del timer
+COMP equ 11h             ; Registro de comparación del timer
+
+EOI  equ 20h             ; End Of Interrupt (para PIC)
+IMR  equ 21h             ; Interrupt Mask Register (PIC)
+INT1 equ 25h             ; Registro de vector de interrupción 1
+
+; --- Habilitar interrupciones del timer ---
+; IMR = 1111 1101b (solo habilita interrupciones del timer y teclado)
+mov al, 11111101b        ; Habilita interrupciones del timer (bit 1 en 0)
+out IMR, al
+
+; --- Configurar vector de interrupción del timer ---
+mov al, 5                ; ID de interrupción del timer
+out INT1, al             ; Asigna rutina de atención a la posición 5
+
+; --- Instalar rutina de interrupción en el vector ---
+mov bl, 5                ; Vector de interrupción 5
+mov [bl], imp_msj        ; Apunta a la rutina imp_msj
+
+; --- Configurar timer para 3 segundos ---
+mov al, 10                ; Valor de comparación (10 segundos)
+out COMP, al
+
+mov al, 0                ; Reinicia el contador del timer
+out CONT, al
+
+; --- Esperar a que se imprima el mensaje ---
+loopinf: cmp imprimio, 0 ; ¿Ya imprimió?
+         jz loopinf      ; Si no, sigue esperando
+
+hlt                      ; Termina el programa
+
+; --- Rutina de interrupción del timer ---
+org 50h
+imp_msj:
+         mov bl, offset mensaje ; Dirección del mensaje
+         mov al, 4             ; Servicio de impresión
+         int 7                 ; Llama a la interrupción de impresión
+         mov imprimio, 1       ; Marca que ya imprimió
+         mov al, 20h           ; Señal de fin de interrupción
+         out EOI, al           ; Notifica al PIC
+         iret                  ; Retorna de la interrupción`,
+  },
 ];

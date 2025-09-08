@@ -7,6 +7,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 vi.mock("@/lib/settings", () => ({
   getSettings: vi.fn(() => ({ language: "es" })),
   useDevices: vi.fn(() => ({})),
+  useSettings: vi.fn(() => [{ language: "es" }, vi.fn()]),
 }));
 
 // Mock de Jotai para evitar problemas

@@ -11,7 +11,6 @@ import {
 import { Slider } from "@/components/ui/Slider";
 import { Switch } from "@/components/ui/Switch";
 import { stopAllAnimations } from "@/computer/shared/animate";
-import { useSimulation } from "@/computer/simulation";
 import { useTranslate } from "@/lib/i18n";
 import { HANDSHAKE_CONNECTIONS, PIO_CONNECTIONS, useSettings } from "@/lib/settings";
 import { defaultSettings } from "@/lib/settings/schema";
@@ -27,7 +26,6 @@ function getTimerFrequency(clockSpeedMs: number): string {
 export function Settings({ className }: { className?: string }) {
   const translate = useTranslate();
   const [settings, setSettings] = useSettings();
-  const { status } = useSimulation();
 
   return (
     <div className={clsx("overflow-auto scrollbar-stone-700", className)}>
@@ -286,7 +284,7 @@ export function Settings({ className }: { className?: string }) {
       </Setting>
 
       {/* Velocidad de impresión - Solo visible si hay impresora seleccionada */}
-      {( settings.devices.handshake === "printer") && (
+      {settings.devices.handshake === "printer" && (
         <Setting>
           <SettingInfo>
             <SettingTitle>
