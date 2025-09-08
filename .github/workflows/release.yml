@@ -128,7 +128,7 @@ jobs:
 
     steps:
       - name: 📊 Release notification
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const tagName = context.ref.replace('refs/tags/', '');
