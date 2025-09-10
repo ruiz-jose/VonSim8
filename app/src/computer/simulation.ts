@@ -123,6 +123,30 @@ if (typeof window !== "undefined") {
       }, 100);
     }
   });
+
+  // Listener para recargar automáticamente el programa cuando se modifique el código
+  window.addEventListener("programModified", (event: CustomEvent) => {
+    const { shouldReload, until } = event.detail;
+
+    if (shouldReload) {
+      console.log("🔄 Recargando programa debido a modificación del código");
+
+      // Resetear la bandera de HLT al recargar
+      store.set(isHaltExecutionAtom, false);
+
+      // Parar la simulación actual si está corriendo
+      const currentStatus = store.get(simulationAtom);
+      if (currentStatus.type === "running") {
+        finishSimulation();
+      }
+
+      // Esperar un momento para que se complete el finish, luego reiniciar
+      setTimeout(() => {
+        // Reiniciar la ejecución con la configuración anterior
+        dispatch("cpu.run", until);
+      }, 100);
+    }
+  });
 }
 
 type RunUntil = "cycle-change" | "end-of-instruction" | "infinity";
@@ -132,6 +156,9 @@ type SimulationStatus =
   | { type: "stopped"; error?: SimulatorError<any> };
 
 export const simulationAtom = atom<SimulationStatus>({ type: "stopped" });
+
+// Atom para rastrear si la simulación se detuvo por HLT
+export const isHaltExecutionAtom = atom(false);
 
 // Obtener el sistema de notificaciones (solo si estamos en un entorno React)
 let addNotification: ((n: { type: string; title: string; message: string }) => void) | null = null;
@@ -208,6 +235,9 @@ export function finishSimulation(error?: SimulatorError<any>) {
   store.set(cycleAtom, { phase: "stopped", error });
   stopAllAnimations();
 
+  // Resetear la bandera de HLT para futuras ejecuciones
+  store.set(isHaltExecutionAtom, false);
+
   console.log("✅ [DEBUG] Simulación finalizada - todos los hilos y procesos limpiados");
 }
 
@@ -262,6 +292,7 @@ function resetState(state: ComputerState, clearRegisters = false) {
   // Limpiar el historial de mensajes si clearRegisters es true
   if (clearRegisters) {
     store.set(messageHistoryAtom, []); // Limpia el historial de mensajes
+    store.set(isHaltExecutionAtom, false); // Resetear bandera de HLT
   }
   // Resetear el total de ciclos acumulados al reiniciar el programa
   store.set(totalCycleCountAtom, 0);
@@ -897,8 +928,20 @@ async function executeThread(generator: EventGenerator): Promise<void> {
 
       // Verificar si el programa ha sido modificado
       if (programModified) {
-        console.log("El programa ha sido modificado. Deteniendo y recargando...");
+        console.log("🔄 Programa modificado - disparando evento de recarga automática");
         store.set(programModifiedAtom, false); // Marcar como no modificado
+        
+        // Disparar evento personalizado para recarga automática
+        if (typeof window !== "undefined") {
+          const reloadEvent = new CustomEvent("programModified", {
+            detail: {
+              shouldReload: true,
+              until: status.type === "running" ? status.until : "infinity"
+            }
+          });
+          window.dispatchEvent(reloadEvent);
+        }
+        
         // Reinicializar contadores al modificar el programa
         fetchStageCounter = 0;
         executeStageCounter = 0;
@@ -1067,6 +1110,9 @@ async function executeThread(generator: EventGenerator): Promise<void> {
           instructionCount++;
           store.set(instructionCountAtom, instructionCount);
 
+          // Marcar que se está ejecutando HLT para preservar el historial
+          store.set(isHaltExecutionAtom, true);
+
           // Para HLT, incrementar a executeStageCounter = 4 antes de mostrar el mensaje
           // ya que los pasos 1-3 fueron para captación y el paso 4 es la ejecución de HLT
           //executeStageCounter = 4;
@@ -1078,13 +1124,16 @@ async function executeThread(generator: EventGenerator): Promise<void> {
           // Actualizar el total de ciclos acumulados
           const prevTotal = store.get(totalCycleCountAtom);
           store.set(totalCycleCountAtom, prevTotal + cycleCount);
+          
+          // Establecer el mensaje antes de actualizar el contador de ciclos de instrucción
           store.set(messageAtom, "Ejecución: Detenido");
 
           currentInstructionCycleCount++;
           store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+          
           console.log(
             "🛑 HLT ejecutado - executeStageCounter establecido a 4, cycleCount:",
-            cycleCount,
+            cycleCount
           );
         } else if (event.value.type === "cpu:int.6") {
           //store.set(messageAtom, "PILA ← DL; DL ← ASCII; (BL) ← DL; IRET");

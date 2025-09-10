@@ -1,7 +1,7 @@
 import { useAtomValue } from "jotai";
 import { useEffect, useRef } from "react";
 
-import { simulationAtom, useSimulation } from "@/computer/simulation";
+import { isHaltExecutionAtom, simulationAtom, useSimulation } from "@/computer/simulation";
 import { programModifiedAtom } from "@/editor/state";
 import { store } from "@/lib/jotai";
 import { useSettings } from "@/lib/settings";
@@ -10,6 +10,7 @@ import { toast } from "@/lib/toast";
 import {
   animationSyncAtom,
   currentInstructionCycleCountAtom,
+  instructionCountAtom,
   messageAtom,
   messageHistoryAtom,
 } from "./state";
@@ -199,6 +200,7 @@ export function RegisterTransferMessages() {
   const messageHistory = useAtomValue(messageHistoryAtom);
   const simulationStatus = useAtomValue(simulationAtom);
   const programModified = useAtomValue(programModifiedAtom);
+  const isHaltExecution = useAtomValue(isHaltExecutionAtom);
   const { devices } = useSimulation();
 
   const [settings] = useSettings();
@@ -293,11 +295,17 @@ export function RegisterTransferMessages() {
       const simulationStatus = store.get(simulationAtom);
       // Si la simulación se detiene o se reinicia, limpiar el historial
       if (simulationStatus.type === "stopped") {
-        store.set(messageHistoryAtom, []);
-        store.set(animationSyncAtom, {
-          canAnimate: true,
-          pendingMessage: null,
-        });
+        const currentIsHaltExecution = store.get(isHaltExecutionAtom);
+        
+        // Solo limpiar el historial si NO se detuvo por HLT
+        // Esto preserva los mensajes del ciclo de instrucción HLT
+        if (!currentIsHaltExecution) {
+          store.set(messageHistoryAtom, []);
+          store.set(animationSyncAtom, {
+            canAnimate: true,
+            pendingMessage: null,
+          });
+        }
       }
     });
 
@@ -316,6 +324,31 @@ export function RegisterTransferMessages() {
       });
     }
   }, [simulationStatus, programModified]);
+
+  // Limpiar el historial cuando se inicia una nueva ejecución
+  // (pero no cuando se detiene por HLT para preservar los mensajes)
+  useEffect(() => {
+    const unsubscribeInstructionCount = store.sub(instructionCountAtom, () => {
+      const instructionCount = store.get(instructionCountAtom);
+      const simulationStatus = store.get(simulationAtom);
+      
+      // Si se reinicia el contador de instrucciones y la simulación está corriendo,
+      // limpiar el historial (nueva ejecución)
+      if (instructionCount === 0 && simulationStatus.type === "running") {
+        store.set(messageHistoryAtom, []);
+        store.set(animationSyncAtom, {
+          canAnimate: true,
+          pendingMessage: null,
+        });
+        // Resetear la bandera de HLT al iniciar nueva ejecución
+        store.set(isHaltExecutionAtom, false);
+      }
+    });
+
+    return () => {
+      unsubscribeInstructionCount();
+    };
+  }, []);
 
   // Usar useEffect para desplazar el scroll al final cuando se agregue un nuevo mensaje
   useEffect(() => {
