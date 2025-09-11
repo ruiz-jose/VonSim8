@@ -929,19 +929,19 @@ async function executeThread(generator: EventGenerator): Promise<void> {
       // Verificar si el programa ha sido modificado
       if (programModified) {
         console.log("🔄 Programa modificado - disparando evento de recarga automática");
-        store.set(programModifiedAtom, false); // Marcar como no modificado
-        
+        // NO marcar como no modificado aquí, se hará en cpu.run
+
         // Disparar evento personalizado para recarga automática
         if (typeof window !== "undefined") {
           const reloadEvent = new CustomEvent("programModified", {
             detail: {
               shouldReload: true,
-              until: status.type === "running" ? status.until : "infinity"
-            }
+              until: status.type === "running" ? status.until : "infinity",
+            },
           });
           window.dispatchEvent(reloadEvent);
         }
-        
+
         // Reinicializar contadores al modificar el programa
         fetchStageCounter = 0;
         executeStageCounter = 0;
@@ -1124,16 +1124,16 @@ async function executeThread(generator: EventGenerator): Promise<void> {
           // Actualizar el total de ciclos acumulados
           const prevTotal = store.get(totalCycleCountAtom);
           store.set(totalCycleCountAtom, prevTotal + cycleCount);
-          
+
           // Establecer el mensaje antes de actualizar el contador de ciclos de instrucción
           store.set(messageAtom, "Ejecución: Detenido");
 
           currentInstructionCycleCount++;
           store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
-          
+
           console.log(
             "🛑 HLT ejecutado - executeStageCounter establecido a 4, cycleCount:",
-            cycleCount
+            cycleCount,
           );
         } else if (event.value.type === "cpu:int.6") {
           //store.set(messageAtom, "PILA ← DL; DL ← ASCII; (BL) ← DL; IRET");
@@ -2870,6 +2870,10 @@ async function dispatch(...args: Action) {
         // Configurar dispositivos basado en detección
         const currentSettings = getSettings();
 
+        // Verificar si el programa fue modificado para forzar reset de registros
+        const programModified = store.get(programModifiedAtom);
+        console.log("🔍 Verificando si programa fue modificado:", programModified);
+
         // Combinar las detecciones: usesPIC (análisis de instrucciones) y result.mayUsePIC (análisis del ensamblador)
         const shouldActivatePIC = usesPIC || (result.mayUsePIC ?? false);
 
@@ -2958,9 +2962,25 @@ async function dispatch(...args: Action) {
 
         // Reset the simulator - usar settings actualizados después de modificar settingsAtom
         const updatedSettings = getSettings(); // Obtener settings actualizados después de la modificación
+
+        // Determinar qué configuración de datos usar: si el programa fue modificado, siempre usar "clean"
+        const dataOnLoadConfig = programModified ? "clean" : currentSettings.dataOnLoad;
+        console.log(
+          "🔧 Configuración de carga de datos:",
+          dataOnLoadConfig,
+          "(programa modificado:",
+          programModified,
+          ")",
+        );
+
+        // Marcar el programa como no modificado después de procesarlo
+        if (programModified) {
+          store.set(programModifiedAtom, false);
+        }
+
         simulator.loadProgram({
           program: result,
-          data: currentSettings.dataOnLoad,
+          data: dataOnLoadConfig,
           devices: {
             keyboardAndScreen: updatedSettings.devices.keyboardAndScreen ?? false,
             pic: updatedSettings.devices.pic ?? false,

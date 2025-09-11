@@ -200,7 +200,6 @@ export function RegisterTransferMessages() {
   const messageHistory = useAtomValue(messageHistoryAtom);
   const simulationStatus = useAtomValue(simulationAtom);
   const programModified = useAtomValue(programModifiedAtom);
-  const isHaltExecution = useAtomValue(isHaltExecutionAtom);
   const { devices } = useSimulation();
 
   const [settings] = useSettings();
@@ -296,7 +295,7 @@ export function RegisterTransferMessages() {
       // Si la simulación se detiene o se reinicia, limpiar el historial
       if (simulationStatus.type === "stopped") {
         const currentIsHaltExecution = store.get(isHaltExecutionAtom);
-        
+
         // Solo limpiar el historial si NO se detuvo por HLT
         // Esto preserva los mensajes del ciclo de instrucción HLT
         if (!currentIsHaltExecution) {
@@ -331,7 +330,7 @@ export function RegisterTransferMessages() {
     const unsubscribeInstructionCount = store.sub(instructionCountAtom, () => {
       const instructionCount = store.get(instructionCountAtom);
       const simulationStatus = store.get(simulationAtom);
-      
+
       // Si se reinicia el contador de instrucciones y la simulación está corriendo,
       // limpiar el historial (nueva ejecución)
       if (instructionCount === 0 && simulationStatus.type === "running") {
