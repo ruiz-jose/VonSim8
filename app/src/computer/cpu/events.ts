@@ -19,7 +19,12 @@ import {
 import type { RegisterKey, SimplePathKey } from "@/computer/shared/springs";
 import { getSpring } from "@/computer/shared/springs";
 import type { SimulatorEvent } from "@/computer/shared/types";
-import { finishSimulation, pauseSimulation, simulationAtom } from "@/computer/simulation";
+import {
+  finishSimulation,
+  isHaltExecutionAtom,
+  pauseSimulation,
+  simulationAtom,
+} from "@/computer/simulation";
 import { highlightCurrentInstruction } from "@/editor/methods";
 import { store } from "@/lib/jotai";
 import { getSettings } from "@/lib/settings";
@@ -705,8 +710,12 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
 
     case "cpu:halt":
     case "cpu:int.0": {
-      // Para HLT, mostrar "Detener CPU" antes de detener completamente
+      // Para HLT, establecer la bandera ANTES de detener la simulación para preservar el historial
       if (event.type === "cpu:halt") {
+        // Establecer la bandera de HLT inmediatamente para preservar el historial
+        store.set(isHaltExecutionAtom, true);
+        console.log("🛑 events.ts: isHaltExecutionAtom set to true before finishSimulation");
+
         const currentCycle = store.get(cycleAtom);
         if ("metadata" in currentCycle) {
           store.set(cycleAtom, { phase: "halting", metadata: currentCycle.metadata });

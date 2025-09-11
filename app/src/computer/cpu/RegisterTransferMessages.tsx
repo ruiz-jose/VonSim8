@@ -274,11 +274,24 @@ export function RegisterTransferMessages() {
 
       // Si el contador se reinicia a 0, es una nueva instrucción
       if (newCount === 0) {
-        store.set(messageHistoryAtom, []);
-        store.set(animationSyncAtom, {
-          canAnimate: true,
-          pendingMessage: null,
-        });
+        // Solo limpiar el historial si NO se está ejecutando HLT
+        const isHaltExecution = store.get(isHaltExecutionAtom);
+        console.log(
+          "🔄 Cycle count reset to 0, isHaltExecution:",
+          isHaltExecution,
+          "current history length:",
+          store.get(messageHistoryAtom).length,
+        );
+        if (!isHaltExecution) {
+          console.log("✅ Clearing message history (not HLT execution)");
+          store.set(messageHistoryAtom, []);
+          store.set(animationSyncAtom, {
+            canAnimate: true,
+            pendingMessage: null,
+          });
+        } else {
+          console.log("⚠️ NOT clearing message history (HLT execution detected)");
+        }
       }
     });
 
@@ -299,11 +312,14 @@ export function RegisterTransferMessages() {
         // Solo limpiar el historial si NO se detuvo por HLT
         // Esto preserva los mensajes del ciclo de instrucción HLT
         if (!currentIsHaltExecution) {
+          console.log("✅ Simulation stopped, clearing message history (not HLT execution)");
           store.set(messageHistoryAtom, []);
           store.set(animationSyncAtom, {
             canAnimate: true,
             pendingMessage: null,
           });
+        } else {
+          console.log("⚠️ Simulation stopped, preserving message history (HLT execution detected)");
         }
       }
     });
@@ -334,13 +350,28 @@ export function RegisterTransferMessages() {
       // Si se reinicia el contador de instrucciones y la simulación está corriendo,
       // limpiar el historial (nueva ejecución)
       if (instructionCount === 0 && simulationStatus.type === "running") {
-        store.set(messageHistoryAtom, []);
-        store.set(animationSyncAtom, {
-          canAnimate: true,
-          pendingMessage: null,
-        });
-        // Resetear la bandera de HLT al iniciar nueva ejecución
-        store.set(isHaltExecutionAtom, false);
+        // Solo limpiar si NO se está ejecutando HLT
+        const isHaltExecution = store.get(isHaltExecutionAtom);
+        console.log(
+          "🔄 Instruction count reset to 0 with running simulation, isHaltExecution:",
+          isHaltExecution,
+          "current history length:",
+          store.get(messageHistoryAtom).length,
+        );
+        if (!isHaltExecution) {
+          console.log("✅ Clearing message history (instruction count reset, not HLT)");
+          store.set(messageHistoryAtom, []);
+          store.set(animationSyncAtom, {
+            canAnimate: true,
+            pendingMessage: null,
+          });
+          // Resetear la bandera de HLT al iniciar nueva ejecución
+          store.set(isHaltExecutionAtom, false);
+        } else {
+          console.log(
+            "⚠️ NOT clearing message history (HLT execution detected during instruction count reset)",
+          );
+        }
       }
     });
 

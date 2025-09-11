@@ -1107,11 +1107,19 @@ async function executeThread(generator: EventGenerator): Promise<void> {
           }
           continue;
         } else if (event.value.type === "cpu:halt") {
+          // Marcar que se está ejecutando HLT para preservar el historial ANTES de cualquier otra operación
+          console.log(
+            "🛑 HLT detected - setting isHaltExecutionAtom to true BEFORE any other operations",
+          );
+          store.set(isHaltExecutionAtom, true);
+
           instructionCount++;
           store.set(instructionCountAtom, instructionCount);
 
-          // Marcar que se está ejecutando HLT para preservar el historial
-          store.set(isHaltExecutionAtom, true);
+          console.log(
+            "🛑 HLT - after setting instruction count, isHaltExecutionAtom:",
+            store.get(isHaltExecutionAtom),
+          );
 
           // Para HLT, incrementar a executeStageCounter = 4 antes de mostrar el mensaje
           // ya que los pasos 1-3 fueron para captación y el paso 4 es la ejecución de HLT
