@@ -1,43 +1,65 @@
-# Ejemplos de Prueba para VonSim8
+# Ejemplos VonSim8
 
-Esta carpeta contiene programas de prueba para verificar diferentes funcionalidades del simulador VonSim8.
+Colección de ejemplos organizados por categoría para aprender y probar las funcionalidades del simulador VonSim8.
 
-## Archivos de Prueba
+## 📚 Categorías
 
-### `test-hlt.asm`
-Programa básico que ejecuta la instrucción HLT para detener la CPU.
-- **Propósito**: Verificar que la instrucción HLT funciona correctamente
-- **Uso**: Cargar en el simulador y ejecutar para ver el comportamiento de detención
+### [🔢 Basic](./basic/)
+Ejemplos fundamentales para comenzar con VonSim8. Conceptos básicos de programación en ensamblador.
 
-### `test-alu-simultaneous.asm`
-Programa simple para probar la animación simultánea de left y right en instrucciones ALU.
-- **Propósito**: Verificar la nueva funcionalidad de animación simultánea
-- **Contenido**: 
-  - Carga valores en registros AL y BL
-  - Ejecuta `ADD AL, BL` para ver la animación simultánea
-- **Uso**: Ejecutar paso a paso para observar la animación simultánea de datos llegando a la ALU
+### [⚙️ ALU](./alu/)
+Ejemplos de operaciones aritméticas y lógicas con la Unidad Aritmética y Lógica. Incluye animaciones detalladas de todas las operaciones disponibles.
 
-### `test-alu-complete.asm`
-Programa completo que prueba múltiples instrucciones ALU con animación simultánea.
-- **Propósito**: Verificar el flujo completo de animaciones en instrucciones ALU
-- **Contenido**:
-  - Carga valores en registros AL, BL, CL
-  - Ejecuta `ADD AL, BL` (suma)
-  - Ejecuta `SUB CL, BL` (resta)
-  - Ejecuta `AND AL, CL` (operación lógica)
-- **Uso**: Ejecutar paso a paso para ver el flujo completo de animaciones
+### [🔔 Interrupts](./interrupts/)
+Ejemplos del Controlador de Interrupciones Programable (PIC) y manejo de interrupciones. Desde configuración básica hasta implementaciones avanzadas.
 
-## Cómo Usar
+### [💾 Memory](./memory/)
+Ejemplos de organización de memoria y directivas ORG. Aprende a controlar dónde se ubica tu código en memoria.
 
-1. **Cargar en el simulador**: Abrir el archivo .asm en el editor del simulador
-2. **Compilar**: Usar el botón de compilación para verificar que no hay errores
-3. **Ejecutar**: Usar los controles de ejecución para ver las animaciones
-4. **Observar**: Prestar atención a las animaciones del bus de datos y la ALU
+### [🔄 Control Flow](./control-flow/)
+Ejemplos de saltos, condicionales y control de flujo del programa. Instrucciones como JZ, JNZ, JMP y HLT.
 
-## Funcionalidades Probadas
+### [🚀 Advanced](./advanced/)
+Ejemplos avanzados que combinan múltiples funcionalidades del simulador. Para usuarios con experiencia previa.
 
-- **Animación simultánea**: Los datos fluyen simultáneamente a los operandos left y right de la ALU
-- **Flujo continuo**: Las animaciones normales continúan después de la animación simultánea
-- **Instrucciones ALU**: ADD, SUB, AND, OR, XOR, CMP
-- **Registros**: AL, BL, CL, DL
-- **Control de flujo**: HLT para detener la ejecución 
+### [🎬 Animations](./animations/)
+Ejemplos específicos para mostrar y probar las capacidades de animación del simulador.
+
+## 🚀 Cómo usar
+
+1. **Navega a la categoría** que te interese según tu nivel
+2. **Lee el README.md** de la categoría para entender los ejemplos disponibles
+3. **Carga el archivo .asm** en VonSim8
+4. **Ejecuta paso a paso** para ver las animaciones y comportamiento
+5. **Experimenta** modificando el código para aprender
+
+## 📝 Convenciones
+
+- Todos los archivos están **documentados** con comentarios explicativos
+- Los **nombres de archivo** son descriptivos de su funcionalidad
+- Cada categoría tiene ejemplos de **menor a mayor complejidad**
+- Se incluyen **README detallados** en cada categoría
+
+## 🎯 Ruta de Aprendizaje Recomendada
+
+1. **[Basic](./basic/)** - Conceptos fundamentales
+2. **[ALU](./alu/)** - Operaciones aritméticas y lógicas
+3. **[Memory](./memory/)** - Organización de memoria
+4. **[Control Flow](./control-flow/)** - Control de programa
+5. **[Interrupts](./interrupts/)** - Sistema de interrupciones
+6. **[Advanced](./advanced/)** - Integración de conceptos
+7. **[Animations](./animations/)** - Características visuales
+
+## 🔧 Para Desarrolladores
+
+Los ejemplos también sirven para:
+- **Probar nuevas funcionalidades** del simulador
+- **Validar comportamientos** esperados
+- **Detectar regresiones** en el código
+- **Documentar casos de uso** específicos
+
+## 📚 Recursos Adicionales
+
+- **Documentación**: Ver `docs/` para guías detalladas
+- **Tests**: Ver `tests/` para tests automatizados
+- **Contribuir**: Sigue las convenciones para agregar nuevos ejemplos 
