@@ -120,15 +120,15 @@ export class BinaryInstruction extends InstructionStatement {
     const bytes: number[] = [];
 
     const opcodes: { [key in BinaryInstructionName]: number } = {
-      MOV: 0b0000_00_00,
-      AND: 0b100_0001_0,
-      OR: 0b100_0010_0,
-      XOR: 0b100_0011_0,
-      ADD: 0b0100_0000,
-      ADC: 0b100_0101_0,
-      SUB: 0b100_0110_0,
-      SBB: 0b100_0111_0,
-      CMP: 0b100_1000_0,
+      MOV: 0b0000_0000,
+      AND: 0b1111_0000,
+      OR:  0b1111_0000,
+      XOR: 0b1111_0000,
+      ADD: 0b0011_0000,
+      ADC: 0b0011_0000,
+      SUB: 0b0110_0000,
+      SBB: 0b0100_0000,
+      CMP: 0b1001_0000
     };
     bytes[0] = opcodes[this.instruction];
 
