@@ -122,17 +122,39 @@ export class BinaryInstruction extends InstructionStatement {
     const opcodes: { [key in BinaryInstructionName]: number } = {
       MOV: 0b0000_0000,
       AND: 0b1111_0000,
-      OR:  0b1111_0000,
+      OR: 0b1111_0000,
       XOR: 0b1111_0000,
       ADD: 0b0011_0000,
       ADC: 0b0011_0000,
       SUB: 0b0110_0000,
       SBB: 0b0100_0000,
-      CMP: 0b1001_0000
+      CMP: 0b1001_0000,
     };
     bytes[0] = opcodes[this.instruction];
 
     if (size === 16) bytes[0] |= 1;
+
+    // Modificar los 4 bits de mayor peso según el modo (excepto para AND, OR, XOR)
+    const isLogicalInstruction =
+      this.instruction === "AND" || this.instruction === "OR" || this.instruction === "XOR";
+
+    if (!isLogicalInstruction) {
+      switch (mode) {
+        case "reg<-reg":
+          // No se modifica (suma 0)
+          break;
+        case "reg<-mem":
+        case "reg<-imd":
+          // Sumar 1 a los 4 bits de mayor peso
+          bytes[0] += 0b0001_0000;
+          break;
+        case "mem<-reg":
+        case "mem<-imd":
+          // Sumar 2 a los 4 bits de mayor peso
+          bytes[0] += 0b0010_0000;
+          break;
+      }
+    }
 
     switch (mode) {
       case "reg<-reg": {
@@ -144,7 +166,7 @@ export class BinaryInstruction extends InstructionStatement {
 
       case "reg<-mem": {
         if (src.mode === "direct") {
-          bytes[0] = 0b0001_00_00; // 0001RR00
+          //bytes[0] = 0b0001_00_00; // 0001RR00
           bytes.push(src.address.byte.low.unsigned);
           // bytes.push(src.address.byte.high.unsigned);
         } else {
@@ -156,7 +178,7 @@ export class BinaryInstruction extends InstructionStatement {
       }
 
       case "reg<-imd": {
-        bytes[0] = 0b0001_00_10; // 0001RR10
+        //bytes[0] = 0b0001_00_10; // 0001RR10
         //bytes[1] |= registerToBits(out) << 0;
         bytes.push(src.low.unsigned);
         bytes[0] |= (registerToBits(out) & 0b11) << 2; // RR
@@ -166,7 +188,7 @@ export class BinaryInstruction extends InstructionStatement {
 
       case "mem<-reg": {
         if (out.mode === "direct") {
-          bytes[0] = 0b0010_00_00; // 0010RR00
+          //bytes[0] = 0b0010_00_00; // 0010RR00
           bytes.push(out.address.byte.low.unsigned);
           //bytes.push(out.address.byte.high.unsigned);
         } else {
@@ -179,7 +201,7 @@ export class BinaryInstruction extends InstructionStatement {
 
       case "mem<-imd": {
         if (out.mode === "direct") {
-          bytes[0] = 0b0010_11_00; // 00101100
+          //bytes[0] = 0b0010_11_00; // 00101100
           bytes.push(out.address.byte.low.unsigned);
           //bytes.push(out.address.byte.high.unsigned);
         } else {
