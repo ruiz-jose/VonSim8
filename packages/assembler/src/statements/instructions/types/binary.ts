@@ -166,11 +166,13 @@ export class BinaryInstruction extends InstructionStatement {
 
       case "reg<-mem": {
         if (src.mode === "direct") {
-          //bytes[0] = 0b0001_00_00; // 0001RR00
+          // Los últimos 2 bits son 00 para directo
+          bytes[0] = (bytes[0] & 0b1111_1100) | 0b0000_0000; // 00 en los últimos 2 bits
           bytes.push(src.address.byte.low.unsigned);
           // bytes.push(src.address.byte.high.unsigned);
         } else {
-          bytes[0] = 0b0001_00_01; // 0001RR01 indirecto
+          // Los últimos 2 bits son 01 para indirecto
+          bytes[0] = (bytes[0] & 0b1111_1100) | 0b0000_0001; // 01 en los últimos 2 bits
         }
         bytes[0] |= (registerToBits(out) & 0b11) << 2; // RR
         //bytes[1] |= registerToBits(out) << 0;
@@ -178,34 +180,39 @@ export class BinaryInstruction extends InstructionStatement {
       }
 
       case "reg<-imd": {
-        //bytes[0] = 0b0001_00_10; // 0001RR10
-        //bytes[1] |= registerToBits(out) << 0;
+        // Los últimos 2 bits son 10 para inmediato
+        bytes[0] = (bytes[0] & 0b1111_1100) | 0b0000_0010; // 10 en los últimos 2 bits
         bytes.push(src.low.unsigned);
         bytes[0] |= (registerToBits(out) & 0b11) << 2; // RR
-        //if (size === 16) bytes.push(src.high.unsigned);
+        if (size === 16) bytes.push(src.high.unsigned);
         break;
       }
 
       case "mem<-reg": {
         if (out.mode === "direct") {
-          //bytes[0] = 0b0010_00_00; // 0010RR00
+          // Bits 3-2 son 00 para directo, bits 1-0 son el registro fuente
+          bytes[0] = (bytes[0] & 0b1111_0000) | 0b0000_0000; // Limpiar últimos 4 bits y poner 00 en bits 3-2
+          bytes[0] |= (registerToBits(src) & 0b11) << 0; // Bits 1-0 = registro fuente
           bytes.push(out.address.byte.low.unsigned);
           //bytes.push(out.address.byte.high.unsigned);
         } else {
-          bytes[0] = 0b0100_00_01; // 0001RR00 indirecto
+          // Bits 3-2 son 01 para indirecto, bits 1-0 son el registro fuente
+          bytes[0] = (bytes[0] & 0b1111_0000) | 0b0000_0100; // Limpiar últimos 4 bits y poner 01 en bits 3-2
+          bytes[0] |= (registerToBits(src) & 0b11) << 0; // Bits 1-0 = registro fuente
         }
-        bytes[0] |= (registerToBits(src) & 0b11) << 2; // RR
         //bytes[1] |= registerToBits(src) << 0;
         break;
       }
 
       case "mem<-imd": {
         if (out.mode === "direct") {
-          //bytes[0] = 0b0010_11_00; // 00101100
+          // Los últimos 4 bits son 1100 para directo
+          bytes[0] = (bytes[0] & 0b1111_0000) | 0b0000_1100; // Últimos 4 bits = 1100
           bytes.push(out.address.byte.low.unsigned);
           //bytes.push(out.address.byte.high.unsigned);
         } else {
-          bytes[0] = 0b0010_11_01; // 00101101
+          // Los últimos 4 bits son 1101 para indirecto
+          bytes[0] = (bytes[0] & 0b1111_0000) | 0b0000_1101; // Últimos 4 bits = 1101
         }
         bytes.push(src.low.unsigned);
         if (size === 16) bytes.push(src.high.unsigned);
