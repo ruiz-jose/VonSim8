@@ -746,11 +746,14 @@ export function generateDataPath(
   // Path especial: MBR -> IP (siempre evitar NodoRegIn y NodoRegOut)
   if (normalizedFrom === "MBR" && normalizedTo === "IP") {
     const start = dataBus.getNodeAttribute("MBR bottom", "position");
-    const mbrCenter = dataBus.getNodeAttribute("MBR", "position");
-    const mid = dataBus.getNodeAttribute("mbr reg join", "position");
+    const exit = dataBus.getNodeAttribute("mbr bottom exit", "position");
+    const horizontal = dataBus.getNodeAttribute("mbr to bus horizontal", "position");
+    const busJoin = dataBus.getNodeAttribute("mbr to bus join", "position");
+    const center = dataBus.getNodeAttribute("mbr to cpu center", "position");
     const end = dataBus.getNodeAttribute("IP", "position");
-    // Línea desde MBR bottom -> MBR centro -> mbr reg join, luego baja en 90° y entra recto a IP
-    return `M ${start[0]} ${start[1]} L ${mbrCenter[0]} ${mbrCenter[1]} L ${mid[0]} ${mid[1]} L ${mid[0]} ${end[1]} L ${end[0]} ${end[1]}`;
+    // Línea desde MBR bottom → mbr bottom exit → mbr to bus horizontal → mbr to bus join → mbr to cpu center → IP
+    console.log("🎯 Usando ruta especial MBR → IP desde MBR bottom (similar a MBR → IR)");
+    return `M ${start[0]} ${start[1]} L ${exit[0]} ${exit[1]} L ${horizontal[0]} ${horizontal[1]} L ${busJoin[0]} ${busJoin[1]} L ${center[0]} ${center[1]} L ${center[0]} ${end[1]} L ${end[0]} ${end[1]}`;
   }
 
   // (Deshabilitado) Path especial: ri -> IP (no mostrar animación por ahora)
