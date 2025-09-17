@@ -1878,7 +1878,27 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         console.log(`🎯 Ejecutando drawDataPath para transferencia normal: ${src} → ${dest}`);
         await drawDataPath(src as DataRegister, dest as DataRegister, instructionName, mode);
       } else {
-        console.log(`⚠️  Saltando animación para transferencia ri → IP`);
+        // Lista completa de instrucciones de salto (JMP y saltos condicionales)
+        const jumpInstructions = [
+          "JMP",
+          "JZ",
+          "JNZ",
+          "JC",
+          "JNC",
+          "JS",
+          "JNS",
+          "JO",
+          "JNO",
+          "CALL",
+        ];
+
+        if (jumpInstructions.includes(instructionName)) {
+          console.log(`🎯 Animando MBR → IP para instrucción de salto: ${instructionName}`);
+          // Para instrucciones de salto, mostrar la animación MBR → IP
+          await drawDataPath("MBR" as DataRegister, "IP" as DataRegister, instructionName, mode);
+        } else {
+          console.log(`⚠️  Saltando animación para transferencia ri → IP`);
+        }
       }
       await activateRegister(`cpu.${dest}` as RegisterKey);
       store.set(registerAtoms[dest], store.get(registerAtoms[src]));
