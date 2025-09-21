@@ -51,7 +51,7 @@ export default defineConfig({
         text: "Formato instrucciones",
         items: [
           { text: "Introducción", link: "/encoding/" },
-          { text: "Codificación", link: "/encoding/encoding" },
+          { text: "Formato Completo", link: "/encoding/encoding" },
         ],
       },
       {
