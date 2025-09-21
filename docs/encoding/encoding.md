@@ -4,14 +4,17 @@ En este documento se describe la codificación binaria de cada instrucción del 
 
 ## Resumen de categorías
 
-| Categoría               | Instrucción      | Código operación   | Operandos | Acción                                                                                   |
-|:-----------------------:|:----------------:|:------------------:|:---------:|:----------------------------------------------------------------------------------------|
-| Transferencia de datos  | MOV              | 0, 1, 2            |    2      | Copia entre registros, carga desde memoria a registro, almacena en memoria              |
-| Procesamiento de datos  | ADD              | 3, 4, 5            |    2      | Suma: operando1 = operando1 + operando2                                                 |
-|                         | SUB              | 6, 7, 8            |    2      | Resta: operando1 = operando1 - operando2                                                |
-|                         | CMP              | 9, 10, 11          |    2      | Comparación: operando1 - operando2 (no modifica el destino)                             |
-| Control de flujo        | JMP / Jxx        | 12                 |    1      | Saltos incondicionales y condicionales                                                  |
-|                         | HLT              | 13                 |    0      | Detiene la CPU                                                                          |
+| Categoría                | Instrucción                                 | Código operación   | Operandos | Acción                                                                                                   |
+|:------------------------:|:-------------------------------------------:|:------------------:|:---------:|:--------------------------------------------------------------------------------------------------------|
+| Transferencia de datos   | MOV                                         | 0, 1, 2            |    2      | Copia entre registros, carga desde memoria a registro, almacena en memoria                              |
+| Procesamiento de datos   | ADD                                         | 3, 4, 5            |    2      | Suma: operando1 = operando1 + operando2                                                                 |
+|                          | SUB                                         | 6, 7, 8            |    2      | Resta: operando1 = operando1 - operando2                                                                |
+|                          | CMP                                         | 9, 10, 11          |    2      | Comparación: operando1 - operando2 (no modifica el destino)                                             |
+| Control de flujo         | JMP / Jxx / CALL / INT                      | 12                 |    1      | Saltos incondicionales JMP, condicionales Jxx, llamada a subrutina CALL, llamada de interrupción INT    |
+| Gestión de flujo         | HLT / RET / IRET / CLI / STI                | 13                 |    0      | Detener CPU (HLT), retorno de subrutina (RET), retorno de interrupción (IRET), gestión de interrupciones (CLI/STI) |
+| Manejo de pila y E/S     | OUT / IN / PUSH / POP                       | 14                 |    2      | Enviar a puerto (OUT), recibir de puerto (IN), poner en la pila (PUSH), retirar de la pila (POP)        |
+| Miscelánea               | AND / OR / XOR / NOT / NEG / INC / DEC      | 15                 |    1-2    | Operaciones lógicas y aritméticas: AND, OR, XOR, NOT, NEG, incremento (INC), decremento (DEC)           |
+                                                                       |
 
 ## Acrónimos y abreviaciones
 
