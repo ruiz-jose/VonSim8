@@ -1,36 +1,34 @@
-# Codificación
+# Formato completo de instrucciones
 
-Aquí se denota la codificación en binario de cada una de las instrucciones del simulador. Pese a que el set de instrucciones esté basado en el del Intel 8088, la codificación se ha simplificado con fines prácticos y didácticos.
+En este documento se describe la codificación binaria de cada instrucción del simulador VonSim8. Aunque el conjunto de instrucciones se inspira en el Intel 8088, la codificación se ha simplificado para facilitar el aprendizaje y la comprensión de los conceptos fundamentales.
+
+## Resumen de categorías
 
 | Categoría               | Instrucción      | Código operación   | Operandos | Acción                                                                                   |
 |:-----------------------:|:----------------:|:------------------:|:---------:|:----------------------------------------------------------------------------------------|
-| Transferencia de datos  | MOV              | 0, 1, 2          |    2      | Copiar entre registros, cargar de memoria a registro, almacenar en memoria              |
-| Procesamiento de datos  | ADD              | 3, 4, 5          |    2      | Operación aritmética: operando1 = operando1 + operando2                                 |
-|                         | SUB              | 6, 7, 8          |    2      | Operación aritmética: operando1 = operando1 - operando2                                 |
-|                         | CMP              | 9, 10, 11        |    2      | Comparación: operando1 - operando2 (no actualiza el destino)                            |
-| Control de flujo        | JMP / Jxx        | 12               |    1      | Salto incondicional JMP, condicionales Jxx                                              |
-|                         | HLT              | 13               |    0      | HLT: detiene el CPU                                                                     |
+| Transferencia de datos  | MOV              | 0, 1, 2            |    2      | Copia entre registros, carga desde memoria a registro, almacena en memoria              |
+| Procesamiento de datos  | ADD              | 3, 4, 5            |    2      | Suma: operando1 = operando1 + operando2                                                 |
+|                         | SUB              | 6, 7, 8            |    2      | Resta: operando1 = operando1 - operando2                                                |
+|                         | CMP              | 9, 10, 11          |    2      | Comparación: operando1 - operando2 (no modifica el destino)                             |
+| Control de flujo        | JMP / Jxx        | 12                 |    1      | Saltos incondicionales y condicionales                                                  |
+|                         | HLT              | 13                 |    0      | Detiene la CPU                                                                          |
 
 ## Acrónimos y abreviaciones
 
-A lo largo de la codificación se usan las siguientes abreviaturas:
+Durante la codificación se emplean las siguientes abreviaturas para los registros:
 
-- `Rx` o `Ry`: referencian registros.
+| Código | Nombre |
+| :----: | :----: |
+|  00    |  AL    |
+|  01    |  CL    |
+|  10    |  DL    |
+|  11    |  BL    |
 
-  | `Código` | `Nombre` |
-  | :------: | :------: |
-  |   `00`   |   `AL`   |
-  |   `01`   |   `CL`   |
-  |   `10`   |   `DL`   |
-  |   `11`   |   `BL`   |
-  
-La codificación de instrucciones en VonSim8 está simplificada para fines didácticos, permitiendo a los estudiantes centrarse en los conceptos fundamentales sin la complejidad técnica de arquitecturas reales.
+En las instrucciones que utilizan registros como operandos, `Ry` representa el registro fuente y `Rx` el registro destino.
 
-Para las instrucciones con un registro como operando, `Ry` codifica el registro fuente y `Rx` el registro destino.
+## Instrucciones binarias (dos operandos)
 
-## Instrucciones con dos operandos (Binarias)
-
-Instrucciones con dos operandos `MOV`, `ADD`, `SUB` y `CMP` están codificadas con 1, 2 o 3 bytes. Los primeros 4 bits de la identifican el `opcode` de la instrucción y los 4 bits restantes identifican el modo de direccionamiento. Estas instrucciones reciben dos operandos y soportan varios modos de direccionamiento. Esta información está codificada en el primer byte junto al código de operación de la instrucción según la siguiente tabla:
+Las instrucciones `MOV`, `ADD`, `SUB` y `CMP` pueden ocupar 1, 2 o 3 bytes. Los primeros 4 bits corresponden al código de operación (`opcode`) y los 4 restantes al modo de direccionamiento. Los modos de direccionamiento y la estructura de los bytes se resumen en la siguiente tabla:
 
 | Destino                                | Fuente                                 | Primer Byte | Segundo Byte        | Tercer Byte |
 | :------------------------------------- | :------------------------------------- | :---------: | :------------------ | :---------- |
@@ -43,7 +41,7 @@ Instrucciones con dos operandos `MOV`, `ADD`, `SUB` y `CMP` están codificadas c
 | Memoria (directo)                      | Inmediato                              | `----1100`  | dir                 | dato        |
 | Memoria (indirecto)                    | Inmediato                              | `----1101`  | dato                |
 
-A continuacion se muestran las combinaciones posibles para cada instrucción de dos operandos:
+A continuación se muestran las combinaciones posibles para cada instrucción binaria:
 
 | #   | Instrucción        | Acción                                      | Codificación                  |
 | --- | ------------------ | ------------------------------------------- | ----------------------------- |
@@ -80,7 +78,7 @@ A continuacion se muestran las combinaciones posibles para cada instrucción de 
 | 11  | `CMP [M], D`       | `Mem[Dirección] - Dato`                     | `1011 1100 MMMMMMMM DDDDDDDD` |
 | 11  | `CMP [BL], D`      | `Mem[BL] - Dato`                            | `1011 1101 DDDDDDDD`          |
 
-## Instrucciones de un solo operando (unarias) 
+## Instrucciones unarias (un solo operando)
 
 | #   | Instrucción        | Acción                                                      | Codificación           |
 | --- | ------------------ | ----------------------------------------------------------- | ---------------------- |
@@ -117,18 +115,6 @@ A continuacion se muestran las combinaciones posibles para cada instrucción de 
 | 14  | `PUSH Ry`     | Pone el valor de `Ry` en la pila                              | `1110 01Ry`            |
 | 14  | `POP Rx`      | Retira el valor del tope de la pila y lo carga en `Rx`        | `1110 10Rx`            |
 
-## Instrucciones lógicas y aritméticas de un operando
-
-| #   | Instrucción   | Acción                                                        | Codificación           |
-| --- | ------------- | ------------------------------------------------------------- | ---------------------- |
-| 15  | `AND Rx, Ry`  | `Rx` ← `Rx AND Ry`                                           | `1111 RxRy`            |
-| 15  | `OR Rx, Ry`   | `Rx` ← `Rx OR Ry`                                            | `1111 RxRy`            |
-| 15  | `XOR Rx, Ry`  | `Rx` ← `Rx XOR Ry`                                           | `1111 RxRy`            |
-| 15  | `INC Rx`      | `Rx` ← `Rx + 1`                                              | `1111 Rx00`            |
-| 15  | `DEC Rx`      | `Rx` ← `Rx - 1`                                              | `1111 Rx01`            |
-| 15  | `NEG Rx`      | `Rx` ← `-Rx` (complemento a dos)                             | `1111 Rx10`            |
-| 15  | `NOT Rx`      | `Rx` ← `NOT Rx` (complemento a uno)                          | `1111 Rx11`            |
-
 ## Instrucciones sin código único de operación
 
 El simulador utiliza un código de operación de 4 bits para las instrucciones, lo que simplifica la arquitectura del sistema pero limita el número máximo de instrucciones implementables a 16 opciones diferentes. Con el objetivo de ampliar el repertorio de instrucciones sin incrementar el tamaño de la codificación, se adoptó una estrategia de agrupación para el código de operación 15.
@@ -136,24 +122,4 @@ El simulador utiliza un código de operación de 4 bits para las instrucciones, 
 Bajo esta implementación, las instrucciones lógicas (AND, OR y XOR) comparten el código de operación 15 con las instrucciones aritméticas de un operando (INC, DEC, NEG y NOT). Esta decisión de diseño permite mantener la compatibilidad con los modos de direccionamiento establecidos para las instrucciones aritméticas de dos operandos (ADD, SUB y CMP), garantizando consistencia en la interfaz del simulador mientras se maximiza la funcionalidad dentro de las limitaciones impuestas por el esquema de codificación de 4 bits.
 
 Esta solución representa un compromiso eficaz entre la simplicidad arquitectural y la capacidad funcional del simulador, permitiendo una mayor diversidad de operaciones sin comprometer la claridad pedagógica del diseño.
-| 13  | `IRET`     | Retorna de interrupción: recupera dirección de retorno a `IP`  | `1101 0010`    |
-| 13  | `CLI`      | Inhabilita interrupciones (Clear Interrupt Flag)               | `1101 0011`    |
-| 13  | `STI`      | Habilita interrupciones (Set Interrupt Flag)                   | `1101 0100`    |
 
-## Instrucciones de E/S y pila
-
-| #   | Instrucción   | Acción                                                        | Codificación           |
-| --- | ------------- | ------------------------------------------------------------- | ---------------------- |
-| 14  | `OUT DL, AL`  | Envía el valor de `AL` al puerto especificado en `DL`         | `1110 0000`            |
-| 14  | `OUT D, AL`   | Envía el valor de `AL` al puerto de dirección inmediata `D`   | `1110 0001 DDDDDDDD`   |
-| 14  | `IN AL, DL`   | Recibe un valor desde el puerto especificado en `DL` y lo carga en `AL` | `1110 0010`    |
-| 14  | `IN AL, D`    | Recibe un valor desde el puerto de dirección inmediata `D` y lo carga en `AL` | `1110 0011 DDDDDDDD` |
-| 14  | `PUSH Ry`     | Pone el valor de `Ry` en la pila                              | `1110 01Ry`            |
-| 14  | `POP Rx`      | Retira el valor del tope de la pila y lo carga en `Rx`        | `1110 10Rx`            |
-
-## Instrucciones sin codigo único de operación
-El simulador utiliza un código de operación de 4 bits para las instrucciones, lo que simplifica la arquitectura del sistema pero limita el número máximo de instrucciones implementables a 16 opciones diferentes. Con el objetivo de ampliar el repertorio de instrucciones sin incrementar el tamaño de la codificación, se adoptó una estrategia de agrupación para el código de operación 15.
-
-Bajo esta implementación, las instrucciones lógicas (AND, OR y XOR) comparten el código de operación 15 con las instrucciones aritméticas de un operando (INC, DEC, NEG y NOT). Esta decisión de diseño permite mantener la compatibilidad con los modos de direccionamiento establecidos para las instrucciones aritméticas de dos operandos (ADD, SUB y CMP), garantizando consistencia en la interfaz del simulador mientras se maximiza la funcionalidad dentro de las limitaciones impuestas por el esquema de codificación de 4 bits.
-
-Esta solución representa un compromiso eficaz entre la simplicidad arquitectural y la capacidad funcional del simulador, permitiendo una mayor diversidad de operaciones sin comprometer la claridad pedagógica del diseño.
