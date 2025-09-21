@@ -11,8 +11,6 @@ Aquí se listan todas las instrucciones que soporta el simulador. Cada instrucci
 | [`MOV dest, fuente`](./mov) | Copia _fuente_ en _dest_                         |  -  |  -  |  -  |  -  |  -  |
 | [`PUSH fuente`](./push)     | Carga _fuente_ en el tope de la pila             |  -  |  -  |  -  |  -  |  -  |
 | [`POP dest`](./pop)         | Desapila el tope de la pila y lo carga en _dest_ |  -  |  -  |  -  |  -  |  -  |
-| [`PUSHF`](./pushf)          | Apila `FLAGS`                                    |  -  |  -  |  -  |  -  |  -  |
-| [`POPF`](./popf)            | Desapila `FLAGS`                                 |  X  |  X  |  X  |  X  |  X  |
 | [`IN dest, fuente`](./in)   | Carga el valor en el puerto _fuente_ en _dest_   |  -  |  -  |  -  |  -  |  -  |
 | [`OUT dest, fuente`](./out) | Carga en el puerto _dest_ el valor en _fuente_   |  -  |  -  |  -  |  -  |  -  |
 
@@ -34,7 +32,6 @@ Aquí se listan todas las instrucciones que soporta el simulador. Cada instrucci
 | [`AND dest, fuente`](./and)   | Operación _dest_ AND _fuente_ bit a bit             |  X  |  0  |  X  |  0  |  -  |
 | [`OR dest, fuente`](./or)     | Operación _dest_ OR _fuente_ bit a bit              |  X  |  0  |  X  |  0  |  -  |
 | [`XOR dest, fuente`](./xor)   | Operación _dest_ XOR _fuente_ bit a bit             |  X  |  0  |  X  |  0  |  -  |
-| [`TEST dest, fuente`](./test) | Operación _dest_ AND _fuente_ bit a bit, solo flags |  X  |  0  |  X  |  0  |  -  |
 | [`NOT dest`](./not)           | Operación NOT _dest_ bit a bit                      |  X  |  0  |  X  |  0  |  -  |
 
 ### Instrucciones de transferencia de control
@@ -51,20 +48,14 @@ Aquí se listan todas las instrucciones que soporta el simulador. Cada instrucci
 | [`JO etiqueta`](./jo)     | Salta a _etiqueta_ si `O=1`                 |  -  |  -  |  -  |  -  |  -  |
 | [`JNO etiqueta`](./jno)   | Salta a _etiqueta_ si `O=0`                 |  -  |  -  |  -  |  -  |  -  |
 | [`CALL etiqueta`](./call) | Llama a subrutina cuyo inicio es _etiqueta_ |  -  |  -  |  -  |  -  |  -  |
-| [`RET`](./ret)            | Retorna de la subrutina                     |  -  |  -  |  -  |  -  |  -  |
-
-### Instrucciones de manejo de interrupciones
-
-| Instrucción      | Comentario                               | `Z` | `C` | `S` | `O` | `I` |
-| :--------------- | :--------------------------------------- | :-: | :-: | :-: | :-: | :-: |
 | [`INT N`](./int) | Ejecuta la interrupción por software _N_ |  -  |  -  |  -  |  -  |  0  |
-| [`IRET`](./iret) | Retorna de la rutina de interrupción     |  X  |  X  |  X  |  X  |  X  |
-| [`CLI`](./cli)   | Inhabilita interrupciones enmascarables  |  -  |  -  |  -  |  -  |  0  |
-| [`STI`](./sti)   | Habilita interrupciones enmascarables    |  -  |  -  |  -  |  -  |  1  |
 
 ### Instrucciones de control
 
 | Instrucción    | Comentario           |  `Z` |  `C` |  `S` | `O` | `I` |
 | :------------- | :------------------- | :-: | :-: | :-: | :-: | :-: |
-| [`NOP`](./nop) | No hace nada         |  -  |  -  |  -  |  -  |  -  |
 | [`HLT`](./hlt) | Detiene la ejecución |  -  |  -  |  -  |  -  |  -  |
+| [`RET`](./ret) | Retorna de la subrutina                     |  -  |  -  |  -  |  -  |  -  |
+| [`IRET`](./iret) | Retorna de la rutina de interrupción     |  X  |  X  |  X  |  X  |  X  |
+| [`CLI`](./cli)   | Inhabilita interrupciones enmascarables  |  -  |  -  |  -  |  -  |  0  |
+| [`STI`](./sti)   | Habilita interrupciones enmascarables    |  -  |  -  |  -  |  -  |  1  |

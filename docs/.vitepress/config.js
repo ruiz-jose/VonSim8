@@ -48,6 +48,20 @@ export default defineConfig({
         ],
       },
       {
+        text: "Formato instrucciones",
+        items: [
+          { text: "Introducción", link: "/encoding/" },
+          { text: "Codificación", link: "/encoding/encoding" },
+        ],
+      },
+      {
+        text: "Ciclo de Instrucción",
+        items: [
+          { text: "Introducción", link: "/instructioncycle/" },
+          { text: "Ciclo completo", link: "/instructioncycle/instructioncycle" },
+        ],
+      },
+      {
         text: "Entrada/Salida",
         items: [
           { text: "Conceptos generales", link: "/io/" },
@@ -81,8 +95,6 @@ export default defineConfig({
         text: "Referencia",
         items: [
           { text: "Tabla ASCII", link: "/reference/ascii" },
-          { text: "Ciclo instrucción", link: "/reference/instructioncycle" },
-          { text: "Codificación", link: "/reference/encoding" },
           { text: "Notas de versión", link: "/changelog" },
         ],
       },

@@ -1,20 +1,4 @@
-# Ciclo de la instrucción
-
-El ciclo de la instrucción es la secuencia de pasos que realiza la **Unidad de Control (UC)** para ejecutar cada instrucción de un programa. Este proceso es fundamental para el funcionamiento de cualquier computadora, ya que involucra elementos clave como registros, buses de datos, direcciones y señales de control generadas por la UC.
-
-Las microoperaciones se expresan mediante la notación de transferencia entre registros:
-
-<div style="text-align:center;">
-destino ← origen
-</div>
-
-<div style="text-align:center;">
-<img src="/images/cicloinstruccion3.png" alt="Flujo del ciclo de instrucción en VonSim8" style="max-width:85%;" />
-</div>
-
-El ciclo se divide en dos etapas principales: **captación (fetch)** y **ejecución**.
-
----
+# Ciclo de la instrucción Completo
 
 ## Etapa 1: Captación
 
@@ -27,7 +11,6 @@ Esta etapa es igual para todas las instrucciones. Su objetivo es leer la instruc
 3. **`IR` ← `MBR`**  
    El contenido del `MBR` se transfiere al `IR`, dejando la instrucción lista para ser decodificada y ejecutada.
 
----
 
 ## Etapa 2: Ejecución
 
