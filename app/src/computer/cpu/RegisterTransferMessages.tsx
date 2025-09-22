@@ -107,40 +107,6 @@ function getPhaseIcon(stage: string, isActive = false) {
   return baseIcon;
 }
 
-// Función para obtener el color de fondo específico de las subfases de ejecución
-function getExecutionSubphaseBgColor(action: string) {
-  // Subfase: Obtener operando (amarillo)
-  if (
-    /obten/i.test(action) ||
-    /operando/i.test(action) ||
-    /leer/i.test(action) ||
-    /cargar/i.test(action)
-  ) {
-    return "bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border-yellow-400/30 shadow-lg shadow-yellow-400/10";
-  }
-  // Subfase: Escribir resultado (violeta)
-  if (
-    /escrib/i.test(action) ||
-    /guardar/i.test(action) ||
-    /almacenar/i.test(action) ||
-    /resultado/i.test(action)
-  ) {
-    return "bg-gradient-to-r from-purple-500/10 to-violet-500/10 border-purple-400/30 shadow-lg shadow-purple-400/10";
-  }
-  // Subfase: Procesar en ALU (verde)
-  if (
-    /procesar/i.test(action) ||
-    /alu/i.test(action) ||
-    /calcular/i.test(action) ||
-    /operar/i.test(action) ||
-    /ejecut/i.test(action)
-  ) {
-    return "bg-gradient-to-r from-green-500/10 to-emerald-500/10 border-green-400/30 shadow-lg shadow-green-400/10";
-  }
-  // Por defecto, usar el color de ejecución
-  return "bg-gradient-to-r from-green-500/10 to-emerald-500/10 border-green-400/30 shadow-lg shadow-green-400/10";
-}
-
 // Función para obtener efectos de borde animado
 function getBorderAnimation(isLatest: boolean, stage: string) {
   if (!isLatest) return "";
@@ -419,30 +385,35 @@ export function RegisterTransferMessages() {
             const isLatest = index === messageHistory.length - 1;
 
             return (
-              <div key={index} className="mb-3 transition-all duration-300 ease-in-out">
+              <div
+                key={index}
+                className={`transition-all duration-300 ease-in-out ${
+                  msg.stage === "Captación" || msg.stage === "Ejecución" ? "mb-1" : "mb-3"
+                }`}
+              >
                 {/* Título de fase con efectos visuales */}
                 {isNewStage && (
-                  <div className="animate-fade-in mb-3">
+                  <div className="animate-fade-in mb-2">
                     <div
-                      className={`flex items-center gap-3 rounded-xl border border-stone-600/50 bg-gradient-to-r from-stone-700/80 to-stone-800/80 p-4 shadow-lg ${getPhaseColor(msg.stage)}`}
+                      className={`flex items-center gap-3 rounded-lg border border-stone-600/30 bg-gradient-to-r from-stone-800/60 to-stone-900/60 px-4 py-2.5 shadow-md backdrop-blur-sm ${getPhaseColor(msg.stage)}`}
                     >
                       <div className="relative">
-                        <span className="text-xl">{getPhaseIcon(msg.stage, isLatest)}</span>
+                        <span className="text-lg">{getPhaseIcon(msg.stage, isLatest)}</span>
                         {isLatest && (
-                          <div className="absolute -right-1 -top-1 size-3 rounded-full bg-green-400"></div>
+                          <div className="absolute -right-0.5 -top-0.5 size-2.5 rounded-full bg-green-400 shadow-sm ring-1 ring-green-300/50"></div>
                         )}
                       </div>
-                      <div className="flex-1">
+                      <div className="min-w-0 flex-1">
                         <h4
-                          className={`text-sm font-bold ${getPhaseColor(msg.stage).split(" ")[0]}`}
+                          className={`truncate text-sm font-bold tracking-wide ${getPhaseColor(msg.stage).split(" ")[0]}`}
                         >
                           {msg.stage}
                         </h4>
-                        <p className="text-xs text-stone-400">
-                          {msg.stage === "Captación" && "Leer instrucción"}
-                          {msg.stage === "Obtención de operandos" && "Preparar datos"}
+                        <p className="mt-0.5 text-xs leading-tight text-stone-400">
+                          {msg.stage === "Captación" && "Leer instrucción desde memoria"}
+                          {msg.stage === "Obtención de operandos" && "Preparar datos necesarios"}
                           {msg.stage === "Ejecución" && "Procesar instrucción"}
-                          {msg.stage === "Escritura" && "Guardar resultado"}
+                          {msg.stage === "Escritura" && "Guardar resultado final"}
                           {msg.stage === "Interrupción" && "Manejar interrupción"}
                         </p>
                       </div>
@@ -462,18 +433,66 @@ export function RegisterTransferMessages() {
                       <span className={`text-sm font-medium text-red-300`}>{msg.action}</span>
                     </div>
                   </div>
+                ) : msg.stage === "Captación" ? (
+                  // Diseño especial para pasos de Captación - más compacto y indentado
+                  <div
+                    className={`ml-8 flex items-center gap-3 rounded-lg border-l-2 border-blue-400/30 bg-gradient-to-r from-blue-900/20 to-blue-800/10 py-2 pl-4 pr-3 transition-all duration-200 hover:bg-blue-800/20 ${
+                      isLatest ? "ring-1 ring-blue-400/50" : ""
+                    }`}
+                  >
+                    {/* Número de ciclo más pequeño para pasos de captación */}
+                    <div
+                      className={`flex size-6 items-center justify-center rounded-full text-xs font-bold transition-all duration-300 ${
+                        isLatest
+                          ? "bg-blue-600 shadow-md shadow-blue-400/30 ring-1 ring-blue-400/50"
+                          : "bg-blue-700/80"
+                      } text-white`}
+                    >
+                      {msg.cycle}
+                    </div>
+
+                    {/* Acción con texto más pequeño y color suave */}
+                    <div className="flex-1">
+                      <span className="text-xs font-medium text-blue-200/90">{msg.action}</span>
+                    </div>
+
+                    {/* Indicador de último mensaje más discreto */}
+                    {isLatest && (
+                      <div className="size-1.5 rounded-full bg-blue-300 shadow-sm shadow-blue-400/30"></div>
+                    )}
+                  </div>
+                ) : msg.stage === "Ejecución" ? (
+                  // Diseño especial para pasos de Ejecución - más compacto y indentado
+                  <div
+                    className={`ml-8 flex items-center gap-3 rounded-lg border-l-2 border-green-400/30 bg-gradient-to-r from-green-900/20 to-green-800/10 py-2 pl-4 pr-3 transition-all duration-200 hover:bg-green-800/20 ${
+                      isLatest ? "ring-1 ring-green-400/50" : ""
+                    }`}
+                  >
+                    {/* Número de ciclo más pequeño para pasos de ejecución */}
+                    <div
+                      className={`flex size-6 items-center justify-center rounded-full text-xs font-bold transition-all duration-300 ${
+                        isLatest
+                          ? "bg-green-600 shadow-md shadow-green-400/30 ring-1 ring-green-400/50"
+                          : "bg-green-700/80"
+                      } text-white`}
+                    >
+                      {msg.cycle}
+                    </div>
+
+                    {/* Acción con texto más pequeño y color suave */}
+                    <div className="flex-1">
+                      <span className="text-xs font-medium text-green-200/90">{msg.action}</span>
+                    </div>
+
+                    {/* Indicador de último mensaje más discreto */}
+                    {isLatest && (
+                      <div className="size-1.5 rounded-full bg-green-300 shadow-sm shadow-green-400/30"></div>
+                    )}
+                  </div>
                 ) : (
                   <div
-                    className={`flex items-center gap-3 rounded-xl border p-4 transition-all duration-300 hover:scale-[1.02] ${
-                      msg.stage === "Ejecución"
-                        ? `${getExecutionSubphaseBgColor(msg.action)} ${
-                            isLatest ? getBorderAnimation(isLatest, msg.stage) : ""
-                          }`
-                        : `border-stone-600/50 bg-gradient-to-r from-stone-800/80 to-stone-900/80 ${
-                            isLatest
-                              ? "bg-stone-700/80 " + getBorderAnimation(isLatest, msg.stage)
-                              : ""
-                          }`
+                    className={`flex items-center gap-3 rounded-xl border border-stone-600/50 bg-gradient-to-r from-stone-800/80 to-stone-900/80 p-4 transition-all duration-300 hover:scale-[1.02] ${
+                      isLatest ? "bg-stone-700/80 " + getBorderAnimation(isLatest, msg.stage) : ""
                     }`}
                   >
                     {/* Número de ciclo con efectos visuales */}
