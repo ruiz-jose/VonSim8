@@ -33,94 +33,123 @@
     opacity: 0.6;
   }
 
-  /* Estilo profesional para la instrucción en curso */
+  /* Estilo profesional para la instrucción en curso - adaptado al simulador */
   .cm-current-instruction {
     background: linear-gradient(
-      135deg,
-      rgba(59, 130, 246, 0.12) 0%,
-      rgba(59, 130, 246, 0.08) 25%,
-      rgba(59, 130, 246, 0.04) 50%,
-      rgba(59, 130, 246, 0.02) 75%,
+      to right,
+      rgba(59, 130, 246, 0.25) 0%,
+      rgba(34, 211, 238, 0.15) 50%,
+      rgba(59, 130, 246, 0.08) 75%,
       transparent 100%
     );
-    border-left: 3px solid #3b82f6;
-    border-right: 1px solid rgba(59, 130, 246, 0.2);
+    border-left: 4px solid rgba(59, 130, 246, 1);
+    border-right: 2px solid rgba(59, 130, 246, 0.3);
+    border-top: 1px solid rgba(59, 130, 246, 0.2);
+    border-bottom: 1px solid rgba(59, 130, 246, 0.2);
     box-shadow:
-      0 0 0 1px rgba(59, 130, 246, 0.1),
-      0 2px 8px rgba(59, 130, 246, 0.15),
-      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      0 0 0 2px rgba(59, 130, 246, 0.15),
+      0 2px 8px rgba(59, 130, 246, 0.3),
+      inset 0 1px 0 rgba(147, 197, 253, 0.15);
     position: relative;
-    backdrop-filter: blur(1px);
+    backdrop-filter: blur(2px);
   }
 
-  /* Efecto de resplandor de fondo */
+  /* Efecto de resplandor de fondo más visible */
   .cm-current-instruction::before {
     content: "";
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at center, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
+    background: radial-gradient(
+      ellipse at left,
+      rgba(59, 130, 246, 0.12) 0%,
+      rgba(34, 211, 238, 0.06) 40%,
+      transparent 70%
+    );
     pointer-events: none;
     z-index: -1;
   }
 
-  /* Borde izquierdo brillante */
+  /* Borde izquierdo más prominente con gradiente azul-cyan */
   .cm-current-instruction::after {
     content: "";
     position: absolute;
     left: 0;
     top: 0;
     bottom: 0;
-    width: 3px;
+    width: 4px;
     background: linear-gradient(
       to bottom,
-      transparent 0%,
-      #3b82f6 20%,
-      #60a5fa 50%,
-      #3b82f6 80%,
-      transparent 100%
+      transparent 5%,
+      rgba(59, 130, 246, 1) 25%,
+      rgba(34, 211, 238, 1) 50%,
+      rgba(59, 130, 246, 1) 75%,
+      transparent 95%
     );
     box-shadow:
-      0 0 8px rgba(59, 130, 246, 0.6),
-      0 0 16px rgba(59, 130, 246, 0.3);
-    animation: glow 2s ease-in-out infinite alternate;
+      0 0 8px rgba(59, 130, 246, 0.8),
+      0 0 16px rgba(34, 211, 238, 0.4),
+      0 0 24px rgba(59, 130, 246, 0.2);
+    animation: captacionGlow 2s ease-in-out infinite alternate;
   }
 
-  /* Indicador de flecha */
+  /* Indicador de flecha para instrucción activa - MÁS VISIBLE */
   .cm-current-instruction .cm-line::before {
-    content: "▶";
+    content: "🔵";
     position: absolute;
-    left: -28px;
+    left: -35px;
     top: 50%;
     transform: translateY(-50%);
-    color: #3b82f6;
     font-size: 16px;
-    font-weight: bold;
-    text-shadow:
-      0 0 8px rgba(59, 130, 246, 0.8),
-      0 0 16px rgba(59, 130, 246, 0.4);
-    z-index: 10;
+    z-index: 15;
     animation: instructionPulse 1.5s ease-in-out infinite;
-    filter: drop-shadow(0 0 4px rgba(59, 130, 246, 0.6));
+    filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.8));
   }
 
-  /* Indicador adicional en el gutter para la instrucción en curso */
+  /* Indicador de flecha adicional - TEXTO */
+  .cm-current-instruction .cm-line::after {
+    content: "▶ EJECUTANDO";
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(59, 130, 246, 0.9);
+    font-size: 12px;
+    font-weight: bold;
+    text-shadow:
+      0 0 4px rgba(59, 130, 246, 0.8),
+      0 0 8px rgba(34, 211, 238, 0.4);
+    z-index: 15;
+    animation: instructionText 2s ease-in-out infinite;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+  }
+
+  /* Indicador adicional en el gutter para la instrucción en curso - MÁS VISIBLE */
   .cm-current-instruction .cm-gutterElement {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0.1) 100%);
-    color: #60a5fa;
-    font-weight: 700;
-    text-shadow: 0 0 4px rgba(59, 130, 246, 0.5);
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(34, 211, 238, 0.2) 100%);
+    color: rgba(59, 130, 246, 1);
+    font-weight: 800;
+    text-shadow: 0 0 4px rgba(59, 130, 246, 0.8);
     border-radius: 4px;
     margin: 1px 2px;
     box-shadow:
-      0 0 0 1px rgba(59, 130, 246, 0.3),
-      0 1px 3px rgba(59, 130, 246, 0.2);
+      0 0 0 2px rgba(59, 130, 246, 0.4),
+      0 2px 4px rgba(59, 130, 246, 0.3),
+      inset 0 1px 0 rgba(147, 197, 253, 0.2);
     position: relative;
+    font-size: 1.1em;
   }
 
-  /* Efecto de resplandor en el texto de la instrucción en curso */
+  /* Efecto de resplandor más visible en el texto de la instrucción en curso */
   .cm-current-instruction .cm-line {
-    text-shadow: 0 0 2px rgba(59, 130, 246, 0.3);
-    font-weight: 500;
+    text-shadow: 0 0 3px rgba(147, 197, 253, 0.4);
+    font-weight: 600;
+    color: rgba(255, 255, 255, 1);
+    background: rgba(59, 130, 246, 0.05);
+    padding: 1px 4px;
+    border-radius: 2px;
   }
 
   .cm-current-instruction .cm-line .cm-content {
@@ -130,11 +159,11 @@
   .cm-current-instruction .cm-gutterElement::before {
     content: "";
     position: absolute;
-    inset: -2px;
-    background: linear-gradient(45deg, transparent, rgba(59, 130, 246, 0.1), transparent);
-    border-radius: 6px;
+    inset: -1px;
+    background: linear-gradient(45deg, transparent, rgba(59, 130, 246, 0.08), transparent);
+    border-radius: 4px;
     z-index: -1;
-    animation: gutterGlow 3s ease-in-out infinite;
+    animation: gutterSoftGlow 4s ease-in-out infinite;
   }
 
   /* Efecto de resplandor adicional para toda la línea */
@@ -163,46 +192,84 @@
     }
   }
 
+  @keyframes instructionArrow {
+    0% {
+      opacity: 0.9;
+      transform: translateY(-50%) scale(1);
+      filter: drop-shadow(0 0 3px rgba(59, 130, 246, 0.5));
+    }
+    50% {
+      opacity: 1;
+      transform: translateY(-50%) scale(1.1);
+      filter: drop-shadow(0 0 5px rgba(34, 211, 238, 0.7));
+    }
+    100% {
+      opacity: 0.9;
+      transform: translateY(-50%) scale(1);
+      filter: drop-shadow(0 0 3px rgba(59, 130, 246, 0.5));
+    }
+  }
+
+  @keyframes captacionGlow {
+    0% {
+      box-shadow:
+        0 0 4px rgba(59, 130, 246, 0.4),
+        0 0 8px rgba(34, 211, 238, 0.2);
+      opacity: 0.8;
+    }
+    100% {
+      box-shadow:
+        0 0 6px rgba(59, 130, 246, 0.6),
+        0 0 12px rgba(34, 211, 238, 0.3);
+      opacity: 1;
+    }
+  }
+
+  @keyframes gutterSoftGlow {
+    0%,
+    100% {
+      opacity: 0.4;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.7;
+      transform: scale(1.02);
+    }
+  }
+
   @keyframes instructionPulse {
     0% {
       opacity: 1;
       transform: translateY(-50%) scale(1);
-      filter: drop-shadow(0 0 4px rgba(59, 130, 246, 0.6));
+      filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.8));
     }
     50% {
-      opacity: 0.8;
-      transform: translateY(-50%) scale(1.15);
-      filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.8));
+      opacity: 0.7;
+      transform: translateY(-50%) scale(1.2);
+      filter: drop-shadow(0 0 10px rgba(34, 211, 238, 1));
     }
     100% {
       opacity: 1;
       transform: translateY(-50%) scale(1);
-      filter: drop-shadow(0 0 4px rgba(59, 130, 246, 0.6));
+      filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.8));
     }
   }
 
-  @keyframes glow {
+  @keyframes instructionText {
     0% {
-      box-shadow:
-        0 0 8px rgba(59, 130, 246, 0.6),
-        0 0 16px rgba(59, 130, 246, 0.3);
-    }
-    100% {
-      box-shadow:
-        0 0 12px rgba(59, 130, 246, 0.8),
-        0 0 24px rgba(59, 130, 246, 0.5);
-    }
-  }
-
-  @keyframes gutterGlow {
-    0%,
-    100% {
-      opacity: 0.3;
-      transform: scale(1);
+      opacity: 0.8;
+      background: rgba(0, 0, 0, 0.3);
+      border-color: rgba(59, 130, 246, 0.3);
     }
     50% {
-      opacity: 0.6;
-      transform: scale(1.05);
+      opacity: 1;
+      background: rgba(59, 130, 246, 0.1);
+      border-color: rgba(59, 130, 246, 0.6);
+    }
+    100% {
+      opacity: 0.8;
+      background: rgba(0, 0, 0, 0.3);
+      border-color: rgba(59, 130, 246, 0.3);
     }
   }
 
