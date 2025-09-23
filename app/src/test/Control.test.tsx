@@ -58,6 +58,9 @@ describe("Control Component - Viñeta 1 Pulse Effect", () => {
     // Verificar que el componente se renderiza correctamente
     expect(screen.getByText("computer.cpu.control-unit")).toBeInTheDocument();
     expect(screen.getByText("computer.cpu.decoder")).toBeInTheDocument();
-    expect(screen.getByText("Instrucción")).toBeInTheDocument();
+    // Verificar que muestra la fase de captación (según el mock)
+    expect(screen.getByText("Captación")).toBeInTheDocument();
+    // Verificar que muestra la instrucción MOV (según el mock)
+    expect(screen.getByText("MOV")).toBeInTheDocument();
   });
 });

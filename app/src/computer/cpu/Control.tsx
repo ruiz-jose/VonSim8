@@ -709,23 +709,70 @@ export function Control() {
         </div>
 
         {/* Información de la instrucción en curso */}
-        <div className="flex w-full flex-1 items-start justify-center p-1">
+        <div className="flex w-full flex-1 items-start justify-center p-0.5">
           <div className="w-[220px] max-w-[220px]">
-            <div className="mb-1 flex items-center justify-between">
-              <span className="w-16 whitespace-nowrap text-xs font-bold uppercase tracking-wide text-mantis-400">
-                Instrucción
-              </span>
-            </div>
-
             {/* Instrucción actual */}
-            <div className="mb-0.5 p-0.5">
+            <div className="mb-0 p-0.5">
               <div className="min-w-0 flex-1 text-center">
                 {cycle && "metadata" in cycle && cycle.metadata ? (
-                  <div className="truncate text-xs text-stone-300">
-                    <span className="font-mono text-mantis-300">{cycle.metadata.name}</span>
-                    {cycle.metadata.operands.length > 0 && (
-                      <span className="text-white"> {cycle.metadata.operands.join(", ")}</span>
-                    )}
+                  <div className="text-xs text-stone-300">
+                    {/* Mostrar la fase actual como título con estilo coherente con la unidad de control */}
+                    <div className="mb-1 flex justify-center">
+                      <div
+                        className={`
+                          flex min-h-[20px] items-center justify-center whitespace-nowrap rounded-md border
+                          border-stone-600 px-3 py-1 text-[11px] font-bold uppercase tracking-wide
+                          transition-all duration-300 ease-in-out
+                          ${(() => {
+                            switch (cycle.phase) {
+                              case "fetching":
+                                return "bg-gradient-to-r from-blue-600/80 to-blue-500/80 text-blue-100 shadow-[0_0_8px_rgba(59,130,246,0.3)]";
+                              case "fetching-operands":
+                                return "bg-gradient-to-r from-yellow-600/80 to-yellow-500/80 text-yellow-100 shadow-[0_0_8px_rgba(234,179,8,0.3)]";
+                              case "fetching-operands-completed":
+                                return "bg-gradient-to-r from-yellow-600/80 to-yellow-500/80 text-yellow-100 shadow-[0_0_8px_rgba(234,179,8,0.3)]";
+                              case "executing":
+                                return "bg-gradient-to-r from-mantis-600/80 to-mantis-500/80 text-mantis-100 shadow-[0_0_8px_rgba(34,197,94,0.3)]";
+                              case "writeback":
+                                return "bg-gradient-to-r from-purple-600/80 to-purple-500/80 text-purple-100 shadow-[0_0_8px_rgba(147,51,234,0.3)]";
+                              case "interrupt":
+                                return "bg-gradient-to-r from-red-600/80 to-red-500/80 text-red-100 shadow-[0_0_8px_rgba(239,68,68,0.3)]";
+                              case "halting":
+                                return "bg-gradient-to-r from-red-600/80 to-red-500/80 text-red-100 shadow-[0_0_8px_rgba(239,68,68,0.3)]";
+                              default:
+                                return "bg-gradient-to-r from-stone-600/80 to-stone-500/80 text-stone-100 shadow-[0_0_8px_rgba(120,113,108,0.3)]";
+                            }
+                          })()}
+                        `}
+                      >
+                        {(() => {
+                          switch (cycle.phase) {
+                            case "fetching":
+                              return "Captación";
+                            case "fetching-operands":
+                              return "Obtención de operandos";
+                            case "fetching-operands-completed":
+                              return "Operandos obtenidos";
+                            case "executing":
+                              return "Ejecución";
+                            case "writeback":
+                              return "Escritura";
+                            case "interrupt":
+                              return "Interrupción";
+                            case "halting":
+                              return "Detener CPU";
+                            default:
+                              return "Procesando";
+                          }
+                        })()}
+                      </div>
+                    </div>
+                    <div className="truncate text-center">
+                      <span className="font-mono text-mantis-300">{cycle.metadata.name}</span>
+                      {cycle.metadata.operands.length > 0 && (
+                        <span className="text-white"> {cycle.metadata.operands.join(", ")}</span>
+                      )}
+                    </div>
                   </div>
                 ) : (
                   <div className="text-xs text-stone-500">
