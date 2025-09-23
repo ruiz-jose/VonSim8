@@ -783,9 +783,18 @@ function handleDirectArithmeticUpdate(): MessageConfig {
 }
 
 // Función específica para actualizaciones de registros en CALL
-function handleCALLRegisterUpdate(_sourceRegister: string): MessageConfig {
+function handleCALLRegisterUpdate(sourceRegister: string): MessageConfig {
+  // Para CALL en executeStageCounter === 3, mostrar el mensaje combinado
+  if (executeStageCounter === 3 && sourceRegister === "IP") {
+    return {
+      message: "Ejecución: MBR ← read(Memoria[MAR]) | IP ← IP + 1",
+      shouldDisplay: true,
+      shouldPause: true,
+    };
+  }
+
   return {
-    message: `Ejecución: MBR ← ${_sourceRegister}`,
+    message: `Ejecución: MBR ← ${sourceRegister}`,
     shouldDisplay: true,
     shouldPause: true,
   };
@@ -1162,7 +1171,10 @@ async function executeThread(generator: EventGenerator): Promise<void> {
             if (sourceRegister === "SP") {
               fetchStageCounter = 3;
               executeStageCounter = 3;
-              store.set(messageAtom, "Ejecución: MAR ← SP");
+              // Para CALL, no mostrar el mensaje aquí (se mostrará en cpu:mbr.set)
+              if (currentInstructionName !== "CALL") {
+                store.set(messageAtom, "Ejecución: MAR ← SP");
+              }
             } else {
               store.set(messageAtom, "Captación: MAR ← IP");
               cycleCount++;
@@ -1205,7 +1217,17 @@ async function executeThread(generator: EventGenerator): Promise<void> {
             messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";
             lastMemoryOperationWasWrite = false; // Es una operación de lectura
           } else if (event.value.type === "cpu:wr.on") {
-            messageReadWrite = "Ejecución: write(Memoria[MAR]) ← MBR";
+            // Para CALL en executeStageCounter >= 8, no establecer el mensaje aquí
+            // porque cpu:register.copy manejará el mensaje combinado
+            if (!(currentInstructionName === "CALL" && executeStageCounter >= 8)) {
+              messageReadWrite = "Ejecución: write(Memoria[MAR]) ← MBR";
+            } else {
+              console.log(
+                "✅ CALL paso",
+                executeStageCounter,
+                "- cpu:wr.on mensaje omitido para mensaje combinado",
+              );
+            }
             lastMemoryOperationWasWrite = true; // Es una operación de escritura
 
             // Detectar si es una instrucción MOV que escribe en memoria (solo para logging)
@@ -1248,8 +1270,11 @@ async function executeThread(generator: EventGenerator): Promise<void> {
             }
 
             // Pausar siempre en cpu:mar.set si está en modo ciclo a ciclo
+            // EXCEPTO para CALL cuando sourceRegister === "SP" (se pausará en cpu:mbr.set)
             if (status.until === "cycle-change") {
-              pauseSimulation();
+              if (!(currentInstructionName === "CALL" && sourceRegister === "SP")) {
+                pauseSimulation();
+              }
             }
 
             // let showRI = false;
@@ -1543,17 +1568,26 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 );
               } else if (
                 shouldDisplayMessage ||
-                sourceRegister === "SP" ||
+                (sourceRegister === "SP" && currentInstructionName !== "CALL") ||
                 (currentInstructionModeid && sourceRegister === "IP") ||
                 messageConfig.shouldDisplay
               ) {
                 // No mostrar mensaje para MOV/ADD/SUB con direccionamiento indirecto cuando se copia ri al MAR
                 // Tampoco mostrar mensaje cuando ri → MAR en instrucciones aritméticas en etapas avanzadas
-                if (!isIndirectInstruction && !isRiToMARSkipCycle) {
+                // No mostrar mensaje para CALL cuando sourceRegister === "SP" (se mostrará en cpu:mbr.set)
+                if (
+                  !isIndirectInstruction &&
+                  !isRiToMARSkipCycle &&
+                  !(currentInstructionName === "CALL" && sourceRegister === "SP")
+                ) {
                   store.set(messageAtom, messageConfig.message);
                 } else if (isRiToMARSkipCycle) {
                   console.log(
                     "⏭️ Mensaje NO mostrado para ri → MAR en etapa avanzada (dirección ya en MAR)",
+                  );
+                } else if (currentInstructionName === "CALL" && sourceRegister === "SP") {
+                  console.log(
+                    "⏭️ Mensaje NO mostrado para CALL MAR ← SP (se mostrará en cpu:mbr.set)",
                   );
                 }
               }
@@ -1570,12 +1604,14 @@ async function executeThread(generator: EventGenerator): Promise<void> {
             // También skip cuando ri → MAR en instrucciones aritméticas en etapas avanzadas
             // Y skip cuando ya se contabilizó para el mensaje simultáneo
             // Nueva lógica: instrucciones aritméticas fuente registro y destino directo en mar.set y executeStageCounter === 5
+            // También skip para CALL cuando sourceRegister === "SP" (se contabilizará en cpu:mbr.set)
 
             const skipCycleCount =
               isIndirectInstruction ||
               isRiToMARSkipCycle ||
               simultaneousCycleCounted ||
-              isArithmeticRegToDirectStep5;
+              isArithmeticRegToDirectStep5 ||
+              (currentInstructionName === "CALL" && sourceRegister === "SP");
 
             if (!skipCycleCount) {
               cycleCount++;
@@ -1599,7 +1635,9 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 isRiToMARSkipCycle,
                 "isArithmeticRegToDirectStep5:",
                 isArithmeticRegToDirectStep5,
-                "(dirección ya almacenada en MAR)",
+                "CALL con SP:",
+                currentInstructionName === "CALL" && sourceRegister === "SP",
+                "(dirección ya almacenada en MAR o será manejado en mbr.set)",
               );
             }
 
@@ -1675,7 +1713,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
 
               let displayMessage = messageConfig.message;
               shouldDisplayMessage = messageConfig.shouldDisplay;
-              const pause = messageConfig.shouldPause;
+              let pause = messageConfig.shouldPause;
 
               // Manejar casos especiales adicionales que requieren lógica específica
               if (
@@ -1685,11 +1723,21 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               ) {
                 displayMessage = "Ejecución: write(Memoria[MAR]) ← MBR; SP ← SP - 1";
               }
-              if (executeStageCounter === 2 && currentInstructionName === "CALL") {
-                displayMessage = "Ejecución: ri ← MBR; SP ← SP - 1";
-              }
               if (executeStageCounter === 4 && currentInstructionName === "CALL") {
+                displayMessage = "Ejecución: ri ← MBR | SP ← SP - 1";
+                pause = true; // Asegurar que se pause en este paso
+              }
+              if (
+                executeStageCounter === 3 &&
+                currentInstructionName === "CALL" &&
+                sourceRegister === "IP"
+              ) {
+                displayMessage = "Ejecución: MBR ← read(Memoria[MAR]) | IP ← IP + 1";
+                pause = true; // Asegurar que se pause en este paso
+              }
+              if (executeStageCounter === 6 && currentInstructionName === "CALL") {
                 displayMessage = "Ejecución: write(Memoria[MAR]) ← MBR; SP ← SP - 1";
+                pause = true; // Asegurar que se pause en este paso
               }
               // Caso especial para captación del segundo byte en instrucciones con direccionamiento directo
               if (
@@ -1943,6 +1991,21 @@ async function executeThread(generator: EventGenerator): Promise<void> {
             console.log("📋 Evento cpu:register.copy detectado");
             const sourceRegister = event.value.src.replace(/\.l$/, "");
             const destRegister = event.value.dest.replace(/\.l$/, "");
+
+            // Debug para todos los eventos register.copy cuando hay una instrucción CALL activa
+            if (currentInstructionName === "CALL") {
+              console.log("🔍 CALL Debug en register.copy:");
+              console.log("   sourceRegister:", sourceRegister, "(original:", event.value.src, ")");
+              console.log("   destRegister:", destRegister, "(original:", event.value.dest, ")");
+              console.log("   executeStageCounter:", executeStageCounter);
+              console.log("   currentInstructionName:", currentInstructionName);
+              console.log("   ¿Es ri → IP?:", sourceRegister === "ri" && destRegister === "IP");
+              console.log(
+                "   ¿Destino contiene IP?:",
+                destRegister.includes("IP") || event.value.dest.includes("IP"),
+              );
+            }
+
             let displaySource = "";
 
             if (
@@ -1992,9 +2055,83 @@ async function executeThread(generator: EventGenerator): Promise<void> {
             if (sourceRegister === "ri" && destRegister === "IP") {
               displayMessage = "Ejecución: IP ← MBR";
               if (currentInstructionName === "CALL") {
-                displayMessage = "Ejecución: IP ← MBR";
+                console.log("🔍 CALL Debug - CONDICIÓN ri→IP CUMPLIDA");
+                console.log("🔍 CALL Debug - sourceRegister === 'ri':", sourceRegister === "ri");
+                console.log("🔍 CALL Debug - destRegister === 'IP':", destRegister === "IP");
+                console.log("🔍 CALL Debug - executeStageCounter:", executeStageCounter);
+                console.log("🔍 CALL Debug - currentInstructionName:", currentInstructionName);
+
+                // Para CALL paso 7 (ciclo 8): mostrar mensaje combinado y contabilizar ciclo
+                // Este es el único lugar donde se debe manejar el ciclo 8
+                if (executeStageCounter === 7) {
+                  displayMessage = "Ejecución: write(Memoria[MAR]) ← MBR | IP ← ri";
+                  store.set(messageAtom, displayMessage);
+                  cycleCount++;
+                  currentInstructionCycleCount++;
+                  store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+                  console.log(
+                    "✅ CALL paso 7 (ciclo 8) - Ciclo contabilizado y mensaje combinado mostrado:",
+                    displayMessage,
+                  );
+                } else if (executeStageCounter >= 8) {
+                  displayMessage = "Ejecución: write(Memoria[MAR]) ← MBR | IP ← ri";
+                  store.set(messageAtom, displayMessage);
+                  cycleCount++;
+                  currentInstructionCycleCount++;
+                  store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+                  console.log(
+                    "✅ CALL paso",
+                    executeStageCounter,
+                    "- Ciclo contabilizado y mensaje combinado mostrado",
+                  );
+                } else {
+                  displayMessage = "Ejecución: IP ← ri";
+                  store.set(messageAtom, displayMessage);
+                  console.log(
+                    "✅ CALL paso",
+                    executeStageCounter,
+                    "- Mensaje individual mostrado:",
+                    displayMessage,
+                  );
+                }
+
+                // Pausar si se está ejecutando por ciclos
+                if (status.until === "cycle-change") {
+                  pauseSimulation();
+                }
+
+                // IMPORTANTE: Salir aquí para evitar que se ejecute la lógica general más abajo
+                // que podría contabilizar un ciclo adicional
+                return;
+              } else {
+                store.set(messageAtom, displayMessage);
               }
+              if (status.until === "cycle-change") {
+                pauseSimulation();
+              }
+            } else if (
+              // Condición ampliada para CALL: cualquier transferencia a IP en paso >= 8
+              currentInstructionName === "CALL" &&
+              executeStageCounter >= 8 &&
+              (destRegister === "IP" || event.value.dest.includes("IP"))
+            ) {
+              console.log("🔍 CALL Debug - CONDICIÓN AMPLIADA PARA IP");
+              console.log("🔍 CALL Debug - sourceRegister:", sourceRegister);
+              console.log("🔍 CALL Debug - destRegister:", destRegister);
+              console.log("🔍 CALL Debug - executeStageCounter:", executeStageCounter);
+
+              displayMessage = "Ejecución: write(Memoria[MAR]) ← MBR | IP ← " + sourceRegister;
               store.set(messageAtom, displayMessage);
+              cycleCount++;
+              currentInstructionCycleCount++;
+              store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+              console.log(
+                "✅ CALL paso",
+                executeStageCounter,
+                "- Mensaje combinado AMPLIADO mostrado:",
+                displayMessage,
+              );
+
               if (status.until === "cycle-change") {
                 pauseSimulation();
               }
@@ -2099,13 +2236,21 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               // Contabilizar ciclos para todas las transferencias de registros normales
               // EXCEPTO BL/BX → ri que se maneja en cpu:mar.set
               // EXCEPTO transferencias a left/right de ALU que no se contabilizan
+              // EXCEPTO CALL paso 8 (ri → IP) que ya se contabilizó arriba
               ((destRegister !== "result" && sourceRegister !== "result") ||
                 // También contabilizar cuando se transfiere resultado a un registro (no a MBR)
                 (sourceRegister === "result" && destRegister !== "MBR")) &&
               // Excluir específicamente BL/BX → ri
               !((sourceRegister === "BL" || sourceRegister === "BX") && destRegister === "ri") &&
               // Excluir específicamente transferencias a left/right de ALU
-              !(destRegister === "left" || destRegister === "right")
+              !(destRegister === "left" || destRegister === "right") &&
+              // Excluir específicamente CALL paso 8+ (ri → IP) que ya se manejó arriba
+              !(
+                currentInstructionName === "CALL" &&
+                sourceRegister === "ri" &&
+                destRegister === "IP" &&
+                executeStageCounter >= 8
+              )
             ) {
               // Para transferencias a left/right de ALU, NO mostrar mensaje ni contabilizar ciclo
               if (destRegister === "left" || destRegister === "right") {
@@ -2396,8 +2541,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 currentInstructionModeri) ||
               (currentInstructionModeid &&
                 executeStageCounter === 4 &&
-                (currentInstructionName === "CALL" ||
-                  currentInstructionName === "ADD" ||
+                (currentInstructionName === "ADD" ||
                   currentInstructionName === "SUB" ||
                   currentInstructionName === "CMP")) ||
               // Para instrucciones aritméticas con direccionamiento directo en executeStageCounter === 3,
@@ -2422,10 +2566,30 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                   currentInstructionName === "XOR") &&
                 currentInstructionModeid &&
                 !currentInstructionModeri &&
-                messageReadWrite === "Ejecución: MBR ← read(Memoria[MAR])") // Solo para lectura de memoria
+                messageReadWrite === "Ejecución: MBR ← read(Memoria[MAR])") || // Solo para lectura de memoria
+              // Para CALL en executeStageCounter === 3 (lectura del segundo byte),
+              // no mostrar mensaje, no pausar, ni contabilizar ciclo porque cpu:register.update ya maneja todo
+              (executeStageCounter === 3 &&
+                currentInstructionName === "CALL" &&
+                messageReadWrite === "Ejecución: MBR ← read(Memoria[MAR])") ||
+              // Para CALL en executeStageCounter === 7 con mensaje de escritura (corresponde al ciclo 8),
+              // no mostrar mensaje, no pausar, ni contabilizar ciclo porque cpu:register.copy ya manejará todo
+              (executeStageCounter === 7 &&
+                currentInstructionName === "CALL" &&
+                messageReadWrite === "Ejecución: write(Memoria[MAR]) ← MBR") ||
+              // Para CALL en executeStageCounter >= 8 (otros pasos de escritura en la pila),
+              // no mostrar mensaje, no pausar, ni contabilizar ciclo porque cpu:register.copy ya manejará todo
+              (executeStageCounter >= 8 && currentInstructionName === "CALL")
             ) {
               ContinuarSinGuardar = true;
               console.log("🔄 ContinuarSinGuardar establecido a true - condición cumplida");
+              if (currentInstructionName === "CALL" && executeStageCounter >= 8) {
+                console.log(
+                  "✅ CALL paso",
+                  executeStageCounter,
+                  "- bus:reset omitido correctamente",
+                );
+              }
             } else {
               console.log(
                 "🔄 ContinuarSinGuardar mantenido como false - ninguna condición cumplida",
@@ -2623,6 +2787,22 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               currentInstructionCycleCount++;
               store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
               executeStageCounter++;
+              // Pausar aquí si se ejecuta por ciclos
+              if (status.until === "cycle-change") {
+                pauseSimulation();
+              }
+            } else if (
+              // Para CALL cuando se copia IP al MBR en el paso 7
+              currentInstructionName === "CALL" &&
+              sourceRegister === "IP"
+            ) {
+              // Mostrar mensaje combinado y pausar
+              store.set(messageAtom, "Ejecución: MAR ← SP | MBR ← IP");
+              cycleCount++;
+              currentInstructionCycleCount++;
+              store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+              executeStageCounter++;
+
               // Pausar aquí si se ejecuta por ciclos
               if (status.until === "cycle-change") {
                 pauseSimulation();
