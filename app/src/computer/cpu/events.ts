@@ -1265,6 +1265,19 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         mode,
       });
 
+      // Agregar debug específico para CALL
+      if (instructionName === "CALL" && normalizedRegister === "ri") {
+        const mbrValue = store.get(MBRAtom);
+        const riValue = store.get(registerAtoms["ri.l"]);
+        console.log("🔍 CALL Debug - MBR → ri:");
+        console.log("  📍 Registro:", normalizedRegister, "| Modo:", mode);
+        console.log("  📊 MBR Value:", mbrValue.unsigned, `(0x${mbrValue.unsigned.toString(16).padStart(2, '0').toUpperCase()})`);
+        console.log("  📋 Ri Value (antes):", (riValue as any).unsigned, `(0x${(riValue as any).unsigned.toString(16).padStart(2, '0').toUpperCase()})`);
+        console.log("  🎬 willSkipAnimation:", mode !== "mem<-imd");
+        console.log("  ✏️ willUpdateRegister:", (normalizedRegister === "ri" && mode === "mem<-imd"));
+        console.log("  🎯 willDoActivation:", (normalizedRegister === "ri" && mode === "mem<-imd"));
+      }
+
       // Si la transferencia es a IP, marcar el flag global para evitar la animación individual de MBR en memoria
       if (normalizedRegister === "IP") {
         window.__nextTransferMBRtoIP = true;
@@ -1324,7 +1337,8 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
             instructionName.startsWith("CMP") ||
             instructionName.startsWith("AND") ||
             instructionName.startsWith("OR") ||
-            instructionName.startsWith("XOR")
+            instructionName.startsWith("XOR") ||
+            instructionName.startsWith("CALL")
           ) {
             pendingMBRtoRI = { instruction: instructionName, mode, destination: "ri" };
             console.log("📝 Marcando animación MBR → ri como pendiente para animación simultánea");
@@ -1517,8 +1531,15 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
 
       // Segundo: Actualizar el valor del registro después de que termine la animación del bus
       // Solo actualizar si no es ri en modo mem<-imd (se actualizará en la animación simultánea)
-      if (!(normalizedRegister === "ri" && mode === "mem<-imd")) {
+      // EXCEPCIÓN: Para CALL, siempre actualizar ri inmediatamente
+      if (!(normalizedRegister === "ri" && mode === "mem<-imd") || instructionName === "CALL") {
         store.set(registerAtoms[event.register], store.get(MBRAtom));
+        
+        // Debug específico para CALL
+        if (instructionName === "CALL" && normalizedRegister === "ri") {
+          const updatedValue = store.get(registerAtoms[event.register]);
+          console.log("🔥 CALL - Registro ri actualizado:", (updatedValue as any).unsigned, `(0x${(updatedValue as any).unsigned.toString(16).padStart(2, '0').toUpperCase()})`);
+        }
       }
 
       // Tercero: Solo DESPUÉS de que termine la animación del bus, hacer la animación de actualización
@@ -1526,14 +1547,16 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         await updateRegisterWithGlow(`cpu.${normalizedRegister}` as RegisterKey);
       } else if (normalizedRegister === "IP") {
         // No hacer animación individual, la animación conjunta se hará en cpu:register.update
-      } else if (!(normalizedRegister === "ri" && mode === "mem<-imd")) {
+      } else if (!(normalizedRegister === "ri" && mode === "mem<-imd") || instructionName === "CALL") {
         // No hacer animación individual para ri en modo mem<-imd (se hará en la animación simultánea)
+        // EXCEPCIÓN: Para CALL, siempre hacer la activación inmediatamente
         await activateRegister(`cpu.${normalizedRegister}` as RegisterKey);
         await deactivateRegister(`cpu.${normalizedRegister}` as RegisterKey);
       }
 
       // Cuarto: Resetear la animación del bus (solo si no es ri en modo mem<-imd)
-      if (!(normalizedRegister === "ri" && mode === "mem<-imd")) {
+      // EXCEPCIÓN: Para CALL, siempre resetear el data path
+      if (!(normalizedRegister === "ri" && mode === "mem<-imd") || instructionName === "CALL") {
         await resetDataPath();
       }
 
