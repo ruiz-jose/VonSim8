@@ -2072,39 +2072,9 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 console.log("🔍 CALL Debug - executeStageCounter:", executeStageCounter);
                 console.log("🔍 CALL Debug - currentInstructionName:", currentInstructionName);
 
-                // Para CALL paso 7 (ciclo 8): mostrar mensaje combinado y contabilizar ciclo
-                // Este es el único lugar donde se debe manejar el ciclo 8
-                if (executeStageCounter === 7) {
-                  displayMessage = "Ejecución: write(Memoria[MAR]) ← MBR | IP ← ri";
-                  store.set(messageAtom, displayMessage);
-                  cycleCount++;
-                  currentInstructionCycleCount++;
-                  store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
-                  console.log(
-                    "✅ CALL paso 7 (ciclo 8) - Ciclo contabilizado y mensaje combinado mostrado:",
-                    displayMessage,
-                  );
-                } else if (executeStageCounter >= 8) {
-                  displayMessage = "Ejecución: write(Memoria[MAR]) ← MBR | IP ← ri";
-                  store.set(messageAtom, displayMessage);
-                  cycleCount++;
-                  currentInstructionCycleCount++;
-                  store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
-                  console.log(
-                    "✅ CALL paso",
-                    executeStageCounter,
-                    "- Ciclo contabilizado y mensaje combinado mostrado",
-                  );
-                } else {
-                  displayMessage = "Ejecución: IP ← ri";
-                  store.set(messageAtom, displayMessage);
-                  console.log(
-                    "✅ CALL paso",
-                    executeStageCounter,
-                    "- Mensaje individual mostrado:",
-                    displayMessage,
-                  );
-                }
+                // Para CALL: NO contabilizar ciclo ni establecer mensaje aquí
+                // Dejar que se maneje automáticamente en cpu:cycle.end
+                console.log("🔄 CALL ri→IP: Delegando contabilización y mensaje a cpu:cycle.end");
 
                 // NO pausar aquí para CALL - la pausa real ocurre en cpu:cycle.end
                 // Si pausamos aquí, el simulador nunca llegará a cpu:cycle.end
@@ -2115,7 +2085,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               } else {
                 store.set(messageAtom, displayMessage);
               }
-              if (status.until === "cycle-change") {
+              if (status.until === "cycle-change" && currentInstructionName !== "CALL") {
                 pauseSimulation();
               }
             } else if (
@@ -2129,17 +2099,9 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               console.log("🔍 CALL Debug - destRegister:", destRegister);
               console.log("🔍 CALL Debug - executeStageCounter:", executeStageCounter);
 
-              displayMessage = "Ejecución: write(Memoria[MAR]) ← MBR | IP ← " + sourceRegister;
-              store.set(messageAtom, displayMessage);
-              cycleCount++;
-              currentInstructionCycleCount++;
-              store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
-              console.log(
-                "✅ CALL paso",
-                executeStageCounter,
-                "- Mensaje combinado AMPLIADO mostrado:",
-                displayMessage,
-              );
+              // Para CALL ampliada: NO contabilizar ciclo ni establecer mensaje aquí
+              // Dejar que se maneje automáticamente en cpu:cycle.end
+              console.log("🔄 CALL transferencia ampliada: Delegando contabilización y mensaje a cpu:cycle.end");
 
               // NO pausar aquí para CALL - la pausa real ocurre en cpu:cycle.end
               // Si pausamos aquí, el simulador nunca llegará a cpu:cycle.end
@@ -2258,12 +2220,11 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               !((sourceRegister === "BL" || sourceRegister === "BX") && destRegister === "ri") &&
               // Excluir específicamente transferencias a left/right de ALU
               !(destRegister === "left" || destRegister === "right") &&
-              // Excluir específicamente CALL paso 8+ (ri → IP) que ya se manejó arriba
+              // Excluir específicamente CALL (ri → IP) que se manejará en cpu:cycle.end
               !(
                 currentInstructionName === "CALL" &&
                 sourceRegister === "ri" &&
-                destRegister === "IP" &&
-                executeStageCounter >= 8
+                destRegister === "IP"
               )
             ) {
               // Para transferencias a left/right de ALU, NO mostrar mensaje ni contabilizar ciclo

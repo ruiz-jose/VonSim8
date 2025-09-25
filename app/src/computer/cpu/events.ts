@@ -490,9 +490,28 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       // _waitingForALUCogAnimation = false;
       // _aluCogAnimationComplete = false;
       currentPhase = "fetching";
-      // Sumar los ciclos de la instrucción actual al acumulador total
+      // Lógica especial para CALL: establecer mensaje final y registrar ciclo 8
       const { store } = await import("@/lib/jotai");
-      const { totalCycleCountAtom, currentInstructionCycleCountAtom } = await import("./state");
+      const { messageAtom, totalCycleCountAtom, currentInstructionCycleCountAtom, cycleCountAtom } = await import("./state");
+      if (currentInstructionName === "CALL") {
+        const displayMessage = "Ejecución: write(Memoria[MAR]) ← MBR | IP ← ri";
+        store.set(messageAtom, displayMessage);
+        
+        // Registrar el ciclo 8 de CALL
+        const currentCycleCount = store.get(cycleCountAtom);
+        const currentInstructionCycles = store.get(currentInstructionCycleCountAtom);
+        
+        store.set(cycleCountAtom, currentCycleCount + 1);
+        store.set(currentInstructionCycleCountAtom, currentInstructionCycles + 1);
+        
+        console.log("✅ CALL cpu:cycle.end - Mensaje final establecido:", displayMessage);
+        console.log("✅ CALL cpu:cycle.end - Ciclo 8 registrado:", {
+          cycleCount: currentCycleCount + 1,
+          currentInstructionCycleCount: currentInstructionCycles + 1
+        });
+      }
+
+      // Sumar los ciclos de la instrucción actual al acumulador total
       const ciclosInstruccion = store.get(currentInstructionCycleCountAtom);
       store.set(totalCycleCountAtom, prev => prev + ciclosInstruccion);
 
