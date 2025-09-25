@@ -85,6 +85,59 @@ function IPPlusOneAnimation() {
   );
 }
 
+// Add SPAnimation component for +1/-1 text
+function SPAnimation() {
+  const [isVisible, setIsVisible] = useState(false);
+  const [animationKey, setAnimationKey] = useState(0);
+  const [animationType, setAnimationType] = useState<"+1" | "-1">("+1");
+
+  useEffect(() => {
+    const handleSPUpdate = (event: CustomEvent<{ type: "+1" | "-1" }>) => {
+      setAnimationType(event.detail.type);
+      setIsVisible(true);
+      setAnimationKey(prev => prev + 1);
+
+      // Usar la velocidad de animación global (executionUnit)
+      const settings = getSettings();
+      const animationDuration = settings.executionUnit * 10;
+
+      setTimeout(() => {
+        setIsVisible(false);
+      }, animationDuration);
+    };
+
+    window.addEventListener("sp-register-update", handleSPUpdate as EventListener);
+
+    return () => {
+      window.removeEventListener("sp-register-update", handleSPUpdate as EventListener);
+    };
+  }, []);
+
+  // No mostrar si las animaciones están desactivadas
+  if (!isVisible) return null;
+
+  return (
+    <>
+      {/* SP Animation Text solo si las animaciones están activadas */}
+      {getSettings().animations && (
+        <div
+          key={animationKey}
+          className={clsx(
+            "pointer-events-none absolute left-[435px] top-[292px]",
+            "font-mono text-xs font-bold",
+          )}
+          style={{
+            color: "#facc15", // Amarillo similar al del registro SP (yellow-400)
+            animation: `slideUpAndFade ${getSettings().executionUnit * 10}ms ease-out forwards`,
+          }}
+        >
+          {animationType}
+        </div>
+      )}
+    </>
+  );
+}
+
 export function CPU() {
   const translate = useTranslate();
 
@@ -281,6 +334,7 @@ export function CPU() {
       {/* Eliminado MAR duplicado sin título */}
 
       <IPPlusOneAnimation />
+      <SPAnimation />
     </div>
   );
 }

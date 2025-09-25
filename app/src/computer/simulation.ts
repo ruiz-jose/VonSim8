@@ -2101,7 +2101,9 @@ async function executeThread(generator: EventGenerator): Promise<void> {
 
               // Para CALL ampliada: NO contabilizar ciclo ni establecer mensaje aquí
               // Dejar que se maneje automáticamente en cpu:cycle.end
-              console.log("🔄 CALL transferencia ampliada: Delegando contabilización y mensaje a cpu:cycle.end");
+              console.log(
+                "🔄 CALL transferencia ampliada: Delegando contabilización y mensaje a cpu:cycle.end",
+              );
 
               // NO pausar aquí para CALL - la pausa real ocurre en cpu:cycle.end
               // Si pausamos aquí, el simulador nunca llegará a cpu:cycle.end

@@ -492,22 +492,23 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       currentPhase = "fetching";
       // Lógica especial para CALL: establecer mensaje final y registrar ciclo 8
       const { store } = await import("@/lib/jotai");
-      const { messageAtom, totalCycleCountAtom, currentInstructionCycleCountAtom, cycleCountAtom } = await import("./state");
+      const { messageAtom, totalCycleCountAtom, currentInstructionCycleCountAtom, cycleCountAtom } =
+        await import("./state");
       if (currentInstructionName === "CALL") {
         const displayMessage = "Ejecución: write(Memoria[MAR]) ← MBR | IP ← ri";
         store.set(messageAtom, displayMessage);
-        
+
         // Registrar el ciclo 8 de CALL
         const currentCycleCount = store.get(cycleCountAtom);
         const currentInstructionCycles = store.get(currentInstructionCycleCountAtom);
-        
+
         store.set(cycleCountAtom, currentCycleCount + 1);
         store.set(currentInstructionCycleCountAtom, currentInstructionCycles + 1);
-        
+
         console.log("✅ CALL cpu:cycle.end - Mensaje final establecido:", displayMessage);
         console.log("✅ CALL cpu:cycle.end - Ciclo 8 registrado:", {
           cycleCount: currentCycleCount + 1,
-          currentInstructionCycleCount: currentInstructionCycles + 1
+          currentInstructionCycleCount: currentInstructionCycles + 1,
         });
       }
 
@@ -1978,9 +1979,40 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
 
       const [reg] = parseRegister(event.register);
       const regNorm = normalize(reg);
+
       // Si se actualiza MBR o IP, animar ambos juntos
       if (regNorm === "IP" || regNorm === "MBR") {
         await animateMBRAndIP();
+      } else if (regNorm === "SP") {
+        // Manejar animación del SP
+        await updateRegisterWithGlow("cpu.SP" as RegisterKey);
+
+        // Determinar si es +1 o -1 basado en la instrucción
+        let animationType: "+1" | "-1" = "+1";
+
+        switch (currentInstructionName) {
+          case "PUSH":
+          case "CALL":
+          case "INT":
+            animationType = "-1"; // PUSH, CALL e INT decrementan SP
+            break;
+          case "RET":
+          case "IRET":
+          case "POP":
+            animationType = "+1"; // RET, IRET y POP incrementan SP
+            break;
+          default:
+            // Para otros casos, intentar determinar por el contexto
+            animationType = "+1";
+            break;
+        }
+
+        // Emitir evento personalizado para la animación del texto
+        window.dispatchEvent(
+          new CustomEvent("sp-register-update", {
+            detail: { type: animationType },
+          }),
+        );
       } else {
         await updateRegisterWithGlow(
           regNorm === "ri" ? "cpu.ri" : (`cpu.${regNorm}` as RegisterKey),
