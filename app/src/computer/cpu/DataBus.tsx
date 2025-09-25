@@ -80,7 +80,7 @@ dataBus.addNode("mbr to ir horizontal", { position: [250, 250] }); // Punto hori
 dataBus.addNode("mbr to ir vertical end", { position: [250, 272] }); // Final de la línea gris vertical
 dataBus.addNode("mbr to ir approach", { position: [250, 275] }); // Punto de aproximación a IR (directamente al centro del registro IR)
 // Nodos para la ruta MBR bottom → ri siguiendo el mismo camino inicial que MBR→IR
-dataBus.addNode("mbr to ri vertical", { position: [390, 388] }); // Punto donde baja hacia ri desde el centro de CPU
+dataBus.addNode("mbr to ri vertical", { position: [425, 388] }); // Punto donde baja hacia ri desde el centro de CPU
 dataBus.addNode("SP join", { position: [425, 309] });
 dataBus.addNode("IP join", { position: [390, 349] }); // Alineado con data mbr join y NodoRegIn
 dataBus.addNode("ri join", { position: [425, 388] });
@@ -708,6 +708,7 @@ export function generateDataPath(
         "mbr to bus horizontal",
         "mbr to bus join",
         "mbr to cpu center",
+        "IP join",
         "mbr to ri vertical",
         "ri",
       ];
@@ -719,6 +720,7 @@ export function generateDataPath(
         "mbr to bus horizontal",
         "mbr to bus join",
         "mbr to cpu center",
+        "IP join",
         "mbr to ri vertical",
         "ri",
       ];
@@ -787,6 +789,7 @@ export function generateDataPath(
       "mbr to bus horizontal",
       "mbr to bus join",
       "mbr to cpu center",
+      "IP join",
       "mbr to ri vertical",
       "ri",
     ];
@@ -798,7 +801,7 @@ export function generateDataPath(
     (instruction === "INT" || instruction === "CALL")
   ) {
     // Ruta IP → MBR entrando por la parte superior (como memoria → MBR)
-    return "M 510 349 H 550 V 233 H 615 V 249";
+    return "M 455 349 H 550 V 233 H 615 V 249";
   }
 
   if (path.length === 0) {

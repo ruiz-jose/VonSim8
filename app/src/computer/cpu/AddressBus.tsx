@@ -29,8 +29,8 @@ export function generateAddressPath(
   }
   switch (from) {
     case "SP":
-      return "M 460 309 H 550 V 348 H 610";
-
+      return "M 455 309 L 525 309 L 550 348 H 610";
+      
     case "IP":
       return "M 460 349 H 610";
 
