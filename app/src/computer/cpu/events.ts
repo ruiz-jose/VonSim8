@@ -1271,11 +1271,19 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         const riValue = store.get(registerAtoms["ri.l"]);
         console.log("🔍 CALL Debug - MBR → ri:");
         console.log("  📍 Registro:", normalizedRegister, "| Modo:", mode);
-        console.log("  📊 MBR Value:", mbrValue.unsigned, `(0x${mbrValue.unsigned.toString(16).padStart(2, '0').toUpperCase()})`);
-        console.log("  📋 Ri Value (antes):", (riValue as any).unsigned, `(0x${(riValue as any).unsigned.toString(16).padStart(2, '0').toUpperCase()})`);
+        console.log(
+          "  📊 MBR Value:",
+          mbrValue.unsigned,
+          `(0x${mbrValue.unsigned.toString(16).padStart(2, "0").toUpperCase()})`,
+        );
+        console.log(
+          "  📋 Ri Value (antes):",
+          (riValue as any).unsigned,
+          `(0x${(riValue as any).unsigned.toString(16).padStart(2, "0").toUpperCase()})`,
+        );
         console.log("  🎬 willSkipAnimation:", mode !== "mem<-imd");
-        console.log("  ✏️ willUpdateRegister:", (normalizedRegister === "ri" && mode === "mem<-imd"));
-        console.log("  🎯 willDoActivation:", (normalizedRegister === "ri" && mode === "mem<-imd"));
+        console.log("  ✏️ willUpdateRegister:", normalizedRegister === "ri" && mode === "mem<-imd");
+        console.log("  🎯 willDoActivation:", normalizedRegister === "ri" && mode === "mem<-imd");
       }
 
       // Si la transferencia es a IP, marcar el flag global para evitar la animación individual de MBR en memoria
@@ -1329,17 +1337,22 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         const isALUOpWithMemory = aluOpsWithMemory.some(op => instructionName.startsWith(op));
 
         if (normalizedRegister === "ri" && mode === "mem<-imd") {
-          // Para TODAS las instrucciones con direccionamiento directo + inmediato, usar pendingMBRtoRI
-          if (
+          // Tratamiento especial para CALL: ejecutar animación inmediatamente en paso 6
+          if (instructionName.startsWith("CALL")) {
+            console.log(
+              "🎯 CALL detectado: ejecutando animación MBR → ri inmediatamente en paso 6",
+            );
+            await drawDataPath("MBR", "ri", instructionName, mode);
+          } else if (
             instructionName.startsWith("MOV") ||
             instructionName.startsWith("ADD") ||
             instructionName.startsWith("SUB") ||
             instructionName.startsWith("CMP") ||
             instructionName.startsWith("AND") ||
             instructionName.startsWith("OR") ||
-            instructionName.startsWith("XOR") ||
-            instructionName.startsWith("CALL")
+            instructionName.startsWith("XOR")
           ) {
+            // Para otras instrucciones con direccionamiento directo + inmediato, usar pendingMBRtoRI
             pendingMBRtoRI = { instruction: instructionName, mode, destination: "ri" };
             console.log("📝 Marcando animación MBR → ri como pendiente para animación simultánea");
           } else {
@@ -1534,11 +1547,15 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       // EXCEPCIÓN: Para CALL, siempre actualizar ri inmediatamente
       if (!(normalizedRegister === "ri" && mode === "mem<-imd") || instructionName === "CALL") {
         store.set(registerAtoms[event.register], store.get(MBRAtom));
-        
+
         // Debug específico para CALL
         if (instructionName === "CALL" && normalizedRegister === "ri") {
           const updatedValue = store.get(registerAtoms[event.register]);
-          console.log("🔥 CALL - Registro ri actualizado:", (updatedValue as any).unsigned, `(0x${(updatedValue as any).unsigned.toString(16).padStart(2, '0').toUpperCase()})`);
+          console.log(
+            "🔥 CALL - Registro ri actualizado:",
+            (updatedValue as any).unsigned,
+            `(0x${(updatedValue as any).unsigned.toString(16).padStart(2, "0").toUpperCase()})`,
+          );
         }
       }
 
@@ -1547,7 +1564,10 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         await updateRegisterWithGlow(`cpu.${normalizedRegister}` as RegisterKey);
       } else if (normalizedRegister === "IP") {
         // No hacer animación individual, la animación conjunta se hará en cpu:register.update
-      } else if (!(normalizedRegister === "ri" && mode === "mem<-imd") || instructionName === "CALL") {
+      } else if (
+        !(normalizedRegister === "ri" && mode === "mem<-imd") ||
+        instructionName === "CALL"
+      ) {
         // No hacer animación individual para ri en modo mem<-imd (se hará en la animación simultánea)
         // EXCEPCIÓN: Para CALL, siempre hacer la activación inmediatamente
         await activateRegister(`cpu.${normalizedRegister}` as RegisterKey);
@@ -1652,8 +1672,15 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         );
       }
 
-      // Si el registro destino es IP, animar ambos juntos
-      if (normalizedRegister === "IP") {
+      // Tratamiento especial para CALL: ejecutar animación IP → MBR en paso 7
+      if (instructionName === "CALL" && normalizedRegister === "IP") {
+        console.log("🎯 CALL detectado: ejecutando animación IP → MBR inmediatamente en paso 7");
+        await drawDataPath("IP", "MBR", instructionName, mode);
+        store.set(MBRAtom, store.get(registerAtoms[event.register]));
+        await resetDataPath();
+      }
+      // Si el registro destino es IP (pero no CALL), animar ambos juntos
+      else if (normalizedRegister === "IP") {
         await animateMBRAndIP();
       }
       // Si no es IP, mostrar animación del bus desde el registro origen hacia MBR
@@ -1901,26 +1928,22 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         console.log(`🎯 Ejecutando drawDataPath para transferencia normal: ${src} → ${dest}`);
         await drawDataPath(src as DataRegister, dest as DataRegister, instructionName, mode);
       } else {
-        // Lista completa de instrucciones de salto (JMP y saltos condicionales)
-        const jumpInstructions = [
-          "JMP",
-          "JZ",
-          "JNZ",
-          "JC",
-          "JNC",
-          "JS",
-          "JNS",
-          "JO",
-          "JNO",
-          "CALL",
-        ];
-
-        if (jumpInstructions.includes(instructionName)) {
-          console.log(`🎯 Animando MBR → IP para instrucción de salto: ${instructionName}`);
-          // Para instrucciones de salto, mostrar la animación MBR → IP
-          await drawDataPath("MBR" as DataRegister, "IP" as DataRegister, instructionName, mode);
+        // Manejar transferencias ri → IP de manera específica por instrucción
+        if (instructionName === "CALL") {
+          console.log(`🎯 Animando ri → IP para instrucción CALL`);
+          // Para CALL, mostrar la animación correcta ri → IP
+          await drawDataPath("ri" as DataRegister, "IP" as DataRegister, instructionName, mode);
         } else {
-          console.log(`⚠️  Saltando animación para transferencia ri → IP`);
+          // Lista de instrucciones de salto que usan MBR → IP (excluyendo CALL)
+          const jumpInstructions = ["JMP", "JZ", "JNZ", "JC", "JNC", "JS", "JNS", "JO", "JNO"];
+
+          if (jumpInstructions.includes(instructionName)) {
+            console.log(`🎯 Animando MBR → IP para instrucción de salto: ${instructionName}`);
+            // Para otras instrucciones de salto, mostrar la animación MBR → IP
+            await drawDataPath("MBR" as DataRegister, "IP" as DataRegister, instructionName, mode);
+          } else {
+            console.log(`⚠️  Saltando animación para transferencia ri → IP`);
+          }
         }
       }
       await activateRegister(`cpu.${dest}` as RegisterKey);

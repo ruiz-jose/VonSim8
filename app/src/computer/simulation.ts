@@ -1659,6 +1659,17 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 console.log("🔍 MOV CL, [BL] paso 4 detectado - pausando en mar.set");
                 pauseSimulation();
               }
+              // Excepción especial para CALL en el ciclo 6: evitar pausa en cpu:mar.set (SP → MAR)
+              // La pausa real ocurrirá en el siguiente evento cpu:mbr.set (IP → MBR)
+              else if (
+                currentInstructionName === "CALL" &&
+                sourceRegister === "SP" &&
+                executeStageCounter === 5
+              ) {
+                console.log(
+                  "⏭️ CALL ciclo 6 detectado - omitiendo pausa en cpu:mar.set (SP → MAR), pausará en cpu:mbr.set",
+                );
+              }
               // Solo omitir la pausa para ri → MAR que se omiten completamente
               // Para instrucciones indirectas con BL/BX → MAR, SÍ pausar porque es un evento visible
               else if (!isRiToMARSkipCycle && !(isIndirectInstruction && !blBxToRiProcessed)) {
@@ -2095,14 +2106,12 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                   );
                 }
 
-                // Pausar si se está ejecutando por ciclos
-                if (status.until === "cycle-change") {
-                  pauseSimulation();
-                }
+                // NO pausar aquí para CALL - la pausa real ocurre en cpu:cycle.end
+                // Si pausamos aquí, el simulador nunca llegará a cpu:cycle.end
+                console.log("🔄 CALL ri→IP: NO pausando, esperando cpu:cycle.end");
 
-                // IMPORTANTE: Salir aquí para evitar que se ejecute la lógica general más abajo
-                // que podría contabilizar un ciclo adicional
-                return;
+                // IMPORTANTE: NO hacer return aquí para permitir que el simulador continúe
+                // El evento debe procesarse completamente para permitir cpu:cycle.end
               } else {
                 store.set(messageAtom, displayMessage);
               }
@@ -2132,9 +2141,14 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 displayMessage,
               );
 
-              if (status.until === "cycle-change") {
-                pauseSimulation();
-              }
+              // NO pausar aquí para CALL - la pausa real ocurre en cpu:cycle.end
+              // Si pausamos aquí, el simulador nunca llegará a cpu:cycle.end
+              console.log(
+                "🔄 CALL transferencia a IP (ampliada): NO pausando, esperando cpu:cycle.end",
+              );
+
+              // IMPORTANTE: NO hacer return aquí para permitir que el simulador continúe
+              // El evento debe procesarse completamente para permitir cpu:cycle.end
             } else if (destRegister === "left" && currentInstructionName === "INT") {
               displayMessage = "ADD BL, 1";
             } else if (sourceRegister === "result" && currentInstructionName === "INT") {
