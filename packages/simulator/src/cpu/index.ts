@@ -615,8 +615,8 @@ export class CPU extends Component {
     }
     SP = SP.add(-1);
     yield* this.updateWordRegister("SP", SP);
-    yield* this.setMAR("SP");
     yield* this.setMBR(sourceRegister);
+    yield* this.setMAR("SP");
     if (!(yield* this.useBus("mem-write"))) return false; // Error writing to memory
 
     if (!MemoryAddress.inRange(SP.unsigned - 1)) {
