@@ -87,7 +87,7 @@ dataBus.addNode("ri join", { position: [425, 388] });
 dataBus.addNode("MAR join1", { position: [550, 388] });
 dataBus.addNode("MAR join2", { position: [550, 349] });
 dataBus.addNode("result mbr join", { position: [370, 250] });
-dataBus.addNode("FLAGS mbr join", { position: [155, 250] }); // FLAGS sigue a la izquierda
+dataBus.addNode("FLAGS mbr join", { position: [250, 250] }); // FLAGS sigue a la izquierda
 dataBus.addNode("left join", { position: [30, 85] });
 dataBus.addNode("right join", { position: [90, 145] });
 dataBus.addNode("operands mbr join", { position: [90, 250] });
@@ -403,26 +403,7 @@ export function generateDataPath(
     return "M 455 388 H 550 V 348 H 580";
   }
 
-  // Path especial: MBR -> RI para instrucciones con direccionamiento directo + inmediato (ruta que pasa por IP join)
-  if (
-    normalizedFrom === "MBR" &&
-    normalizedTo === "ri" &&
-    (instruction?.startsWith("MOV") ||
-      instruction?.startsWith("ADD") ||
-      instruction?.startsWith("SUB") ||
-      instruction?.startsWith("CMP") ||
-      instruction?.startsWith("AND") ||
-      instruction?.startsWith("OR") ||
-      instruction?.startsWith("XOR")) &&
-    mode === "mem<-imd"
-  ) {
-    console.log(
-      "🎯 Usando ruta especial MBR → ri (direccionamiento directo + inmediato pasando por IP join)",
-    );
-    // Ruta: MBR → mbr reg join → IP join → ri join → ri
-    // Posiciones: [620,250] → [390,250] → [390,349] → [390,388] → [455,388]
-    return "M 620 250 H 390 V 349 V 388 H 455";
-  }
+  // Código anterior deshabilitado eliminado - reemplazado por la ruta directa más abajo
 
   // Path especial: ri -> left end para animaciones simultáneas
   if (normalizedFrom === "ri" && normalizedTo === "left end") {
@@ -451,6 +432,14 @@ export function generateDataPath(
   // Si el origen o destino es MAR, no se debe mostrar animación del DataBus
   if (normalizedFrom === "MAR" || normalizedTo === "MAR") {
     return "";
+  }
+
+  // CASO ESPECIAL PRIORITARIO: FLAGS → MBR (animación pasando por toda la secuencia de nodos)
+  if (normalizedFrom === "FLAGS" && normalizedTo === "MBR") {
+    console.log("🎯 Usando ruta FLAGS → MBR pasando por secuencia completa de nodos");
+    // Ruta: FLAGS → FLAGS mbr join → data mbr join → outr mbr join → mbr approach horizontal → mbr approach vertical → mbr top approach → mbr top entry → MBR top → MBR
+    // Posiciones: FLAGS [250, 225] → FLAGS mbr join [250, 250] → data mbr join [390, 250] → outr mbr join [550, 250] → mbr approach horizontal [580, 250] → mbr approach vertical [580, 215] → mbr top approach [600, 215] → mbr top entry [615, 215] → MBR top [615, 215] → MBR [615, 249]
+    return "M 250 225 L 250 250 L 390 250 L 550 250 L 580 250 L 580 215 L 600 215 L 615 215 L 615 215 L 615 249";
   }
 
   // CASO ESPECIAL PRIORITARIO: MBR → IR (debe ejecutarse ANTES que cualquier otra lógica)
@@ -688,54 +677,28 @@ export function generateDataPath(
       "MBR",
     ];
   } else if (normalizedFrom === "MBR" && normalizedTo === "ri") {
-    // Casos específicos para MBR -> ri según instrucción y modo
-    if (["JMP", "JC", "JZ"].includes(instruction ?? "")) {
-      // Para saltos, animar MBR bottom -> salida inferior -> centro CPU -> IP (usando misma ruta inicial que MBR→IR)
-      path = [
-        "MBR bottom",
-        "mbr bottom exit",
-        "mbr to bus horizontal",
-        "mbr to bus join",
-        "mbr to cpu center",
-        "IP join",
-        "IP",
-      ];
-    } else if ((instruction === "MOV" || instruction === "INT") && mode === "mem<-imd") {
-      // Para instrucciones MOV/INT con modo mem<-imd, usar ruta desde borde inferior -> centro CPU -> ri
-      path = [
-        "MBR bottom",
-        "mbr bottom exit",
-        "mbr to bus horizontal",
-        "mbr to bus join",
-        "mbr to cpu center",
-        "IP join",
-        "mbr to ri vertical",
-        "ri",
-      ];
-    } else if (mode === "mem<-imd" && (instruction === "ADD" || instruction === "SUB")) {
-      // Para instrucciones ADD/SUB con modo mem<-imd, usar ruta desde borde inferior -> centro CPU -> ri
-      path = [
-        "MBR bottom",
-        "mbr bottom exit",
-        "mbr to bus horizontal",
-        "mbr to bus join",
-        "mbr to cpu center",
-        "IP join",
-        "mbr to ri vertical",
-        "ri",
-      ];
-    } else {
-      // Para otros casos, usar la ruta del AddressBus (showpath2): MBR -> MAR
-      return "M 594 249 H 550 V 348 H 580";
-    }
-    // Generar el path SVG
+    // RUTA DIRECTA para MBR → ri: evitar NodoRegIn y NodoRegOut completamente
+    // Usar la misma estrategia que MBR → IR: salir por la parte inferior y ir directo al registro
+    console.log("🎯 Usando ruta directa MBR → ri (evitando NodoRegIn/NodoRegOut)");
+    path = [
+      "MBR bottom",
+      "mbr bottom exit",
+      "mbr to bus horizontal",
+      "mbr to bus join",
+      "mbr to cpu center",
+      "mbr to ri vertical",
+      "ri",
+    ];
+    // Generar el path SVG inmediatamente para esta ruta especial
     const start = dataBus.getNodeAttribute(path[0], "position");
     let d = `M ${start[0]} ${start[1]}`;
     for (let i = 1; i < path.length; i++) {
       const [x, y] = dataBus.getNodeAttribute(path[i], "position");
       d += ` L ${x} ${y}`;
     }
+    console.log("🎯 Path SVG directo MBR → ri:", d);
     return d;
+  // Código anterior deshabilitado eliminado
   } else {
     try {
       path = bidirectional(dataBus, normalizedFrom, normalizedTo) || [];
@@ -782,7 +745,11 @@ export function generateDataPath(
     return "";
   }
 
-  if (normalizedFrom === "MBR" && normalizedTo === "ri" && instruction === "CALL") {
+  if (
+    normalizedFrom === "MBR" &&
+    normalizedTo === "ri" &&
+    (instruction === "CALL" || instruction === "INT")
+  ) {
     path = [
       "MBR bottom",
       "mbr bottom exit",
