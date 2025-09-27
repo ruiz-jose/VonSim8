@@ -660,6 +660,14 @@ function handleSPRegisterUpdate(
       };
     case "RET":
     case "IRET":
+      // Caso especial para RET en el paso 6 (executeStage === 3): mensaje combinado
+      if (executeStage === 3) {
+        return {
+          message: "Ejecución: IP ← MBR | SP ← SP + 1",
+          shouldDisplay: true,
+          shouldPause: true,
+        };
+      }
       return {
         message: "Ejecución: SP = SP + 1",
         shouldDisplay: true,
@@ -1941,6 +1949,13 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               currentInstructionModeid && // Con valor inmediato
               executeStageCounter === 4; // Paso 6 según el log
 
+            // Caso especial para RET en paso 6: no contabilizar ciclo ni mostrar mensaje aquí
+            // El mensaje combinado se mostrará en cpu:register.update
+            const isRETStep6 =
+              currentInstructionName === "RET" &&
+              executeStageCounter === 3 &&
+              sourceRegister === "IP";
+
             if (isALUIndirectImmediateMBRtoID) {
               console.log(
                 "🎯 Caso especial detectado: MBR → ID sin contabilizar ciclo ni mostrar mensaje",
@@ -1950,7 +1965,14 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               console.log("   originalRegister:", originalRegister);
             }
 
-            if (!mbridirmar && !isALUIndirectImmediateMBRtoID) {
+            if (isRETStep6) {
+              console.log(
+                "🎯 Caso especial RET paso 6 detectado: IP ← MBR sin contabilizar ciclo ni mostrar mensaje",
+              );
+              console.log("   Se mostrará mensaje combinado en cpu:register.update");
+            }
+
+            if (!mbridirmar && !isALUIndirectImmediateMBRtoID && !isRETStep6) {
               if (
                 String(sourceRegister) !== "MBR" &&
                 String(sourceRegister) !== "right.l" &&
