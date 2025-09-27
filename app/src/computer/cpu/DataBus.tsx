@@ -768,7 +768,7 @@ export function generateDataPath(
   if (normalizedFrom === "ri" && normalizedTo === "IP") {
     // Ruta: ri → ri out → ri out join → outr mbr join (bus central a altura MBR) → mbr reg join → NodoRegIn → IP join → IP
     console.log("🎯 Usando ruta especial ri → IP pasando por bus central a altura MBR");
-    return "M 455 388 H 480 H 525 H 550 V 250 H 390 H 390 V 349 H 455";
+    return "M 455 388 H 480  H 525 L 550 349 V 250 H 390 V 349 H 455";
   }
 
   // Resto de la lógica específica de instrucciones usando nombres normalizados
