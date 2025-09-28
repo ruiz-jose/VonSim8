@@ -679,8 +679,21 @@ function handleSPRegisterUpdate(
         shouldPause: true,
       };
     case "RET":
+      // Caso especial para RET en el paso 6 (executeStage === 3): mensaje combinado sin pausa
+      if (executeStage === 3) {
+        return {
+          message: "Ejecución: IP ← MBR | SP ← SP + 1",
+          shouldDisplay: true,
+          shouldPause: false, // No pausar en RET para mantener fluidez
+        };
+      }
+      return {
+        message: "Ejecución: SP = SP + 1",
+        shouldDisplay: true,
+        shouldPause: false, // No pausar en RET para mantener fluidez
+      };
     case "IRET":
-      // Caso especial para RET en el paso 6 (executeStage === 3): mensaje combinado
+      // Caso especial para IRET en el paso 6 (executeStage === 3): mensaje combinado
       if (executeStage === 3) {
         return {
           message: "Ejecución: IP ← MBR | SP ← SP + 1",
