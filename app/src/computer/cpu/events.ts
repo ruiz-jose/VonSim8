@@ -1593,7 +1593,13 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       if (normalizedRegister === "IR") {
         await updateRegisterWithGlow(`cpu.${normalizedRegister}` as RegisterKey);
       } else if (normalizedRegister === "IP") {
-        // No hacer animación individual, la animación conjunta se hará en cpu:register.update
+        // Para RET: mostrar animación MBR → IP
+        if (instructionName === "RET") {
+          console.log("🎯 RET detectado: mostrando animación MBR → IP");
+          await drawDataPath("MBR", "IP", instructionName, mode);
+        } else {
+          // No hacer animación individual para otros casos, la animación conjunta se hará en cpu:register.update
+        }
       } else if (
         !(normalizedRegister === "ri" && mode === "mem<-imd") ||
         instructionName === "CALL" ||
@@ -1606,11 +1612,12 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       }
 
       // Cuarto: Resetear la animación del bus (solo si no es ri en modo mem<-imd)
-      // EXCEPCIÓN: Para CALL e INT, siempre resetear el data path
+      // EXCEPCIÓN: Para CALL, INT y RET, siempre resetear el data path
       if (
         !(normalizedRegister === "ri" && mode === "mem<-imd") ||
         instructionName === "CALL" ||
-        instructionName === "INT"
+        instructionName === "INT" ||
+        instructionName === "RET"
       ) {
         await resetDataPath();
       }
