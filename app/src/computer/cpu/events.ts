@@ -1714,9 +1714,9 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         );
       }
 
-      // Tratamiento especial para CALL: ejecutar animación IP → MBR en paso 7
-      if (instructionName === "CALL" && normalizedRegister === "IP") {
-        console.log("🎯 CALL detectado: ejecutando animación IP → MBR inmediatamente en paso 7");
+      // Tratamiento especial para CALL e INT: ejecutar animación IP → MBR en paso 7/9
+      if ((instructionName === "CALL" || instructionName === "INT") && normalizedRegister === "IP") {
+        console.log(`🎯 ${instructionName} detectado: ejecutando animación IP → MBR inmediatamente`);
         await drawDataPath("IP", "MBR", instructionName, mode);
         store.set(MBRAtom, store.get(registerAtoms[event.register]));
         await resetDataPath();

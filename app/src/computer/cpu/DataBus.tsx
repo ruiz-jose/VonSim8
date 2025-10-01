@@ -698,7 +698,7 @@ export function generateDataPath(
     }
     console.log("🎯 Path SVG directo MBR → ri:", d);
     return d;
-  // Código anterior deshabilitado eliminado
+    // Código anterior deshabilitado eliminado
   } else {
     try {
       path = bidirectional(dataBus, normalizedFrom, normalizedTo) || [];
