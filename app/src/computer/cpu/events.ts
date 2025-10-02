@@ -1593,10 +1593,18 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       if (normalizedRegister === "IR") {
         await updateRegisterWithGlow(`cpu.${normalizedRegister}` as RegisterKey);
       } else if (normalizedRegister === "IP") {
-        // Para RET e INT: mostrar animación MBR → IP
+        // Para RET e INT: mostrar animación MBR → IP y activación del registro
         if (instructionName === "RET" || instructionName === "INT") {
           console.log(`🎯 ${instructionName} detectado: mostrando animación MBR → IP`);
-          await drawDataPath("MBR", "IP", instructionName, mode);
+          try {
+            await drawDataPath("MBR", "IP", instructionName, mode);
+            // Activar y desactivar el registro IP después de la animación
+            await activateRegister("cpu.IP");
+            await deactivateRegister("cpu.IP");
+          } catch (error) {
+            console.error(`❌ Error en animación MBR → IP para ${instructionName}:`, error);
+            // Continuar aunque falle la animación
+          }
         } else {
           // No hacer animación individual para otros casos, la animación conjunta se hará en cpu:register.update
         }
