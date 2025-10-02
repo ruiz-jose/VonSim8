@@ -400,7 +400,7 @@ export function generateDataPath(
   if (normalizedFrom === "ri" && normalizedTo === "MAR" && mode === "mem<-imd") {
     // Ruta directa desde ri hasta MAR para instrucciones con modo directo e inmediato
     console.log("🎯 Usando ruta especial ri → MAR:", "M 455 388 H 550 V 348 H 580");
-    return "M 455 388 H 550 V 348 H 580";
+    return "M 455 388  H 480 H 525 L 550 V 348 H 580";
   }
 
   // Código anterior deshabilitado eliminado - reemplazado por la ruta directa más abajo
@@ -427,10 +427,6 @@ export function generateDataPath(
 
   if (!dataBus.hasNode(normalizedTo)) {
     console.warn(`Nodo destino '${normalizedTo}' no existe en el grafo`);
-    return "";
-  }
-  // Si el origen o destino es MAR, no se debe mostrar animación del DataBus
-  if (normalizedFrom === "MAR" || normalizedTo === "MAR") {
     return "";
   }
 
@@ -731,7 +727,7 @@ export function generateDataPath(
   if (normalizedFrom === "ri" && normalizedTo === "IP") {
     // Ruta: ri → ri out → ri out join → outr mbr join (bus central a altura MBR) → mbr reg join → NodoRegIn → IP join → IP
     console.log("🎯 Usando ruta especial ri → IP pasando por bus central a altura MBR");
-    return "M 455 388 H 480  H 525 L 550 349 V 250 H 390 V 349 H 455";
+    return "M 455 388 H 480 H 525 L 550 349 V 250 H 390 V 349 H 455";
   }
 
   // Resto de la lógica específica de instrucciones usando nombres normalizados
