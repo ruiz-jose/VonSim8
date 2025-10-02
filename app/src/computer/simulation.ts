@@ -701,6 +701,14 @@ function handleSPRegisterUpdate(
           shouldPause: true,
         };
       }
+      // Caso especial para IRET en el paso 9 (executeStage === 5): mensaje combinado FLAGS ← MBR | SP ← SP + 1
+      if (executeStage === 5) {
+        return {
+          message: "Ejecución: Flags ← MBR | SP ← SP + 1",
+          shouldDisplay: true,
+          shouldPause: true,
+        };
+      }
       return {
         message: "Ejecución: SP = SP + 1",
         shouldDisplay: true,
@@ -2129,6 +2137,13 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               executeStageCounter === 3 &&
               sourceRegister === "IP";
 
+            // Caso especial para IRET en paso 9: no contabilizar ciclo ni mostrar mensaje aquí
+            // El mensaje combinado "Flags ← MBR | SP ← SP + 1" se mostrará en cpu:register.update
+            const isIRETStep9 =
+              currentInstructionName === "IRET" &&
+              executeStageCounter === 5 &&
+              sourceRegister === "FLAGS";
+
             if (isALUIndirectImmediateMBRtoID) {
               console.log(
                 "🎯 Caso especial detectado: MBR → ID sin contabilizar ciclo ni mostrar mensaje",
@@ -2150,6 +2165,15 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 "🎯 Caso especial IRET paso 6 detectado: IP ← MBR sin contabilizar ciclo ni mostrar mensaje",
               );
               console.log("   Se mostrará mensaje combinado en cpu:register.update");
+            }
+
+            if (isIRETStep9) {
+              console.log(
+                "🎯 Caso especial IRET paso 9 detectado: FLAGS ← MBR sin contabilizar ciclo ni mostrar mensaje",
+              );
+              console.log(
+                "   Se mostrará mensaje combinado en cpu:register.update: Flags ← MBR | SP ← SP + 1",
+              );
             }
 
             // Caso especial para INT y CALL: Log para debugging
@@ -2182,7 +2206,13 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               if (status.until === "cycle-change") {
                 pauseSimulation();
               }
-            } else if (!mbridirmar && !isALUIndirectImmediateMBRtoID && !isRETStep6 && !isIRETStep6) {
+            } else if (
+              !mbridirmar &&
+              !isALUIndirectImmediateMBRtoID &&
+              !isRETStep6 &&
+              !isIRETStep6 &&
+              !isIRETStep9
+            ) {
               if (
                 String(sourceRegister) !== "MBR" &&
                 String(sourceRegister) !== "right.l" &&
