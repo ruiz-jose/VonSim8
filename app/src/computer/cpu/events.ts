@@ -241,6 +241,42 @@ const drawSimultaneousLeftRightPath = (from: DataRegister, instruction: string, 
 const resetDataPath = () =>
   anim({ key: "cpu.internalBus.data.opacity", to: 0 }, { duration: 1, easing: "easeInSine" });
 
+// Función para animar el bus de direcciones (azul) - para transferencias a MAR
+const drawAddressPath = (from: string, to: string) => {
+  console.log("🎨 drawAddressPath llamado con:", { from, to });
+  try {
+    const path = generateAddressPath(from as MARRegister);
+    console.log("🎯 Ruta generada en drawAddressPath:", path);
+    if (!path) {
+      console.log("❌ No hay ruta para bus de direcciones, retornando Promise.resolve()");
+      return Promise.resolve();
+    }
+
+    const settings = getSettings();
+    const duration = settings.animations ? settings.executionUnit : 1;
+    console.log("🔧 Duración de la animación (bus de direcciones):", duration);
+
+    return anim(
+      [
+        { key: "cpu.internalBus.address.path", from: path },
+        { key: "cpu.internalBus.address.opacity", from: 1 },
+        { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
+      ],
+      { duration, easing: "easeInOutSine", forceMs: true },
+    );
+  } catch (error) {
+    console.error("❌ Error en drawAddressPath:", error);
+    return Promise.resolve();
+  }
+};
+
+const resetAddressPath = () => {
+  return anim(
+    { key: "cpu.internalBus.address.opacity", to: 0 },
+    { duration: 1, easing: "easeInSine" },
+  );
+};
+
 // Función para manejar la animación simultánea de manera asíncrona
 const handleSimultaneousAnimation = async (
   src: DataRegister,
@@ -310,9 +346,6 @@ declare global {
     VONSIM_PARALLEL_ANIMATIONS?: boolean;
   }
 }
-
-// Variable global temporal para guardar el último origen de ri
-let lastSourceForRI: string | null = null;
 
 // Variables para coordinar animaciones simultáneas para MBR→ID/ri e IP→MAR
 let pendingMBRtoID: { instruction: string; mode: string; destination: string } | null = null;
@@ -1142,8 +1175,8 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         isRiToMARSkipAnimation,
       );
 
-      // Animación azul (bus de direcciones) - solo si no es IP en modo mem<-imd Y no es ri → MAR skip Y no es ri → MAR simultáneo
-      // IMPORTANTE: isRiToMARSkipAnimation solo debe aplicarse cuando regNorm === "ri"
+      // Animación azul (bus de direcciones) - solo si no es IP en modo mem<-imd Y no es ri
+      // IMPORTANTE: Para ri, hay lógica específica más adelante que maneja todas las animaciones
       const isDirectAddressingForRi =
         regNorm === "ri" &&
         (instructionName === "MOV" ||
@@ -1152,10 +1185,10 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
           instructionName === "CMP") &&
         mode !== "mem<-imd";
 
+      // Excluir completamente ri de este bloque porque tiene su propia lógica específica después
       if (
         !(regNorm === "IP" && mode === "mem<-imd") &&
-        !(regNorm === "ri" && isRiToMARSkipAnimation) &&
-        !(regNorm === "ri" && isRiToMARSimultaneous) &&
+        regNorm !== "ri" && // EXCLUIR completamente ri - tiene su propia lógica después
         !isDirectAddressingForRi // No mostrar bus en mar.set para direccionamiento directo
       ) {
         await anim(
@@ -1171,23 +1204,12 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         );
         await activateRegister(`cpu.MAR`, colors.blue[500]);
         store.set(MARAtom, store.get(registerAtoms[regNorm]));
-      } else if (regNorm === "ri" && (isRiToMARSkipAnimation || isRiToMARSimultaneous)) {
-        if (isRiToMARSkipAnimation) {
-          console.log("⏭️ Animación de bus y registro MAR omitida para ri → MAR en etapa avanzada");
-        } else {
-          console.log("⏭️ Animación de bus y registro MAR diferida para ri → MAR simultáneo");
-        }
-        // Actualizar el valor del MAR y mostrar destello aunque se omita la animación de bus
-        if (!isRiToMARSimultaneous) {
-          store.set(MARAtom, store.get(registerAtoms[regNorm]));
-          await activateRegister("cpu.MAR", colors.blue[500]);
-          await deactivateRegister("cpu.MAR");
-        }
       }
 
-      // --- Lógica para animar desde el origen real si MAR se actualiza desde ri ---
-      if (regNorm === "ri" && !isRiToMARSkipAnimation) {
+      // --- Lógica específica para cuando MAR se actualiza desde ri ---
+      if (regNorm === "ri" && !isRiToMARSkipAnimation && !isRiToMARSimultaneous) {
         console.log("[cpu:mar.set] ri detectado, mode:", mode, "instructionName:", instructionName);
+
         // Para direccionamiento directo (MOV/ADD/SUB/CMP), NO mostrar bus aquí (se mostró en mbr.get)
         if (
           (instructionName === "MOV" ||
@@ -1201,34 +1223,30 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
           // Destello/actualización de MAR después de haberse mostrado el bus en mbr.get
           await activateRegister("cpu.MAR", colors.blue[500]);
           await deactivateRegister("cpu.MAR");
-          lastSourceForRI = null;
           return;
         }
-        // Para instrucciones con modo mem<-imd, mostrar animación especial ri -> MAR
-        if (mode === "mem<-imd") {
-          console.log("✅ Animando bus especial: ri → MAR (modo mem<-imd)", {
-            instructionName,
-            mode,
-          });
-          console.log("🔧 Llamando drawDataPath con:", {
-            from: "ri",
-            to: "MAR",
-            instructionName,
-            mode,
-          });
-          const path = await drawDataPath("ri" as DataRegister, "MAR", instructionName, mode);
-          console.log("🎯 Ruta generada para ri → MAR:", path);
-          // Resetear la animación del bus después de completarse
-          await resetDataPath();
-        } else {
-          console.log("❌ No es modo mem<-imd, usando lógica alternativa");
-          // Si hay un origen previo, úsalo; si no, fuerza BL→MAR
-          const source = lastSourceForRI || "BL";
-          await drawDataPath(normalize(source) as DataRegister, "MAR", instructionName, mode);
-          // Resetear la animación del bus después de completarse
-          await resetDataPath();
-        }
-        lastSourceForRI = null;
+
+        // Para todos los demás casos (incluido INT con mem<-imd), mostrar animación ri → MAR
+        console.log("✅ Animando bus de direcciones: ri → MAR", {
+          instructionName,
+          mode,
+        });
+
+        await drawAddressPath("ri", "MAR");
+
+        // Activar registro MAR
+        await activateRegister("cpu.MAR", colors.blue[500]);
+
+        // Actualizar el registro MAR
+        store.set(MARAtom, store.get(registerAtoms.ri));
+
+        // Desactivar registro MAR
+        await deactivateRegister("cpu.MAR");
+
+        // Resetear la animación del bus de direcciones
+        await resetAddressPath();
+
+        return;
       } else if (regNorm === "IP" && mode === "mem<-imd") {
         // Marcar animación IP → MAR como pendiente para ejecución simultánea
         pendingIPtoMARFromRegCopy = { instruction: instructionName, mode };
@@ -1241,14 +1259,11 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         await resetDataPath();
       }
 
-      // Solo desactivar si no es IP en modo mem<-imd (se hará en la animación simultánea)
-      // Y solo si no es ri → MAR skip (no hay animación que desactivar)
-      // Y solo si no es ri → MAR simultáneo (se hará en la animación simultánea)
-      // IMPORTANTE: isRiToMARSkipAnimation solo debe aplicarse cuando regNorm === "ri"
+      // Solo desactivar si no es IP en modo mem<-imd Y no es ri
+      // ri tiene su propia lógica de activación/desactivación en su bloque específico
       if (
         !(regNorm === "IP" && mode === "mem<-imd") &&
-        !(regNorm === "ri" && isRiToMARSkipAnimation) &&
-        !(regNorm === "ri" && isRiToMARSimultaneous)
+        regNorm !== "ri" // EXCLUIR ri - tiene su propia lógica
       ) {
         await Promise.all([
           deactivateRegister("cpu.MAR"),
@@ -1257,12 +1272,6 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
             { duration: 1, easing: "easeInSine" },
           ),
         ]);
-      } else if (regNorm === "ri" && (isRiToMARSkipAnimation || isRiToMARSimultaneous)) {
-        if (isRiToMARSkipAnimation) {
-          console.log("⏭️ Desactivación de registro MAR omitida para ri → MAR en etapa avanzada");
-        } else {
-          console.log("⏭️ Desactivación de registro MAR diferida para ri → MAR simultáneo");
-        }
       }
       return;
     }
@@ -1723,8 +1732,13 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       }
 
       // Tratamiento especial para CALL e INT: ejecutar animación IP → MBR en paso 7/9
-      if ((instructionName === "CALL" || instructionName === "INT") && normalizedRegister === "IP") {
-        console.log(`🎯 ${instructionName} detectado: ejecutando animación IP → MBR inmediatamente`);
+      if (
+        (instructionName === "CALL" || instructionName === "INT") &&
+        normalizedRegister === "IP"
+      ) {
+        console.log(
+          `🎯 ${instructionName} detectado: ejecutando animación IP → MBR inmediatamente`,
+        );
         await drawDataPath("IP", "MBR", instructionName, mode);
         store.set(MBRAtom, store.get(registerAtoms[event.register]));
         await resetDataPath();
@@ -2055,10 +2069,6 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
     case "cpu:register.buscopy": {
       const src = normalize(event.src);
       const dest = normalize(event.dest);
-      // Guardar el último origen de ri
-      if (dest === "ri") {
-        lastSourceForRI = src;
-      }
       // Evitar animación duplicada si es ri -> MAR (ya se anima en cpu:mar.set)
       if (!(src === "ri" && dest.toLowerCase() === "mar")) {
         if (!(src === "ri" && dest === "IP")) {

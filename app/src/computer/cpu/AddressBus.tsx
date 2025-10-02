@@ -22,7 +22,7 @@ export function generateAddressPath(
 ): string {
   let path = "";
   if (showpath1) {
-    path = "M 455 388 H 550 V 348 H 610"; // ri - ajustado para conectar con MAR desde registro redimensionado
+    path = "M 455 388 L 525 388 L 550 348 H 610"; // ri - usando líneas que siguen el bus gris
   }
   if (showpath2) {
     path = "M 594 249 H 550 V 348 H 610"; // mbr - ajustado para conectar con MAR
@@ -35,7 +35,9 @@ export function generateAddressPath(
       return "M 460 349 H 610";
 
     case "ri":
-      return showpath1 || showpath2 ? path : "";
+      // Si showpath1 o showpath2 están definidos, usar esa lógica
+      // Si no, retornar el path por defecto de ri → MAR que sigue el bus gris estático
+      return showpath1 || showpath2 ? path : "M 455 388 L 525 388 L 550 348 H 610";
 
     default:
       throw new Error(`Invalid register ${from}`);
