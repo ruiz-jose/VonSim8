@@ -165,7 +165,7 @@ export function CPU() {
       } else {
         setShowRegisters(false);
       }
-      if (instruction === "IRET" || modeid) {
+      if (modeid) {
         setShowid(true);
       } else {
         setShowid(false);

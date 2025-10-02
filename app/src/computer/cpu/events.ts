@@ -1321,6 +1321,12 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       // Si la transferencia es a IP, marcar el flag global para evitar la animación individual de MBR en memoria
       if (normalizedRegister === "IP") {
         window.__nextTransferMBRtoIP = true;
+        
+        // Para RET e IRET, ejecutar la animación MBR → IP inmediatamente
+        if (instructionName === "RET" || instructionName === "IRET") {
+          console.log(`🎯 ${instructionName} detectado: ejecutando animación MBR → IP inmediatamente`);
+          await drawDataPath("MBR", "IP", instructionName, mode);
+        }
       }
 
       // Solo animar el bus de datos desde MBR a IR, MAR o registros de propósito general (AL, BL, CL, DL) si NO es una operación de la ALU

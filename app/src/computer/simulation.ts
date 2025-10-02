@@ -2122,6 +2122,13 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               executeStageCounter === 3 &&
               sourceRegister === "IP";
 
+            // Caso especial para IRET en paso 6: no contabilizar ciclo ni mostrar mensaje aquí
+            // El mensaje combinado se mostrará en cpu:register.update
+            const isIRETStep6 =
+              currentInstructionName === "IRET" &&
+              executeStageCounter === 3 &&
+              sourceRegister === "IP";
+
             if (isALUIndirectImmediateMBRtoID) {
               console.log(
                 "🎯 Caso especial detectado: MBR → ID sin contabilizar ciclo ni mostrar mensaje",
@@ -2134,6 +2141,13 @@ async function executeThread(generator: EventGenerator): Promise<void> {
             if (isRETStep6) {
               console.log(
                 "🎯 Caso especial RET paso 6 detectado: IP ← MBR sin contabilizar ciclo ni mostrar mensaje",
+              );
+              console.log("   Se mostrará mensaje combinado en cpu:register.update");
+            }
+
+            if (isIRETStep6) {
+              console.log(
+                "🎯 Caso especial IRET paso 6 detectado: IP ← MBR sin contabilizar ciclo ni mostrar mensaje",
               );
               console.log("   Se mostrará mensaje combinado en cpu:register.update");
             }
@@ -2168,7 +2182,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               if (status.until === "cycle-change") {
                 pauseSimulation();
               }
-            } else if (!mbridirmar && !isALUIndirectImmediateMBRtoID && !isRETStep6) {
+            } else if (!mbridirmar && !isALUIndirectImmediateMBRtoID && !isRETStep6 && !isIRETStep6) {
               if (
                 String(sourceRegister) !== "MBR" &&
                 String(sourceRegister) !== "right.l" &&
@@ -2505,7 +2519,8 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               currentInstructionName === "PUSH" ||
               currentInstructionName === "POP" ||
               currentInstructionName === "IN" ||
-              currentInstructionName === "RET")
+              currentInstructionName === "RET" ||
+              currentInstructionName === "IRET")
           ) {
             /*(currentInstructionMode &&
               (currentInstructionName === "MOV" ||
@@ -2541,6 +2556,9 @@ async function executeThread(generator: EventGenerator): Promise<void> {
             }
 
             if (currentInstructionName === "RET") {
+              messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";
+            }
+            if (currentInstructionName === "IRET") {
               messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";
             }
             if (currentInstructionName === "IN") {

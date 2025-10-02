@@ -596,9 +596,9 @@ export class CPU extends Component {
 
   /**
    * Pushes a value to the stack, and updates the SP register.
-   * This value should have been previously written to the id register.
+   * The value is read directly from the specified register.
    * @see {@link https://vonsim.github.io/docs/cpu/#pila}
-   * @param value The value to push to the stack.
+   * @param sourceRegister The register containing the value to push to the stack.
    * @returns Whether the operation was successful.
    *
    * ---
@@ -633,8 +633,9 @@ export class CPU extends Component {
 
   /**
    * Pops a value from the stack, and updates the SP register.
-   * This value will be written to the id register.
+   * This value will be written directly to the specified register.
    * @see {@link https://vonsim.github.io/docs/cpu/#pila}
+   * @param sourceRegister The register where the popped value will be written.
    * @returns Whether the operation was successful.
    *
    * ---
