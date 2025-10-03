@@ -1968,7 +1968,14 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               console.log("currentInstructionModeri:", currentInstructionModeri);
               console.log("executeStageCounter:", executeStageCounter);
               console.log("pause:", pause);
-              if (
+              
+              // Caso especial para PUSH con SP: NO mostrar mensaje ni contabilizar ciclo
+              // porque el mensaje combinado "MBR ← registro | SP ← SP - 1" ya se mostró en cpu:mbr.set
+              // NOTA: executeStageCounter es 4 aquí porque ya se incrementó en cpu:mbr.set
+              if (currentInstructionName === "PUSH" && sourceRegister === "SP" && executeStageCounter === 4) {
+                console.log("⏭️ PUSH paso 5 (SP update) - omitiendo ciclo y mensaje (ya mostrado en mbr.set)");
+                // NO incrementar executeStageCounter aquí, ya se incrementó en cpu:mbr.set
+              } else if (
                 currentInstructionName !== "DEC" &&
                 currentInstructionName !== "INC" &&
                 currentInstructionName !== "NOT" &&
@@ -1985,7 +1992,11 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 console.log("⏭️ INT paso 11 (ri.l update) - omitiendo ciclo y mensaje");
               }
 
-              executeStageCounter++;
+              // Solo incrementar executeStageCounter si NO es PUSH con SP
+              // NOTA: executeStageCounter es 4 aquí porque ya se incrementó en cpu:mbr.set
+              if (!(currentInstructionName === "PUSH" && sourceRegister === "SP" && executeStageCounter === 4)) {
+                executeStageCounter++;
+              }
               if (displayMessage !== "Interrupción: MAR ← (video)") {
                 if (status.until === "cycle-change") {
                   if (
@@ -1993,11 +2004,16 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                     currentInstructionName !== "INC" &&
                     currentInstructionName !== "NOT" &&
                     currentInstructionName !== "NEG" &&
-                    !(currentInstructionName === "INT" && executeStageCounter === 12)
+                    !(currentInstructionName === "INT" && executeStageCounter === 12) &&
+                    !(currentInstructionName === "PUSH" && sourceRegister === "SP" && executeStageCounter === 4)
                   ) {
                     if (pause) {
                       pauseSimulation();
                     }
+                  } else if (currentInstructionName === "PUSH" && sourceRegister === "SP" && executeStageCounter === 4) {
+                    // Para PUSH con SP: SÍ pausar, pero NO mostrar mensaje ni contabilizar ciclo
+                    console.log("🛑 PUSH paso 5 (SP update) - pausando sin mensaje ni ciclo");
+                    pauseSimulation();
                   }
                 }
               }
@@ -3000,6 +3016,21 @@ async function executeThread(generator: EventGenerator): Promise<void> {
             ) {
               resultmbrimar = true;
               displayMessageresultmbr = `Ejecución: MBR ← ${sourceRegister} ; MAR ← MBR`;
+            } else if (
+              // Para PUSH cuando se copia el registro al MBR en el paso 5 (ciclo 5)
+              // Mostrar mensaje combinado: MBR ← registro | SP ← SP - 1
+              currentInstructionName === "PUSH" &&
+              executeStageCounter === 3 &&
+              ["AL", "BL", "CL", "DL", "AH", "BH", "CH", "DH", "AX", "BX", "CX", "DX"].includes(sourceRegister)
+            ) {
+              console.log(`🎯 PUSH paso 5 detectado: ${sourceRegister} → MBR | SP ← SP - 1`);
+              store.set(messageAtom, `Ejecución: MBR ← ${sourceRegister} | SP ← SP - 1`);
+              cycleCount++;
+              currentInstructionCycleCount++;
+              store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+              executeStageCounter++;
+              // NO pausar aquí para PUSH - la pausa ocurrirá en cpu:register.update cuando se actualice SP
+              console.log("⏭️ PUSH paso 5 (MBR ← registro) - NO pausando, pausará en cpu:register.update");
             } else if (
               // Para instrucciones aritméticas con direccionamiento directo e inmediato
               // Etapa 5: copiar el tercer byte (valor inmediato) al registro id

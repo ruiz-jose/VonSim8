@@ -613,11 +613,13 @@ export class CPU extends Component {
       yield { type: "cpu:error", error: new SimulatorError("stack-overflow") };
       return false;
     }
+
+    yield* this.setMAR("SP");
+    yield* this.setMBR(sourceRegister);
     SP = SP.add(-1);
     yield* this.updateWordRegister("SP", SP);
-    yield* this.setMBR(sourceRegister);
-    yield* this.setMAR("SP");
     if (!(yield* this.useBus("mem-write"))) return false; // Error writing to memory
+
 
     if (!MemoryAddress.inRange(SP.unsigned - 1)) {
       yield { type: "cpu:error", error: new SimulatorError("stack-overflow") };
