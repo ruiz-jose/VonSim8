@@ -717,7 +717,7 @@ function handleSPRegisterUpdate(
     case "POP":
       if (executeStage === 3) {
         return {
-          message: `${displayMessagepop}; SP = SP + 1`,
+          message: `${displayMessagepop} | SP = SP + 1`,
           shouldDisplay: true,
           shouldPause: true,
         };
