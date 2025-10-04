@@ -1007,7 +1007,9 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
             // También skip para direccionamiento indirecto en etapa 4 (cuando no hay modos directos/inmediatos)
             (currentExecuteStageCounter === 4 && instructionName === currentInstructionName))) ||
         // También skip para INT pasos 6 y 7 con SP (no hay animación válida, solo preparación interna)
-        (regNorm === "SP" && currentInstructionName === "INT" && (currentExecuteStageCounter === 4 || currentExecuteStageCounter === 5));
+        (regNorm === "SP" &&
+          currentInstructionName === "INT" &&
+          (currentExecuteStageCounter === 4 || currentExecuteStageCounter === 5));
 
       console.log(`🔍 isRiToMARSimultaneous Debug:`, {
         regNorm,
@@ -1636,6 +1638,26 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         } else {
           // No hacer animación individual para otros casos, la animación conjunta se hará en cpu:register.update
         }
+      } else if (normalizedRegister === "ri") {
+        // Caso especial para ri: siempre activar cuando es CALL, pero NO para INT (se activa en register.update)
+        console.log(
+          `🔍 Evaluando activación para ri - instructionName: ${instructionName}, mode: ${mode}`,
+        );
+        if (instructionName === "CALL") {
+          console.log(`✅ Activando registro ri para ${instructionName}`);
+          await activateRegister(`cpu.${normalizedRegister}` as RegisterKey);
+          await deactivateRegister(`cpu.${normalizedRegister}` as RegisterKey);
+        } else if (instructionName === "INT") {
+          console.log(
+            `⏭️ Omitiendo activación de ri para INT (se activará en register.update con el mensaje combinado)`,
+          );
+        } else if (mode !== "mem<-imd") {
+          console.log(`✅ Activando registro ri (modo no es mem<-imd)`);
+          await activateRegister(`cpu.${normalizedRegister}` as RegisterKey);
+          await deactivateRegister(`cpu.${normalizedRegister}` as RegisterKey);
+        } else {
+          console.log(`⏭️ Omitiendo activación de ri (animación simultánea posterior)`);
+        }
       } else if (
         !(normalizedRegister === "ri" && mode === "mem<-imd") ||
         instructionName === "CALL" ||
@@ -1643,8 +1665,11 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       ) {
         // No hacer animación individual para ri en modo mem<-imd (se hará en la animación simultánea)
         // EXCEPCIÓN: Para CALL e INT, siempre hacer la activación inmediatamente
+        console.log(`✅ Activando registro ${normalizedRegister}`);
         await activateRegister(`cpu.${normalizedRegister}` as RegisterKey);
         await deactivateRegister(`cpu.${normalizedRegister}` as RegisterKey);
+      } else {
+        console.log(`⏭️ Omitiendo activación de ${normalizedRegister}`);
       }
 
       // Cuarto: Resetear la animación del bus (solo si no es ri en modo mem<-imd)
@@ -2053,6 +2078,19 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
 
       const [reg] = parseRegister(event.register);
       const regNorm = normalize(reg);
+
+      // Caso especial para INT paso 6: activar el registro ri con destello
+      // ANTES de actualizar el SP para mostrar la transferencia combinada "ri ← MBR | SP ← SP - 1"
+      if (
+        currentInstructionName === "INT" &&
+        currentExecuteStageCounter === 4 &&
+        regNorm === "SP"
+      ) {
+        console.log("🎯 INT paso 6 en register.update - Activando ri con destello ANTES de SP");
+        // Activar y desactivar el registro ri para mostrar el destello
+        await activateRegister("cpu.ri" as RegisterKey);
+        await deactivateRegister("cpu.ri" as RegisterKey);
+      }
 
       // Si se actualiza MBR o IP, animar ambos juntos
       if (regNorm === "IP" || regNorm === "MBR") {
