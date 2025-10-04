@@ -323,6 +323,9 @@ let lastMemoryOperationWasWrite = false; // Flag para rastrear si la última ope
 
 let shouldPauseAfterEvent = false; // Nueva bandera para pausar después del evento
 
+// Bandera para rastrear si ya se mostró la notificación del flag I
+let interruptFlagNotificationShown = false;
+
 // Tipos para mejorar la legibilidad y mantenibilidad
 type InstructionContext = {
   name: string;
@@ -542,7 +545,7 @@ function handleINTInstruction(
     return {
       message: "Ejecución: MAR ← IP",
       shouldDisplay: true,
-      shouldPause: true,
+      shouldPause: false, // No pausar - se pausará en cpu:cycle.end
     };
   }
 
@@ -551,7 +554,7 @@ function handleINTInstruction(
     return {
       message: "Ejecución: ri ← MBR; MAR ← SP",
       shouldDisplay: true,
-      shouldPause: true,
+      shouldPause: false, // No pausar - se pausará en cpu:cycle.end
     };
   }
 
@@ -561,14 +564,14 @@ function handleINTInstruction(
     return {
       message: "Ejecución: MAR ← SP | MBR ← FLAGS",
       shouldDisplay: true,
-      shouldPause: true,
+      shouldPause: false, // No pausar - se pausará en cpu:cycle.end
     };
   }
 
   return {
     message: `Ejecución: MAR ← ${sourceRegister}`,
     shouldDisplay: true,
-    shouldPause: true,
+    shouldPause: false, // No pausar - se pausará en cpu:cycle.end
   };
 }
 
@@ -663,11 +666,13 @@ function handleSPRegisterUpdate(
   executeStage: number,
   modeRi: boolean,
 ): MessageConfig {
-  if (modeRi && executeStage === 4 && instructionName === "INT") {
+  // Caso especial para INT paso 6: ri ← MBR | SP ← SP - 1
+  // Este es el paso donde se guarda el número de interrupción y se decrementa SP
+  if (executeStage === 4 && instructionName === "INT") {
     return {
-      message: "",
-      shouldDisplay: false,
-      shouldPause: false,
+      message: "Ejecución: ri ← MBR | SP ← SP - 1",
+      shouldDisplay: true,
+      shouldPause: true, // SÍ pausar - paso importante para observar
     };
   }
 
@@ -698,7 +703,7 @@ function handleSPRegisterUpdate(
         return {
           message: "Ejecución: IP ← MBR | SP ← SP + 1",
           shouldDisplay: true,
-          shouldPause: true,
+          shouldPause: false, // No pausar - se pausará en cpu:cycle.end
         };
       }
       // Caso especial para IRET en el paso 9 (executeStage === 5): mensaje combinado FLAGS ← MBR | SP ← SP + 1
@@ -706,13 +711,13 @@ function handleSPRegisterUpdate(
         return {
           message: "Ejecución: Flags ← MBR | SP ← SP + 1",
           shouldDisplay: true,
-          shouldPause: true,
+          shouldPause: false, // No pausar - se pausará en cpu:cycle.end
         };
       }
       return {
         message: "Ejecución: SP = SP + 1",
         shouldDisplay: true,
-        shouldPause: true,
+        shouldPause: false, // No pausar - se pausará en cpu:cycle.end
       };
     case "POP":
       if (executeStage === 3) {
@@ -742,7 +747,35 @@ function handleFLAGSRegisterUpdate(
     return {
       message: "Ejecución: write(Memoria[MAR]) ← MBR; SP ← SP - 1; update(Flags I=0)",
       shouldDisplay: true,
-      shouldPause: true,
+      shouldPause: false, // No pausar - se pausará en cpu:cycle.end
+    };
+  }
+
+  // Distinguir entre CLI (I=0) y STI (I=1)
+  // CLI y STI no deben pausar en modo ciclo a ciclo (son instrucciones simples)
+  if (instructionName === "CLI") {
+    return {
+      message: "Ejecución: update(Flags I=0)",
+      shouldDisplay: true,
+      shouldPause: false, // No pausar - instrucción simple
+    };
+  }
+
+  if (instructionName === "STI") {
+    return {
+      message: "Ejecución: update(Flags I=1)",
+      shouldDisplay: true,
+      shouldPause: false, // No pausar - instrucción simple
+    };
+  }
+
+  // Para INT y otras instrucciones que modifican I, por defecto I=0
+  // INT no debe pausar aquí, se pausará en cpu:cycle.end
+  if (instructionName === "INT") {
+    return {
+      message: "Ejecución: update(Flags I=0)",
+      shouldDisplay: true,
+      shouldPause: false, // No pausar - se pausará en cpu:cycle.end
     };
   }
 
@@ -757,12 +790,13 @@ function handleFLAGSRegisterUpdate(
 function handleINTRegisterUpdate(sourceRegister: string): MessageConfig {
   switch (sourceRegister) {
     case "IP":
-      // Para INT en executeStageCounter === 3 (paso 5), mostrar el mensaje combinado
+      // Para INT en executeStageCounter === 3 (paso 5), mostrar el mensaje combinado y PAUSAR
+      // Este es el paso de lectura del número de interrupción, importante para observar
       if (executeStageCounter === 3) {
         return {
           message: "Ejecución: MBR ← read(Memoria[MAR]) | IP ← IP + 1",
           shouldDisplay: true,
-          shouldPause: true,
+          shouldPause: true, // SÍ pausar - paso importante de lectura de operando
         };
       }
       break;
@@ -770,26 +804,26 @@ function handleINTRegisterUpdate(sourceRegister: string): MessageConfig {
       return {
         message: "Interrupción: AL ← ASCII",
         shouldDisplay: true,
-        shouldPause: true,
+        shouldPause: true, // Mantener pausa en interrupciones de sistema INT 6/7
       };
     case "right.l":
       return {
         message: "Interrupción: SUB AL, 1",
         shouldDisplay: true,
-        shouldPause: true,
+        shouldPause: true, // Mantener pausa en interrupciones de sistema INT 6/7
       };
     case "right":
       return {
         message: "Interrupción: ADD BL, 1",
         shouldDisplay: true,
-        shouldPause: true,
+        shouldPause: true, // Mantener pausa en interrupciones de sistema INT 6/7
       };
   }
 
   return {
     message: `Ejecución: MBR ← ${sourceRegister}`,
     shouldDisplay: true,
-    shouldPause: true,
+    shouldPause: false, // No pausar en otros casos - se pausará en cpu:cycle.end
   };
 }
 
@@ -1358,9 +1392,14 @@ async function executeThread(generator: EventGenerator): Promise<void> {
             }
 
             // Pausar siempre en cpu:mar.set si está en modo ciclo a ciclo
-            // EXCEPTO para CALL cuando sourceRegister === "SP" (se pausará en cpu:mbr.set)
+            // EXCEPTO para:
+            // - CALL cuando sourceRegister === "SP" (se pausará en cpu:mbr.set)
+            // - INT paso 6 cuando sourceRegister === "SP" (se pausará en cpu:register.update)
+            // - INT paso 7 cuando sourceRegister === "SP" (se pausará en cpu:cycle.end)
             if (status.until === "cycle-change") {
-              if (!(currentInstructionName === "CALL" && sourceRegister === "SP")) {
+              if (!(currentInstructionName === "CALL" && sourceRegister === "SP") &&
+                  !(currentInstructionName === "INT" && executeStageCounter === 4 && sourceRegister === "SP") &&
+                  !(currentInstructionName === "INT" && executeStageCounter === 5 && sourceRegister === "SP")) {
                 pauseSimulation();
               }
             }
@@ -1488,9 +1527,21 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               }
 
               // Manejar casos especiales que requieren lógica adicional
-              // PRIORIDAD 1: Caso especial para INT paso 7 con SP: mostrar mensaje combinado
-              // NOTA: executeStageCounter es 6 aquí porque se incrementó en cpu:mbr.set
+              // PRIORIDAD 0: Caso especial para INT paso 6 y 7 con SP: no mostrar mensaje aquí
+              // El mensaje se mostrará en cpu:register.update o cpu:cycle.end
               if (
+                currentInstructionName === "INT" &&
+                (executeStageCounter === 4 || executeStageCounter === 5) &&
+                sourceRegister === "SP"
+              ) {
+                console.log(`🎯 INT paso ${executeStageCounter === 4 ? '6' : '7'} detectado en cpu:mar.set`);
+                console.log("   currentInstructionName:", currentInstructionName);
+                console.log("   executeStageCounter:", executeStageCounter);
+                console.log("   sourceRegister:", sourceRegister);
+                // No establecer mensaje aquí
+              } else if (
+                // PRIORIDAD 1: Caso especial para INT paso 7 con SP: mostrar mensaje combinado
+                // NOTA: executeStageCounter es 6 aquí porque se incrementó en cpu:mbr.set
                 currentInstructionName === "INT" &&
                 executeStageCounter === 6 &&
                 sourceRegister === "SP"
@@ -1754,13 +1805,16 @@ async function executeThread(generator: EventGenerator): Promise<void> {
             // Y skip cuando ya se contabilizó para el mensaje simultáneo
             // Nueva lógica: instrucciones aritméticas fuente registro y destino directo en mar.set y executeStageCounter === 5
             // También skip para CALL cuando sourceRegister === "SP" (se contabilizará en cpu:mbr.set)
+            // También skip para INT paso 6 con SP (se contabilizará en cpu:register.update)
 
             const skipCycleCount =
               isIndirectInstruction ||
               isRiToMARSkipCycle ||
               simultaneousCycleCounted ||
               isArithmeticRegToDirectStep5 ||
-              (currentInstructionName === "CALL" && sourceRegister === "SP");
+              (currentInstructionName === "CALL" && sourceRegister === "SP") ||
+              (currentInstructionName === "INT" && executeStageCounter === 4 && sourceRegister === "SP") ||
+              (currentInstructionName === "INT" && executeStageCounter === 5 && sourceRegister === "SP");
 
             if (!skipCycleCount) {
               cycleCount++;
@@ -1808,6 +1862,24 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 console.log("🔍 MOV CL, [BL] paso 4 detectado - pausando en mar.set");
                 pauseSimulation();
               }
+              // Para INT en el paso 6: NO pausar en cpu:mar.set (SP → MAR)
+              // La pausa ocurrirá en cpu:register.update cuando se actualice SP
+              else if (
+                currentInstructionName === "INT" &&
+                sourceRegister === "SP" &&
+                executeStageCounter === 4
+              ) {
+                console.log("⏭️ INT paso 6 detectado - NO pausando en cpu:mar.set (pausará en register.update)");
+              }
+              // Para INT en el paso 7: NO pausar en cpu:mar.set (SP → MAR)
+              // La pausa ocurrirá en cpu:cycle.end
+              else if (
+                currentInstructionName === "INT" &&
+                sourceRegister === "SP" &&
+                executeStageCounter === 5
+              ) {
+                console.log("⏭️ INT paso 7 detectado - NO pausando en cpu:mar.set (pausará en cycle.end)");
+              }
               // Para CALL en el paso 7: SÍ pausar en cpu:mar.set (SP → MAR)
               // La pausa ahora ocurre aquí en lugar de en cpu:mbr.set
               else if (
@@ -1818,17 +1890,6 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 console.log("🛑 CALL paso 7 detectado - pausando en cpu:mar.set (SP → MAR)");
                 pauseSimulation();
               }
-              // Para INT en el paso 7: SÍ pausar en cpu:mar.set (SP → MAR)
-              // La pausa ahora ocurre aquí en lugar de en cpu:mbr.set
-              // NOTA: executeStageCounter es 6 aquí porque se incrementó en cpu:mbr.set
-              else if (
-                currentInstructionName === "INT" &&
-                sourceRegister === "SP" &&
-                executeStageCounter === 6
-              ) {
-                console.log("🛑 INT paso 7 detectado - pausando en cpu:mar.set (SP → MAR)");
-                pauseSimulation();
-              }
               // Solo omitir la pausa para ri → MAR que se omiten completamente
               // Para instrucciones indirectas con BL/BX → MAR, SÍ pausar porque es un evento visible
               else if (!isRiToMARSkipCycle && !(isIndirectInstruction && !blBxToRiProcessed)) {
@@ -1837,14 +1898,16 @@ async function executeThread(generator: EventGenerator): Promise<void> {
             }
 
             // Solo incrementar executeStageCounter si no es un caso de ri → MAR que se omite
-            if (!isRiToMARSkipCycle) {
+            // Tampoco incrementar para INT paso 6 con SP (se incrementará en cpu:register.update)
+            if (!isRiToMARSkipCycle && 
+                !(currentInstructionName === "INT" && executeStageCounter === 4 && sourceRegister === "SP")) {
               executeStageCounter++;
               console.log(
                 "🔍 cpu:mar.set - executeStageCounter después del incremento:",
                 executeStageCounter,
               );
             } else {
-              console.log("⏭️ executeStageCounter NO incrementado para ri → MAR en etapa avanzada");
+              console.log("⏭️ executeStageCounter NO incrementado para ri → MAR omitido o INT paso 6");
             }
           } else if (event.value.type === "cpu:register.update") {
             const sourceRegister = event.value.register;
@@ -1901,15 +1964,20 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 sourceRegister === "FLAGS"
               ) {
                 displayMessage = "Ejecución: write(Memoria[MAR]) ← MBR | update(Flags I=0)";
-                pause = true; // Asegurar que se pause en este paso
+                pause = false; // No pausar - se pausará en cpu:cycle.end
               }
               if (executeStageCounter === 4 && currentInstructionName === "CALL") {
                 displayMessage = "Ejecución: ri ← MBR | SP ← SP - 1";
                 pause = true; // Asegurar que se pause en este paso
               }
               if (executeStageCounter === 4 && currentInstructionName === "INT") {
+                console.log("🎯 INT paso 6 detectado en cpu:register.update");
+                console.log("   sourceRegister:", sourceRegister);
+                console.log("   executeStageCounter:", executeStageCounter);
                 displayMessage = "Ejecución: ri ← MBR | SP ← SP - 1";
-                pause = true; // Asegurar que se pause en este paso
+                pause = true; // SÍ pausar - paso importante para observar
+                console.log("   displayMessage establecido a:", displayMessage);
+                console.log("   pause establecido a:", pause);
               }
               if (
                 executeStageCounter === 3 &&
@@ -1980,7 +2048,6 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 currentInstructionName !== "INC" &&
                 currentInstructionName !== "NOT" &&
                 currentInstructionName !== "NEG" &&
-                !(currentInstructionName === "INT" && executeStageCounter === 5) &&
                 !(currentInstructionName === "INT" && executeStageCounter === 8) &&
                 !(currentInstructionName === "INT" && executeStageCounter === 11)
               ) {
@@ -1988,6 +2055,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 cycleCount++;
                 currentInstructionCycleCount++;
                 store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+                console.log("🔢 Ciclo contabilizado en cpu:register.update - cycleCount:", cycleCount);
               } else if (currentInstructionName === "INT" && executeStageCounter === 11) {
                 console.log("⏭️ INT paso 11 (ri.l update) - omitiendo ciclo y mensaje");
               }
@@ -3157,12 +3225,12 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
               executeStageCounter++;
 
-              // Pausar aquí si se ejecuta por ciclos
+              // NO pausar aquí - se pausará en cpu:cycle.end
               if (status.until === "cycle-change") {
                 console.log(
-                  "🛑 INT paso 9 detectado - pausando en cpu:mbr.set (IP → MBR | SP ← SP - 1)",
+                  "⏭️ INT paso 9 detectado - NO pausando, se pausará en cpu:cycle.end (IP → MBR | SP ← SP - 1)",
                 );
-                pauseSimulation();
+                // NO llamar a pauseSimulation()
               }
             } else if (event.value.register === "result.l") {
               // Caso especial para cuando se copia el resultado de la ALU al MBR
@@ -3272,6 +3340,11 @@ async function dispatch(...args: Action) {
         store.set(showSPAtom, hasSPInstruction);
 
         const hasINT = instructions.includes("INT");
+
+        // Verificar si el programa tiene instrucciones que afectan al flag I (interrupción)
+        const hasInterruptFlagInstructions = instructions.some(instruction =>
+          ["INT", "CLI", "STI", "IRET"].includes(instruction),
+        );
 
         // Verificar si el programa contiene INT 6 o INT 7
         const connectScreenAndKeyboard = result.instructions.some(instruction => {
@@ -3432,6 +3505,24 @@ async function dispatch(...args: Action) {
           console.log("🔧 Flag I configurado para mostrarse automáticamente");
         }
 
+        // Notificar si se activa la visualización del flag I por instrucciones de interrupción
+        // Solo mostrar la notificación la primera vez en la sesión actual
+        if (hasInterruptFlagInstructions && !shouldActivatePIC && !currentSettings.devices.pic && !interruptFlagNotificationShown) {
+          notifyWarning(
+            "Flag I activado automáticamente",
+            `Se detectó que el programa utiliza instrucciones de interrupción (INT, CLI, STI o IRET). El flag I se ha configurado para mostrarse automáticamente.`,
+          );
+          console.log(
+            "🔧 Flag I configurado para mostrarse debido a instrucciones de interrupción en el código",
+          );
+          // Marcar que ya se mostró la notificación para no repetirla
+          interruptFlagNotificationShown = true;
+        } else if (!hasInterruptFlagInstructions) {
+          // Resetear la bandera si el nuevo programa no tiene instrucciones de interrupción
+          // Esto permite que la notificación se muestre nuevamente si se carga otro programa con estas instrucciones
+          interruptFlagNotificationShown = false;
+        }
+
         // Notificar si se activa automáticamente el Timer (que requiere PIC)
         if (usesTimer && !currentSettings.devices.pic) {
           notifyWarning(
@@ -3443,6 +3534,14 @@ async function dispatch(...args: Action) {
           );
         }
 
+        // Determinar si necesitamos mostrar el flag I
+        // Se debe mostrar si:
+        // 1. Se activa el PIC automáticamente y no estaba activado antes
+        // 2. El programa tiene instrucciones INT, CLI, STI o IRET
+        const shouldShowInterruptFlag =
+          ((shouldActivatePIC || usesTimer) && !currentSettings.devices.pic) ||
+          hasInterruptFlagInstructions;
+
         store.set(settingsAtom, (prev: any) => ({
           ...prev,
           devices: {
@@ -3453,13 +3552,14 @@ async function dispatch(...args: Action) {
             pic: shouldActivatePIC || usesTimer || prev.devices.pic,
             "switches-and-leds": usesPIO,
           },
-          // Cambiar automáticamente la visibilidad de flags cuando se active el PIC
-          flagsVisibility:
-            (shouldActivatePIC || usesTimer) && !currentSettings.devices.pic
-              ? prev.flagsVisibility === "SF_OF_CF_ZF"
-                ? "IF_SF_OF_CF_ZF"
-                : "IF_CF_ZF"
-              : prev.flagsVisibility,
+          // Cambiar automáticamente la visibilidad de flags cuando se active el PIC o haya instrucciones de interrupción
+          flagsVisibility: shouldShowInterruptFlag
+            ? prev.flagsVisibility === "SF_OF_CF_ZF"
+              ? "IF_SF_OF_CF_ZF"
+              : prev.flagsVisibility === "CF_ZF"
+                ? "IF_CF_ZF"
+                : prev.flagsVisibility
+            : prev.flagsVisibility,
         }));
 
         // Actualizar el átomo con el valor de connectScreenAndKeyboard
@@ -3479,6 +3579,8 @@ async function dispatch(...args: Action) {
           usesTimer,
           connectScreenAndKeyboard,
           hasINTOrInterruptDevices,
+          hasInterruptFlagInstructions,
+          shouldShowInterruptFlag,
           currentHandshakeConfig: getSettings().devices.handshake,
           currentPICConfig: getSettings().devices.pic,
         });

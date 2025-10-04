@@ -995,17 +995,19 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       // Detectar si es un caso donde ri → MAR no debe mostrar animación
       // porque la dirección ya está almacenada en MAR, PERO no aplicar cuando es parte de animación simultánea
       const isRiToMARSkipAnimation =
-        regNorm === "ri" &&
-        (currentInstructionName === "ADD" ||
-          currentInstructionName === "SUB" ||
-          currentInstructionName === "CMP" ||
-          currentInstructionName === "AND" ||
-          currentInstructionName === "OR" ||
-          currentInstructionName === "XOR") &&
-        !isRiToMARSimultaneous && // NO skip si es parte de animación simultánea
-        (currentExecuteStageCounter >= 5 || // En etapas avanzadas, ri → MAR es solo preparación
-          // También skip para direccionamiento indirecto en etapa 4 (cuando no hay modos directos/inmediatos)
-          (currentExecuteStageCounter === 4 && instructionName === currentInstructionName));
+        (regNorm === "ri" &&
+          (currentInstructionName === "ADD" ||
+            currentInstructionName === "SUB" ||
+            currentInstructionName === "CMP" ||
+            currentInstructionName === "AND" ||
+            currentInstructionName === "OR" ||
+            currentInstructionName === "XOR") &&
+          !isRiToMARSimultaneous && // NO skip si es parte de animación simultánea
+          (currentExecuteStageCounter >= 5 || // En etapas avanzadas, ri → MAR es solo preparación
+            // También skip para direccionamiento indirecto en etapa 4 (cuando no hay modos directos/inmediatos)
+            (currentExecuteStageCounter === 4 && instructionName === currentInstructionName))) ||
+        // También skip para INT pasos 6 y 7 con SP (no hay animación válida, solo preparación interna)
+        (regNorm === "SP" && currentInstructionName === "INT" && (currentExecuteStageCounter === 4 || currentExecuteStageCounter === 5));
 
       console.log(`🔍 isRiToMARSimultaneous Debug:`, {
         regNorm,
@@ -1253,17 +1255,24 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         console.log("📝 Marcando animación IP → MAR como pendiente desde cpu:mar.set");
 
         // Las animaciones simultáneas se ejecutarán en cpu:register.copy cuando se detecten ambas transferencias
+      } else if (isRiToMARSkipAnimation) {
+        // Omitir animación para casos específicos (INT paso 6 con SP, instrucciones aritméticas en etapas avanzadas)
+        console.log("⏭️ Omitiendo animación para", regNorm, "→ MAR (isRiToMARSkipAnimation)");
+        // Actualizar el registro MAR sin animación
+        store.set(MARAtom, store.get(registerAtoms[regNorm]));
+        console.log("✅ MAR actualizado desde", regNorm, "sin animación");
       } else if (!isFromMBR) {
         await drawDataPath(regNorm as DataRegister, "MAR", instructionName, mode);
         // Resetear la animación del bus después de completarse
         await resetDataPath();
       }
 
-      // Solo desactivar si no es IP en modo mem<-imd Y no es ri
+      // Solo desactivar si no es IP en modo mem<-imd Y no es ri Y no fue omitido por isRiToMARSkipAnimation
       // ri tiene su propia lógica de activación/desactivación en su bloque específico
       if (
         !(regNorm === "IP" && mode === "mem<-imd") &&
-        regNorm !== "ri" // EXCLUIR ri - tiene su propia lógica
+        regNorm !== "ri" && // EXCLUIR ri - tiene su propia lógica
+        !isRiToMARSkipAnimation // EXCLUIR casos omitidos - no tienen animación que desactivar
       ) {
         await Promise.all([
           deactivateRegister("cpu.MAR"),
