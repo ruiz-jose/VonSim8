@@ -558,13 +558,14 @@ function handleINTInstruction(
     };
   }
 
-  // Para INT paso 7 (executeStage: 5) cuando el registro es SP
-  // Mostrar mensaje simultáneo que incluye FLAGS → MBR
-  if (executeStage === 5 && sourceRegister === "SP") {
+  // Para INT paso 8 (executeStage: 7) cuando el registro es SP
+  // Este caso ya no debería mostrar mensaje porque se maneja en cpu:mbr.set
+  // pero mantenemos la lógica por si acaso
+  if (executeStage === 7 && sourceRegister === "SP") {
     return {
-      message: "Ejecución: MAR ← SP | MBR ← FLAGS",
-      shouldDisplay: true,
-      shouldPause: false, // No pausar - se pausará en cpu:cycle.end
+      message: "", // Mensaje ya mostrado en cpu:mbr.set
+      shouldDisplay: false,
+      shouldPause: false,
     };
   }
 
@@ -676,6 +677,16 @@ function handleSPRegisterUpdate(
     };
   }
 
+  // Caso especial para INT paso 9 con SP (executeStage === 7): NO establecer mensaje aquí
+  // El mensaje combinado "MBR ← IP | SP ← SP - 1" ya se mostró en cpu:mbr.set
+  if (executeStage === 7 && instructionName === "INT") {
+    return {
+      message: "",
+      shouldDisplay: false,
+      shouldPause: false, // No pausar - ya se pausó en mbr.set
+    };
+  }
+
   switch (instructionName) {
     case "PUSH":
       return {
@@ -743,6 +754,17 @@ function handleFLAGSRegisterUpdate(
   executeStage: number,
   modeRi: boolean,
 ): MessageConfig {
+  // Caso especial para INT ciclo 8 (executeStage === 6 con FLAGS)
+  // Mensaje combinado: write(Memoria[MAR]) ← MBR | update(Flags I=0)
+  // SÍ pausar en modo ciclo a ciclo
+  if (instructionName === "INT" && executeStage === 6) {
+    return {
+      message: "Ejecución: write(Memoria[MAR]) ← MBR | update(Flags I=0)",
+      shouldDisplay: true,
+      shouldPause: true, // SÍ pausar - momento importante para observar
+    };
+  }
+
   if (modeRi && executeStage === 5 && instructionName === "INT") {
     return {
       message: "Ejecución: write(Memoria[MAR]) ← MBR; SP ← SP - 1; update(Flags I=0)",
@@ -1395,11 +1417,13 @@ async function executeThread(generator: EventGenerator): Promise<void> {
             // EXCEPTO para:
             // - CALL cuando sourceRegister === "SP" (se pausará en cpu:mbr.set)
             // - INT paso 6 cuando sourceRegister === "SP" (se pausará en cpu:register.update)
-            // - INT paso 7 cuando sourceRegister === "SP" (se pausará en cpu:cycle.end)
+            // - INT paso 7 preparación cuando sourceRegister === "SP" (se pausará en cpu:mbr.set)
+            // - INT después de paso 7 cuando sourceRegister === "SP" (después de FLAGS → MBR)
             if (status.until === "cycle-change") {
               if (!(currentInstructionName === "CALL" && sourceRegister === "SP") &&
                   !(currentInstructionName === "INT" && executeStageCounter === 4 && sourceRegister === "SP") &&
-                  !(currentInstructionName === "INT" && executeStageCounter === 5 && sourceRegister === "SP")) {
+                  !(currentInstructionName === "INT" && executeStageCounter === 5 && sourceRegister === "SP") &&
+                  !(currentInstructionName === "INT" && executeStageCounter === 7 && sourceRegister === "SP")) {
                 pauseSimulation();
               }
             }
@@ -1527,43 +1551,73 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               }
 
               // Manejar casos especiales que requieren lógica adicional
-              // PRIORIDAD 0: Caso especial para INT paso 6 y 7 con SP: no mostrar mensaje aquí
-              // El mensaje se mostrará en cpu:register.update o cpu:cycle.end
+              // PRIORIDAD 0: Caso especial para INT paso 6 con SP: mostrar MAR ← SP
               if (
                 currentInstructionName === "INT" &&
-                (executeStageCounter === 4 || executeStageCounter === 5) &&
+                executeStageCounter === 4 &&
                 sourceRegister === "SP"
               ) {
-                console.log(`🎯 INT paso ${executeStageCounter === 4 ? '6' : '7'} detectado en cpu:mar.set`);
-                console.log("   currentInstructionName:", currentInstructionName);
-                console.log("   executeStageCounter:", executeStageCounter);
-                console.log("   sourceRegister:", sourceRegister);
-                // No establecer mensaje aquí
-              } else if (
-                // PRIORIDAD 1: Caso especial para INT paso 7 con SP: mostrar mensaje combinado
-                // NOTA: executeStageCounter es 6 aquí porque se incrementó en cpu:mbr.set
-                currentInstructionName === "INT" &&
-                executeStageCounter === 6 &&
-                sourceRegister === "SP"
-              ) {
-                console.log("🎯 INT paso 7 detectado en cpu:mar.set");
-                console.log("   currentInstructionName:", currentInstructionName);
-                console.log("   executeStageCounter:", executeStageCounter);
-                console.log("   sourceRegister:", sourceRegister);
-                console.log("   Estableciendo mensaje: MAR ← SP | MBR ← Flags");
-                store.set(messageAtom, "Ejecución: MAR ← SP | MBR ← Flags");
-              } else if (
-                currentInstructionName === "INT" &&
-                executeStageCounter === 10 &&
-                sourceRegister === "SP"
-              ) {
-                // PRIORIDAD 2: Caso especial para INT paso 10 con SP: mostrar solo MAR ← SP
-                console.log("🎯 INT paso 10 detectado en cpu:mar.set");
+                console.log("🎯 INT paso 6 detectado en cpu:mar.set");
                 console.log("   currentInstructionName:", currentInstructionName);
                 console.log("   executeStageCounter:", executeStageCounter);
                 console.log("   sourceRegister:", sourceRegister);
                 console.log("   Estableciendo mensaje: MAR ← SP");
                 store.set(messageAtom, "Ejecución: MAR ← SP");
+                // Limpiar mbridirmar para evitar mensaje incorrecto
+                mbridirmar = false;
+              } else if (
+                // PRIORIDAD 1: Caso especial para INT paso 7 con SP - DESPUÉS de FLAGS → MBR
+                // executeStageCounter === 6 porque se incrementó en cpu:mbr.set con FLAGS
+                // AQUÍ es donde se muestra el mensaje combinado, se contabiliza ciclo y se pausa
+                currentInstructionName === "INT" &&
+                executeStageCounter === 6 &&
+                sourceRegister === "SP"
+              ) {
+                console.log("🎯 INT paso 7 (ciclo 7) detectado en cpu:mar.set - SP → MAR");
+                console.log("   currentInstructionName:", currentInstructionName);
+                console.log("   executeStageCounter:", executeStageCounter);
+                console.log("   sourceRegister:", sourceRegister);
+                console.log("   Estableciendo mensaje combinado: MBR ← FLAGS | MAR ← SP");
+                store.set(messageAtom, "Ejecución: MBR ← FLAGS | MAR ← SP");
+                // Limpiar mbridirmar para evitar mensaje incorrecto
+                mbridirmar = false;
+              } else if (
+                // PRIORIDAD 2: Caso especial para INT paso 7 - ANTES de FLAGS → MBR (executeStageCounter === 5)
+                // Este caso no debería ocurrir porque el orden es FLAGS → MBR primero, luego SP → MAR
+                currentInstructionName === "INT" &&
+                executeStageCounter === 5 &&
+                sourceRegister === "SP"
+              ) {
+                console.log("⚠️ INT paso 7 (preparación) detectado en cpu:mar.set - NO ESPERADO");
+                console.log("   Este caso no debería ocurrir - verificar orden de eventos");
+                // Limpiar mbridirmar para evitar mensaje incorrecto
+                mbridirmar = false;
+              } else if (
+                // PRIORIDAD 3: Caso especial para INT después del paso 7 (ejecuteStageCounter === 7)
+                // NO debería ocurrir después de los cambios
+                currentInstructionName === "INT" &&
+                executeStageCounter === 7 &&
+                sourceRegister === "SP"
+              ) {
+                console.log("⚠️ INT después de paso 7 detectado en cpu:mar.set - NO ESPERADO");
+                console.log("   Este caso no debería ocurrir - verificar lógica");
+                // Limpiar mbridirmar para evitar mensaje incorrecto
+                mbridirmar = false;
+              } else if (
+                currentInstructionName === "INT" &&
+                executeStageCounter === 8 &&
+                sourceRegister === "SP"
+              ) {
+                // PRIORIDAD 3: Caso especial para INT paso 10 (ciclo 10) con SP: mostrar solo MAR ← SP
+                // NOTA: executeStageCounter es 8 aquí porque viene del paso 9 que no incrementó el contador
+                console.log("🎯 INT paso 10 (ciclo 10) detectado en cpu:mar.set");
+                console.log("   currentInstructionName:", currentInstructionName);
+                console.log("   executeStageCounter:", executeStageCounter);
+                console.log("   sourceRegister:", sourceRegister);
+                console.log("   Estableciendo mensaje: MAR ← SP");
+                store.set(messageAtom, "Ejecución: MAR ← SP");
+                // Limpiar mbridirmar para evitar mensaje incorrecto
+                mbridirmar = false;
               } else if (
                 // Priorizar el mensaje especial para MOV x, 5 (directo-inmediato) en ciclo 5
                 sourceRegister === "IP" &&
@@ -1750,13 +1804,15 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 );
               } else if (
                 currentInstructionName === "INT" &&
-                executeStageCounter === 11 &&
+                executeStageCounter === 8 &&
                 sourceRegister === "ri"
               ) {
-                // Caso especial para INT paso 12 con ri: mostrar mensaje MAR ← ri
-                // NOTA: executeStageCounter es 11 aquí porque aún no se ha incrementado
-                console.log("🎯 INT paso 12 detectado en cpu:mar.set - mostrando MAR ← ri");
+                // Caso especial para INT paso 12 (ciclo 12) con ri: SÍ mostrar mensaje "MAR ← ri"
+                // NOTA: executeStageCounter es 8 aquí (ya no hay register.update previo con ri.l)
+                console.log("🎯 INT paso 12 (ciclo 12) detectado en cpu:mar.set - Mostrando MAR ← ri");
                 store.set(messageAtom, "Ejecución: MAR ← ri");
+                // Limpiar mbridirmar para evitar mensaje incorrecto
+                mbridirmar = false;
               } else if (
                 // Para INT cuando sourceRegister === "SP": mostrar mensaje combinado
                 (currentInstructionName === "INT" && sourceRegister === "SP") ||
@@ -1814,7 +1870,10 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               isArithmeticRegToDirectStep5 ||
               (currentInstructionName === "CALL" && sourceRegister === "SP") ||
               (currentInstructionName === "INT" && executeStageCounter === 4 && sourceRegister === "SP") ||
-              (currentInstructionName === "INT" && executeStageCounter === 5 && sourceRegister === "SP");
+              (currentInstructionName === "INT" && executeStageCounter === 5 && sourceRegister === "SP") ||
+              // NO skip para executeStageCounter === 6 (INT paso 7 con SP) - debe contar ciclo
+              (currentInstructionName === "INT" && executeStageCounter === 7 && sourceRegister === "SP");
+              // NO skip para INT paso 12 con ri (executeStageCounter === 8) - debe contar ciclo 12
 
             if (!skipCycleCount) {
               cycleCount++;
@@ -1871,14 +1930,23 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               ) {
                 console.log("⏭️ INT paso 6 detectado - NO pausando en cpu:mar.set (pausará en register.update)");
               }
-              // Para INT en el paso 7: NO pausar en cpu:mar.set (SP → MAR)
-              // La pausa ocurrirá en cpu:cycle.end
+              // Para INT paso 7 con executeStageCounter === 5: NO pausar (caso inesperado)
               else if (
                 currentInstructionName === "INT" &&
                 sourceRegister === "SP" &&
                 executeStageCounter === 5
               ) {
-                console.log("⏭️ INT paso 7 detectado - NO pausando en cpu:mar.set (pausará en cycle.end)");
+                console.log("⚠️ INT paso 7 (executeStageCounter === 5) detectado - NO ESPERADO - NO pausando");
+              }
+              // Para INT paso 7 con executeStageCounter === 6: SÍ pausar en cpu:mar.set (SP → MAR)
+              // Este es el caso correcto después de FLAGS → MBR
+              else if (
+                currentInstructionName === "INT" &&
+                sourceRegister === "SP" &&
+                executeStageCounter === 6
+              ) {
+                console.log("🛑 INT paso 7 (ciclo 7) detectado - pausando en cpu:mar.set (SP → MAR)");
+                pauseSimulation();
               }
               // Para CALL en el paso 7: SÍ pausar en cpu:mar.set (SP → MAR)
               // La pausa ahora ocurre aquí en lugar de en cpu:mbr.set
@@ -1898,16 +1966,23 @@ async function executeThread(generator: EventGenerator): Promise<void> {
             }
 
             // Solo incrementar executeStageCounter si no es un caso de ri → MAR que se omite
-            // Tampoco incrementar para INT paso 6 con SP (se incrementará en cpu:register.update)
+            // Tampoco incrementar para:
+            // - INT paso 6 con SP (executeStageCounter === 4, se incrementará en cpu:register.update)
+            // - INT paso 7 con SP (executeStageCounter === 6, ciclo 7)
+            // - INT paso 7 con SP preparación (executeStageCounter === 5, caso inesperado)
+            // - INT después de paso 7 con SP (executeStageCounter === 7)
             if (!isRiToMARSkipCycle && 
-                !(currentInstructionName === "INT" && executeStageCounter === 4 && sourceRegister === "SP")) {
+                !(currentInstructionName === "INT" && executeStageCounter === 4 && sourceRegister === "SP") &&
+                !(currentInstructionName === "INT" && executeStageCounter === 5 && sourceRegister === "SP") &&
+                !(currentInstructionName === "INT" && executeStageCounter === 6 && sourceRegister === "SP") &&
+                !(currentInstructionName === "INT" && executeStageCounter === 7 && sourceRegister === "SP")) {
               executeStageCounter++;
               console.log(
                 "🔍 cpu:mar.set - executeStageCounter después del incremento:",
                 executeStageCounter,
               );
             } else {
-              console.log("⏭️ executeStageCounter NO incrementado para ri → MAR omitido o INT paso 6");
+              console.log("⏭️ executeStageCounter NO incrementado para ri → MAR omitido o INT paso 6/7");
             }
           } else if (event.value.type === "cpu:register.update") {
             const sourceRegister = event.value.register;
@@ -1955,16 +2030,6 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 currentInstructionName === "INT"
               ) {
                 displayMessage = "Ejecución: write(Memoria[MAR]) ← MBR; SP ← SP - 1";
-              }
-              // Caso especial para INT executeStageCounter === 7 con FLAGS (ciclo 8)
-              // Combinar el mensaje de escritura de memoria con la actualización de FLAGS
-              if (
-                executeStageCounter === 7 &&
-                currentInstructionName === "INT" &&
-                sourceRegister === "FLAGS"
-              ) {
-                displayMessage = "Ejecución: write(Memoria[MAR]) ← MBR | update(Flags I=0)";
-                pause = false; // No pausar - se pausará en cpu:cycle.end
               }
               if (executeStageCounter === 4 && currentInstructionName === "CALL") {
                 displayMessage = "Ejecución: ri ← MBR | SP ← SP - 1";
@@ -2044,25 +2109,40 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 console.log("⏭️ PUSH paso 5 (SP update) - omitiendo ciclo y mensaje (ya mostrado en mbr.set)");
                 // NO incrementar executeStageCounter aquí, ya se incrementó en cpu:mbr.set
               } else if (
+                // Caso especial para INT paso 7 con SP: NO mostrar mensaje ni contabilizar ciclo
+                // porque el mensaje combinado "MBR ← FLAGS | MAR ← SP" ya se mostró en cpu:mar.set
+                // NOTA: executeStageCounter es 7 aquí después de sincronización
+                currentInstructionName === "INT" && sourceRegister === "SP" && executeStageCounter === 7
+              ) {
+                console.log("⏭️ INT paso 7 (SP update) - omitiendo ciclo y mensaje (ya mostrado en mar.set)");
+                // NO incrementar executeStageCounter aquí
+              } else if (
+                // Caso especial para INT paso 9 con SP: NO mostrar mensaje ni contabilizar ciclo
+                // porque el mensaje combinado "MBR ← IP | SP ← SP - 1" ya se mostró en cpu:mbr.set
+                // NOTA: executeStageCounter es 8 aquí porque ya se incrementó en cpu:mbr.set (de 7 a 8)
+                currentInstructionName === "INT" && sourceRegister === "SP" && executeStageCounter === 8
+              ) {
+                console.log("⏭️ INT paso 9 (SP update) - omitiendo ciclo y mensaje (ya mostrado en mbr.set)");
+                // NO incrementar executeStageCounter aquí, ya se incrementó en cpu:mbr.set
+              } else if (
                 currentInstructionName !== "DEC" &&
                 currentInstructionName !== "INC" &&
                 currentInstructionName !== "NOT" &&
                 currentInstructionName !== "NEG" &&
-                !(currentInstructionName === "INT" && executeStageCounter === 8) &&
-                !(currentInstructionName === "INT" && executeStageCounter === 11)
+                !(currentInstructionName === "INT" && executeStageCounter === 8)
               ) {
                 store.set(messageAtom, displayMessage);
                 cycleCount++;
                 currentInstructionCycleCount++;
                 store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
                 console.log("🔢 Ciclo contabilizado en cpu:register.update - cycleCount:", cycleCount);
-              } else if (currentInstructionName === "INT" && executeStageCounter === 11) {
-                console.log("⏭️ INT paso 11 (ri.l update) - omitiendo ciclo y mensaje");
               }
 
-              // Solo incrementar executeStageCounter si NO es PUSH con SP
-              // NOTA: executeStageCounter es 4 aquí porque ya se incrementó en cpu:mbr.set
-              if (!(currentInstructionName === "PUSH" && sourceRegister === "SP" && executeStageCounter === 4)) {
+              // Solo incrementar executeStageCounter si NO es PUSH con SP, INT paso 7 con SP, ni INT paso 9 con SP
+              // NOTA: executeStageCounter es 4 para PUSH, 7 para INT paso 7, 8 para INT paso 9
+              if (!(currentInstructionName === "PUSH" && sourceRegister === "SP" && executeStageCounter === 4) &&
+                  !(currentInstructionName === "INT" && sourceRegister === "SP" && executeStageCounter === 7) &&
+                  !(currentInstructionName === "INT" && sourceRegister === "SP" && executeStageCounter === 8)) {
                 executeStageCounter++;
               }
               if (displayMessage !== "Interrupción: MAR ← (video)") {
@@ -2073,7 +2153,9 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                     currentInstructionName !== "NOT" &&
                     currentInstructionName !== "NEG" &&
                     !(currentInstructionName === "INT" && executeStageCounter === 12) &&
-                    !(currentInstructionName === "PUSH" && sourceRegister === "SP" && executeStageCounter === 4)
+                    !(currentInstructionName === "PUSH" && sourceRegister === "SP" && executeStageCounter === 4) &&
+                    !(currentInstructionName === "INT" && sourceRegister === "SP" && executeStageCounter === 7) &&
+                    !(currentInstructionName === "INT" && sourceRegister === "SP" && executeStageCounter === 8)
                   ) {
                     if (pause) {
                       pauseSimulation();
@@ -2081,6 +2163,10 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                   } else if (currentInstructionName === "PUSH" && sourceRegister === "SP" && executeStageCounter === 4) {
                     // Para PUSH con SP: SÍ pausar, pero NO mostrar mensaje ni contabilizar ciclo
                     console.log("🛑 PUSH paso 5 (SP update) - pausando sin mensaje ni ciclo");
+                    pauseSimulation();
+                  } else if (currentInstructionName === "INT" && executeStageCounter === 6 && sourceRegister === "FLAGS") {
+                    // Para INT ciclo 8 (executeStageCounter=6 con FLAGS): SÍ pausar
+                    console.log("🛑 INT ciclo 8 (FLAGS update) - pausando después de actualización");
                     pauseSimulation();
                   }
                 }
@@ -2273,23 +2359,23 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               console.log(`🎯 showriAtom debería estar habilitado para ${currentInstructionName}`);
             }
 
-            // Caso especial para INT paso 13: IP ← MBR (último paso antes de saltar a la rutina de interrupción)
+            // Caso especial para INT paso 13 (ciclo 14): IP ← MBR (último paso antes de saltar a la rutina de interrupción)
+            // IMPORTANTE: NO pausar aquí - la pausa se manejará en cpu:cycle.end
             const isINTStep13 =
               currentInstructionName === "INT" &&
-              executeStageCounter === 12 &&
+              executeStageCounter === 10 &&
               originalRegister === "IP.l";
 
             if (isINTStep13) {
               console.log(
-                "🎯 INT paso 13 detectado: IP ← MBR - último paso antes de saltar a rutina de interrupción",
+                "🎯 INT paso 13 (ciclo 14) detectado: IP ← MBR - NO pausar aquí (pausará en cycle.end)",
               );
               store.set(messageAtom, "Ejecución: IP ← MBR");
               cycleCount++;
               currentInstructionCycleCount++;
               store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
-              if (status.until === "cycle-change") {
-                pauseSimulation();
-              }
+              // NO pausar aquí - dejar que cpu:cycle.end lo haga
+              console.log("⏭️ INT paso 13: Omitiendo pausa - se pausará en cpu:cycle.end");
             } else if (
               !mbridirmar &&
               !isALUIndirectImmediateMBRtoID &&
@@ -2428,20 +2514,12 @@ async function executeThread(generator: EventGenerator): Promise<void> {
 
                 // IMPORTANTE: NO hacer return aquí para permitir que el simulador continúe
                 // El evento debe procesarse completamente para permitir cpu:cycle.end
-              } else if (currentInstructionName === "INT" && executeStageCounter === 12) {
-                // Para INT paso 12: NO contabilizar ciclo, NO establecer mensaje, NO pausar
-                // Este es el salto final a la rutina de interrupción
-                console.log(
-                  "🔄 INT paso 12 (ri→IP): NO registrando mensaje ni contabilizando ciclo",
-                );
-                // No hacer nada - dejar que el evento se procese silenciosamente
               } else {
                 store.set(messageAtom, displayMessage);
               }
               if (
                 status.until === "cycle-change" &&
-                currentInstructionName !== "CALL" &&
-                !(currentInstructionName === "INT" && executeStageCounter === 12)
+                currentInstructionName !== "CALL"
               ) {
                 pauseSimulation();
               }
@@ -2688,9 +2766,11 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                   "🎯 INT paso 11 detectado - estableciendo mensaje de escritura:",
                   messageReadWrite,
                 );
-              } else if (executeStageCounter === 7) {
-                // Paso 7 de INT: escritura de FLAGS en la pila
+              } else if (executeStageCounter === 6) {
+                // Paso 7 de INT (ciclo 8): escritura de FLAGS en la pila
+                // NOTA: executeStageCounter es 6 aquí en bus:reset, será 7 en register.update
                 messageReadWrite = "Ejecución: write(Memoria[MAR]) ← MBR";
+                console.log("🎯 INT ciclo 8 detectado en bus:reset - executeStageCounter:", executeStageCounter);
               } else {
                 // Otros pasos de INT: por defecto lectura, pero verificar lastMemoryOperationWasWrite
                 if (lastMemoryOperationWasWrite) {
@@ -3034,14 +3114,19 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 messageReadWrite === "Ejecución: MBR ← read(Memoria[MAR])",
             );
 
-            // Caso especial: INT en executeStageCounter === 7 (ciclo 8) no debe contabilizar ni mostrar mensaje aquí
-            // porque se manejará en el siguiente evento cpu:register.update con mensaje combinado
+            // Caso especial: INT en executeStageCounter === 6 (ciclo 8)
+            // NO establecer mensaje, NO contabilizar ciclo, NO pausar
+            // Todo se manejará en cpu:register.update con FLAGS
             const isINTStep8 =
               currentInstructionName === "INT" &&
-              executeStageCounter === 7 &&
+              executeStageCounter === 6 &&
               messageReadWrite === "Ejecución: write(Memoria[MAR]) ← MBR";
 
-            if (!ContinuarSinGuardar && !isINTStep8) {
+            if (isINTStep8) {
+              // NO hacer nada aquí - todo se manejará en cpu:register.update
+              console.log("🎯 INT ciclo 8 detectado en bus:reset (executeStageCounter=6)");
+              console.log("⏭️ Omitiendo mensaje, ciclo y pausa - se manejará en cpu:register.update");
+            } else if (!ContinuarSinGuardar) {
               store.set(messageAtom, messageReadWrite);
               cycleCount++;
               currentInstructionCycleCount++;
@@ -3051,10 +3136,6 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               if (status.until === "cycle-change") {
                 pauseSimulation();
               }
-            } else if (isINTStep8) {
-              console.log(
-                "⏭️ INT ciclo 8 detectado - omitiendo bus:reset, se manejará en cpu:register.update con mensaje combinado",
-              );
             } else if (isLastStepBeforeCycleEnd) {
               // Para el último paso antes de cycle.end: mostrar mensaje y contabilizar ciclo, pero NO pausar
               store.set(messageAtom, messageReadWrite);
@@ -3201,23 +3282,30 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               // NO pausar aquí para CALL - la pausa ocurrirá en cpu:mar.set con SP
               console.log("⏭️ CALL IP → MBR: NO pausando, pausará en siguiente cpu:mar.set con SP");
             } else if (
-              // Para INT cuando se copian FLAGS al MBR en el paso 7
-              // NO contabilizar ciclo, mensaje ni pausar aquí - se hará en cpu:mar.set
+              // Para INT cuando se copian FLAGS al MBR en el paso 7 (ciclo 7)
+              // Mostrar mensaje combinado: MBR ← FLAGS | MAR ← SP
               currentInstructionName === "INT" &&
               sourceRegister === "FLAGS" &&
               executeStageCounter === 5
             ) {
               console.log(
-                "⏭️ INT paso 7 (FLAGS → MBR) - omitiendo ciclo/mensaje/pausa, se manejará en cpu:mar.set",
+                "🎯 INT paso 7 (ciclo 7) detectado: FLAGS → MBR (sin mensaje, sin ciclo, sin pausa)",
               );
-              // Solo incrementar executeStageCounter, sin contabilizar ciclo ni pausar
+              // NO mostrar mensaje aquí - se mostrará en cpu:mar.set
+              // NO contabilizar ciclo aquí - se contabilizará en cpu:mar.set
+              // NO pausar aquí - se pausará en cpu:mar.set
+              
+              // Solo incrementar executeStageCounter para avanzar al siguiente evento
               executeStageCounter++;
             } else if (
-              // Para INT cuando se copia IP al MBR en el paso 9
+              // Para INT cuando se copia IP al MBR en el paso 9 (ciclo 9)
+              // NOTA: executeStageCounter es 7 aquí DESPUÉS de la sincronización
+              // (viene del paso 7 que termina con executeStageCounter === 7)
               currentInstructionName === "INT" &&
               sourceRegister === "IP" &&
-              executeStageCounter === 9
+              executeStageCounter === 7
             ) {
+              console.log("🎯 INT paso 9 (ciclo 9) detectado: IP → MBR | SP ← SP - 1");
               // Mostrar mensaje combinado que incluye SP ← SP - 1 (que se omitió en register.update)
               store.set(messageAtom, "Ejecución: MBR ← IP | SP ← SP - 1");
               cycleCount++;
@@ -3225,12 +3313,12 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
               executeStageCounter++;
 
-              // NO pausar aquí - se pausará en cpu:cycle.end
+              // SÍ pausar aquí en modo ciclo a ciclo
               if (status.until === "cycle-change") {
                 console.log(
-                  "⏭️ INT paso 9 detectado - NO pausando, se pausará en cpu:cycle.end (IP → MBR | SP ← SP - 1)",
+                  "🛑 INT paso 9 - pausando en cpu:mbr.set (IP → MBR | SP ← SP - 1)",
                 );
-                // NO llamar a pauseSimulation()
+                pauseSimulation();
               }
             } else if (event.value.register === "result.l") {
               // Caso especial para cuando se copia el resultado de la ALU al MBR

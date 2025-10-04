@@ -1260,7 +1260,9 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         console.log("⏭️ Omitiendo animación para", regNorm, "→ MAR (isRiToMARSkipAnimation)");
         // Actualizar el registro MAR sin animación
         store.set(MARAtom, store.get(registerAtoms[regNorm]));
-        console.log("✅ MAR actualizado desde", regNorm, "sin animación");
+        // Limpiar cualquier destello pendiente del MAR
+        await deactivateRegister("cpu.MAR");
+        console.log("✅ MAR actualizado desde", regNorm, "sin animación y destello limpiado");
       } else if (!isFromMBR) {
         await drawDataPath(regNorm as DataRegister, "MAR", instructionName, mode);
         // Resetear la animación del bus después de completarse
@@ -1704,6 +1706,17 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         void anim(
           { key: "sequencer.progress.progress", to: 0.9 },
           { duration: 200, easing: "easeInOutSine", forceMs: true },
+        );
+      }
+
+      // Limpiar el bus de direcciones si es INT paso 7 (FLAGS → MBR después de SP → MAR)
+      // IMPORTANTE: En INT executeStageCounter === 5, SP → MAR fue marcado como "skip"
+      // pero puede haber quedado una animación anterior visible en pantalla
+      if (currentInstructionName === "INT" && currentExecuteStageCounter === 5) {
+        console.log("🧹 INT paso 7: Limpiando bus de direcciones antes de FLAGS → MBR");
+        await anim(
+          { key: "cpu.internalBus.address.opacity", to: 0 },
+          { duration: 1, easing: "easeInSine" },
         );
       }
 

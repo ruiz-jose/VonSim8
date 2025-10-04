@@ -237,9 +237,13 @@ export class CPU extends Component {
     // Get interrupt routine address low
     //let vector = Byte.fromUnsigned(number.unsigned * 4, 16);
     const vector = Byte.fromUnsigned(number.unsigned, 8);
-    yield* this.updateByteRegister("ri.l", vector);
+    // IMPORTANTE: Actualizar ri.l DIRECTAMENTE sin generar evento cpu:register.update
+    // para evitar el destello visual en el registro ri durante el ciclo 12 de INT
+    this.#setRegister("ri.l", vector);
     //yield* this.getMBR("IP.l");
-    yield* this.copyByteRegister("ri.l", "IP.l");
+    // COMENTADO: Este copyByteRegister genera dos eventos innecesarios (register.update y register.copy)
+    // que se quieren evitar en el ciclo 12 de INT. El valor ya está en ri.l y se usará directamente.
+    // yield* this.copyByteRegister("ri.l", "IP.l");
     //console.log("Interrupt vector address:", vector);
     // yield* this.updateByteRegister("id.l", vector);
     //yield* this.copyByteRegister("id.l", "ri.l");
@@ -615,8 +619,9 @@ export class CPU extends Component {
     }
     SP = SP.add(-1);
     yield* this.updateWordRegister("SP", SP);
-    yield* this.setMAR("SP");
     yield* this.setMBR(sourceRegister);
+    yield* this.setMAR("SP");
+
 
     if (!(yield* this.useBus("mem-write"))) return false; // Error writing to memory
 
