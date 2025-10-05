@@ -39,8 +39,6 @@ export function ControlLines() {
     .filter(Boolean)
     .join(" ");
 
-  const memPath = "M 750 545 H 800";
-
   // Obtener las propiedades de animación de los buses de control
   const {
     path: rdPath_anim,
@@ -141,22 +139,7 @@ export function ControlLines() {
 
         {/* Chip select */}
 
-        {devices.hasIOBus && (
-          <>
-            <ControlLine springs="bus.iom" d="M 380 460 H 675 V 525" />
-            <path
-              className="fill-none stroke-stone-900 stroke-[6px]"
-              strokeLinejoin="round"
-              d={memPath}
-            />
-            <animated.path
-              className="fill-none stroke-[4px]"
-              strokeLinejoin="round"
-              d={memPath}
-              style={getSpring("bus.mem")}
-            />
-          </>
-        )}
+        {devices.hasIOBus && <ControlLine springs="bus.iom" d="M 380 460 H 675 V 525" />}
         {devices.pic && <ControlLine springs="bus.pic" d="M 521 595 V 730 H 450" />}
         {devices.timer && <ControlLine springs="bus.timer" d="M 563 595 V 875" />}
         {devices.handshake && <ControlLine springs="bus.handshake" d="M 710 595 V 950 H 900" />}
@@ -205,7 +188,7 @@ export function ControlLines() {
         )}
 
         {devices.pio && devices.leds && (
-          <ControlLine springs="bus.pio->leds" d="M 1300 848 H 1120" />
+          <ControlLine springs="bus.pio->leds" d="M 1120 848 H 1300" />
         )}
       </svg>
     </>

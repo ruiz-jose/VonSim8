@@ -4,6 +4,8 @@ import { useSimulation } from "@/computer/simulation";
 export function DataLines() {
   const { devices } = useSimulation();
 
+  const memPath = "M 750 545 H 800";
+
   const addressPath = [
     "M 645 349 H 800", // Comienza desde el borde derecho del registro MAR
     devices.pic && "M 725 349 V 770 H 450",
@@ -34,6 +36,9 @@ export function DataLines() {
     strokeDashoffset: addressStrokeDashoffset,
     opacity: addressOpacity,
   } = getSpring("bus.address");
+
+  // Obtener las propiedades de animación del bus mem (chip select a memoria)
+  const memSpring = getSpring("bus.mem");
 
   return (
     <svg className="pointer-events-none absolute inset-0 z-[25] size-full">
@@ -95,6 +100,23 @@ export function DataLines() {
           opacity: addressOpacity,
         }}
       />
+
+      {/* Chip select to memory line - z-index higher to appear above other buses */}
+      {devices.hasIOBus && (
+        <>
+          <path
+            className="fill-none stroke-stone-900 stroke-[6px]"
+            strokeLinejoin="round"
+            d={memPath}
+          />
+          <animated.path
+            className="fill-none stroke-[4px]"
+            strokeLinejoin="round"
+            d={memPath}
+            style={memSpring}
+          />
+        </>
+      )}
     </svg>
   );
 }

@@ -88,6 +88,95 @@ const resetExternalDataPath = () =>
   anim({ key: "bus.data.opacity", to: 0 }, { duration: 1, easing: "easeInSine" });
 
 /**
+ * Genera el path SVG para el bus de datos desde MBR hacia el PIO
+ */
+function generateDataPathToPIO(): string {
+  // Coordenadas del MBR (reutilizando las mismas coordenadas)
+  const mbrCenterX = 615;
+  const mbrBottomY = 274;
+  const mbrLowerY = 285;
+  const cpuBoundaryX = 645;
+
+  // Coordenadas intermedias hacia el PIO
+  const midY = 790; // Altura donde el bus de datos gira hacia el PIO (coincide con DataLines.tsx)
+  const pioX = 900; // Coordenada x del PIO
+
+  // Ruta: MBR inferior → bajar → salir horizontalmente → bajar hasta midY → ir hacia el PIO
+  return `M ${mbrCenterX} ${mbrBottomY} L ${mbrCenterX} ${mbrLowerY} L ${cpuBoundaryX} ${mbrLowerY} L ${cpuBoundaryX} 249 L 765 249 L 765 ${midY} L ${pioX} ${midY}`;
+}
+
+/**
+ * Anima el bus de datos desde el MBR hacia el PIO
+ */
+export const drawDataPathToPIO = (duration?: number) => {
+  try {
+    const path = generateDataPathToPIO();
+    if (!path) {
+      console.warn("❌ No se generó path para drawDataPathToPIO");
+      return Promise.resolve();
+    }
+
+    const settings = getSettings();
+    const MAX_EXECUTION_UNIT_MS = 250;
+    const eu = Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS);
+    const actualDuration = duration ?? (settings.animations ? eu : 1);
+
+    return anim(
+      [
+        { key: "bus.data.path", from: path },
+        { key: "bus.data.opacity", from: 1 },
+        { key: "bus.data.strokeDashoffset", from: 1, to: 0 },
+      ],
+      { duration: actualDuration, easing: "easeInOutSine", forceMs: true },
+    ).then(() => resetExternalDataPath());
+  } catch (error) {
+    console.warn("Error en drawDataPathToPIO:", error);
+    return Promise.resolve();
+  }
+};
+
+/**
+ * Genera el path SVG para el bus de direcciones desde MAR hacia el PIO
+ */
+function generateAddressPathToPIO(): string {
+  // Coordenadas que coinciden con DataLines.tsx: "M 725 349 V 770 H 900"
+  // Comienza en x=725 (punto intermedio del bus de direcciones), y=349 (altura del MAR)
+  // Baja verticalmente hasta y=770
+  // Va horizontalmente hasta x=900 (PIO)
+  return "M 725 349 V 770 H 900";
+}
+
+/**
+ * Anima el bus de direcciones desde el MAR hacia el PIO
+ */
+export const drawAddressPathToPIO = (duration?: number) => {
+  try {
+    const path = generateAddressPathToPIO();
+    if (!path) {
+      console.warn("❌ No se generó path para drawAddressPathToPIO");
+      return Promise.resolve();
+    }
+
+    const settings = getSettings();
+    const MAX_EXECUTION_UNIT_MS = 250;
+    const eu = Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS);
+    const actualDuration = duration ?? (settings.animations ? eu : 1);
+
+    return anim(
+      [
+        { key: "bus.address.path", from: path },
+        { key: "bus.address.opacity", from: 1 },
+        { key: "bus.address.strokeDashoffset", from: 1, to: 0 },
+      ],
+      { duration: actualDuration, easing: "easeInOutSine", forceMs: true },
+    ).then(() => resetExternalAddressPath());
+  } catch (error) {
+    console.warn("Error en drawAddressPathToPIO:", error);
+    return Promise.resolve();
+  }
+};
+
+/**
  * Genera el path SVG para el bus de direcciones (MAR → memoria)
  * usando las mismas coordenadas que el path estático en DataLines.tsx
  * La animación comienza más a la derecha del registro MAR
@@ -176,6 +265,70 @@ const drawWRControlPath = (duration?: number) => {
     );
   } catch (error) {
     console.warn("Error en drawWRControlPath:", error);
+    return Promise.resolve();
+  }
+};
+
+/**
+ * Genera el path SVG para el bus de control WR desde CPU hacia el PIO
+ */
+function generateWRControlPathToPIO(): string {
+  // Coordenadas que coinciden con ControlLines.tsx: "M 790 440 V 815 H 900"
+  // Comienza en el punto intermedio del bus WR, luego baja hasta y=815 y va al PIO
+  return "M 380 440 H 790 V 815 H 900";
+}
+
+/**
+ * Anima el bus de control WR desde el CPU hacia el PIO
+ */
+export const drawWRControlPathToPIO = (duration?: number) => {
+  try {
+    const path = generateWRControlPathToPIO();
+    if (!path) {
+      console.warn("❌ No se generó path para drawWRControlPathToPIO");
+      return Promise.resolve();
+    }
+
+    const settings = getSettings();
+    const MAX_EXECUTION_UNIT_MS = 250;
+    const eu = Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS);
+    const actualDuration = duration ?? (settings.animations ? eu : 1);
+
+    return anim(
+      [
+        { key: "bus.wr.path", from: path },
+        { key: "bus.wr.opacity", from: 1 },
+        { key: "bus.wr.strokeDashoffset", from: 1, to: 0 },
+      ],
+      { duration: actualDuration, easing: "easeInOutSine", forceMs: true },
+    );
+  } catch (error) {
+    console.warn("Error en drawWRControlPathToPIO:", error);
+    return Promise.resolve();
+  }
+};
+
+/**
+ * Anima la línea de control desde el chip select hasta el PIO
+ * Coordenadas: "M 612 595 V 730 H 900" (desde ControlLines.tsx)
+ * Esta línea usa un path estático definido en ControlLines.tsx
+ */
+export const drawPIOControlLine = (duration?: number) => {
+  try {
+    const settings = getSettings();
+    const MAX_EXECUTION_UNIT_MS = 250;
+    const eu = Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS);
+    const actualDuration = duration ?? (settings.animations ? eu : 1);
+
+    return anim(
+      [
+        { key: "bus.pio.opacity", from: 1 },
+        { key: "bus.pio.strokeDashoffset", from: 1, to: 0 },
+      ],
+      { duration: actualDuration, easing: "easeInOutSine", forceMs: true },
+    ).then(() => anim({ key: "bus.pio.opacity", to: 0 }, { duration: 1, easing: "easeInSine" }));
+  } catch (error) {
+    console.warn("Error en drawPIOControlLine:", error);
     return Promise.resolve();
   }
 };
