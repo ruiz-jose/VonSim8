@@ -41,7 +41,7 @@ export class StackInstruction extends Instruction<"PUSH" | "POP" | "PUSHF" | "PO
       // yield* computer.cpu.copyWordRegister(register, "id");
       const lowByteRegister =
         register === "FLAGS" ? "FLAGS.l" : (`${register[0]}L` as "AL" | "BL" | "CL" | "DL");
-      return yield* computer.cpu.pushToStack(lowByteRegister); // Will return false if stack overflow
+      return yield* computer.cpu.pushToStack(lowByteRegister, true); // Will return false if stack overflow
     } else {
       const lowByteRegister =
         register === "FLAGS" ? "FLAGS.l" : (`${register[0]}L` as "AL" | "BL" | "CL" | "DL");

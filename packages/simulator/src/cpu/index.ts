@@ -603,6 +603,7 @@ export class CPU extends Component {
    * The value is read directly from the specified register.
    * @see {@link https://vonsim.github.io/docs/cpu/#pila}
    * @param sourceRegister The register containing the value to push to the stack.
+   * @param isPushInstruction Whether this is being called from a PUSH instruction (affects operation order).
    * @returns Whether the operation was successful.
    *
    * ---
@@ -610,6 +611,7 @@ export class CPU extends Component {
    */
   *pushToStack(
     sourceRegister: "AL" | "BL" | "CL" | "DL" | "id.l" | "IP.l" | "FLAGS.l",
+    isPushInstruction = false,
   ): EventGenerator<boolean> {
     let SP = this.getRegister("SP");
 
@@ -617,22 +619,29 @@ export class CPU extends Component {
       yield { type: "cpu:error", error: new SimulatorError("stack-overflow") };
       return false;
     }
-    SP = SP.add(-1);
-    yield* this.updateWordRegister("SP", SP);
-    yield* this.setMBR(sourceRegister);
-    yield* this.setMAR("SP");
 
-    if (!(yield* this.useBus("mem-write"))) return false; // Error writing to memory
+    if (isPushInstruction) {
+      // Para la instrucción PUSH: MAR -> MBR -> write -> SP--
+      yield* this.setMAR("SP");
+      yield* this.setMBR(sourceRegister);
+      SP = SP.add(-1);
+      yield* this.updateWordRegister("SP", SP);
+      if (!(yield* this.useBus("mem-write"))) return false; // Error writing to memory
+
+    } else {
+      // Para otras instrucciones (INT, CALL, etc.): SP-- -> MBR -> MAR -> write
+      SP = SP.add(-1);
+      yield* this.updateWordRegister("SP", SP);
+      yield* this.setMBR(sourceRegister);
+      yield* this.setMAR("SP");
+      if (!(yield* this.useBus("mem-write"))) return false; // Error writing to memory
+    }
 
     if (!MemoryAddress.inRange(SP.unsigned - 1)) {
       yield { type: "cpu:error", error: new SimulatorError("stack-overflow") };
       return false;
     }
-    /* yield* this.setMAR("SP");
-    yield* this.setMBR(sourceRegister);
-    if (!(yield* this.useBus("mem-write"))) return false; // Error writing to memory
-    SP = SP.add(-1);
-    yield* this.updateWordRegister("SP", SP);*/
+
     return true;
   }
 
