@@ -1240,7 +1240,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
 
           // Generar el path desde MBR a MAR
           const mbrToMarPath = generateMBRtoMARPath();
-          
+
           await anim(
             [
               {
