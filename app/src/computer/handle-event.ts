@@ -2,12 +2,9 @@ import { IOAddress, MemoryAddress } from "@vonsim/common/address";
 import { Byte } from "@vonsim/common/byte";
 import type { Split } from "type-fest";
 
-import { store } from "@/lib/jotai";
-
 import { handleBusEvent } from "./bus/events";
 import { handleClockEvent } from "./clock/events";
 import { handleCPUEvent } from "./cpu/events";
-import { animationSyncAtom } from "./cpu/state";
 import { handleF10Event } from "./f10/events";
 import { handleHandshakeEvent } from "./handshake/events";
 import { handleKeyboardEvent } from "./keyboard/events";
@@ -27,22 +24,9 @@ const runningEvents = new Set<EventType>();
 
 // Función para manejar animaciones de manera sincronizada
 async function handleSynchronizedAnimation(animationFunction: () => Promise<void>): Promise<void> {
-  const syncState = store.get(animationSyncAtom);
-
-  if (!syncState.canAnimate) {
-    // Esperar hasta que las animaciones estén permitidas
-    await new Promise<void>(resolve => {
-      const unsubscribe = store.sub(animationSyncAtom, () => {
-        const newSyncState = store.get(animationSyncAtom);
-        if (newSyncState.canAnimate) {
-          unsubscribe();
-          resolve();
-        }
-      });
-    });
-  }
-
-  // Ejecutar la animación
+  // Simplificado: ejecutar directamente sin esperar sincronización
+  // El sistema de sincronización original causaba timeouts porque
+  // animationSyncAtom nunca se actualizaba en ninguna parte del código
   await animationFunction();
 }
 

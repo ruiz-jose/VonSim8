@@ -627,7 +627,6 @@ export class CPU extends Component {
       SP = SP.add(-1);
       yield* this.updateWordRegister("SP", SP);
       if (!(yield* this.useBus("mem-write"))) return false; // Error writing to memory
-
     } else {
       // Para otras instrucciones (INT, CALL, etc.): SP-- -> MBR -> MAR -> write
       SP = SP.add(-1);
