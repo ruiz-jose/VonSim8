@@ -398,6 +398,24 @@ function generateRegisterTransferMessage(
     return handleCALLInstruction(sourceRegister);
   }
 
+  // Caso especial para OUT en executeStage === 4 (ciclo 6): MAR ← MBR
+  if (name === "OUT" && sourceRegister === "ri" && executeStage === 4) {
+    return {
+      message: "Ejecución: MAR ← MBR",
+      shouldDisplay: true,
+      shouldPause: true,
+    };
+  }
+
+  // Caso especial para OUT: MBR ← registro
+  if (name === "OUT" && executeStage === 5) {
+    return {
+      message: `Ejecución: MBR ← ${sourceRegister}`,
+      shouldDisplay: true,
+      shouldPause: true,
+    };
+  }
+
   // Casos especiales para instrucciones aritméticas con solo direccionamiento directo
   if (["ADD", "SUB", "CMP", "AND", "OR", "XOR"].includes(name) && modeRi && !modeId) {
     return handleDirectArithmetic(sourceRegister, executeStage);
@@ -642,6 +660,15 @@ function generateRegisterUpdateMessage(
   // Casos especiales para instrucciones CALL
   if (name === "CALL") {
     return handleCALLRegisterUpdate(sourceRegister);
+  }
+
+  // Caso especial para OUT en executeStage === 3 (ciclo 5)
+  if (name === "OUT" && sourceRegister === "IP" && executeStage === 3) {
+    return {
+      message: "Ejecución: MBR ← read(Memoria[MAR]) | IP ← IP + 1",
+      shouldDisplay: true,
+      shouldPause: true,
+    };
   }
 
   // Caso especial para IP en instrucciones con direccionamiento directo durante la captación
@@ -3431,6 +3458,24 @@ async function executeThread(generator: EventGenerator): Promise<void> {
 
               // Pausar si estamos ejecutando por ciclos
               if (status.until === "cycle-change") {
+                pauseSimulation();
+              }
+            } else if (
+              // Para OUT cuando se copia el registro al MBR en el paso 7 (ciclo 7)
+              currentInstructionName === "OUT" &&
+              executeStageCounter === 5 &&
+              ["AL", "BL", "CL", "DL", "AH", "BH", "CH", "DH"].includes(sourceRegister)
+            ) {
+              console.log(`🎯 OUT paso 7 (ciclo 7) detectado: ${sourceRegister} → MBR`);
+              store.set(messageAtom, `Ejecución: MBR ← ${sourceRegister}`);
+              cycleCount++;
+              currentInstructionCycleCount++;
+              store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+              executeStageCounter++;
+
+              // Pausar si estamos ejecutando por ciclos
+              if (status.until === "cycle-change") {
+                console.log("🛑 OUT paso 7 - pausando en cpu:mbr.set (registro → MBR)");
                 pauseSimulation();
               }
             } else {

@@ -1230,6 +1230,47 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
           return;
         }
 
+        // Para instrucción OUT en el ciclo 6, mostrar animación MBR → MAR
+        if (instructionName === "OUT" && currentExecuteStageCounter === 4) {
+          console.log("✅ Animando bus de direcciones para OUT: MBR → MAR", {
+            instructionName,
+            mode,
+            executeStageCounter: currentExecuteStageCounter,
+          });
+
+          // Generar el path desde MBR a MAR
+          const mbrToMarPath = generateMBRtoMARPath();
+          
+          await anim(
+            [
+              {
+                key: "cpu.internalBus.address.path",
+                from: mbrToMarPath,
+              },
+              { key: "cpu.internalBus.address.opacity", from: 1 },
+              { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
+            ],
+            { duration: 300, easing: "easeInOutSine", forceMs: true },
+          );
+
+          // Activar registro MAR
+          await activateRegister("cpu.MAR", colors.blue[500]);
+
+          // Actualizar el registro MAR desde ri (que contiene el valor del MBR)
+          store.set(MARAtom, store.get(registerAtoms.ri));
+
+          // Desactivar registro MAR
+          await deactivateRegister("cpu.MAR");
+
+          // Resetear la animación del bus de direcciones
+          await anim(
+            { key: "cpu.internalBus.address.opacity", to: 0 },
+            { duration: 1, easing: "easeInSine" },
+          );
+
+          return;
+        }
+
         // Para todos los demás casos (incluido INT con mem<-imd), mostrar animación ri → MAR
         console.log("✅ Animando bus de direcciones: ri → MAR", {
           instructionName,

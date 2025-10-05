@@ -615,6 +615,29 @@ export function generateDataPath(
   } else if (
     registers.includes(normalizedFrom) &&
     normalizedTo === "MBR" &&
+    instruction?.toUpperCase() === "OUT"
+  ) {
+    // Prioridad MÁXIMA: OUT registro→MBR debe usar la ruta directa por la parte superior
+    // evitando completamente NodoRegIn y mbr reg join (solo pasa por NodoRegOut y outr mbr join)
+    console.log(
+      "🎯 Usando ruta prioritaria para OUT registro→MBR (evitando NodoRegIn y mbr reg join)",
+    );
+    path = [
+      normalizedFrom,
+      `${normalizedFrom} out`,
+      `${normalizedFrom} out join`,
+      "NodoRegOut",
+      "outr mbr join",
+      "mbr approach horizontal",
+      "mbr approach vertical",
+      "mbr top approach",
+      "mbr top entry",
+      "MBR top",
+      "MBR",
+    ];
+  } else if (
+    registers.includes(normalizedFrom) &&
+    normalizedTo === "MBR" &&
     instruction?.toUpperCase() === "PUSH"
   ) {
     // Prioridad MÁXIMA: PUSH registro→MBR debe usar la ruta directa por la parte superior
