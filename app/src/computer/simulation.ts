@@ -398,11 +398,11 @@ function generateRegisterTransferMessage(
     return handleCALLInstruction(sourceRegister);
   }
 
-  // Caso especial para OUT en executeStage === 4 (ciclo 6): MAR ← MBR
-  if (name === "OUT" && sourceRegister === "ri" && executeStage === 4) {
+  // Caso especial para OUT en executeStage === 2 (paso 4): solo pausar, mensaje ya mostrado en cpu:register.copy
+  if (name === "OUT" && sourceRegister === "ri" && executeStage === 2) {
     return {
-      message: "Ejecución: MAR ← MBR",
-      shouldDisplay: true,
+      message: "",
+      shouldDisplay: false,
       shouldPause: true,
     };
   }
@@ -1917,7 +1917,12 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               // NO skip para executeStageCounter === 6 (INT paso 7 con SP) - debe contar ciclo
               (currentInstructionName === "INT" &&
                 executeStageCounter === 7 &&
-                sourceRegister === "SP");
+                sourceRegister === "SP") ||
+              // Skip para OUT cuando sourceRegister === "ri" y executeStageCounter === 2 (paso 4)
+              // El ciclo ya se contabilizó en cpu:register.copy cuando se mostró la animación DL→MAR
+              (currentInstructionName === "OUT" &&
+                sourceRegister === "ri" &&
+                executeStageCounter === 2);
             // NO skip para INT paso 12 con ri (executeStageCounter === 8) - debe contar ciclo 12
 
             if (!skipCycleCount) {
@@ -3458,6 +3463,24 @@ async function executeThread(generator: EventGenerator): Promise<void> {
 
               // Pausar si estamos ejecutando por ciclos
               if (status.until === "cycle-change") {
+                pauseSimulation();
+              }
+            } else if (
+              // Para OUT cuando se copia el registro AL al MBR en el paso 5 (ciclo 5)
+              currentInstructionName === "OUT" &&
+              executeStageCounter === 3 &&
+              ["AL", "BL", "CL", "DL", "AH", "BH", "CH", "DH"].includes(sourceRegister)
+            ) {
+              console.log(`🎯 OUT paso 5 (ciclo 5) detectado: ${sourceRegister} → MBR`);
+              store.set(messageAtom, `Ejecución: MBR ← ${sourceRegister}`);
+              cycleCount++;
+              currentInstructionCycleCount++;
+              store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+              executeStageCounter++;
+
+              // Pausar si estamos ejecutando por ciclos
+              if (status.until === "cycle-change") {
+                console.log("🛑 OUT paso 5 - pausando en cpu:mbr.set (registro → MBR)");
                 pauseSimulation();
               }
             } else if (

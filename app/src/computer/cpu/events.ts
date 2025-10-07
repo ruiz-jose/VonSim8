@@ -47,6 +47,9 @@ let pendingRightTransfer: { from: DataRegister; instruction: string; mode: strin
 // let _waitingForALUCogAnimation = false;
 // let _aluCogAnimationComplete = false;
 
+// Variable para rastrear el registro fuente en instrucciones OUT (DL o DX)
+let pendingOUTSourceRegister: string | null = null;
+
 // Variables para rastrear el contexto actual de la instrucción
 let currentExecuteStageCounter = 0;
 let currentInstructionName = "";
@@ -1230,33 +1233,20 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
           return;
         }
 
-        // Para instrucción OUT en el ciclo 6, mostrar animación MBR → MAR
-        if (instructionName === "OUT" && currentExecuteStageCounter === 4) {
-          console.log("✅ Animando bus de direcciones para OUT: MBR → MAR", {
+        // Para instrucción OUT en executeStageCounter === 2 (paso 4), solo actualizar MAR y resetear bus
+        // La animación ya se mostró en cpu:register.copy
+        if (instructionName === "OUT" && currentExecuteStageCounter === 2 && pendingOUTSourceRegister) {
+          console.log("✅ OUT paso 4 - actualizando MAR (animación ya mostrada en register.copy)", {
             instructionName,
             mode,
             executeStageCounter: currentExecuteStageCounter,
+            sourceRegister: pendingOUTSourceRegister,
           });
-
-          // Generar el path desde MBR a MAR
-          const mbrToMarPath = generateMBRtoMARPath();
-
-          await anim(
-            [
-              {
-                key: "cpu.internalBus.address.path",
-                from: mbrToMarPath,
-              },
-              { key: "cpu.internalBus.address.opacity", from: 1 },
-              { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
-            ],
-            { duration: 300, easing: "easeInOutSine", forceMs: true },
-          );
 
           // Activar registro MAR
           await activateRegister("cpu.MAR", colors.blue[500]);
 
-          // Actualizar el registro MAR desde ri (que contiene el valor del MBR)
+          // Actualizar el registro MAR desde ri (que contiene el valor del registro DL/DX)
           store.set(MARAtom, store.get(registerAtoms.ri));
 
           // Desactivar registro MAR
@@ -1267,6 +1257,9 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
             { key: "cpu.internalBus.address.opacity", to: 0 },
             { duration: 1, easing: "easeInSine" },
           );
+
+          // Limpiar el registro fuente pendiente
+          pendingOUTSourceRegister = null;
 
           return;
         }
@@ -1867,6 +1860,39 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       console.log(
         `🔄 cpu:register.copy: ${event.src} → ${event.dest} (normalizado: ${src} → ${dest})`,
       );
+
+      // Detectar cuando OUT copia DL/DX a ri para guardar el registro fuente
+      if (
+        currentInstructionName === "OUT" &&
+        (src === "DL" || src === "DX") &&
+        dest === "ri" &&
+        currentExecuteStageCounter === 2
+      ) {
+        console.log(`📝 OUT detectado - mostrando animación del bus de datos: ${src} → MAR (evitando nodos de entrada)`);
+        pendingOUTSourceRegister = src;
+        
+        // Animar solo el secuenciador
+        await animateSequencerOnly(0.05);
+        
+        // Mostrar animación del bus de datos desde DL/DX directamente a MAR
+        // Esta animación mostrará el dato moviéndose desde el registro al MAR por el bus de salida
+        // sin pasar por NodoRegIn, mbr reg join, IP join ni ri join
+        await drawDataPath(src, "ri", instructionName, mode);
+        
+        // Activar registro MAR brevemente con color azul (bus de dirección)
+        await activateRegister("cpu.MAR", colors.blue[500]);
+        
+        // Actualizar el registro ri desde DL/DX (lógica interna)
+        store.set(registerAtoms[dest], store.get(registerAtoms[src]));
+        
+        // Desactivar registro MAR
+        await deactivateRegister("cpu.MAR");
+        
+        // Resetear el bus de datos
+        await resetDataPath();
+        
+        return;
+      }
 
       // Animar solo el secuenciador por cada operación de copia importante
       if ((dest === "left" || dest === "right") && currentPhase === "executing") {

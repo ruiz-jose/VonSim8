@@ -12,11 +12,11 @@ type IOInstructionName = "IN" | "OUT";
 
 type InitialOperation =
   | { port: "fixed"; size: ByteSize; address: NumberExpression }
-  | { port: "variable"; size: ByteSize };
+  | { port: "variable"; size: ByteSize; portSize: ByteSize };
 
 type Operation =
   | { port: "fixed"; size: ByteSize; address: IOAddress }
-  | { port: "variable"; size: ByteSize };
+  | { port: "variable"; size: ByteSize; portSize: ByteSize };
 
 /**
  * IOInstruction:
@@ -115,11 +115,12 @@ export class IOInstruction extends InstructionStatement {
     const size: ByteSize = internal.value === "AX" ? 16 : 8;
 
     if (external.isRegister()) {
-      if (external.value !== "DX") {
+      if (external.value !== "DL" && external.value !== "DX") {
         throw new AssemblerError("expects-dx").at(external);
       }
 
-      this.#initialOperation = { port: "variable", size };
+      const portSize: ByteSize = external.value === "DX" ? 16 : 8;
+      this.#initialOperation = { port: "variable", size, portSize };
       return;
     }
 
@@ -147,7 +148,7 @@ export class IOInstruction extends InstructionStatement {
       const address = IOAddress.from(computed);
       this.#operation = { port: "fixed", size: op.size, address };
     } else {
-      this.#operation = { port: "variable", size: op.size };
+      this.#operation = { port: "variable", size: op.size, portSize: op.portSize };
     }
   }
 }

@@ -21,8 +21,12 @@ export class IOInstruction extends Instruction<"IN" | "OUT"> {
   #formatOperands(): string[] {
     const operands: string[] = [];
 
-    if (this.operation.port === "variable") operands.push("DX");
-    else operands.push(this.operation.address.toString());
+    if (this.operation.port === "variable") {
+      // Usar el tamaño del puerto para determinar si mostrar DL o DX
+      operands.push(this.operation.portSize === 8 ? "DL" : "DX");
+    } else {
+      operands.push(this.operation.address.toString());
+    }
 
     if (this.operation.size === 8) operands.push("AL");
     else operands.push("AX");
