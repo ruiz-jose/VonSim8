@@ -88,7 +88,7 @@ const resetExternalDataPath = () =>
   anim({ key: "bus.data.opacity", to: 0 }, { duration: 1, easing: "easeInSine" });
 
 /**
- * Genera el path SVG para el bus de datos desde MBR hacia el PIO
+ * Genera el path SVG para el bus de datos desde MBR hacia el PIO (escritura)
  */
 function generateDataPathToPIO(): string {
   // Coordenadas del MBR (reutilizando las mismas coordenadas)
@@ -106,7 +106,25 @@ function generateDataPathToPIO(): string {
 }
 
 /**
- * Anima el bus de datos desde el MBR hacia el PIO
+ * Genera el path SVG para el bus de datos desde PIO hacia el MBR (lectura)
+ */
+function generateDataPathFromPIO(): string {
+  // Coordenadas del MBR
+  const mbrCenterX = 615;
+  const mbrBottomY = 274;
+  const mbrLowerY = 285;
+  const cpuBoundaryX = 645;
+
+  // Coordenadas intermedias desde el PIO
+  const midY = 790; // Altura donde el bus de datos gira hacia el PIO
+  const pioX = 900; // Coordenada x del PIO
+
+  // Ruta INVERSA: PIO → ir hacia la izquierda → subir hasta 249 → entrar al CPU → subir hasta MBR
+  return `M ${pioX} ${midY} L 765 ${midY} L 765 249 L ${cpuBoundaryX} 249 L ${cpuBoundaryX} ${mbrLowerY} L ${mbrCenterX} ${mbrLowerY} L ${mbrCenterX} ${mbrBottomY}`;
+}
+
+/**
+ * Anima el bus de datos desde el MBR hacia el PIO (escritura)
  */
 export const drawDataPathToPIO = (duration?: number) => {
   try {
@@ -131,6 +149,37 @@ export const drawDataPathToPIO = (duration?: number) => {
     ).then(() => resetExternalDataPath());
   } catch (error) {
     console.warn("Error en drawDataPathToPIO:", error);
+    return Promise.resolve();
+  }
+};
+
+/**
+ * Anima el bus de datos desde el PIO hacia el MBR (lectura)
+ */
+export const drawDataPathFromPIO = (duration?: number) => {
+  try {
+    const path = generateDataPathFromPIO();
+    if (!path) {
+      console.warn("❌ No se generó path para drawDataPathFromPIO");
+      return Promise.resolve();
+    }
+
+    const settings = getSettings();
+    const MAX_EXECUTION_UNIT_MS = 250;
+    const eu = Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS);
+    const actualDuration = duration ?? (settings.animations ? eu : 1);
+
+    console.log("🎯 Animando bus de datos desde PIO → MBR");
+    return anim(
+      [
+        { key: "bus.data.path", from: path },
+        { key: "bus.data.opacity", from: 1 },
+        { key: "bus.data.strokeDashoffset", from: 1, to: 0 },
+      ],
+      { duration: actualDuration, easing: "easeInOutSine", forceMs: true },
+    ).then(() => resetExternalDataPath());
+  } catch (error) {
+    console.warn("Error en drawDataPathFromPIO:", error);
     return Promise.resolve();
   }
 };
@@ -304,6 +353,45 @@ export const drawWRControlPathToPIO = (duration?: number) => {
     );
   } catch (error) {
     console.warn("Error en drawWRControlPathToPIO:", error);
+    return Promise.resolve();
+  }
+};
+
+/**
+ * Genera el path SVG para el bus de control RD desde CPU hacia el PIO
+ */
+function generateRDControlPathToPIO(): string {
+  // Coordenadas que coinciden con ControlLines.tsx: "M 780 420 V 805 H 900"
+  // Comienza en el punto intermedio del bus RD, luego baja hasta y=805 y va al PIO
+  return "M 380 420 H 780 V 805 H 900";
+}
+
+/**
+ * Anima el bus de control RD desde el CPU hacia el PIO
+ */
+export const drawRDControlPathToPIO = (duration?: number) => {
+  try {
+    const path = generateRDControlPathToPIO();
+    if (!path) {
+      console.warn("❌ No se generó path para drawRDControlPathToPIO");
+      return Promise.resolve();
+    }
+
+    const settings = getSettings();
+    const MAX_EXECUTION_UNIT_MS = 250;
+    const eu = Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS);
+    const actualDuration = duration ?? (settings.animations ? eu : 1);
+
+    return anim(
+      [
+        { key: "bus.rd.path", from: path },
+        { key: "bus.rd.opacity", from: 1 },
+        { key: "bus.rd.strokeDashoffset", from: 1, to: 0 },
+      ],
+      { duration: actualDuration, easing: "easeInOutSine", forceMs: true },
+    );
+  } catch (error) {
+    console.warn("Error en drawRDControlPathToPIO:", error);
     return Promise.resolve();
   }
 };
