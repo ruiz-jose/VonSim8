@@ -1815,6 +1815,15 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 // Caso especial para MOV con direccionamiento directo: copiar directamente del MBR al MAR
                 store.set(messageAtom, "Ejecución: MAR ← MBR");
               } else if (
+                // Caso especial para IN en ciclo 6 (executeStageCounter === 4): MAR ← MBR
+                // Se debe mostrar la animación especial MBR → MAR en lugar de ri → MAR
+                sourceRegister === "ri" &&
+                currentInstructionName === "IN" &&
+                executeStageCounter === 4
+              ) {
+                console.log("🎯 IN ciclo 6 detectado - MAR ← MBR (animación especial MBR → MAR)");
+                store.set(messageAtom, "Ejecución: MAR ← MBR");
+              } else if (
                 // Caso especial para instrucciones ALU con direccionamiento indirecto e inmediato
                 // cuando se copia el contenido de BL al MAR - paso 6 de ADD [BL], 6
                 // PERO NO mostrar si isRiToMARSkipCycle es true (MAR ya tiene la dirección correcta)
@@ -2154,6 +2163,18 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 jumpInstructions.includes((currentInstructionName || "").toUpperCase())
               ) {
                 displayMessage = "Ejecución: MBR ← read(Memoria[MAR]) | IP ← IP + 1";
+              }
+
+              // Caso especial para instrucción IN en el ciclo 5 (executeStageCounter === 3)
+              // Mostrar mensaje combinado de lectura del PIO e incremento de IP
+              if (
+                executeStageCounter === 3 &&
+                currentInstructionName === "IN" &&
+                sourceRegister === "IP"
+              ) {
+                displayMessage = "Ejecución: MBR ← read(PIO[MAR]) | IP ← IP + 1";
+                pause = true; // Asegurar que se pause en este paso
+                console.log("🎯 IN ciclo 5 detectado - mensaje combinado establecido");
               }
 
               // Caso especial para el paso 7 de instrucciones ALU con direccionamiento directo e inmediato
@@ -3156,7 +3177,12 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               // no mostrar mensaje, no pausar, ni contabilizar ciclo porque cpu:register.update ya manejará todo
               (executeStageCounter === 3 &&
                 currentInstructionName === "INT" &&
-                messageReadWrite === "Ejecución: MBR ← read(Memoria[MAR])")
+                messageReadWrite === "Ejecución: MBR ← read(Memoria[MAR])") ||
+              // Para IN en executeStageCounter === 3 (ciclo 5 - lectura del PIO),
+              // no mostrar mensaje, no pausar, ni contabilizar ciclo porque cpu:register.update ya manejará todo
+              (executeStageCounter === 3 &&
+                currentInstructionName === "IN" &&
+                messageReadWrite === "Ejecución: MBR ← read(PIO[MAR])")
             ) {
               ContinuarSinGuardar = true;
               console.log("🔄 ContinuarSinGuardar establecido a true - condición cumplida");
@@ -3165,6 +3191,13 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                   "✅ CALL paso",
                   executeStageCounter,
                   "- bus:reset omitido correctamente",
+                );
+              }
+              if (currentInstructionName === "IN" && executeStageCounter === 3) {
+                console.log(
+                  "✅ IN paso",
+                  executeStageCounter,
+                  "(ciclo 5) - bus:reset omitido correctamente",
                 );
               }
             } else {

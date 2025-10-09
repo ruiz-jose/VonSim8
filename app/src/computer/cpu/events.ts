@@ -828,7 +828,10 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
 
       // Detectar si el registro origen es MBR (para animación especial)
       const regNorm = normalize(event.register); // NO toLowerCase
-      const isFromMBR = regNorm === "MBR";
+      const isFromMBR =
+        regNorm === "MBR" ||
+        // Caso especial para IN ciclo 6: cuando ri → MAR, mostrar animación MBR → MAR
+        (regNorm === "ri" && currentInstructionName === "IN" && currentExecuteStageCounter === 4);
 
       // Detectar transferencias IP→MAR para animación simultánea con MBR→ID
       if (regNorm === "IP") {
@@ -1012,7 +1015,12 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         // También skip para INT pasos 6 y 7 con SP (no hay animación válida, solo preparación interna)
         (regNorm === "SP" &&
           currentInstructionName === "INT" &&
-          (currentExecuteStageCounter === 4 || currentExecuteStageCounter === 5));
+          (currentExecuteStageCounter === 4 || currentExecuteStageCounter === 5)) ||
+        // También skip para IN ciclo 6 (executeStageCounter === 4) cuando ri → MAR
+        // Se debe mostrar animación especial MBR → MAR en su lugar
+        (regNorm === "ri" &&
+          currentInstructionName === "IN" &&
+          currentExecuteStageCounter === 4);
 
       console.log(`🔍 isRiToMARSimultaneous Debug:`, {
         regNorm,
@@ -1620,10 +1628,38 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
             );
           } else {
             // Omitir animación MBR → ri en direccionamiento directo (no inmediato)
-            if (normalizedRegister === "ri" && mode !== "mem<-imd") {
+            // EXCEPTO para la instrucción IN que sí necesita mostrar la animación MBR → MAR
+            if (
+              normalizedRegister === "ri" &&
+              mode !== "mem<-imd" &&
+              instructionName !== "IN"
+            ) {
               console.log("⏭️ Omitiendo animación MBR → ri para direccionamiento directo");
             } else {
-              await drawDataPath("MBR", normalizedRegister as DataRegister, instructionName, mode);
+              // Para IN, dibujar animación MBR → MAR en lugar de MBR → ri
+              if (normalizedRegister === "ri" && instructionName === "IN") {
+                console.log("🎯 IN detectado: mostrando animación especial MBR → MAR");
+                await anim(
+                  [
+                    { key: "cpu.internalBus.address.path", from: generateMBRtoMARPath() },
+                    { key: "cpu.internalBus.address.opacity", from: 1 },
+                    { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
+                  ],
+                  { duration: 300, easing: "easeInOutSine", forceMs: true },
+                );
+                // Ocultar el bus de direcciones tras la animación
+                await anim(
+                  { key: "cpu.internalBus.address.opacity", to: 0 },
+                  { duration: 100, easing: "easeInSine", forceMs: true },
+                );
+              } else {
+                await drawDataPath(
+                  "MBR",
+                  normalizedRegister as DataRegister,
+                  instructionName,
+                  mode,
+                );
+              }
             }
           }
         }

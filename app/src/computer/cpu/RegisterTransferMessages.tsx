@@ -358,7 +358,7 @@ export function RegisterTransferMessages() {
   if (!settings.showInstructionCycle || devices.pic) return null;
 
   return (
-    <div className="absolute left-[120px] top-[520px] z-10 h-min w-[420px]">
+    <div className="absolute left-[20px] top-[520px] z-10 h-min w-[420px]">
       {/* Contenedor principal con efectos visuales mejorados */}
       <div className="rounded-xl border-2 border-stone-400/50 bg-gradient-to-br from-stone-800 to-stone-900 shadow-2xl backdrop-blur-sm">
         {/* Header con efectos visuales */}
