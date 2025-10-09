@@ -557,8 +557,18 @@ export function generateDataPath(
     // Caso específico: DL/AL/BL/CL → ri para OUT (animación visual hacia MAR)
     // Ruta directa por bus de salida: registro → registro out → registro out join → NodoRegOut → outr mbr join → MAR join2 → MAR
     // Evita completamente NodoRegIn, mbr reg join, IP join y ri join
-    console.log(`🎯 Usando ruta especial ${normalizedFrom} → MAR para OUT (evitando nodos de entrada)`);
-    path = [normalizedFrom, `${normalizedFrom} out`, `${normalizedFrom} out join`, "NodoRegOut", "outr mbr join", "MAR join2", "MAR"];
+    console.log(
+      `🎯 Usando ruta especial ${normalizedFrom} → MAR para OUT (evitando nodos de entrada)`,
+    );
+    path = [
+      normalizedFrom,
+      `${normalizedFrom} out`,
+      `${normalizedFrom} out join`,
+      "NodoRegOut",
+      "outr mbr join",
+      "MAR join2",
+      "MAR",
+    ];
   } else if (normalizedFrom === "MBR" && normalizedTo === "id" && mode === "mem<-imd") {
     // Caso específico: MBR → id (ruta completa con id join alineado)
     // Ruta: MBR bottom → MBR → mbr reg join → NodoRegIn → id join → id (salida desde parte inferior)

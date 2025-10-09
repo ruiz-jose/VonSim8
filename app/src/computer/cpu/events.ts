@@ -1018,9 +1018,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
           (currentExecuteStageCounter === 4 || currentExecuteStageCounter === 5)) ||
         // También skip para IN ciclo 6 (executeStageCounter === 4) cuando ri → MAR
         // Se debe mostrar animación especial MBR → MAR en su lugar
-        (regNorm === "ri" &&
-          currentInstructionName === "IN" &&
-          currentExecuteStageCounter === 4);
+        (regNorm === "ri" && currentInstructionName === "IN" && currentExecuteStageCounter === 4);
 
       console.log(`🔍 isRiToMARSimultaneous Debug:`, {
         regNorm,
@@ -1243,7 +1241,11 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
 
         // Para instrucción OUT en executeStageCounter === 2 (paso 4), solo actualizar MAR y resetear bus
         // La animación ya se mostró en cpu:register.copy
-        if (instructionName === "OUT" && currentExecuteStageCounter === 2 && pendingOUTSourceRegister) {
+        if (
+          instructionName === "OUT" &&
+          currentExecuteStageCounter === 2 &&
+          pendingOUTSourceRegister
+        ) {
           console.log("✅ OUT paso 4 - actualizando MAR (animación ya mostrada en register.copy)", {
             instructionName,
             mode,
@@ -1629,11 +1631,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
           } else {
             // Omitir animación MBR → ri en direccionamiento directo (no inmediato)
             // EXCEPTO para la instrucción IN que sí necesita mostrar la animación MBR → MAR
-            if (
-              normalizedRegister === "ri" &&
-              mode !== "mem<-imd" &&
-              instructionName !== "IN"
-            ) {
+            if (normalizedRegister === "ri" && mode !== "mem<-imd" && instructionName !== "IN") {
               console.log("⏭️ Omitiendo animación MBR → ri para direccionamiento directo");
             } else {
               // Para IN, dibujar animación MBR → MAR en lugar de MBR → ri
@@ -1904,29 +1902,31 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         dest === "ri" &&
         currentExecuteStageCounter === 2
       ) {
-        console.log(`📝 OUT detectado - mostrando animación del bus de datos: ${src} → MAR (evitando nodos de entrada)`);
+        console.log(
+          `📝 OUT detectado - mostrando animación del bus de datos: ${src} → MAR (evitando nodos de entrada)`,
+        );
         pendingOUTSourceRegister = src;
-        
+
         // Animar solo el secuenciador
         await animateSequencerOnly(0.05);
-        
+
         // Mostrar animación del bus de datos desde DL/DX directamente a MAR
         // Esta animación mostrará el dato moviéndose desde el registro al MAR por el bus de salida
         // sin pasar por NodoRegIn, mbr reg join, IP join ni ri join
         await drawDataPath(src, "ri", instructionName, mode);
-        
+
         // Activar registro MAR brevemente con color azul (bus de dirección)
         await activateRegister("cpu.MAR", colors.blue[500]);
-        
+
         // Actualizar el registro ri desde DL/DX (lógica interna)
         store.set(registerAtoms[dest], store.get(registerAtoms[src]));
-        
+
         // Desactivar registro MAR
         await deactivateRegister("cpu.MAR");
-        
+
         // Resetear el bus de datos
         await resetDataPath();
-        
+
         return;
       }
 
