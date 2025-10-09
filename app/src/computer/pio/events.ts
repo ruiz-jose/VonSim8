@@ -1,10 +1,10 @@
 import {
   drawAddressPathToPIO,
-  drawDataPathToPIO,
   drawDataPathFromPIO,
+  drawDataPathToPIO,
   drawPIOControlLine,
-  drawWRControlPathToPIO,
   drawRDControlPathToPIO,
+  drawWRControlPathToPIO,
 } from "@/computer/memory/events";
 import {
   activateRegister,
@@ -29,7 +29,7 @@ export async function handlePIOEvent(event: SimulatorEvent<"pio:">): Promise<voi
 
     case "pio:read.ok": {
       console.log("🎯 pio:read.ok: Iniciando animaciones de lectura desde PIO");
-      
+
       // Activar la animación del texto 'Read' en el bus de control RD
       store.set(showReadBusAnimationAtom, true);
       showReadControlText();
@@ -42,16 +42,12 @@ export async function handlePIOEvent(event: SimulatorEvent<"pio:">): Promise<voi
 
       // Primero: Animar los buses de direcciones, control RD y línea de control hacia el PIO
       console.log("🎯 pio:read.ok: Animando buses de direcciones y control RD hacia PIO");
-      await Promise.all([
-        drawAddressPathToPIO(),
-        drawRDControlPathToPIO(),
-        drawPIOControlLine(),
-      ]);
+      await Promise.all([drawAddressPathToPIO(), drawRDControlPathToPIO(), drawPIOControlLine()]);
 
       // Segundo: Animar el bus de datos desde PIO → MBR
       console.log("🎯 pio:read.ok: Animando bus de datos PIO → MBR");
       await drawDataPathFromPIO();
-      
+
       // Tercero: Poblar el bus de datos con el valor leído
       await populateDataBus(event.value);
 
@@ -61,7 +57,7 @@ export async function handlePIOEvent(event: SimulatorEvent<"pio:">): Promise<voi
 
       // Desactivar los registros MAR y MBR
       await Promise.all([deactivateRegister("cpu.MAR"), deactivateRegister("cpu.MBR")]);
-      
+
       return;
     }
 

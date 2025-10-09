@@ -37,7 +37,6 @@ import {
   generateSimultaneousLeftRightPath,
 } from "./DataBus";
 import { aluOperationAtom, cycleAtom, MARAtom, MBRAtom, registerAtoms } from "./state";
-import { drawDataPathFromPIO } from "@/computer/memory/events";
 
 console.log("🔧 generateDataPath importado:", typeof generateDataPath);
 
@@ -1642,7 +1641,9 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
               // Para IN, dibujar animación MBR → MAR en ciclo 6 (bus de direcciones solamente)
               // La animación del bus de datos PIO → MBR se mostrará en ciclo 7 (bus:reset)
               if (normalizedRegister === "ri" && instructionName === "IN") {
-                console.log("🎯 IN ciclo 6 detectado: mostrando animación MBR → MAR (bus de direcciones)");
+                console.log(
+                  "🎯 IN ciclo 6 detectado: mostrando animación MBR → MAR (bus de direcciones)",
+                );
                 await anim(
                   [
                     { key: "cpu.internalBus.address.path", from: generateMBRtoMARPath() },
