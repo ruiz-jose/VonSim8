@@ -24,39 +24,47 @@ import { CAAtom, CBAtom, PAAtom, PBAtom } from "./state";
 
 export async function handlePIOEvent(event: SimulatorEvent<"pio:">): Promise<void> {
   switch (event.type) {
-    case "pio:read":
-      return;
-
-    case "pio:read.ok": {
-      console.log("🎯 pio:read.ok: Iniciando animaciones de lectura desde PIO");
+    case "pio:read": {
+      console.log(
+        "🎯 pio:read: Iniciando animaciones de bus de direcciones y control RD hacia PIO",
+      );
 
       // Activar la animación del texto 'Read' en el bus de control RD
       store.set(showReadBusAnimationAtom, true);
       showReadControlText();
 
-      // Activar los registros MAR (azul) y MBR (verde) antes de animar los buses
-      await Promise.all([
-        activateRegister("cpu.MAR", colors.blue[500]),
-        activateRegister("cpu.MBR", colors.mantis[400]),
-      ]);
+      // Activar solo el registro MAR (azul) para el bus de direcciones
+      await activateRegister("cpu.MAR", colors.blue[500]);
 
-      // Primero: Animar los buses de direcciones, control RD y línea de control hacia el PIO
-      console.log("🎯 pio:read.ok: Animando buses de direcciones y control RD hacia PIO");
+      // Animar los buses de direcciones, control RD y línea de control hacia el PIO
+      console.log("🎯 pio:read: Animando buses de direcciones (MAR → PIO) y control RD hacia PIO");
       await Promise.all([drawAddressPathToPIO(), drawRDControlPathToPIO(), drawPIOControlLine()]);
-
-      // Segundo: Animar el bus de datos desde PIO → MBR
-      console.log("🎯 pio:read.ok: Animando bus de datos PIO → MBR");
-      await drawDataPathFromPIO();
-
-      // Tercero: Poblar el bus de datos con el valor leído
-      await populateDataBus(event.value);
 
       // Ocultar texto "Read" y desactivar la animación
       hideReadControlText();
       store.set(showReadBusAnimationAtom, false);
 
-      // Desactivar los registros MAR y MBR
-      await Promise.all([deactivateRegister("cpu.MAR"), deactivateRegister("cpu.MBR")]);
+      // Desactivar el registro MAR
+      await deactivateRegister("cpu.MAR");
+
+      return;
+    }
+
+    case "pio:read.ok": {
+      console.log("🎯 pio:read.ok: Iniciando animación de bus de datos desde PIO");
+
+      // Activar el registro MBR (verde) antes de animar el bus de datos
+      await activateRegister("cpu.MBR", colors.mantis[400]);
+
+      // Animar el bus de datos desde PIO → MBR
+      console.log("🎯 pio:read.ok: Animando bus de datos PIO → MBR");
+      await drawDataPathFromPIO();
+
+      // Poblar el bus de datos con el valor leído
+      await populateDataBus(event.value);
+
+      // Desactivar el registro MBR
+      await deactivateRegister("cpu.MBR");
 
       return;
     }

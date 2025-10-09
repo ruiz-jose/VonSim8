@@ -1020,6 +1020,9 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         (regNorm === "SP" &&
           currentInstructionName === "INT" &&
           (currentExecuteStageCounter === 4 || currentExecuteStageCounter === 5)) ||
+        // También skip para IN ciclo 5 (executeStageCounter === 2) cuando ri → MAR
+        // No debe mostrar animación porque la dirección ya se mostró en el ciclo 4 (DL/DX → MAR)
+        (regNorm === "ri" && currentInstructionName === "IN" && currentExecuteStageCounter === 2) ||
         // También skip para IN ciclo 6 (executeStageCounter === 4) cuando ri → MAR
         // Se debe mostrar animación especial MBR → MAR en su lugar
         (regNorm === "ri" && currentInstructionName === "IN" && currentExecuteStageCounter === 4);
@@ -1901,6 +1904,71 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       console.log(
         `🔄 cpu:register.copy: ${event.src} → ${event.dest} (normalizado: ${src} → ${dest})`,
       );
+
+      // Detectar cuando IN copia DL/DX a ri para mostrar animación especial del registro al MAR
+      if (
+        currentInstructionName === "IN" &&
+        (src === "DL" || src === "DX") &&
+        dest === "ri" &&
+        currentExecuteStageCounter === 2
+      ) {
+        console.log(
+          `📝 IN detectado - mostrando animación especial del bus de direcciones: ${src} → MAR`,
+        );
+
+        // Animar solo el secuenciador
+        await animateSequencerOnly(0.05);
+
+        // Crear path personalizado desde DL/DX hacia MAR usando el bus de direcciones
+        // DL está en [455, 165], DL out en [483, 165]
+        // DX está en [455, 125], DX out en [483, 125]
+        // MAR join2 en [550, 349], MAR en [610, 349]
+        let pathFromRegisterToMAR = "";
+        if (src === "DL") {
+          // Path desde DL: salir del registro, subir al nodo común, luego bajar hasta MAR
+          pathFromRegisterToMAR = "M 455 165 L 483 165 L 525 165 L 550 115 L 550 348 H 610";
+        } else if (src === "DX") {
+          // Path desde DX: salir del registro, subir al nodo común, luego bajar hasta MAR
+          pathFromRegisterToMAR = "M 455 125 L 483 125 L 525 125 L 550 115 L 550 348 H 610";
+        }
+
+        console.log(`🎯 Path del bus de direcciones (${src} → MAR): ${pathFromRegisterToMAR}`);
+
+        // Mostrar animación del bus de direcciones desde DL/DX directamente a MAR (azul)
+        // Esta animación mostrará la dirección del puerto moviéndose desde el registro al MAR
+        // usando el bus de direcciones interno (azul)
+        await Promise.all([
+          anim(
+            [
+              { key: "cpu.internalBus.address.path", from: pathFromRegisterToMAR },
+              { key: "cpu.internalBus.address.opacity", from: 1 },
+              { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
+            ],
+            { duration: 300, easing: "easeInOutSine", forceMs: true },
+          ),
+          activateRegister(`cpu.${src}` as RegisterKey, colors.blue[500]),
+        ]);
+
+        // Activar registro MAR brevemente con color azul (bus de dirección)
+        await activateRegister("cpu.MAR", colors.blue[500]);
+
+        // Actualizar el registro ri desde DL/DX (lógica interna)
+        store.set(registerAtoms[dest], store.get(registerAtoms[src]));
+
+        // Desactivar registros
+        await Promise.all([
+          deactivateRegister("cpu.MAR"),
+          deactivateRegister(`cpu.${src}` as RegisterKey),
+        ]);
+
+        // Resetear el bus de direcciones
+        await anim(
+          { key: "cpu.internalBus.address.opacity", to: 0 },
+          { duration: 1, easing: "easeInSine" },
+        );
+
+        return;
+      }
 
       // Detectar cuando OUT copia DL/DX a ri para guardar el registro fuente
       if (

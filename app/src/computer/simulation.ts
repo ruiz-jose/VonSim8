@@ -1514,20 +1514,24 @@ async function executeThread(generator: EventGenerator): Promise<void> {
             // o cuando ri → MAR es solo preparación interna del procesador)
             const isRiToMARSkipCycle =
               sourceRegister === "ri" &&
-              (currentInstructionName === "ADD" ||
+              (((currentInstructionName === "ADD" ||
                 currentInstructionName === "SUB" ||
                 currentInstructionName === "CMP" ||
                 currentInstructionName === "AND" ||
                 currentInstructionName === "OR" ||
                 currentInstructionName === "XOR") &&
-              ((executeStageCounter >= 5 && // En etapas avanzadas
-                (messageReadWrite === "Ejecución: write(Memoria[MAR]) ← MBR" || // Para escritura
-                  executeStageCounter >= 7)) || // Para etapas muy avanzadas (preparación interna)
-                // Caso específico: ADD/SUB/etc [BL], n - paso 9 innecesario (executeStageCounter === 5)
-                // porque el MAR ya tiene la dirección de destino
-                (executeStageCounter === 5 &&
-                  !currentInstructionModeri &&
-                  currentInstructionModeid));
+                ((executeStageCounter >= 5 && // En etapas avanzadas
+                  (messageReadWrite === "Ejecución: write(Memoria[MAR]) ← MBR" || // Para escritura
+                    executeStageCounter >= 7)) || // Para etapas muy avanzadas (preparación interna)
+                  // Caso específico: ADD/SUB/etc [BL], n - paso 9 innecesario (executeStageCounter === 5)
+                  // porque el MAR ya tiene la dirección de destino
+                  (executeStageCounter === 5 &&
+                    !currentInstructionModeri &&
+                    currentInstructionModeid))) ||
+                // Caso especial para IN: ri → MAR en ciclo 5 (executeStageCounter === 2)
+                // No debe contabilizar ciclo, mostrar animación ni mensaje
+                // porque la dirección del puerto ya está en MBR y se transferirá directamente
+                (currentInstructionName === "IN" && executeStageCounter === 2));
 
             // Declarar isArithmeticRegToDirectStep5 antes de su uso
             const isArithmeticRegToDirectStep5 =
