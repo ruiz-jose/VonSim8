@@ -83,7 +83,7 @@
     "eslint": "^8.57.1",
     "eslint-config-vonsim": "workspace:^",
     "eslint-plugin-react": "^7.37.2",
-    "eslint-plugin-react-hooks": "^4.6.2",
+    "eslint-plugin-react-hooks": "^7.0.0",
     "eslint-plugin-tailwindcss": "^3.17.5",
     "jsdom": "^25.0.1",
     "postcss": "^8.4.49",
