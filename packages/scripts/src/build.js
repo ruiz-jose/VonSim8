@@ -101,7 +101,7 @@ if (await fs.stat(appDistPath).catch(() => false)) {
         // Usar copyDir en lugar de cp
         await copyDir(appDistPath, distPath);
         console.info(`✅ Archivos copiados exitosamente a ${distPath}`);
-        
+
         // Limpiar app/dist después de copiar
         await fs.rm(appDistPath, { recursive: true });
         console.info(`🗑️  Directorio ${appDistPath} limpiado`);
