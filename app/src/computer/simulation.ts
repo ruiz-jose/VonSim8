@@ -54,6 +54,38 @@ declare global {
 
 const simulator = new Simulator();
 
+/**
+ * Función auxiliar para establecer mensaje Y agregarlo al historial de forma síncrona
+ * Esto garantiza que tanto en desarrollo como en producción se registren los mensajes de la misma manera
+ */
+function setMessageAndAddToHistory(message: string): void {
+  if (!message) return;
+  
+  // Establecer el mensaje actual
+  store.set(messageAtom, message);
+  
+  // Agregar al historial inmediatamente de forma síncrona
+  const currentCycleCount = store.get(currentInstructionCycleCountAtom);
+  const [stage, ...actionParts] = message.split(":");
+  const action = actionParts.join(":").trim();
+  
+  // Agregar al historial evitando duplicados
+  // NOTA: Mostramos currentCycleCount + 1 porque el contador se incrementa DESPUÉS de llamar a esta función
+  store.set(messageHistoryAtom, prev => {
+    const lastMessage = prev[prev.length - 1];
+    const displayCycle = currentCycleCount + 1; // Mostrar ciclo desde 1 en lugar de 0
+    // Evitar duplicados basados en ciclo y acción
+    if (
+      lastMessage &&
+      lastMessage.cycle === displayCycle &&
+      lastMessage.action === action
+    ) {
+      return prev;
+    }
+    return [...prev, { cycle: displayCycle, stage: stage.trim(), action }];
+  });
+}
+
 // Listener para recargar automáticamente el programa cuando se active el PIO
 if (typeof window !== "undefined") {
   window.addEventListener("pioActivated", (event: CustomEvent) => {
@@ -1310,7 +1342,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
           store.set(totalCycleCountAtom, prevTotal + cycleCount);
 
           // Establecer el mensaje antes de actualizar el contador de ciclos de instrucción
-          store.set(messageAtom, "Ejecución: Detenido");
+          setMessageAndAddToHistory("Ejecución: Detenido");
 
           currentInstructionCycleCount++;
           store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
@@ -1321,13 +1353,13 @@ async function executeThread(generator: EventGenerator): Promise<void> {
           );
         } else if (event.value.type === "cpu:int.6") {
           //store.set(messageAtom, "PILA ← DL; DL ← ASCII; (BL) ← DL; IRET");
-          store.set(messageAtom, "INT 6: Lectura de carácter del teclado");
+          setMessageAndAddToHistory("INT 6: Lectura de carácter del teclado");
           //  if (status.until === "cycle-change") {
           //  pauseSimulation();
           // }
         } else if (event.value.type === "cpu:int.7") {
           //store.set(messageAtom, "PILA ← DL; Bucle: DL ← (BL); video ← DL; SUB AL, 1; JNZ Bucle; (BL) ← DL; IRET");
-          store.set(messageAtom, "Interrupción: Rutina mostrar por pantalla");
+          setMessageAndAddToHistory("Interrupción: Rutina mostrar por pantalla");
           if (status.until === "cycle-change") {
             pauseSimulation();
           }
@@ -1340,10 +1372,10 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               executeStageCounter = 3;
               // Para CALL, no mostrar el mensaje aquí (se mostrará en cpu:mbr.set)
               if (currentInstructionName !== "CALL") {
-                store.set(messageAtom, "Ejecución: MAR ← SP");
+                setMessageAndAddToHistory("Ejecución: MAR ← SP");
               }
             } else {
-              store.set(messageAtom, "Captación: MAR ← IP");
+              setMessageAndAddToHistory("Captación: MAR ← IP");
               cycleCount++;
               currentInstructionCycleCount++;
               store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
@@ -1360,7 +1392,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               "executeStageCounter:",
               executeStageCounter,
             );
-            store.set(messageAtom, "Captación: MBR ← read(Memoria[MAR]) | IP ← IP + 1");
+            setMessageAndAddToHistory("Captación: MBR ← read(Memoria[MAR]) | IP ← IP + 1");
             cycleCount++;
             currentInstructionCycleCount++;
             store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
@@ -1370,7 +1402,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
             executeStageCounter++;
             fetchStageCounter++;
           } else if (event.value.type === "cpu:mbr.get") {
-            store.set(messageAtom, "Captación: IR ← MBR");
+            setMessageAndAddToHistory("Captación: IR ← MBR");
             cycleCount++;
             currentInstructionCycleCount++;
             store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
@@ -1410,7 +1442,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               );
             }
           } else if (event.value.type === "pio:write.ok") {
-            store.set(messageAtom, "Ejecución: write(PIO[MAR]) ← MBR");
+            setMessageAndAddToHistory("Ejecución: write(PIO[MAR]) ← MBR");
             cycleCount++;
             currentInstructionCycleCount++;
             store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
@@ -1603,7 +1635,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 console.log("   executeStageCounter:", executeStageCounter);
                 console.log("   sourceRegister:", sourceRegister);
                 console.log("   Estableciendo mensaje: MAR ← SP");
-                store.set(messageAtom, "Ejecución: MAR ← SP");
+                setMessageAndAddToHistory("Ejecución: MAR ← SP");
                 // Limpiar mbridirmar para evitar mensaje incorrecto
                 mbridirmar = false;
               } else if (
@@ -1619,7 +1651,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 console.log("   executeStageCounter:", executeStageCounter);
                 console.log("   sourceRegister:", sourceRegister);
                 console.log("   Estableciendo mensaje combinado: MBR ← FLAGS | MAR ← SP");
-                store.set(messageAtom, "Ejecución: MBR ← FLAGS | MAR ← SP");
+                setMessageAndAddToHistory("Ejecución: MBR ← FLAGS | MAR ← SP");
                 // Limpiar mbridirmar para evitar mensaje incorrecto
                 mbridirmar = false;
               } else if (
@@ -1656,7 +1688,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 console.log("   executeStageCounter:", executeStageCounter);
                 console.log("   sourceRegister:", sourceRegister);
                 console.log("   Estableciendo mensaje: MAR ← SP");
-                store.set(messageAtom, "Ejecución: MAR ← SP");
+                setMessageAndAddToHistory("Ejecución: MAR ← SP");
                 // Limpiar mbridirmar para evitar mensaje incorrecto
                 mbridirmar = false;
               } else if (
@@ -1667,10 +1699,10 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 currentInstructionOperands.length === 2
               ) {
                 // Mostrar el mensaje especial de simultaneidad solo en el ciclo 6 para MOV x, 5 (directo-inmediato)
-                store.set(messageAtom, "Ejecución: MAR ← IP | ri ← MBR");
+                setMessageAndAddToHistory("Ejecución: MAR ← IP | ri ← MBR");
                 simultaneousCycleCounted = false;
               } else if (resultmbrimar) {
-                store.set(messageAtom, displayMessageresultmbr);
+                setMessageAndAddToHistory(displayMessageresultmbr);
               } else if (
                 mbridirmar &&
                 !isRiToMARSkipCycle &&
@@ -1691,7 +1723,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                   currentInstructionModeri &&
                   currentInstructionModeid
                 ) {
-                  store.set(messageAtom, "Ejecución: MAR ← IP; MBR→MBR");
+                  setMessageAndAddToHistory("Ejecución: MAR ← IP; MBR→MBR");
                 } else if (
                   sourceRegister === "ri" &&
                   currentInstructionName === "MOV" &&
@@ -1702,7 +1734,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                   // para que aparezca como ciclo 4 (después de MBR ← read que fue ciclo 3)
                   cycleCount++;
                   currentInstructionCycleCount++;
-                  store.set(messageAtom, `Ejecución: MAR ← ${blBxRegisterName}`);
+                  setMessageAndAddToHistory(`Ejecución: MAR ← ${blBxRegisterName}`);
                   store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
                   console.log(
                     "🔢 Ciclo incrementado ANTES de mostrar MAR ← BL/BX - cycleCount:",
@@ -1737,7 +1769,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                   // Marcar que ya se contabilizó el ciclo para evitar doble contabilización
                   simultaneousCycleCounted = true;
                   // Ahora mostrar el mensaje usando el registro almacenado
-                  store.set(messageAtom, `Ejecución: MAR ← ${blBxRegisterName}`);
+                  setMessageAndAddToHistory(`Ejecución: MAR ← ${blBxRegisterName}`);
                   mbridirmar = false;
                   blBxToRiProcessed = false; // También resetear esta bandera
                   blBxRegisterName = ""; // Limpiar el nombre almacenado
@@ -1752,12 +1784,12 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                   ) {
                     // Solo mostrar MAR ← MBR, nunca MBR → id
                     if (!isArithmeticRegToDirectStep5) {
-                      store.set(messageAtom, "Ejecución: MAR ← MBR");
+                      setMessageAndAddToHistory("Ejecución: MAR ← MBR");
                     }
                     return; // Evita que se muestre cualquier animación de id
                   }
                   if (idToMbrCombinedMessage) {
-                    store.set(messageAtom, "Ejecución: MAR ← ri | id ← MBR");
+                    setMessageAndAddToHistory("Ejecución: MAR ← ri | id ← MBR");
                     idToMbrCombinedMessage = false; // Reset the flag after use
                   } else if (
                     // Solo para instrucciones que realmente usan el registro id
@@ -1768,7 +1800,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                     // Animación combinada especial: BL → MAR (direcciones) + MBR → id (datos)
                     cycleCount++;
                     currentInstructionCycleCount++;
-                    store.set(messageAtom, `Ejecución: MAR ← BL | id ← MBR`);
+                    setMessageAndAddToHistory(`Ejecución: MAR ← BL | id ← MBR`);
                     if (
                       currentInstructionName &&
                       ["ADD", "SUB", "CMP", "AND", "OR", "XOR"].includes(currentInstructionName) &&
@@ -1817,7 +1849,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 executeStageCounter === 4
               ) {
                 // Caso especial para MOV con direccionamiento directo: copiar directamente del MBR al MAR
-                store.set(messageAtom, "Ejecución: MAR ← MBR");
+                setMessageAndAddToHistory("Ejecución: MAR ← MBR");
               } else if (
                 // Caso especial para IN en ciclo 6 (executeStageCounter === 4): MAR ← MBR
                 // Se debe mostrar la animación especial MBR → MAR en lugar de ri → MAR
@@ -1826,7 +1858,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 executeStageCounter === 4
               ) {
                 console.log("🎯 IN ciclo 6 detectado - MAR ← MBR (animación especial MBR → MAR)");
-                store.set(messageAtom, "Ejecución: MAR ← MBR");
+                setMessageAndAddToHistory("Ejecución: MAR ← MBR");
               } else if (
                 // Caso especial para instrucciones ALU con direccionamiento indirecto e inmediato
                 // cuando se copia el contenido de BL al MAR - paso 6 de ADD [BL], 6
@@ -1845,7 +1877,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               ) {
                 // Mensaje simultáneo: MAR ← BL | id ← MBR
 
-                store.set(messageAtom, "Ejecución: MAR ← BL | id ← MBR");
+                setMessageAndAddToHistory("Ejecución: MAR ← BL | id ← MBR");
                 console.log("🎯 Paso 6 de ADD [BL], 6 - Mensaje simultáneo: MAR ← BL | id ← MBR");
               } else if (isRiToMARSkipCycle && sourceRegister === "ri") {
                 // Caso especial: ri → MAR se debe omitir completamente (no mostrar mensaje ni contabilizar)
@@ -1862,7 +1894,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 console.log(
                   "🎯 INT paso 12 (ciclo 12) detectado en cpu:mar.set - Mostrando MAR ← ri",
                 );
-                store.set(messageAtom, "Ejecución: MAR ← ri");
+                setMessageAndAddToHistory("Ejecución: MAR ← ri");
                 // Limpiar mbridirmar para evitar mensaje incorrecto
                 mbridirmar = false;
               } else if (
@@ -1885,9 +1917,9 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 ) {
                   // Caso especial para INT con SP: mostrar mensaje combinado
                   if (currentInstructionName === "INT" && sourceRegister === "SP") {
-                    store.set(messageAtom, "Ejecución: MAR ← SP | MBR ← FLAGS");
+                    setMessageAndAddToHistory("Ejecución: MAR ← SP | MBR ← FLAGS");
                   } else {
-                    store.set(messageAtom, messageConfig.message);
+                    setMessageAndAddToHistory(messageConfig.message);
                   }
                 } else if (isRiToMARSkipCycle) {
                   console.log(
@@ -2246,7 +2278,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 currentInstructionName !== "NEG" &&
                 !(currentInstructionName === "INT" && executeStageCounter === 8)
               ) {
-                store.set(messageAtom, displayMessage);
+                setMessageAndAddToHistory(displayMessage);
                 cycleCount++;
                 currentInstructionCycleCount++;
                 store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
@@ -2524,7 +2556,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               console.log(
                 "🎯 INT paso 13 (ciclo 14) detectado: IP ← MBR - NO pausar aquí (pausará en cycle.end)",
               );
-              store.set(messageAtom, "Ejecución: IP ← MBR");
+              setMessageAndAddToHistory("Ejecución: IP ← MBR");
               cycleCount++;
               currentInstructionCycleCount++;
               store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
@@ -2542,7 +2574,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 String(sourceRegister) !== "right.l" &&
                 String(sourceRegister) !== "left.l"
               ) {
-                store.set(messageAtom, `Ejecución: ${sourceRegister} ← MBR`);
+                setMessageAndAddToHistory(`Ejecución: ${sourceRegister} ← MBR`);
                 cycleCount++;
                 currentInstructionCycleCount++;
                 store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
@@ -2573,7 +2605,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
             // Para instrucciones MOV entre registros, siempre contabilizar el ciclo
             if (currentInstructionName === "MOV") {
               const displayMessage = `Ejecución: ${destRegister} ← ${sourceRegister}`;
-              store.set(messageAtom, displayMessage);
+              setMessageAndAddToHistory(displayMessage);
               cycleCount++;
               currentInstructionCycleCount++;
               store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
@@ -2669,7 +2701,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 // IMPORTANTE: NO hacer return aquí para permitir que el simulador continúe
                 // El evento debe procesarse completamente para permitir cpu:cycle.end
               } else {
-                store.set(messageAtom, displayMessage);
+                setMessageAndAddToHistory(displayMessage);
               }
               if (status.until === "cycle-change" && currentInstructionName !== "CALL") {
                 pauseSimulation();
@@ -2707,21 +2739,21 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               }
             } else if (sourceRegister === "IP" && destRegister === "id") {
               displayMessage = "Ejecución: id ← IP";
-              store.set(messageAtom, displayMessage);
+              setMessageAndAddToHistory(displayMessage);
               if (status.until === "cycle-change") {
                 pauseSimulation();
               }
             } else if (sourceRegister === "id" && destRegister === "ri") {
               displayMessage = "Ejecución: MAR ← id";
               shouldDisplayMessage = false; // No mostrar el mensaje en el próximo ciclo
-              store.set(messageAtom, displayMessage);
+              setMessageAndAddToHistory(displayMessage);
             } else if (sourceRegister === "MBR" && destRegister === "ri") {
               displayMessage = "Ejecución: MAR ← MBR";
-              store.set(messageAtom, displayMessage);
+              setMessageAndAddToHistory(displayMessage);
               // pauseSimulation();
             } else if (sourceRegister === "id" && destRegister === "IP") {
               displayMessage = "Ejecución: IP ← MBR";
-              store.set(messageAtom, displayMessage);
+              setMessageAndAddToHistory(displayMessage);
               if (status.until === "cycle-change") {
                 pauseSimulation();
               }
@@ -2733,7 +2765,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               const registerName = sourceRegister === "BL" ? "BL" : "BX";
               blBxRegisterName = registerName; // Recordar el nombre del registro
               displayMessage = `Ejecución: MAR ← ${registerName}`;
-              // NO guardar el mensaje aquí: store.set(messageAtom, displayMessage);
+              // NO guardar el mensaje aquí: setMessageAndAddToHistory(displayMessage);
               shouldDisplayMessage = false;
               // Marcar que ya se procesó esta transferencia para mostrar el mensaje correcto en cpu:mar.set
               mbridirmar = true;
@@ -2744,7 +2776,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 fuenteALU = sourceRegister;
               }
 
-              //store.set(messageAtom, displayMessage);
+              //setMessageAndAddToHistory(displayMessage);
               // pauseSimulation();
             }
             // Debug: mostrar información del evento register.copy
@@ -2781,7 +2813,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 /^[0-9A-F]+h?$/i.test(currentInstructionOperands[1]);
 
               if (!isBLorBXToRi && !isIndirectImmediate) {
-                store.set(messageAtom, displayMessage);
+                setMessageAndAddToHistory(displayMessage);
                 cycleCount++;
                 currentInstructionCycleCount++;
                 store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
@@ -2822,7 +2854,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               if (destRegister === "left" || destRegister === "right") {
                 // No hacer nada - estas transferencias no se muestran ni contabilizan
               } else {
-                store.set(messageAtom, displayMessage);
+                setMessageAndAddToHistory(displayMessage);
               }
 
               cycleCount++;
@@ -3295,7 +3327,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 "⏭️ Omitiendo mensaje, ciclo y pausa - se manejará en cpu:register.update",
               );
             } else if (!ContinuarSinGuardar) {
-              store.set(messageAtom, messageReadWrite);
+              setMessageAndAddToHistory(messageReadWrite);
               cycleCount++;
               currentInstructionCycleCount++;
               store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
@@ -3306,7 +3338,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               }
             } else if (isLastStepBeforeCycleEnd) {
               // Para el último paso antes de cycle.end: mostrar mensaje y contabilizar ciclo, pero NO pausar
-              store.set(messageAtom, messageReadWrite);
+              setMessageAndAddToHistory(messageReadWrite);
               cycleCount++;
               currentInstructionCycleCount++;
               store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
@@ -3343,7 +3375,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               )
             ) {
               console.log(`🎯 PUSH paso 5 detectado: ${sourceRegister} → MBR | SP ← SP - 1`);
-              store.set(messageAtom, `Ejecución: MBR ← ${sourceRegister} | SP ← SP - 1`);
+              setMessageAndAddToHistory(`Ejecución: MBR ← ${sourceRegister} | SP ← SP - 1`);
               cycleCount++;
               currentInstructionCycleCount++;
               store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
@@ -3365,7 +3397,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 currentInstructionName === "OR" ||
                 currentInstructionName === "XOR")
             ) {
-              store.set(messageAtom, `Ejecución: id ← MBR`);
+              setMessageAndAddToHistory(`Ejecución: id ← MBR`);
               if (status.until === "cycle-change") {
                 pauseSimulation();
               }
@@ -3408,7 +3440,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
             ) {
               // Usar el formato de mensaje que ya tienes implementado: MBR ← MBR ADD id; update(FLAGS)
               const formattedMessage = sourceRegister.replace("; write(FLAGS)", "; update(FLAGS)");
-              store.set(messageAtom, `Ejecución: MBR ← ${formattedMessage}`);
+              setMessageAndAddToHistory(`Ejecución: MBR ← ${formattedMessage}`);
               if (status.until === "cycle-change") {
                 pauseSimulation();
               }
@@ -3429,7 +3461,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
             ) {
               // Para MOV [memoria], registro - el paso 5 (o 3 en algunos microciclos) es el registro → MBR
               console.log(`🎯 MOV paso 5/3 detectado: ${sourceRegister} → MBR`);
-              store.set(messageAtom, `Ejecución: MBR ← ${sourceRegister}`);
+              setMessageAndAddToHistory(`Ejecución: MBR ← ${sourceRegister}`);
               cycleCount++;
               currentInstructionCycleCount++;
               store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
@@ -3445,7 +3477,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
             ) {
               // Mostrar mensaje combinado pero NO pausar aquí
               // La pausa ocurrirá en el siguiente cpu:mar.set con SP
-              store.set(messageAtom, "Ejecución: MAR ← SP | MBR ← IP");
+              setMessageAndAddToHistory("Ejecución: MAR ← SP | MBR ← IP");
               cycleCount++;
               currentInstructionCycleCount++;
               store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
@@ -3479,7 +3511,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
             ) {
               console.log("🎯 INT paso 9 (ciclo 9) detectado: IP → MBR | SP ← SP - 1");
               // Mostrar mensaje combinado que incluye SP ← SP - 1 (que se omitió en register.update)
-              store.set(messageAtom, "Ejecución: MBR ← IP | SP ← SP - 1");
+              setMessageAndAddToHistory("Ejecución: MBR ← IP | SP ← SP - 1");
               cycleCount++;
               currentInstructionCycleCount++;
               store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
@@ -3493,7 +3525,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
             } else if (event.value.register === "result.l") {
               // Caso especial para cuando se copia el resultado de la ALU al MBR
               const displayMessage = `Ejecución: MBR ← ${sourceRegister.replace("; write(FLAGS)", " ; update(FLAGS)")}`;
-              store.set(messageAtom, displayMessage);
+              setMessageAndAddToHistory(displayMessage);
               cycleCount++;
               currentInstructionCycleCount++;
               store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
@@ -3509,7 +3541,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               ["AL", "BL", "CL", "DL", "AH", "BH", "CH", "DH"].includes(sourceRegister)
             ) {
               console.log(`🎯 OUT paso 5 (ciclo 5) detectado: ${sourceRegister} → MBR`);
-              store.set(messageAtom, `Ejecución: MBR ← ${sourceRegister}`);
+              setMessageAndAddToHistory(`Ejecución: MBR ← ${sourceRegister}`);
               cycleCount++;
               currentInstructionCycleCount++;
               store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
@@ -3527,7 +3559,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               ["AL", "BL", "CL", "DL", "AH", "BH", "CH", "DH"].includes(sourceRegister)
             ) {
               console.log(`🎯 OUT paso 7 (ciclo 7) detectado: ${sourceRegister} → MBR`);
-              store.set(messageAtom, `Ejecución: MBR ← ${sourceRegister}`);
+              setMessageAndAddToHistory(`Ejecución: MBR ← ${sourceRegister}`);
               cycleCount++;
               currentInstructionCycleCount++;
               store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
@@ -4323,3 +4355,7 @@ export function useSimulation() {
 
   return { status, dispatch, devices };
 }
+
+
+
+

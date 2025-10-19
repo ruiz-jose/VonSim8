@@ -179,7 +179,9 @@ export function RegisterTransferMessages() {
     return { cycle, stage: stage.trim(), action };
   };
 
-  // Usar useEffect para agregar el mensaje actual al historial (solo como respaldo)
+  // DESACTIVADO: Ahora los mensajes se agregan al historial de forma síncrona en simulation.ts
+  // mediante la función setMessageAndAddToHistory() para evitar duplicados
+  /*
   useEffect(() => {
     if (message) {
       const currentInstructionCycleCount = store.get(currentInstructionCycleCountAtom);
@@ -199,8 +201,11 @@ export function RegisterTransferMessages() {
       });
     }
   }, [message]);
+  */
 
-  // Detectar cambios en el contador de ciclos para mostrar mensajes anticipadamente
+  // DESACTIVADO: Ahora los mensajes se agregan al historial de forma síncrona en simulation.ts
+  // mediante la función setMessageAndAddToHistory() para evitar duplicados
+  /*
   useEffect(() => {
     const unsubscribeCycleCount = store.sub(currentInstructionCycleCountAtom, () => {
       const newCount = store.get(currentInstructionCycleCountAtom);
@@ -265,6 +270,7 @@ export function RegisterTransferMessages() {
       unsubscribeCycleCount();
     };
   }, []);
+  */
 
   // Limpiar el historial cuando el contador de ciclos por instrucción se reinicie (nueva instrucción)
   // o cuando se reinicie la simulación
