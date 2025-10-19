@@ -61,12 +61,18 @@ const simulator = new Simulator();
 function setMessageAndAddToHistory(message: string): void {
   if (!message) return;
 
+  // Reemplazar "Ejecución:" por "Interrupción:" si estamos en una rutina de interrupción
+  let finalMessage = message;
+  if (isExecutingInterruptRoutine && message.startsWith("Ejecución:")) {
+    finalMessage = message.replace("Ejecución:", "Interrupción:");
+  }
+
   // Establecer el mensaje actual
-  store.set(messageAtom, message);
+  store.set(messageAtom, finalMessage);
 
   // Agregar al historial inmediatamente de forma síncrona
   const currentCycleCount = store.get(currentInstructionCycleCountAtom);
-  const [stage, ...actionParts] = message.split(":");
+  const [stage, ...actionParts] = finalMessage.split(":");
   const action = actionParts.join(":").trim();
 
   // Agregar al historial evitando duplicados
@@ -324,6 +330,10 @@ function resetState(state: ComputerState, clearRegisters = false) {
   }
   // Resetear el total de ciclos acumulados al reiniciar el programa
   store.set(totalCycleCountAtom, 0);
+  
+  // Resetear la bandera de rutina de interrupción
+  isExecutingInterruptRoutine = false;
+  interruptFlagNotificationShown = false;
 }
 
 let currentInstructionName: string | null = null;
@@ -353,6 +363,14 @@ let shouldPauseAfterEvent = false; // Nueva bandera para pausar después del eve
 
 // Bandera para rastrear si ya se mostró la notificación del flag I
 let interruptFlagNotificationShown = false;
+
+// Bandera para rastrear si estamos ejecutando una rutina de interrupción (INT 6 o INT 7)
+let isExecutingInterruptRoutine = false;
+
+// Exportar una función para que otros módulos puedan verificar si estamos en rutina de interrupción
+export function getIsExecutingInterruptRoutine(): boolean {
+  return isExecutingInterruptRoutine;
+}
 
 // Tipos para mejorar la legibilidad y mantenibilidad
 type InstructionContext = {
@@ -1255,6 +1273,14 @@ async function executeThread(generator: EventGenerator): Promise<void> {
         currentInstructionModeid = event.value.instruction.willUse.id ? true : false;
         currentInstructionModeri = event.value.instruction.willUse.ri ? true : false;
         currentInstructionOperands = event.value.instruction.operands;
+        
+        // Desactivar la bandera de rutina de interrupción cuando comience una nueva instrucción normal
+        // (esto ocurre después de que INT 6/7 haya terminado con su IRET implícito)
+        if (isExecutingInterruptRoutine && currentInstructionName !== "INT") {
+          isExecutingInterruptRoutine = false;
+          console.log("✅ Rutina de interrupción terminada - volviendo a modo normal");
+        }
+        
         // Para INT y CALL, siempre mostrar ri porque se usa en el paso 6
         const shouldShowRi =
           currentInstructionModeri ||
@@ -1350,12 +1376,16 @@ async function executeThread(generator: EventGenerator): Promise<void> {
         } else if (event.value.type === "cpu:int.6") {
           //store.set(messageAtom, "PILA ← DL; DL ← ASCII; (BL) ← DL; IRET");
           setMessageAndAddToHistory("INT 6: Lectura de carácter del teclado");
+          // Activar la bandera de rutina de interrupción
+          isExecutingInterruptRoutine = true;
           //  if (status.until === "cycle-change") {
           //  pauseSimulation();
           // }
         } else if (event.value.type === "cpu:int.7") {
           //store.set(messageAtom, "PILA ← DL; Bucle: DL ← (BL); video ← DL; SUB AL, 1; JNZ Bucle; (BL) ← DL; IRET");
           setMessageAndAddToHistory("Interrupción: Rutina mostrar por pantalla");
+          // Activar la bandera de rutina de interrupción
+          isExecutingInterruptRoutine = true;
           if (status.until === "cycle-change") {
             pauseSimulation();
           }
@@ -1371,7 +1401,9 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 setMessageAndAddToHistory("Ejecución: MAR ← SP");
               }
             } else {
-              setMessageAndAddToHistory("Captación: MAR ← IP");
+              // Si estamos en rutina de interrupción, usar "Interrupción:" en lugar de "Captación:"
+              const prefix = isExecutingInterruptRoutine ? "Interrupción" : "Captación";
+              setMessageAndAddToHistory(`${prefix}: MAR ← IP`);
               cycleCount++;
               currentInstructionCycleCount++;
               store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
@@ -1382,23 +1414,48 @@ async function executeThread(generator: EventGenerator): Promise<void> {
             }
             fetchStageCounter++;
           } else if (event.value.type === "cpu:register.update") {
+            const sourceRegister = event.value.register;
+            
             console.log(
               "🔍 Debug: Captación register.update - fetchStageCounter:",
               fetchStageCounter,
               "executeStageCounter:",
               executeStageCounter,
+              "register:",
+              sourceRegister,
+              "isExecutingInterruptRoutine:",
+              isExecutingInterruptRoutine,
             );
-            setMessageAndAddToHistory("Captación: MBR ← read(Memoria[MAR]) | IP ← IP + 1");
-            cycleCount++;
-            currentInstructionCycleCount++;
-            store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
-            if (status.until === "cycle-change") {
-              pauseSimulation();
+            
+            // Caso especial: Si estamos en rutina de interrupción y el registro es SP,
+            // este es el primer evento de la rutina (decrementar SP antes de hacer PUSH)
+            if (isExecutingInterruptRoutine && sourceRegister === "SP") {
+              setMessageAndAddToHistory("Interrupción: SP ← SP - 1");
+              cycleCount++;
+              currentInstructionCycleCount++;
+              store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+              if (status.until === "cycle-change") {
+                pauseSimulation();
+              }
+              executeStageCounter++;
+              fetchStageCounter++;
+            } else {
+              // Si estamos en rutina de interrupción (pero no es SP), usar "Interrupción:" en lugar de "Captación:"
+              const prefix = isExecutingInterruptRoutine ? "Interrupción" : "Captación";
+              setMessageAndAddToHistory(`${prefix}: MBR ← read(Memoria[MAR]) | IP ← IP + 1`);
+              cycleCount++;
+              currentInstructionCycleCount++;
+              store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+              if (status.until === "cycle-change") {
+                pauseSimulation();
+              }
+              executeStageCounter++;
+              fetchStageCounter++;
             }
-            executeStageCounter++;
-            fetchStageCounter++;
           } else if (event.value.type === "cpu:mbr.get") {
-            setMessageAndAddToHistory("Captación: IR ← MBR");
+            // Si estamos en rutina de interrupción, usar "Interrupción:" en lugar de "Captación:"
+            const prefix = isExecutingInterruptRoutine ? "Interrupción" : "Captación";
+            setMessageAndAddToHistory(`${prefix}: IR ← MBR`);
             cycleCount++;
             currentInstructionCycleCount++;
             store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
@@ -1406,6 +1463,31 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               pauseSimulation();
             }
             fetchStageCounter++;
+          } else if (event.value.type === "cpu:mbr.set") {
+            // Caso especial: Si estamos en rutina de interrupción y el registro es DL
+            // Este es el primer evento de guardado de registros en la rutina INT 6/7
+            const sourceRegister = event.value.register;
+            
+            console.log("🔍 cpu:mbr.set en fase de captación - Debug:");
+            console.log("  isExecutingInterruptRoutine:", isExecutingInterruptRoutine);
+            console.log("  sourceRegister:", sourceRegister);
+            console.log("  fetchStageCounter:", fetchStageCounter);
+            console.log("  executeStageCounter:", executeStageCounter);
+            
+            if (isExecutingInterruptRoutine && sourceRegister === "DL") {
+              console.log("🎯 Rutina de interrupción - MBR ← DL detectado en fase de captación");
+              setMessageAndAddToHistory("Interrupción: MBR ← DL");
+              cycleCount++;
+              currentInstructionCycleCount++;
+              store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+              executeStageCounter++;
+              
+              // Pausar si estamos ejecutando por ciclos
+              if (status.until === "cycle-change") {
+                console.log("🛑 Pausando en rutina de interrupción - MBR ← DL");
+                pauseSimulation();
+              }
+            }
           }
         } else {
           if (event.value.type === "cpu:rd.on" && executeStageCounter > 1) {
@@ -3354,7 +3436,30 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                       ? MBRALU
                       : event.value.register;
 
-            if (
+            // Debug: mostrar el estado de la rutina de interrupción
+            console.log("🔍 cpu:mbr.set Debug:");
+            console.log("  isExecutingInterruptRoutine:", isExecutingInterruptRoutine);
+            console.log("  sourceRegister:", sourceRegister);
+            console.log("  event.value.register:", event.value.register);
+            console.log("  executeStageCounter:", executeStageCounter);
+            console.log("  currentInstructionName:", currentInstructionName);
+
+            // Caso especial: Si estamos en rutina de interrupción y el registro es DL
+            // Este es el primer evento de guardado de registros en la rutina INT 6/7
+            if (isExecutingInterruptRoutine && sourceRegister === "DL") {
+              console.log("🎯 Rutina de interrupción - MBR ← DL detectado");
+              setMessageAndAddToHistory("Interrupción: MBR ← DL");
+              cycleCount++;
+              currentInstructionCycleCount++;
+              store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+              executeStageCounter++;
+              
+              // Pausar si estamos ejecutando por ciclos
+              if (status.until === "cycle-change") {
+                console.log("🛑 Pausando en rutina de interrupción - MBR ← DL");
+                pauseSimulation();
+              }
+            } else if (
               currentInstructionModeri &&
               executeStageCounter === 5 &&
               (currentInstructionName === "ADD" || currentInstructionName === "SUB")
