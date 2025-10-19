@@ -21,6 +21,7 @@ import { getSpring } from "@/computer/shared/springs";
 import type { SimulatorEvent } from "@/computer/shared/types";
 import {
   finishSimulation,
+  getIsExecutingInterruptRoutine,
   isHaltExecutionAtom,
   pauseSimulation,
   simulationAtom,
@@ -1025,7 +1026,10 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         (regNorm === "ri" && currentInstructionName === "IN" && currentExecuteStageCounter === 2) ||
         // También skip para IN ciclo 6 (executeStageCounter === 4) cuando ri → MAR
         // Se debe mostrar animación especial MBR → MAR en su lugar
-        (regNorm === "ri" && currentInstructionName === "IN" && currentExecuteStageCounter === 4);
+        (regNorm === "ri" && currentInstructionName === "IN" && currentExecuteStageCounter === 4) ||
+        // También skip para rutinas de interrupción (INT 6/7) cuando ri → MAR
+        // No debe mostrar animación del bus de direcciones porque la dirección real proviene del registro original (BL, etc.)
+        (regNorm === "ri" && getIsExecutingInterruptRoutine());
 
       console.log(`🔍 isRiToMARSimultaneous Debug:`, {
         regNorm,

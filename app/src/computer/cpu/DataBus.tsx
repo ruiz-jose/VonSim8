@@ -635,6 +635,30 @@ export function generateDataPath(
   } else if (
     registers.includes(normalizedFrom) &&
     normalizedTo === "MBR" &&
+    instruction?.toUpperCase() === "INT"
+  ) {
+    // Prioridad MÁXIMA: INT registro→MBR (rutina de interrupción) debe usar la ruta directa por la parte superior
+    // evitando completamente NodoRegIn y mbr reg join (solo pasa por NodoRegOut y outr mbr join)
+    // Esto se aplica cuando guardamos registros en la pila durante la rutina de interrupción
+    console.log(
+      "🎯 Usando ruta prioritaria para INT registro→MBR (rutina de interrupción - evitando NodoRegIn y mbr reg join)",
+    );
+    path = [
+      normalizedFrom,
+      `${normalizedFrom} out`,
+      `${normalizedFrom} out join`,
+      "NodoRegOut",
+      "outr mbr join",
+      "mbr approach horizontal",
+      "mbr approach vertical",
+      "mbr top approach",
+      "mbr top entry",
+      "MBR top",
+      "MBR",
+    ];
+  } else if (
+    registers.includes(normalizedFrom) &&
+    normalizedTo === "MBR" &&
     instruction?.toUpperCase() === "OUT"
   ) {
     // Prioridad MÁXIMA: OUT registro→MBR debe usar la ruta directa por la parte superior

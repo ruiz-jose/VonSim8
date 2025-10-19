@@ -1782,6 +1782,38 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               } else if (resultmbrimar) {
                 setMessageAndAddToHistory(displayMessageresultmbr);
               } else if (
+                // Caso especial: rutina de interrupción con ri → MAR
+                // Mostrar "Interrupción: MAR ← BL" (el registro que se guardó originalmente)
+                isExecutingInterruptRoutine &&
+                sourceRegister === "ri" &&
+                blBxToRiProcessed &&
+                blBxRegisterName
+              ) {
+                console.log("🎯 Rutina de interrupción - MAR ← BL detectado (ri → MAR)");
+                // Incrementar ciclo ANTES de mostrar el mensaje
+                cycleCount++;
+                currentInstructionCycleCount++;
+                setMessageAndAddToHistory(`Interrupción: MAR ← ${blBxRegisterName}`);
+                store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+                console.log(
+                  "🔢 Ciclo incrementado en rutina de interrupción - MAR ← BL - cycleCount:",
+                  cycleCount,
+                  "currentInstructionCycleCount:",
+                  currentInstructionCycleCount,
+                );
+                // Marcar que ya se contabilizó el ciclo para evitar doble contabilización
+                simultaneousCycleCounted = true;
+                // Resetear banderas
+                mbridirmar = false;
+                blBxToRiProcessed = false;
+                blBxRegisterName = "";
+                
+                // Pausar si estamos ejecutando por ciclos
+                if (status.until === "cycle-change") {
+                  console.log("🛑 Pausando en rutina de interrupción - MAR ← BL");
+                  pauseSimulation();
+                }
+              } else if (
                 mbridirmar &&
                 !isRiToMARSkipCycle &&
                 !(
@@ -2238,7 +2270,15 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 console.log("🎯 INT paso 6 detectado en cpu:register.update");
                 console.log("   sourceRegister:", sourceRegister);
                 console.log("   executeStageCounter:", executeStageCounter);
-                displayMessage = "Ejecución: ri ← MBR | SP ← SP - 1";
+                console.log("   isExecutingInterruptRoutine:", isExecutingInterruptRoutine);
+                
+                if (isExecutingInterruptRoutine) {
+                  // Durante la rutina de interrupción INT 7, mostrar solo "ri ← Video:"
+                  displayMessage = "Ejecución: ri ← Video:";
+                } else {
+                  // Durante la instrucción INT normal
+                  displayMessage = "Ejecución: ri ← MBR | SP ← SP - 1";
+                }
                 pause = true; // SÍ pausar - paso importante para observar
                 console.log("   displayMessage establecido a:", displayMessage);
                 console.log("   pause establecido a:", pause);
@@ -3182,7 +3222,8 @@ async function executeThread(generator: EventGenerator): Promise<void> {
             if (
               (currentInstructionModeri &&
                 (executeStageCounter === 4 || executeStageCounter === 8) &&
-                currentInstructionName === "INT") ||
+                currentInstructionName === "INT" &&
+                !isExecutingInterruptRoutine) || // NO aplicar en rutinas de interrupción
               // Para MOV/ADD/SUB con direccionamiento directo durante la captación del operando en executeStageCounter === 3,
               // no mostrar el mensaje de bus:reset porque cpu:register.update manejará el mensaje correcto
               (executeStageCounter === 3 &&
