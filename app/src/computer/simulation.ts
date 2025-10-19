@@ -60,26 +60,22 @@ const simulator = new Simulator();
  */
 function setMessageAndAddToHistory(message: string): void {
   if (!message) return;
-  
+
   // Establecer el mensaje actual
   store.set(messageAtom, message);
-  
+
   // Agregar al historial inmediatamente de forma síncrona
   const currentCycleCount = store.get(currentInstructionCycleCountAtom);
   const [stage, ...actionParts] = message.split(":");
   const action = actionParts.join(":").trim();
-  
+
   // Agregar al historial evitando duplicados
   // NOTA: Mostramos currentCycleCount + 1 porque el contador se incrementa DESPUÉS de llamar a esta función
   store.set(messageHistoryAtom, prev => {
     const lastMessage = prev[prev.length - 1];
     const displayCycle = currentCycleCount + 1; // Mostrar ciclo desde 1 en lugar de 0
     // Evitar duplicados basados en ciclo y acción
-    if (
-      lastMessage &&
-      lastMessage.cycle === displayCycle &&
-      lastMessage.action === action
-    ) {
+    if (lastMessage && lastMessage.cycle === displayCycle && lastMessage.action === action) {
       return prev;
     }
     return [...prev, { cycle: displayCycle, stage: stage.trim(), action }];
@@ -4355,7 +4351,3 @@ export function useSimulation() {
 
   return { status, dispatch, devices };
 }
-
-
-
-

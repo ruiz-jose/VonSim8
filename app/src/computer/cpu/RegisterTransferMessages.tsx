@@ -11,7 +11,7 @@ import {
   animationSyncAtom,
   currentInstructionCycleCountAtom,
   instructionCountAtom,
-  messageAtom,
+  // messageAtom, // DESACTIVADO: Ya no se usa porque los mensajes se agregan en simulation.ts
   messageHistoryAtom,
 } from "./state";
 
@@ -162,7 +162,8 @@ function getStageColor(stage: string, action: string) {
 }
 
 export function RegisterTransferMessages() {
-  const message = useAtomValue(messageAtom);
+  // DESACTIVADO: Ya no se usa porque los mensajes se agregan en simulation.ts
+  // const message = useAtomValue(messageAtom);
   const messageHistory = useAtomValue(messageHistoryAtom);
   const simulationStatus = useAtomValue(simulationAtom);
   const programModified = useAtomValue(programModifiedAtom);
@@ -172,12 +173,15 @@ export function RegisterTransferMessages() {
 
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // DESACTIVADO: Ya no se usa porque los mensajes se agregan en simulation.ts
   // Función para dividir el mensaje en "Ciclo", "Etapa" y "Acción"
+  /*
   const parseMessage = (msg: string, cycle: number) => {
     const [stage, ...actionParts] = msg.split(":");
     const action = actionParts.join(":").trim();
     return { cycle, stage: stage.trim(), action };
   };
+  */
 
   // DESACTIVADO: Ahora los mensajes se agregan al historial de forma síncrona en simulation.ts
   // mediante la función setMessageAndAddToHistory() para evitar duplicados
