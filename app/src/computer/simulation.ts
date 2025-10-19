@@ -330,7 +330,7 @@ function resetState(state: ComputerState, clearRegisters = false) {
   }
   // Resetear el total de ciclos acumulados al reiniciar el programa
   store.set(totalCycleCountAtom, 0);
-  
+
   // Resetear la bandera de rutina de interrupción
   isExecutingInterruptRoutine = false;
   interruptFlagNotificationShown = false;
@@ -1273,14 +1273,14 @@ async function executeThread(generator: EventGenerator): Promise<void> {
         currentInstructionModeid = event.value.instruction.willUse.id ? true : false;
         currentInstructionModeri = event.value.instruction.willUse.ri ? true : false;
         currentInstructionOperands = event.value.instruction.operands;
-        
+
         // Desactivar la bandera de rutina de interrupción cuando comience una nueva instrucción normal
         // (esto ocurre después de que INT 6/7 haya terminado con su IRET implícito)
         if (isExecutingInterruptRoutine && currentInstructionName !== "INT") {
           isExecutingInterruptRoutine = false;
           console.log("✅ Rutina de interrupción terminada - volviendo a modo normal");
         }
-        
+
         // Para INT y CALL, siempre mostrar ri porque se usa en el paso 6
         const shouldShowRi =
           currentInstructionModeri ||
@@ -1415,7 +1415,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
             fetchStageCounter++;
           } else if (event.value.type === "cpu:register.update") {
             const sourceRegister = event.value.register;
-            
+
             console.log(
               "🔍 Debug: Captación register.update - fetchStageCounter:",
               fetchStageCounter,
@@ -1426,7 +1426,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               "isExecutingInterruptRoutine:",
               isExecutingInterruptRoutine,
             );
-            
+
             // Caso especial: Si estamos en rutina de interrupción y el registro es SP,
             // este es el primer evento de la rutina (decrementar SP antes de hacer PUSH)
             if (isExecutingInterruptRoutine && sourceRegister === "SP") {
@@ -1467,13 +1467,13 @@ async function executeThread(generator: EventGenerator): Promise<void> {
             // Caso especial: Si estamos en rutina de interrupción y el registro es DL
             // Este es el primer evento de guardado de registros en la rutina INT 6/7
             const sourceRegister = event.value.register;
-            
+
             console.log("🔍 cpu:mbr.set en fase de captación - Debug:");
             console.log("  isExecutingInterruptRoutine:", isExecutingInterruptRoutine);
             console.log("  sourceRegister:", sourceRegister);
             console.log("  fetchStageCounter:", fetchStageCounter);
             console.log("  executeStageCounter:", executeStageCounter);
-            
+
             if (isExecutingInterruptRoutine && sourceRegister === "DL") {
               console.log("🎯 Rutina de interrupción - MBR ← DL detectado en fase de captación");
               setMessageAndAddToHistory("Interrupción: MBR ← DL");
@@ -1481,7 +1481,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               currentInstructionCycleCount++;
               store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
               executeStageCounter++;
-              
+
               // Pausar si estamos ejecutando por ciclos
               if (status.until === "cycle-change") {
                 console.log("🛑 Pausando en rutina de interrupción - MBR ← DL");
@@ -3453,7 +3453,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               currentInstructionCycleCount++;
               store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
               executeStageCounter++;
-              
+
               // Pausar si estamos ejecutando por ciclos
               if (status.until === "cycle-change") {
                 console.log("🛑 Pausando en rutina de interrupción - MBR ← DL");
