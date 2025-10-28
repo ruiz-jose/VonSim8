@@ -1807,7 +1807,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 mbridirmar = false;
                 blBxToRiProcessed = false;
                 blBxRegisterName = "";
-                
+
                 // Pausar si estamos ejecutando por ciclos
                 if (status.until === "cycle-change") {
                   console.log("🛑 Pausando en rutina de interrupción - MAR ← BL");
@@ -2271,7 +2271,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                 console.log("   sourceRegister:", sourceRegister);
                 console.log("   executeStageCounter:", executeStageCounter);
                 console.log("   isExecutingInterruptRoutine:", isExecutingInterruptRoutine);
-                
+
                 if (isExecutingInterruptRoutine) {
                   // Durante la rutina de interrupción INT 7, mostrar solo "ri ← Video:"
                   displayMessage = "Ejecución: ri ← Video:";
