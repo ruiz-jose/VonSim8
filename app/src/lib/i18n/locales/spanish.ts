@@ -30,8 +30,7 @@ export const spanish: Locale = {
     "assemble-error": "Error de ensamblado. Solucione los errores y vuelva a intentar.",
     "invalid-action": "Acción inválida.",
     "keyboard-input-required": "Ingrese un carácter por teclado",
-    "keyboard-input-description":
-      "El programa está esperando que ingrese un carácter. Use el teclado virtual o su teclado físico.",
+    "keyboard-input-description": "El programa está esperando que ingrese un carácter usando el teclado virtual.",
   },
 
   editor: {

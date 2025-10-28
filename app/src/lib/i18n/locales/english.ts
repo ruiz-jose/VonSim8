@@ -29,8 +29,7 @@ export const english = {
     "assemble-error": "Assemble error. Fix the errors and try again.",
     "invalid-action": "Invalid action.",
     "keyboard-input-required": "Enter a character from keyboard",
-    "keyboard-input-description":
-      "The program is waiting for you to enter a character. Use the virtual keyboard or your physical keyboard.",
+    "keyboard-input-description": "The program is waiting for you to enter a character using the virtual keyboard.",
   },
 
   editor: {
