@@ -422,6 +422,7 @@ export function ALU() {
             settings.flagsVisibility === "IF_CF_ZF" ||
             settings.flagsVisibility === "IF_SF_OF_CF_ZF") && (
             <span
+              id="flag-i-indicator"
               className={clsx(
                 "rounded border px-0.5 py-0 text-[10px] font-bold transition-all duration-200",
                 IF

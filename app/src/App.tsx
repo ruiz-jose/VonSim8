@@ -6,6 +6,7 @@ import { useMedia } from "react-use";
 
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
+import { InlineNotificationProvider } from "@/components/InlineNotification";
 import { KeyboardShortcuts } from "@/components/KeyboardShortcuts";
 import { Settings, settingsOpenAtom } from "@/components/Settings";
 import { UpdateBanner } from "@/components/UpdateBanner";
@@ -46,6 +47,7 @@ const App = memo(() => {
 
       <WelcomeTour />
       <KeyboardShortcuts />
+      <InlineNotificationProvider />
     </div>
   );
 });

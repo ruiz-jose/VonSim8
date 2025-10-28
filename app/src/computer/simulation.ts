@@ -236,7 +236,26 @@ function notifyError(error: SimulatorError<any>) {
   }
 }
 
-export function notifyWarning(title: string, message: string) {
+export function notifyWarning(
+  title: string,
+  message: string,
+  options?: { inline?: boolean; targetId?: string },
+) {
+  // Para notificaciones inline, usar un sistema diferente
+  if (options?.inline && options?.targetId) {
+    const event = new CustomEvent("showInlineNotification", {
+      detail: {
+        title,
+        message,
+        targetId: options.targetId,
+        duration: 3000, // 3 segundos por defecto
+      },
+    });
+    window.dispatchEvent(event);
+    return;
+  }
+
+  // Mantener el comportamiento original para notificaciones normales
   toast({ title, description: message, variant: "info" }); // 'warning' no es válido, usar 'info' para toast
   if (addNotification) {
     addNotification({
@@ -3981,10 +4000,10 @@ async function dispatch(...args: Action) {
           !currentSettings.devices.pic &&
           !interruptFlagNotificationShown
         ) {
-          notifyWarning(
-            "Flag I activado automáticamente",
-            `Se detectó que el programa utiliza instrucciones de interrupción (INT, CLI, STI o IRET). El flag I se ha configurado para mostrarse automáticamente.`,
-          );
+          notifyWarning("Flag I activado", "Se detectó uso de instrucciones de interrupción", {
+            inline: true,
+            targetId: "flag-i-indicator",
+          });
           console.log(
             "🔧 Flag I configurado para mostrarse debido a instrucciones de interrupción en el código",
           );
