@@ -39,6 +39,8 @@ export function* handleSyscall(
 
     case 6: {
       // INT 6 - Read character from the keyboard and store it in [BX]
+      // La rutina INT 6 está inyectada en memoria (C0h)
+      // El PIOKeyboard maneja la lectura del teclado a través de los puertos 30h y 31h.
       yield { type: "cpu:int.6" };
 
       if (!("keyboard" in computer.io)) {
@@ -46,59 +48,9 @@ export function* handleSyscall(
         return false;
       }
 
-      /*org 20h
-      int 6
-      hlt         ; Detiene la ejecución
-
-
-      org 0C0h
-      push AL
-      wait_for_key:
-      in AL, 64h
-      cmp AL, 1
-      jz wait_for_key 
-      in AL, 60h
-      pop AL
-      mov [BL], AL
-      iret*/
-
-      //org 0C0h
-      //push AL
-      yield* computer.cpu.setMAR("IP");
-      if (!(yield* computer.cpu.useBus("mem-read"))) return false; // Error reading memory
-      // Incrementar el registro IP manualmente si es necesario
-      yield* computer.cpu.updateWordRegister("IP", IP => IP.add(1));
-      yield* computer.cpu.getMBR("IR");
-      if (!(yield* computer.cpu.pushToStack("AL"))) return false; // Stack overflow
-
-      // in AL, 64h
-      /*yield* computer.cpu.setMAR("IP");
-      if (!(yield* computer.cpu.useBus("mem-read"))) return false; // Error reading memory
-      // Incrementar el registro IP manualmente si es necesario
-      yield* computer.cpu.updateWordRegister("IP", IP => IP.add(1));
-      yield* computer.cpu.setMAR("IP");
-      if (!(yield* computer.cpu.useBus("mem-read"))) return false; // Error reading memory
-      yield* computer.cpu.setMAR("ri");*/
-
-      const keyboard = computer.io.keyboard;
-      if (!keyboard) {
-        yield { type: "cpu:error", error: new SimulatorError("device-not-connected", "keyboard") };
-        return false;
-      }
-      const char = yield* keyboard.readChar();
-
-      //yield* computer.cpu.updateByteRegister("id.l",char);
-      yield* computer.cpu.updateByteRegister("AL", char);
-
-      //yield* computer.cpu.copyWordRegister("BX", "ri");
-      yield* computer.cpu.copyByteRegister("BL", "ri.l");
-
-      yield* computer.cpu.setMAR("ri");
-      yield* computer.cpu.setMBR("AL");
-      if (!(yield* computer.cpu.useBus("mem-write"))) return false; // Error writing to memory
-      if (!(yield* computer.cpu.popFromStack("AL"))) return false; // Stack underflow
-      // Doesn't return -- retrieves machine state
-      break;
+      // La rutina de interrupción debe ejecutarse desde C0h
+      // No restauramos el estado aquí, será restaurado por IRET
+      return true;
     }
 
     case 7: {

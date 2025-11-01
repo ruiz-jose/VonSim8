@@ -2383,18 +2383,25 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               console.log("executeStageCounter:", executeStageCounter);
               console.log("pause:", pause);
 
-              // Caso especial para PUSH con SP: NO mostrar mensaje ni contabilizar ciclo
-              // porque el mensaje combinado "MBR ← registro | SP ← SP - 1" ya se mostró en cpu:mbr.set
-              // NOTA: executeStageCounter es 4 aquí porque ya se incrementó en cpu:mbr.set
-              if (
-                currentInstructionName === "PUSH" &&
-                sourceRegister === "SP" &&
-                executeStageCounter === 4
-              ) {
+              // Caso especial para PUSH con SP: NO mostrar mensaje (ya se mostró en cpu:mbr.set)
+              // pero SÍ contabilizar el ciclo y pausar si corresponde
+              // El mensaje combinado "MBR ← registro | SP ← SP - 1" ya se mostró en cpu:mbr.set
+              if (currentInstructionName === "PUSH" && sourceRegister === "SP") {
                 console.log(
-                  "⏭️ PUSH paso 5 (SP update) - omitiendo ciclo y mensaje (ya mostrado en mbr.set)",
+                  "⏭️ PUSH (SP update) - omitiendo SOLO el mensaje (ya mostrado en mbr.set), pero SÍ contabilizando ciclo",
+                  "executeStageCounter:",
+                  executeStageCounter,
                 );
-                // NO incrementar executeStageCounter aquí, ya se incrementó en cpu:mbr.set
+                // SÍ contabilizar el ciclo
+                cycleCount++;
+                currentInstructionCycleCount++;
+                store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+                console.log(
+                  "🔢 Ciclo contabilizado en cpu:register.update (PUSH SP) - cycleCount:",
+                  cycleCount,
+                );
+                // NO mostrar mensaje (ya se mostró en mbr.set)
+                // NO incrementar executeStageCounter aquí (se manejará más abajo)
               } else if (
                 // Caso especial para INT paso 7 con SP: NO mostrar mensaje ni contabilizar ciclo
                 // porque el mensaje combinado "MBR ← FLAGS | MAR ← SP" ya se mostró en cpu:mar.set
@@ -2437,13 +2444,10 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               }
 
               // Solo incrementar executeStageCounter si NO es PUSH con SP, INT paso 7 con SP, ni INT paso 9 con SP
-              // NOTA: executeStageCounter es 4 para PUSH, 7 para INT paso 7, 8 para INT paso 9
+              // NOTA: Para PUSH con SP, el mensaje combinado ya se mostró en cpu:mbr.set
+              // y el executeStageCounter ya se incrementó allí
               if (
-                !(
-                  currentInstructionName === "PUSH" &&
-                  sourceRegister === "SP" &&
-                  executeStageCounter === 4
-                ) &&
+                !(currentInstructionName === "PUSH" && sourceRegister === "SP") &&
                 !(
                   currentInstructionName === "INT" &&
                   sourceRegister === "SP" &&
@@ -2459,17 +2463,16 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               }
               if (displayMessage !== "Interrupción: MAR ← (video)") {
                 if (status.until === "cycle-change") {
-                  if (
+                  // Caso especial para PUSH con SP: SÍ pausar (el mensaje ya se mostró en mbr.set, el ciclo ya se contabilizó arriba)
+                  if (currentInstructionName === "PUSH" && sourceRegister === "SP") {
+                    console.log("🛑 PUSH (SP update) - pausando después de contabilizar ciclo");
+                    pauseSimulation();
+                  } else if (
                     currentInstructionName !== "DEC" &&
                     currentInstructionName !== "INC" &&
                     currentInstructionName !== "NOT" &&
                     currentInstructionName !== "NEG" &&
                     !(currentInstructionName === "INT" && executeStageCounter === 12) &&
-                    !(
-                      currentInstructionName === "PUSH" &&
-                      sourceRegister === "SP" &&
-                      executeStageCounter === 4
-                    ) &&
                     !(
                       currentInstructionName === "INT" &&
                       sourceRegister === "SP" &&
@@ -2484,14 +2487,6 @@ async function executeThread(generator: EventGenerator): Promise<void> {
                     if (pause) {
                       pauseSimulation();
                     }
-                  } else if (
-                    currentInstructionName === "PUSH" &&
-                    sourceRegister === "SP" &&
-                    executeStageCounter === 4
-                  ) {
-                    // Para PUSH con SP: SÍ pausar, pero NO mostrar mensaje ni contabilizar ciclo
-                    console.log("🛑 PUSH paso 5 (SP update) - pausando sin mensaje ni ciclo");
-                    pauseSimulation();
                   } else if (
                     currentInstructionName === "INT" &&
                     executeStageCounter === 6 &&
@@ -3538,15 +3533,18 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               resultmbrimar = true;
               displayMessageresultmbr = `Ejecución: MBR ← ${sourceRegister} ; MAR ← MBR`;
             } else if (
-              // Para PUSH cuando se copia el registro al MBR en el paso 5 (ciclo 5)
+              // Para PUSH cuando se copia el registro al MBR en el paso 4-5 (ciclo 4)
               // Mostrar mensaje combinado: MBR ← registro | SP ← SP - 1
+              // NOTA: executeStageCounter puede ser 2 o 3 dependiendo de la sincronización
               currentInstructionName === "PUSH" &&
-              executeStageCounter === 3 &&
+              (executeStageCounter === 2 || executeStageCounter === 3) &&
               ["AL", "BL", "CL", "DL", "AH", "BH", "CH", "DH", "AX", "BX", "CX", "DX"].includes(
                 sourceRegister,
               )
             ) {
-              console.log(`🎯 PUSH paso 5 detectado: ${sourceRegister} → MBR | SP ← SP - 1`);
+              console.log(
+                `🎯 PUSH paso 4 detectado (executeStageCounter: ${executeStageCounter}): ${sourceRegister} → MBR | SP ← SP - 1`,
+              );
               setMessageAndAddToHistory(`Ejecución: MBR ← ${sourceRegister} | SP ← SP - 1`);
               cycleCount++;
               currentInstructionCycleCount++;
@@ -3554,7 +3552,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
               executeStageCounter++;
               // NO pausar aquí para PUSH - la pausa ocurrirá en cpu:register.update cuando se actualice SP
               console.log(
-                "⏭️ PUSH paso 5 (MBR ← registro) - NO pausando, pausará en cpu:register.update",
+                "⏭️ PUSH paso 4 (MBR ← registro) - NO pausando, pausará en cpu:register.update",
               );
             } else if (
               // Para instrucciones aritméticas con direccionamiento directo e inmediato
@@ -4404,7 +4402,12 @@ async function dispatch(...args: Action) {
       if (status.type !== "running" || !status.waitingForInput) return invalidAction();
 
       // Save read character
-      simulator.devices.keyboard.readChar(Byte.fromChar(args[1]));
+      const result = simulator.devices.keyboard.readChar(Byte.fromChar(args[1]));
+
+      // Si readChar devuelve un generador (PIOKeyboard), ejecutarlo
+      if (result && typeof result === "object" && Symbol.iterator in result) {
+        startThread(result as EventGenerator);
+      }
 
       store.set(simulationAtom, { ...status, waitingForInput: false });
       return;

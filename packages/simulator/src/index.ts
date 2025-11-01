@@ -79,9 +79,20 @@ export class Simulator {
       keyboard: {
         connected: () => "keyboard" in this.#computer.io,
         readChar: (char: Byte<8>) => {
-          if (this.#computer.io.keyboard) return this.#computer.io.keyboard.setLastCharRead(char);
-          else
+          // Si el PIO es PIOKeyboard, copiar la tecla en los puertos
+          // IMPORTANTE: setKeyPressed ahora es un generador, pero aquí
+          // solo lo configuramos; se ejecutará cuando la CPU lo pida
+          if (this.#computer.io.pio && "setKeyPressed" in this.#computer.io.pio) {
+            // Guardar el carácter para que esté listo cuando se necesite
+            const pio = this.#computer.io.pio as any;
+            // setKeyPressed es un generador, necesitamos ejecutarlo
+            return pio.setKeyPressed(char);
+          } else if (this.#computer.io.keyboard) {
+            // Fallback al método anterior para compatibilidad
+            this.#computer.io.keyboard.setLastCharRead(char);
+          } else {
             console.warn("Called keyboard.press() when no keyboard was connected to the computer");
+          }
         },
       },
       leds: {

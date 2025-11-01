@@ -1,3 +1,4 @@
+import { assemble } from "@vonsim/assembler";
 import { MemoryAddress } from "@vonsim/common/address";
 import { AnyByte, Byte } from "@vonsim/common/byte";
 
@@ -154,6 +155,38 @@ export class CPU extends Component {
     this.#setFlag("IF", true);
 
     this.#instructions = new Map();
+
+    // Si el programa contiene instrucciones INT, inyectar las rutinas de sistema
+    const hasINTInstruction = options.program.instructions.some(
+      instruction => instruction.instruction === "INT",
+    );
+
+    if (hasINTInstruction) {
+      // Ensamblar la rutina INT 6 (lectura de teclado)
+      const int6Code = `
+        org 0C0h
+        push AL
+        wait_for_key:
+        in AL, 32h
+        cmp AL, 0
+        jz wait_for_key
+        in AL, 30h
+        mov [BL], AL
+        pop AL
+        iret
+      `;
+
+      const int6Result = assemble(int6Code);
+      if (int6Result.success) {
+        // Agregar las instrucciones de INT 6 al mapa de instrucciones
+        for (const statement of int6Result.instructions) {
+          const instruction = statementToInstruction(statement);
+          this.#instructions.set(instruction.start.value, instruction);
+        }
+      }
+    }
+
+    // Agregar las instrucciones del programa del usuario
     for (const statement of options.program.instructions) {
       const instruction = statementToInstruction(statement);
       this.#instructions.set(instruction.start.value, instruction);
@@ -172,24 +205,28 @@ export class CPU extends Component {
     while (true) {
       // Gets the instruction at the current IP from `this.#instructions`
       const IP = this.#registers.IP;
+      const instruction = this.#instructions.get(IP.unsigned);
       const syscallNumber = getSyscallNumber(IP);
-      if (syscallNumber !== null) {
-        // Syscall
-        const continueExecuting = yield* handleSyscall(this.computer, syscallNumber);
-        if (!continueExecuting) return;
-      } else {
-        const instruction = this.#instructions.get(IP.unsigned);
-        if (!instruction) {
-          yield {
-            type: "cpu:error",
-            error: new SimulatorError("no-instruction", this.#registers.IP),
-          };
-          return;
-        }
 
+      // Si hay una instrucción en esta dirección, ejecutarla
+      // incluso si es una dirección de syscall (para permitir
+      // rutinas de interrupción en ensamblador)
+      if (instruction) {
         // Execute the instruction, and checks if the instruction returned `false` (halt)
         const continueExecuting = yield* instruction.execute(this.computer);
         if (!continueExecuting) return;
+      } else if (syscallNumber !== null) {
+        // Si no hay instrucción pero es una dirección de syscall,
+        // manejar el syscall de forma especial
+        const continueExecuting = yield* handleSyscall(this.computer, syscallNumber);
+        if (!continueExecuting) return;
+      } else {
+        // No hay instrucción ni syscall en esta dirección
+        yield {
+          type: "cpu:error",
+          error: new SimulatorError("no-instruction", this.#registers.IP),
+        };
+        return;
       }
 
       // Check for interrupts
@@ -622,10 +659,10 @@ export class CPU extends Component {
 
     if (isPushInstruction) {
       // Para la instrucción PUSH: MAR -> MBR -> write -> SP--
-      yield* this.setMAR("SP");
       yield* this.setMBR(sourceRegister);
       SP = SP.add(-1);
       yield* this.updateWordRegister("SP", SP);
+      yield* this.setMAR("SP");
       if (!(yield* this.useBus("mem-write"))) return false; // Error writing to memory
     } else {
       // Para otras instrucciones (INT, CALL, etc.): SP-- -> MBR -> MAR -> write

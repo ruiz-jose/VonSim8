@@ -66,41 +66,9 @@ export class Memory extends Component {
         this.#buffer[start] = address.unsigned;
         this.#reservedMemory.add(start);
 
-        // Inject the INT 6 handler routine at address C0h
-        if (number === 6) {
-          const int6Handler = [
-            0xd0, // push AL
-            0xd8,
-            0x30, // in AL, 30h
-            0x12,
-            0x01, // cmp AL, 1
-            0xc1,
-            0xc1, // jz wait_for_key (-6 bytes)
-            0xd8,
-            0x31, // in AL, 31h
-            0xd4, // pop AL
-            0x41, // mov [BX], AL
-            0xe1, // iret
-          ];
-
-          // Inject the INT 6 handler routine at address C0h
-          /*  if (number === 6) {
-          const int6Handler = [
-            0xD0, // push AL
-            0xd8, 0x64, // in AL, 64h
-            0x12, 0x01, // cmp AL, 1
-            0xC1, 0xC1, // jz wait_for_key (-6 bytes)
-            0xd8, 0x60, // in AL, 60h
-            0xD4, // pop AL
-            0x41, // mov [BX], AL
-            0xE1, // iret
-          ];*/
-          const int6HandlerAddress = address.unsigned;
-          for (let i = 0; i < int6Handler.length; i++) {
-            this.#buffer[int6HandlerAddress + i] = int6Handler[i];
-            this.#reservedMemory.add(int6HandlerAddress + i);
-          }
-        }
+        // Las instrucciones de las rutinas de interrupción (como INT 6)
+        // se inyectan automáticamente en la CPU, no es necesario
+        // inyectarlas aquí como bytecodes
       }
     }
 
@@ -115,6 +83,33 @@ export class Memory extends Component {
 
     // Load instructions into memory
     this.#codeMemory = new Set();
+
+    // Si el programa contiene instrucciones INT, cargar las rutinas del sistema
+    if (hasINTInstruction) {
+      // Cargar la rutina INT 6 en memoria
+      const int6Bytecodes = [
+        0xd0, // C0h: push AL
+        0xd8,
+        0x32, // C1h: in AL, 32h (wait_for_key) - leer estado (CA)
+        0xa2,
+        0x00, // C3h: cmp AL, 0 - comparar con 0 (sin tecla)
+        0xc1,
+        0xc1, // C5h: jz wait_for_key (-5 bytes, salta a C1h)
+        0xd8,
+        0x30, // C7h: in AL, 30h - leer carácter (PA)
+        0x24, // CAh: mov [BL], AL
+        0xd4, // C9h: pop AL
+        0xe1, // CBh: iret
+      ];
+
+      const int6Address = 0xc0;
+      for (let i = 0; i < int6Bytecodes.length; i++) {
+        this.#buffer[int6Address + i] = int6Bytecodes[i];
+        this.#codeMemory.add(int6Address + i);
+      }
+    }
+
+    // Cargar las instrucciones del programa del usuario
     for (const instruction of options.program.instructions) {
       this.#buffer.set(instruction.toBytes(), instruction.start.value);
       for (let i = 0; i < instruction.length; i++) {

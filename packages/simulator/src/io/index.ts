@@ -6,6 +6,7 @@ import type { IORegister } from "../bus";
 import { Component, ComponentInit } from "../component";
 import { SimulatorError } from "../error";
 import type { EventGenerator } from "../events";
+import { PIOKeyboard } from "./connections/pio-keyboard";
 import { PIOPrinter } from "./connections/pio-printer";
 import { PIOSwitchesAndLeds } from "./connections/pio-switches-and-leds";
 import { Clock } from "./devices/clock";
@@ -31,7 +32,9 @@ export class IOInterface extends Component {
   // Devices
   readonly clock: Clock | null = null;
   readonly f10: F10 | null = null;
-  readonly keyboard: Keyboard | null = null;
+  get keyboard(): Keyboard | null {
+    return this.pio instanceof PIOKeyboard ? this.pio.keyboard : null;
+  }
   get leds(): Leds | null {
     return this.pio?.leds ?? null;
   }
@@ -53,7 +56,6 @@ export class IOInterface extends Component {
     super(options);
 
     if (options.devices.keyboardAndScreen) {
-      this.keyboard = new Keyboard(options);
       this.screen = new Screen(options);
     }
 
@@ -64,12 +66,18 @@ export class IOInterface extends Component {
       this.pic = new PIC(options);
     }
 
-    this.pio =
-      options.devices.pio === "switches-and-leds"
-        ? new PIOSwitchesAndLeds(options)
-        : options.devices.pio === "printer"
-          ? new PIOPrinter(options)
-          : null;
+    // Si hay keyboard y screen, usar PIOKeyboard
+    // De lo contrario, usar el PIO especificado
+    if (options.devices.keyboardAndScreen) {
+      this.pio = new PIOKeyboard(options);
+    } else {
+      this.pio =
+        options.devices.pio === "switches-and-leds"
+          ? new PIOSwitchesAndLeds(options)
+          : options.devices.pio === "printer"
+            ? new PIOPrinter(options)
+            : null;
+    }
 
     if (options.devices.handshake) {
       if (this.pio instanceof PIOPrinter) {

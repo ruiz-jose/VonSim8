@@ -53,8 +53,23 @@ export function highlightLine(pos: number | null) {
   if (pos === null) {
     window.codemirror.dispatch({ effects: addLineHighlight.of(null) });
   } else {
-    const docPosition = window.codemirror.state.doc.lineAt(pos).from;
-    window.codemirror.dispatch({ effects: addLineHighlight.of(docPosition) });
+    // Validar que la posición está dentro del documento
+    const docLength = window.codemirror.state.doc.length;
+    if (pos >= docLength) {
+      // La instrucción está fuera del documento (probablemente una rutina del sistema inyectada)
+      // No resaltar nada
+      window.codemirror.dispatch({ effects: addLineHighlight.of(null) });
+      return;
+    }
+
+    try {
+      const docPosition = window.codemirror.state.doc.lineAt(pos).from;
+      window.codemirror.dispatch({ effects: addLineHighlight.of(docPosition) });
+    } catch (error) {
+      // Si hay algún error al obtener la línea, no resaltar
+      console.warn(`No se puede resaltar la posición ${pos} en el documento`, error);
+      window.codemirror.dispatch({ effects: addLineHighlight.of(null) });
+    }
   }
 }
 
@@ -64,7 +79,22 @@ export function highlightCurrentInstruction(pos: number | null) {
   if (pos === null) {
     window.codemirror.dispatch({ effects: addCurrentInstructionHighlight.of(null) });
   } else {
-    const docPosition = window.codemirror.state.doc.lineAt(pos).from;
-    window.codemirror.dispatch({ effects: addCurrentInstructionHighlight.of(docPosition) });
+    // Validar que la posición está dentro del documento
+    const docLength = window.codemirror.state.doc.length;
+    if (pos >= docLength) {
+      // La instrucción está fuera del documento (probablemente una rutina del sistema inyectada)
+      // No resaltar nada
+      window.codemirror.dispatch({ effects: addCurrentInstructionHighlight.of(null) });
+      return;
+    }
+
+    try {
+      const docPosition = window.codemirror.state.doc.lineAt(pos).from;
+      window.codemirror.dispatch({ effects: addCurrentInstructionHighlight.of(docPosition) });
+    } catch (error) {
+      // Si hay algún error al obtener la línea, no resaltar
+      console.warn(`No se puede resaltar la posición ${pos} en el documento`, error);
+      window.codemirror.dispatch({ effects: addCurrentInstructionHighlight.of(null) });
+    }
   }
 }
