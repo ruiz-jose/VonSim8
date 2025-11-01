@@ -3,6 +3,7 @@ import { useAtomValue } from "jotai";
 import { useEffect, useState } from "react";
 
 import { Register } from "@/computer/shared/Register";
+import { getSpring } from "@/computer/shared/springs";
 import { useTranslate } from "@/lib/i18n";
 import { getSettings } from "@/lib/settings";
 
@@ -11,7 +12,7 @@ import { ALU } from "./ALU";
 import { Control } from "./Control";
 import { DataBus } from "./DataBus";
 import type { PhysicalRegister } from "./state";
-import { registerAtoms, showSPAtom } from "./state";
+import { registerAtoms, showriAtom,showSPAtom } from "./state";
 
 // Add IPPlusOneAnimation component
 function IPPlusOneAnimation() {
@@ -142,13 +143,43 @@ export function CPU() {
   const translate = useTranslate();
 
   const showSP = useAtomValue(showSPAtom); // Usar el átomo showSPAtom
+  const showri = useAtomValue(showriAtom); // Usar el átomo showriAtom
   const [showid, setShowid] = useState(false);
-  const [showri, setShowri] = useState(false);
 
   const [showRegisters, setShowRegisters] = useState(false);
 
+  // Sincronizar la opacidad del registro ri con el átomo showriAtom
   useEffect(() => {
-    const handleInstruction = (instruction: string, modeid?: boolean, moderi?: boolean) => {
+    const riOpacity = getSpring("cpu.ri").opacity;
+    if (showri) {
+      riOpacity.start(1);
+    } else {
+      riOpacity.start(0);
+    }
+  }, [showri]);
+
+  // Sincronizar la opacidad del registro SP con el átomo showSPAtom
+  useEffect(() => {
+    const spOpacity = getSpring("cpu.SP").opacity;
+    if (showSP) {
+      spOpacity.start(1);
+    } else {
+      spOpacity.start(1); // SP siempre visible cuando no está en uso especial
+    }
+  }, [showSP]);
+
+  // Sincronizar la opacidad del registro id con el estado local showid
+  useEffect(() => {
+    const idOpacity = getSpring("cpu.id").opacity;
+    if (showid) {
+      idOpacity.start(1);
+    } else {
+      idOpacity.start(0);
+    }
+  }, [showid]);
+
+  useEffect(() => {
+    const handleInstruction = (instruction: string, modeid?: boolean) => {
       if (
         instruction === "ADD" ||
         instruction === "SUB" ||
@@ -170,11 +201,6 @@ export function CPU() {
       } else {
         setShowid(false);
       }
-      if (moderi) {
-        setShowri(true);
-      } else {
-        setShowri(false);
-      }
     };
 
     // Suscríbete a los cambios de instrucción aquí
@@ -182,11 +208,7 @@ export function CPU() {
     // Aquí se muestra un ejemplo con un evento personalizado
     const eventListener = (event: Event) => {
       const customEvent = event as CustomEvent;
-      handleInstruction(
-        customEvent.detail.instruction,
-        customEvent.detail.modeid,
-        customEvent.detail.moderi,
-      );
+      handleInstruction(customEvent.detail.instruction, customEvent.detail.modeid);
     };
 
     window.addEventListener("instructionChange", eventListener as EventListener);

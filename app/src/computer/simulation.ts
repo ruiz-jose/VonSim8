@@ -4354,6 +4354,10 @@ async function dispatch(...args: Action) {
           },
         });
         window.dispatchEvent(resetEvent);
+
+        // Resetear los átomos de visibilidad de registros temporales al presionar reiniciar
+        store.set(showSPAtom, false);
+        store.set(showriAtom, false);
       } else {
         pauseSimulation();
       }
