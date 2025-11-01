@@ -1257,11 +1257,11 @@ async function executeThread(generator: EventGenerator): Promise<void> {
           // Crear un timeout para detectar bloqueos en handleEvent
           // PERO: No aplicar timeout a eventos que requieren interacción del usuario
           const eventPromise = handleEvent(event.value);
-          
+
           // Lista de eventos que requieren interacción del usuario y no deben tener timeout
           const interactiveEvents = ["keyboard:listen-key"];
           const isInteractiveEvent = interactiveEvents.some(ie => eventType.includes(ie));
-          
+
           if (isInteractiveEvent) {
             // Para eventos interactivos, esperar sin timeout
             await eventPromise;
