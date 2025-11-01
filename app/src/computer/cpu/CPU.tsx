@@ -12,7 +12,7 @@ import { ALU } from "./ALU";
 import { Control } from "./Control";
 import { DataBus } from "./DataBus";
 import type { PhysicalRegister } from "./state";
-import { registerAtoms, showriAtom,showSPAtom } from "./state";
+import { registerAtoms, showriAtom, showSPAtom } from "./state";
 
 // Add IPPlusOneAnimation component
 function IPPlusOneAnimation() {
