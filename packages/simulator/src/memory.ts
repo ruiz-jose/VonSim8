@@ -86,7 +86,7 @@ export class Memory extends Component {
 
     // Si el programa contiene instrucciones INT, cargar las rutinas del sistema
     if (hasINTInstruction) {
-      // Cargar la rutina INT 6 en memoria
+      // Cargar la rutina INT 6 en memoria (lectura de teclado)
       const int6Bytecodes = [
         0xd0, // C0h: push AL
         0xd8,
@@ -106,6 +106,41 @@ export class Memory extends Component {
       for (let i = 0; i < int6Bytecodes.length; i++) {
         this.#buffer[int6Address + i] = int6Bytecodes[i];
         this.#codeMemory.add(int6Address + i);
+      }
+
+      // Cargar la rutina INT 7 en memoria (escritura en pantalla)
+      // NOTA: Los bytecodes se generan automáticamente desde cpu/index.ts
+      // La rutina se ejecuta desde las instrucciones ensambladas, no desde estos bytecodes
+      const int7Bytecodes = [
+        0xd3, // D0h: push DL
+        0xd2, // D1h: push CL
+        0x1e,
+        0xe7, // D2h: mov DL, 0E7h
+        0xa2,
+        0x00, // D4h: cmp AL, 0 (int7_loop)
+        0xc1,
+        0xe8, // D6h: jz int7_end
+        0x19, // D8h: mov CL, [BL]
+        0xd1, // D9h: push BL
+        0x07, // DAh: mov BL, DL
+        0x26, // DBh: mov [BL], CL
+        0xda, // DCh: out 33h, CL
+        0x33,
+        0xd5, // DEh: pop BL
+        0x45, // DFh: inc BL
+        0x47, // E0h: inc DL
+        0x46, // E1h: dec AL
+        0xc0,
+        0xd4, // E2h: jmp int7_loop
+        0xd6, // E4h: pop CL
+        0xd7, // E5h: pop DL
+        0xe1, // E6h: iret
+      ];
+
+      const int7Address = 0xd0;
+      for (let i = 0; i < int7Bytecodes.length; i++) {
+        this.#buffer[int7Address + i] = int7Bytecodes[i];
+        this.#codeMemory.add(int7Address + i);
       }
     }
 

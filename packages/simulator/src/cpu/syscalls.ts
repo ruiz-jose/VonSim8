@@ -62,80 +62,59 @@ export function* handleSyscall(
         return false;
       }
 
-      // Push AX and BX to stack
-      //yield* computer.cpu.copyWordRegister("AX", "id");
-      //if (!(yield* computer.cpu.pushToStack("AL"))) return false; // Stack overflow
-      //yield* computer.cpu.copyWordRegister("BX", "id");
-      //if (!(yield* computer.cpu.pushToStack("BL"))) return false; // Stack overflow
+      // Guardar DL en el stack
       if (!(yield* computer.cpu.pushToStack("DL"))) return false; // Stack overflow
 
-      // CMP AL, 0 -- Check if length is 0
-      /*  yield* computer.cpu.copyByteRegister("AL", "left.l");
-      yield* computer.cpu.updateByteRegister("right.l", Byte.fromUnsigned(1, 8));
-      const AL = computer.cpu.getRegister("AL");
-      yield* computer.cpu.aluExecute("CMP", AL, {
-        CF: false,
-        OF: false,
-        SF: AL.signed < 0,
-        ZF: AL.isZero(),
-      });*/
-      let video = 0xd8;
+      let video = 0xe7; // Dirección base de video
+      
       while (!computer.cpu.getRegister("AL").isZero()) {
-        // Read character from [BX]
+        // Leer carácter desde [BX]
         yield* computer.cpu.copyByteRegister("BL", "ri.l");
         yield* computer.cpu.setMAR("ri");
-        if (!(yield* computer.cpu.useBus("mem-read"))) return false; // Error reading from memory
-        //yield* computer.cpu.getMBR("id.l");
+        if (!(yield* computer.cpu.useBus("mem-read"))) return false;
         yield* computer.cpu.getMBR("DL");
 
+        // Escribir en memoria de video en la dirección 'video'
         yield* computer.cpu.updateByteRegister("ri.l", Byte.fromUnsigned(video, 8));
         yield* computer.cpu.setMAR("ri");
         yield* computer.cpu.setMBR("DL");
-        if (!(yield* computer.cpu.useBus("mem-write"))) return false; // Error writing to memory
+        if (!(yield* computer.cpu.useBus("mem-write"))) return false;
 
-        // Send character to the screen
+        // Enviar carácter a la pantalla
         const char = computer.cpu.getRegister("DL");
-        if (computer.io.screen) {
-          yield* computer.io.screen.sendChar(char);
-        } else {
-          yield { type: "cpu:error", error: new SimulatorError("device-not-connected", "screen") };
-          return false;
-        }
+        yield* computer.io.screen.sendChar(char);
+
         video++;
 
-        // INC BX
+        // INC BL
         yield* computer.cpu.copyByteRegister("BL", "left.l");
         yield* computer.cpu.updateWordRegister("right", Byte.fromUnsigned(1, 16));
-        const BX = computer.cpu.getRegister("BX").add(1); // Should always succeed, otherwise the memory would've thrown an error
+        const BX = computer.cpu.getRegister("BX").add(1);
         yield* computer.cpu.aluExecute("ADD", BX, {
-          CF: false, // Never, since max value to add is 0x7FFF + 1 = 0x8000 (max memory address)
-          OF: BX.signed < 0, // Only happens when 0x7FFF + 1 (max memory address)
+          CF: false,
+          OF: BX.signed < 0,
           SF: BX.signed < 0,
-          ZF: false, // Never, since max value to add is 0x7FFF + 1 = 0x8000 (max memory address)
+          ZF: false,
         });
         yield* computer.cpu.copyByteRegister("result.l", "BL");
+
         // DEC AL
         yield* computer.cpu.copyByteRegister("AL", "left.l");
         yield* computer.cpu.updateByteRegister("right.l", Byte.fromUnsigned(1, 8));
-        const AL = computer.cpu.getRegister("AL").add(-1); // Should always succeed, because AL != 0
+        const AL = computer.cpu.getRegister("AL").add(-1);
         yield* computer.cpu.aluExecute("SUB", AL, {
-          CF: false, // Never, will stop before doing 0 - 1
-          OF: AL.signed === Byte.maxSignedValue(8), // True when 0x80 - 1
+          CF: false,
+          OF: AL.signed === Byte.maxSignedValue(8),
           SF: AL.signed < 0,
           ZF: AL.isZero(),
         });
         yield* computer.cpu.copyByteRegister("result.l", "AL");
       }
 
-      // Pop BX and AX from stack
-      //if (!(yield* computer.cpu.popFromStack("id.l"))) return false; // Stack underflow
-      //yield* computer.cpu.copyWordRegister("id", "BX");
-      //if (!(yield* computer.cpu.popFromStack("id.l"))) return false; // Stack underflow
-      //yield* computer.cpu.copyWordRegister("id", "AX");
+      // Restaurar DL del stack
       if (!(yield* computer.cpu.popFromStack("DL"))) return false; // Stack underflow
 
-      // Doesn't return -- retrieves machine state
-      break;
+      return false; // No ejecutar rutina en ensamblador
     }
 
     // It's not a special interrupt, so we

@@ -184,6 +184,40 @@ export class CPU extends Component {
           this.#instructions.set(instruction.start.value, instruction);
         }
       }
+
+      // Ensamblar la rutina INT 7 (escritura en pantalla)
+      const int7Code = `
+        org 0D0h
+        push DL
+        push CL
+        mov DL, 0E7h
+        int7_loop:
+        cmp AL, 0
+        jz int7_end
+        mov CL, [BL]
+        push BL
+        mov BL, DL
+        mov [BL], CL
+        out 33h, CL
+        pop BL
+        inc BL
+        inc DL
+        dec AL
+        jmp int7_loop
+        int7_end:
+        pop CL
+        pop DL
+        iret
+      `;
+
+      const int7Result = assemble(int7Code);
+      if (int7Result.success) {
+        // Agregar las instrucciones de INT 7 al mapa de instrucciones
+        for (const statement of int7Result.instructions) {
+          const instruction = statementToInstruction(statement);
+          this.#instructions.set(instruction.start.value, instruction);
+        }
+      }
     }
 
     // Agregar las instrucciones del programa del usuario
