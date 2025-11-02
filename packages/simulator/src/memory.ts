@@ -20,7 +20,8 @@ export type MemoryOperation =
         | SimulatorError<"address-is-reserved">
         | SimulatorError<"address-out-of-range">;
     }
-  | { type: "memory:write.warning"; warning: string };
+  | { type: "memory:write.warning"; warning: string }
+  | { type: "memory:write.screen"; address: MemoryAddress; value: Byte<8> };
 
 /**
  * Memory.
@@ -226,6 +227,16 @@ export class Memory extends Component {
       };
       return false;
     }*/
+
+    // Interceptar escritura en 0xE5 para mostrar el carácter en pantalla
+    if (address === 0xe5) {
+      yield { type: "memory:write.screen", address: MemoryAddress.from(address), value };
+      
+      // Si la pantalla está disponible, enviar el carácter directamente
+      if ("screen" in this.computer.io) {
+        yield* this.computer.io.screen.sendChar(value);
+      }
+    }
 
     this.#buffer.set([value.unsigned], address);
     yield { type: "memory:write.ok", address: MemoryAddress.from(address), value };

@@ -624,6 +624,14 @@ export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promi
       return;
     }
 
+    case "memory:write.screen": {
+      // Interceptar escritura en 0xE5 para mostrar el carácter en pantalla
+      // El evento screen:send-char será manejado automáticamente por el sistema
+      // Este caso simplemente reconoce el evento sin hacer nada adicional
+      // ya que el generador en memory.ts ya emite el evento necesario
+      return;
+    }
+
     default: {
       const _exhaustiveCheck: never = event;
       return _exhaustiveCheck;
