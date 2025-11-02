@@ -2,6 +2,7 @@
 
 import { ByteRegister } from "../../../../assembler/src/types";
 import type { Computer } from "../../computer";
+import type { WordRegister } from "../../cpu/types";
 import type { EventGenerator } from "../../events";
 import { Instruction } from "../instruction";
 import { splitRegister } from "../utils";
@@ -89,12 +90,9 @@ export class MOVInstruction extends Instruction<"MOV"> {
         //else yield* super.consumeInstruction(computer, "ri.l");
         yield* super.consumeInstruction(computer, "ri.l");
         // yield* super.consumeInstruction(computer, "ri.h");
-      } else {
-        if (this.operation.mode === "mem<-reg" || this.operation.mode === "reg<-mem") {
-          // Move BL to ri para direccionamiento indirecto
-          yield* computer.cpu.copyByteRegister("BL", "ri.l");
-        }
       }
+      // NOTA: La copia de BL a ri.l para direccionamiento indirecto
+      // se hace ahora justo antes de setMAR en cada caso específico
     }
     if (this.operation.mode === "reg<-imd") {
       // Emitir el evento de cambio de fase antes de copiar el valor inmediato
@@ -115,11 +113,33 @@ export class MOVInstruction extends Instruction<"MOV"> {
 
     switch (mode) {
       case "reg<-reg": {
+        // DEBUG: Log temporal para diagnóstico
+        console.log(`[DEBUG MOV reg<-reg] src=${src}, dest=${out}, size=${size}`);
+        if (size === 8) {
+          const srcVal = computer.cpu.getRegister(src as ByteRegister);
+          const outVal = computer.cpu.getRegister(out as ByteRegister);
+          console.log(
+            `[DEBUG MOV reg<-reg] ANTES: ${src}=${srcVal.toString("hex")} (${srcVal.unsigned})`,
+          );
+          console.log(
+            `[DEBUG MOV reg<-reg] ANTES: ${out}=${outVal.toString("hex")} (${outVal.unsigned})`,
+          );
+        }
+
         // Emitir el evento de cambio de fase antes de la transferencia
         yield { type: "cpu:cycle.update", phase: "writeback" };
         // Simular transferencia por el bus de datos interno usando el MBR
         if (size === 8) {
           yield { type: "cpu:register.buscopy", src, dest: out, size: 8 };
+
+          // CRITICAL: Actualizar el registro en el backend del simulador
+          yield* computer.cpu.copyByteRegister(src as ByteRegister, out as ByteRegister);
+
+          // DEBUG: Log después de la copia
+          const outValAfter = computer.cpu.getRegister(out as ByteRegister);
+          console.log(
+            `[DEBUG MOV reg<-reg] DESPUÉS: ${out}=${outValAfter.toString("hex")} (${outValAfter.unsigned})`,
+          );
         } else {
           const [srcLow, srcHigh] = splitRegister(src);
           const [outLow, outHigh] = splitRegister(out);
@@ -127,10 +147,17 @@ export class MOVInstruction extends Instruction<"MOV"> {
           if (srcHigh && outHigh) {
             yield { type: "cpu:register.buscopy", src: srcHigh, dest: outHigh, size: 8 };
           }
+
+          // CRITICAL: Actualizar el registro en el backend del simulador
+          yield* computer.cpu.copyWordRegister(src as WordRegister, out as WordRegister);
         }
         return true;
       }
       case "reg<-mem": {
+        // Si es direccionamiento indirecto, copiar BL a ri justo antes de usarlo
+        if (this.operation.src.mode === "indirect") {
+          yield* computer.cpu.copyByteRegister("BL", "ri.l");
+        }
         yield* computer.cpu.setMAR("ri");
         if (!(yield* computer.cpu.useBus("mem-read"))) return false;
         // Emitir el evento de cambio de fase antes de copiar al registro destino
@@ -170,6 +197,27 @@ export class MOVInstruction extends Instruction<"MOV"> {
       case "mem<-reg": {
         //const [low, high] = splitRegister(src);
         const [low] = splitRegister(src);
+
+        // Si es direccionamiento indirecto, copiar BL a ri justo antes de usarlo
+        if (this.operation.out.mode === "indirect") {
+          yield* computer.cpu.copyByteRegister("BL", "ri.l");
+        }
+
+        // DEBUG: Log temporal para diagnóstico
+        console.log(`[DEBUG MOV mem<-reg] ANTES de setMAR`);
+        console.log(
+          `[DEBUG MOV mem<-reg] BL=${computer.cpu.getRegister("BL").toString("hex")} (${computer.cpu.getRegister("BL").unsigned})`,
+        );
+        console.log(
+          `[DEBUG MOV mem<-reg] ri=${computer.cpu.getRegister("ri").toString("hex")} (${computer.cpu.getRegister("ri").unsigned})`,
+        );
+        console.log(
+          `[DEBUG MOV mem<-reg] ri.l=${computer.cpu.getRegister("ri.l").toString("hex")} (${computer.cpu.getRegister("ri.l").unsigned})`,
+        );
+        console.log(
+          `[DEBUG MOV mem<-reg] ${low}=${computer.cpu.getRegister(low).toString("hex")} (${computer.cpu.getRegister(low).unsigned})`,
+        );
+
         // Write low byte
         yield* computer.cpu.setMAR("ri");
         // Emitir el evento de cambio de fase antes de copiar el registro al MBR

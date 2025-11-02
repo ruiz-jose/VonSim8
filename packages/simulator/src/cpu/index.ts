@@ -189,12 +189,12 @@ export class CPU extends Component {
 
       // Ensamblar la rutina INT 7 (escritura en pantalla)
       // Esta rutina escribe una cadena de caracteres en la pantalla
-      // usando memoria de video (0xE7) y opcionalmente el puerto PIO (33h)
+      // usando memoria de video (0xE5) y opcionalmente el puerto PIO (33h)
       const int7Code = `
         org 0D0h
         push DL
         push CL
-        mov DL, 0E7h
+        mov DL, 0E5h
         int7_loop:
         cmp AL, 0
         jz int7_end
@@ -564,6 +564,20 @@ export class CPU extends Component {
    */
   *setMAR(register: MARRegister): EventGenerator {
     const value = this.getRegister(register);
+
+    // DEBUG: Log temporal para diagnóstico
+    console.log(
+      `[DEBUG setMAR] register=${register}, value=${value.toString("hex")} (${value.unsigned})`,
+    );
+    if (register === "ri") {
+      console.log(
+        `[DEBUG setMAR] ri.l=${this.getRegister("ri.l").toString("hex")} (${this.getRegister("ri.l").unsigned})`,
+      );
+      console.log(
+        `[DEBUG setMAR] BL=${this.getRegister("BL").toString("hex")} (${this.getRegister("BL").unsigned})`,
+      );
+    }
+
     this.#MAR = value.withHigh(Byte.zero(8)); // Asigna el byte alto a cero
     yield { type: "cpu:mar.set", register };
   }

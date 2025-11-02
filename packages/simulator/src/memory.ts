@@ -116,7 +116,7 @@ export class Memory extends Component {
         0xd3, // D0h: push DL
         0xd2, // D1h: push CL
         0x1e,
-        0xe7, // D2h: mov DL, 0E7h
+        0xe5, // D2h: mov DL, 0E5h
         0xa2,
         0x00, // D4h: cmp AL, 0 (int7_loop)
         0xc1,
