@@ -92,9 +92,9 @@ export class Memory extends Component {
         0xd8,
         0x32, // C1h: in AL, 32h (wait_for_key) - leer estado (CA)
         0xa2,
-        0x00, // C3h: cmp AL, 0 - comparar con 0 (sin tecla)
-        0xc1,
-        0xc1, // C5h: jz wait_for_key (-5 bytes, salta a C1h)
+        0x01, // C3h: cmp AL, 1 - comparar con 1 (sin tecla)
+        0xc2,
+        0xc1, // C5h: jnz wait_for_key
         0xd8,
         0x30, // C7h: in AL, 30h - leer carácter (PA)
         0x24, // CAh: mov [BL], AL

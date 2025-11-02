@@ -65,16 +65,16 @@ export class JumpInstruction extends InstructionStatement {
     const bytes: number[] = [];
 
     const opcodes: { [key in JumpInstructionName]: number } = {
-      JC: 0b1100_0010,
-      JNC: 0b1100_0110,
+      JC: 0b1100_0011,
+      JNC: 0b1100_0100,
       JZ: 0b1100_0001,
-      JNZ: 0b1100_0101,
-      JS: 0b1100_0111,
+      JNZ: 0b1100_0010,
+      JS: 0b1100_0101,
       JNS: 0b1100_0110,
       JO: 0b1100_1000,
-      JNO: 0b1100_1000,
+      JNO: 0b1100_1001,
       JMP: 0b1100_0000,
-      CALL: 0b1100_1001,
+      CALL: 0b1100_1010,
     };
 
     bytes.push(opcodes[this.instruction]);

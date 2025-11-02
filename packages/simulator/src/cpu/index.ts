@@ -168,8 +168,8 @@ export class CPU extends Component {
         push AL
         wait_for_key:
         in AL, 32h
-        cmp AL, 0
-        jz wait_for_key
+        cmp AL, 1
+        jnz wait_for_key
         in AL, 30h
         mov [BL], AL
         pop AL
