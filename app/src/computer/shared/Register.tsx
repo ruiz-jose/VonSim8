@@ -9,6 +9,7 @@ import { useTranslate } from "@/lib/i18n";
 
 export function Register({
   name,
+  title,
   valueAtom,
   springs,
   emphasis = false,
@@ -49,131 +50,140 @@ export function Register({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <animated.button
-          title={
-            displayName !== "left" && displayName !== "right" && displayName !== "result"
-              ? `Registro ${displayName}`
-              : displayName
-          }
-          className={clsx(
-            "flex cursor-pointer items-center font-mono leading-none transition-opacity",
-            isGeneralPurpose || isIP || isSP || isMBR || isMAR || isIR || isTemporal
-              ? "size-10 justify-center rounded border-2 text-lg font-bold shadow-[0_2px_8px_0_rgba(60,180,120,0.10)] transition-all duration-200 hover:scale-110 hover:shadow-xl"
-              : isFlags
-                ? "min-h-[32px] min-w-[90px] gap-2 rounded border-2 border-yellow-400 bg-gradient-to-br from-yellow-900 via-yellow-800 to-stone-900 px-2.5 py-0.5 font-bold text-yellow-200 shadow-[0_2px_8px_0_rgba(250,204,21,0.10)]"
-                : "rounded-md border bg-stone-800 px-2 py-1",
-            // Colores específicos para cada tipo
-            isGeneralPurpose
-              ? "border-mantis-500 bg-stone-800 text-mantis-300"
-              : isIP
-                ? "border-red-500 bg-stone-800 text-red-300"
-                : isSP
-                  ? "border-yellow-400 bg-stone-800 text-yellow-300"
-                  : isMBR || isMAR || isIR
-                    ? "border-indigo-400 bg-stone-800 text-indigo-300"
-                    : isTemporal
-                      ? "border-cyan-400 bg-stone-800 text-cyan-300"
-                      : isFlags
-                        ? ""
-                        : emphasis
-                          ? "border-mantis-400 text-lg"
-                          : "border-stone-600 text-base",
-            className,
-          )}
-          style={
-            displayName === "left" || displayName === "right" || displayName === "result"
-              ? { backgroundColor: "transparent" }
-              : getSpring(springs)
-          }
-        >
-          {isGeneralPurpose || isSP || isMBR || isMAR || isIR || isTemporal ? (
-            // Formato tipo celda de memoria para registros generales, SP, MBR, MAR, IR, id y ri
-            <>
-              <span
-                className={clsx(
-                  isGeneralPurpose || isTemporal
-                    ? "mt-4"
-                    : isIR || isMAR || isMBR
-                      ? "mt-4"
-                      : "mt-2",
-                  "font-mono text-base font-bold",
-                )}
-              >
-                {low.toString("hex")}
-              </span>
-            </>
-          ) : isIP ? (
-            // IP: nombre y valor juntos
-            <>
-              <span className={clsx("mt-4 font-mono text-base font-bold text-red-300")}>
-                {low.toString("hex")}
-              </span>
-            </>
-          ) : displayName === "left" ? (
-            // Para el registro left, no mostrar el valor - será mostrado en el texto del bus
-            <span className="opacity-0" />
-          ) : displayName === "right" ? (
-            // Para el registro right, no mostrar el valor - será mostrado en el texto del bus
-            <span className="opacity-0" />
-          ) : displayName === "result" ? (
-            // Para el registro result, no mostrar el valor - será mostrado en el texto del bus
-            <span className="opacity-0" />
-          ) : (
-            // Formato original para otros registros
-            <>
-              <span
-                className={clsx(
-                  "mr-2 font-extrabold tracking-wide",
-                  isGeneralPurpose && "text-mantis-300 drop-shadow",
-                  isFlags && "text-yellow-200",
-                  isTemporal && "text-cyan-300",
-                  // Reducir tamaño para left y right
-                  (displayName === "left" || displayName === "right") && "text-xs",
-                )}
-              >
-                {displayName}
-              </span>
-              <span
-                className={clsx(
-                  "rounded px-1 py-0.5 font-light",
-                  isGeneralPurpose
-                    ? "border border-mantis-400 bg-stone-950 text-mantis-300"
-                    : isFlags
-                      ? "border border-yellow-400 bg-yellow-950 text-yellow-200"
-                      : isTemporal
-                        ? "border border-cyan-400 bg-cyan-950 text-cyan-200"
-                        : "border border-stone-600 bg-stone-900 text-white",
-                )}
-              >
-                {low.toString("hex")}
-              </span>
-            </>
-          )}
-          {isFlags && (
-            <span className="ml-2 flex gap-1">
-              <span
-                className={clsx(
-                  "rounded border px-1 text-xs font-bold",
-                  Number(low) & 0b10
-                    ? "border-yellow-300 bg-yellow-400 text-yellow-950"
-                    : "border-yellow-700 bg-stone-800 text-yellow-300",
-                )}
-              >
-                Z
-              </span>
-              <span
-                className={clsx(
-                  "rounded border px-1 text-xs font-bold",
-                  Number(low) & 0b01
-                    ? "border-yellow-300 bg-yellow-400 text-yellow-950"
-                    : "border-yellow-700 bg-stone-800 text-yellow-300",
-                )}
-              >
-                C
-              </span>
+        <div className="relative">
+          {title && (
+            <span className="absolute -left-1 -top-3 z-30 rounded bg-mantis-500 px-1.5 py-0.5 text-[10px] font-bold text-white shadow-md">
+              {title}
             </span>
           )}
-        </animated.button>
+          <animated.button
+            title={
+              displayName !== "left" && displayName !== "right" && displayName !== "result"
+                ? `Registro ${displayName}`
+                : displayName
+            }
+            className={clsx(
+              "flex cursor-pointer items-center font-mono leading-none transition-opacity",
+              isGeneralPurpose || isIP || isSP || isMBR || isMAR || isIR || isTemporal
+                ? "size-10 justify-center rounded border-2 text-lg font-bold shadow-[0_2px_8px_0_rgba(60,180,120,0.10)] transition-all duration-200 hover:scale-110 hover:shadow-xl"
+                : isFlags
+                  ? "min-h-[32px] min-w-[90px] gap-2 rounded border-2 border-yellow-400 bg-gradient-to-br from-yellow-900 via-yellow-800 to-stone-900 px-2.5 py-0.5 font-bold text-yellow-200 shadow-[0_2px_8px_0_rgba(250,204,21,0.10)]"
+                  : "rounded-md border bg-stone-800 px-2 py-1",
+              // Colores específicos para cada tipo
+              isGeneralPurpose
+                ? "border-mantis-500 bg-stone-800 text-mantis-300"
+                : isIP
+                  ? "border-red-500 bg-stone-800 text-red-300"
+                  : isSP
+                    ? "border-yellow-400 bg-stone-800 text-yellow-300"
+                    : isMBR || isMAR || isIR
+                      ? "border-indigo-400 bg-stone-800 text-indigo-300"
+                      : isTemporal
+                        ? "border-cyan-400 bg-stone-800 text-cyan-300"
+                        : isFlags
+                          ? ""
+                          : emphasis
+                            ? "border-mantis-400 text-lg"
+                            : "border-stone-600 text-base",
+              className,
+            )}
+            style={
+              displayName === "left" || displayName === "right" || displayName === "result"
+                ? { backgroundColor: "transparent" }
+                : getSpring(springs)
+            }
+          >
+            {isGeneralPurpose || isSP || isMBR || isMAR || isIR || isTemporal ? (
+              // Formato tipo celda de memoria para registros generales, SP, MBR, MAR, IR, id y ri
+              <>
+                <span
+                  className={clsx(
+                    isGeneralPurpose || isTemporal
+                      ? "mt-4"
+                      : isIR || isMAR || isMBR
+                        ? "mt-4"
+                        : "mt-2",
+                    "font-mono text-base font-bold",
+                  )}
+                >
+                  {low.toString("hex")}
+                </span>
+              </>
+            ) : isIP ? (
+              // IP: nombre y valor juntos
+              <>
+                <span className={clsx("mt-4 font-mono text-base font-bold text-red-300")}>
+                  {low.toString("hex")}
+                </span>
+              </>
+            ) : displayName === "left" ? (
+              // Para el registro left, no mostrar el valor - será mostrado en el texto del bus
+              <span className="opacity-0" />
+            ) : displayName === "right" ? (
+              // Para el registro right, no mostrar el valor - será mostrado en el texto del bus
+              <span className="opacity-0" />
+            ) : displayName === "result" ? (
+              // Para el registro result, no mostrar el valor - será mostrado en el texto del bus
+              <span className="opacity-0" />
+            ) : (
+              // Formato original para otros registros
+              <>
+                <span
+                  className={clsx(
+                    "mr-2 font-extrabold tracking-wide",
+                    isGeneralPurpose && "text-mantis-300 drop-shadow",
+                    isFlags && "text-yellow-200",
+                    isTemporal && "text-cyan-300",
+                    // Reducir tamaño para left y right
+                    (displayName === "left" || displayName === "right") && "text-xs",
+                    // Agregar margen superior cuando hay título para evitar solapamiento
+                    title && "mt-2",
+                  )}
+                >
+                  {displayName}
+                </span>
+                <span
+                  className={clsx(
+                    "rounded px-1 py-0.5 font-light",
+                    isGeneralPurpose
+                      ? "border border-mantis-400 bg-stone-950 text-mantis-300"
+                      : isFlags
+                        ? "border border-yellow-400 bg-yellow-950 text-yellow-200"
+                        : isTemporal
+                          ? "border border-cyan-400 bg-cyan-950 text-cyan-200"
+                          : "border border-stone-600 bg-stone-900 text-white",
+                  )}
+                >
+                  {low.toString("hex")}
+                </span>
+              </>
+            )}
+            {isFlags && (
+              <span className="ml-2 flex gap-1">
+                <span
+                  className={clsx(
+                    "rounded border px-1 text-xs font-bold",
+                    Number(low) & 0b10
+                      ? "border-yellow-300 bg-yellow-400 text-yellow-950"
+                      : "border-yellow-700 bg-stone-800 text-yellow-300",
+                  )}
+                >
+                  Z
+                </span>
+                <span
+                  className={clsx(
+                    "rounded border px-1 text-xs font-bold",
+                    Number(low) & 0b01
+                      ? "border-yellow-300 bg-yellow-400 text-yellow-950"
+                      : "border-yellow-700 bg-stone-800 text-yellow-300",
+                  )}
+                >
+                  C
+                </span>
+              </span>
+            )}
+          </animated.button>
+        </div>
       </PopoverTrigger>
 
       <PopoverContent className="w-60">

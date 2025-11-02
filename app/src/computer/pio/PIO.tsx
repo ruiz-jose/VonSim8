@@ -1,3 +1,5 @@
+import { IOAddress } from "@vonsim/common/address";
+
 import { Register } from "@/computer/shared/Register";
 import { useSimulation } from "@/computer/simulation";
 import { useTranslate } from "@/lib/i18n";
@@ -17,33 +19,13 @@ export function PIO() {
       </span>
       <hr className="border-stone-600" />
       <div className="flex w-full items-center justify-evenly py-4">
-        <Register
-          name="PA"
-          title={translate("generics.io-register", "PA", 0x30)}
-          valueAtom={PAAtom}
-          springs="pio.PA"
-        />
-        <Register
-          name="CA"
-          title={translate("generics.io-register", "CA", 0x32)}
-          valueAtom={CAAtom}
-          springs="pio.CA"
-        />
+        <Register name="PA" title={IOAddress.format(0x30)} valueAtom={PAAtom} springs="pio.PA" />
+        <Register name="CA" title={IOAddress.format(0x32)} valueAtom={CAAtom} springs="pio.CA" />
       </div>
       <hr className="border-stone-600" />
       <div className="flex w-full items-center justify-evenly py-4">
-        <Register
-          name="PB"
-          title={translate("generics.io-register", "PB", 0x31)}
-          valueAtom={PBAtom}
-          springs="pio.PB"
-        />
-        <Register
-          name="CB"
-          title={translate("generics.io-register", "CB", 0x33)}
-          valueAtom={CBAtom}
-          springs="pio.CB"
-        />
+        <Register name="PB" title={IOAddress.format(0x31)} valueAtom={PBAtom} springs="pio.PB" />
+        <Register name="CB" title={IOAddress.format(0x33)} valueAtom={CBAtom} springs="pio.CB" />
       </div>
     </div>
   );
