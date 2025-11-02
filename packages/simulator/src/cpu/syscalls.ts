@@ -55,6 +55,10 @@ export function* handleSyscall(
 
     case 7: {
       // INT 7 - Write string to the screen, starting from [BX] and of length AL
+      // IMPORTANTE: Esta función se ejecuta cuando IP apunta a una dirección de syscall (0xD0)
+      // pero no debería ejecutarse si la instrucción INT 7 se llamó normalmente,
+      // ya que en ese caso la rutina en ensamblador se ejecuta automáticamente.
+      // Este caso solo maneja la situación donde no hay instrucciones en la dirección del syscall.
       yield { type: "cpu:int.7" };
 
       if (!("screen" in computer.io)) {
@@ -62,59 +66,10 @@ export function* handleSyscall(
         return false;
       }
 
-      // Guardar DL en el stack
-      if (!(yield* computer.cpu.pushToStack("DL"))) return false; // Stack overflow
-
-      let video = 0xe7; // Dirección base de video
-      
-      while (!computer.cpu.getRegister("AL").isZero()) {
-        // Leer carácter desde [BX]
-        yield* computer.cpu.copyByteRegister("BL", "ri.l");
-        yield* computer.cpu.setMAR("ri");
-        if (!(yield* computer.cpu.useBus("mem-read"))) return false;
-        yield* computer.cpu.getMBR("DL");
-
-        // Escribir en memoria de video en la dirección 'video'
-        yield* computer.cpu.updateByteRegister("ri.l", Byte.fromUnsigned(video, 8));
-        yield* computer.cpu.setMAR("ri");
-        yield* computer.cpu.setMBR("DL");
-        if (!(yield* computer.cpu.useBus("mem-write"))) return false;
-
-        // Enviar carácter a la pantalla
-        const char = computer.cpu.getRegister("DL");
-        yield* computer.io.screen.sendChar(char);
-
-        video++;
-
-        // INC BL
-        yield* computer.cpu.copyByteRegister("BL", "left.l");
-        yield* computer.cpu.updateWordRegister("right", Byte.fromUnsigned(1, 16));
-        const BX = computer.cpu.getRegister("BX").add(1);
-        yield* computer.cpu.aluExecute("ADD", BX, {
-          CF: false,
-          OF: BX.signed < 0,
-          SF: BX.signed < 0,
-          ZF: false,
-        });
-        yield* computer.cpu.copyByteRegister("result.l", "BL");
-
-        // DEC AL
-        yield* computer.cpu.copyByteRegister("AL", "left.l");
-        yield* computer.cpu.updateByteRegister("right.l", Byte.fromUnsigned(1, 8));
-        const AL = computer.cpu.getRegister("AL").add(-1);
-        yield* computer.cpu.aluExecute("SUB", AL, {
-          CF: false,
-          OF: AL.signed === Byte.maxSignedValue(8),
-          SF: AL.signed < 0,
-          ZF: AL.isZero(),
-        });
-        yield* computer.cpu.copyByteRegister("result.l", "AL");
-      }
-
-      // Restaurar DL del stack
-      if (!(yield* computer.cpu.popFromStack("DL"))) return false; // Stack underflow
-
-      return false; // No ejecutar rutina en ensamblador
+      // La rutina de interrupción debe ejecutarse desde D0h
+      // Como las instrucciones ya están inyectadas en el CPU,
+      // simplemente continuamos y dejaremos que se ejecuten normalmente
+      return true;
     }
 
     // It's not a special interrupt, so we

@@ -41,6 +41,8 @@ export class CPU extends Component {
   #registers: RegistersMap;
   #MAR: Byte<16>;
   #MBR: Byte<8>;
+  #isExecutingINT7 = false;
+  #isStackOperation = false;
 
   constructor(options: ComponentInit) {
     super(options);
@@ -186,6 +188,8 @@ export class CPU extends Component {
       }
 
       // Ensamblar la rutina INT 7 (escritura en pantalla)
+      // Esta rutina escribe una cadena de caracteres en la pantalla
+      // usando memoria de video (0xE7) y opcionalmente el puerto PIO (33h)
       const int7Code = `
         org 0D0h
         push DL
@@ -198,7 +202,6 @@ export class CPU extends Component {
         push BL
         mov BL, DL
         mov [BL], CL
-        out 33h, CL
         pop BL
         inc BL
         inc DL
@@ -241,6 +244,10 @@ export class CPU extends Component {
       const IP = this.#registers.IP;
       const instruction = this.#instructions.get(IP.unsigned);
       const syscallNumber = getSyscallNumber(IP);
+
+      // Detectar si estamos ejecutando la rutina INT 7 (rango 0xD0-0xE4)
+      const isInINT7Range = IP.unsigned >= 0xd0 && IP.unsigned <= 0xe4;
+      this.#isExecutingINT7 = isInINT7Range;
 
       // Si hay una instrucción en esta dirección, ejecutarla
       // incluso si es una dirección de syscall (para permitir
@@ -691,6 +698,9 @@ export class CPU extends Component {
       return false;
     }
 
+    // Marcar que estamos haciendo una operación de stack
+    this.#isStackOperation = true;
+
     if (isPushInstruction) {
       // Para la instrucción PUSH: MAR -> MBR -> write -> SP--
       yield* this.setMBR(sourceRegister);
@@ -706,6 +716,9 @@ export class CPU extends Component {
       yield* this.setMAR("SP");
       if (!(yield* this.useBus("mem-write"))) return false; // Error writing to memory
     }
+
+    // Desmarcar la operación de stack
+    this.#isStackOperation = false;
 
     if (!MemoryAddress.inRange(SP.unsigned - 1)) {
       yield { type: "cpu:error", error: new SimulatorError("stack-overflow") };
@@ -747,6 +760,27 @@ export class CPU extends Component {
     yield* this.updateWordRegister("SP", SP);
 
     return true;
+  }
+
+  /**
+   * Sets the flag indicating we're executing INT 7 routine
+   */
+  setExecutingINT7(value: boolean): void {
+    this.#isExecutingINT7 = value;
+  }
+
+  /**
+   * Gets the flag indicating if we're executing INT 7 routine
+   */
+  isExecutingINT7(): boolean {
+    return this.#isExecutingINT7;
+  }
+
+  /**
+   * Gets the flag indicating if we're in a stack operation (PUSH/POP)
+   */
+  isStackOperation(): boolean {
+    return this.#isStackOperation;
   }
 }
 

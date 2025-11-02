@@ -8,7 +8,12 @@ import { ComputerState, EventGenerator, Simulator, SimulatorError } from "@vonsi
 import { atom, useAtomValue } from "jotai";
 import { useMemo } from "react";
 
-import { hasINT6InstructionAtom, hasINTInstructionAtom, mayUsePICAtom } from "@/computer/cpu/state";
+import {
+  hasINT6InstructionAtom,
+  hasINT7InstructionAtom,
+  hasINTInstructionAtom,
+  mayUsePICAtom,
+} from "@/computer/cpu/state";
 import { dataAddressesAtom, programAddressesAtom } from "@/computer/memory/state";
 import { highlightCurrentInstruction, highlightLine, setReadOnly } from "@/editor/methods";
 import { programModifiedAtom } from "@/editor/state"; // Importar programModifiedAtom
@@ -3868,6 +3873,19 @@ async function dispatch(...args: Action) {
           return false;
         });
 
+        // Verificar si el programa usa INT 7 específicamente (para colorear la rutina de interrupción)
+        const hasINT7 = result.instructions.some(instruction => {
+          if (instruction.instruction === "INT") {
+            return instruction.operands.some((operand: any) => {
+              if (operand.type === "number-expression" && typeof operand.value.value === "number") {
+                return operand.value.value === 7;
+              }
+              return false;
+            });
+          }
+          return false;
+        });
+
         // Verificar si el programa usa PIO (direcciones 30h-33h: PA, PB, CA, CB)
         const usesPIO = result.instructions.some(instruction => {
           if (instruction.instruction === "IN" || instruction.instruction === "OUT") {
@@ -4084,6 +4102,7 @@ async function dispatch(...args: Action) {
         const hasINTOrInterruptDevices = hasINT || shouldActivatePIC;
         store.set(hasINTInstructionAtom, hasINTOrInterruptDevices);
         store.set(hasINT6InstructionAtom, hasINT6);
+        store.set(hasINT7InstructionAtom, hasINT7);
         store.set(mayUsePICAtom, result.mayUsePIC ?? false);
 
         console.log("🔍 DEBUG Vector de Interrupciones:", {

@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover";
 import {
   hasINT6InstructionAtom,
+  hasINT7InstructionAtom,
   hasINTInstructionAtom,
   mayUsePICAtom,
   registerAtoms,
@@ -29,6 +30,7 @@ export function Memory() {
   const showSP = useAtomValue(showSPAtom);
   const hasINT = useAtomValue(hasINTInstructionAtom);
   const hasINT6 = useAtomValue(hasINT6InstructionAtom);
+  const hasINT7 = useAtomValue(hasINT7InstructionAtom);
   const mayUsePIC = useAtomValue(mayUsePICAtom);
   const writtenAddresses = useAtomValue(writtenAddressesAtom);
 
@@ -132,7 +134,10 @@ export function Memory() {
                           cell.address.valueOf() <= 7) ||
                         (hasINT6 &&
                           cell.address.valueOf() >= 0xc0 &&
-                          cell.address.valueOf() <= 0xcb)
+                          cell.address.valueOf() <= 0xcb) ||
+                        (hasINT7 &&
+                          cell.address.valueOf() >= 0xd0 &&
+                          cell.address.valueOf() <= 0xe4)
                       }
                       isWritten={writtenAddresses.has(cell.address.valueOf())}
                       label={

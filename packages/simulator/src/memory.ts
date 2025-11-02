@@ -120,13 +120,11 @@ export class Memory extends Component {
         0xa2,
         0x00, // D4h: cmp AL, 0 (int7_loop)
         0xc1,
-        0xe8, // D6h: jz int7_end
+        0xe2, // D6h: jz int7_end
         0x19, // D8h: mov CL, [BL]
         0xd1, // D9h: push BL
         0x07, // DAh: mov BL, DL
         0x26, // DBh: mov [BL], CL
-        0xda, // DCh: out 33h, CL
-        0x33,
         0xd5, // DEh: pop BL
         0x45, // DFh: inc BL
         0x47, // E0h: inc DL
@@ -228,14 +226,17 @@ export class Memory extends Component {
       return false;
     }*/
 
-    // Interceptar escritura en 0xE5 para mostrar el carácter en pantalla
-    if (address === 0xe5) {
+    // Interceptar escritura en direcciones de pantalla para mostrar el carácter automáticamente
+    // Condiciones:
+    // 1. Si estamos ejecutando INT 7 (CPU flag activo)
+    // 2. Y NO es una operación de stack (PUSH/POP detectada explícitamente)
+    // 3. Entonces mostrar el carácter en pantalla
+    const isExecutingINT7 = this.computer.cpu.isExecutingINT7();
+    const isStackOperation = this.computer.cpu.isStackOperation();
+
+    if (isExecutingINT7 && !isStackOperation && "screen" in this.computer.io) {
       yield { type: "memory:write.screen", address: MemoryAddress.from(address), value };
-      
-      // Si la pantalla está disponible, enviar el carácter directamente
-      if ("screen" in this.computer.io) {
-        yield* this.computer.io.screen.sendChar(value);
-      }
+      yield* this.computer.io.screen.sendChar(value);
     }
 
     this.#buffer.set([value.unsigned], address);

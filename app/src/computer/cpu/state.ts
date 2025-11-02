@@ -42,6 +42,7 @@ export const showInstructionCycleAtom = atom(true); // Por defecto, visible
 export const showCPUStatsAtom = atom(true); // Por defecto, visible
 export const hasINTInstructionAtom = atom(false); // Nueva bandera que indica si el programa tiene instrucciones INT
 export const hasINT6InstructionAtom = atom(false); // Nueva bandera que indica si el programa usa INT 6 específicamente
+export const hasINT7InstructionAtom = atom(false); // Nueva bandera que indica si el programa usa INT 7 específicamente
 export const mayUsePICAtom = atom(false); // Nueva bandera que indica si el programa puede usar el PIC
 // Átomo para controlar la sincronización de animaciones con mensajes
 export const animationSyncAtom = atom<{ canAnimate: boolean; pendingMessage: string | null }>({
