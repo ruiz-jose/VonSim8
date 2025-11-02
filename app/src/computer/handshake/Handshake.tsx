@@ -1,3 +1,5 @@
+import { IOAddress } from "@vonsim/common/address";
+
 import { Register } from "@/computer/shared/Register";
 import { useSimulation } from "@/computer/simulation";
 import { useTranslate } from "@/lib/i18n";
@@ -16,23 +18,25 @@ export function Handshake() {
         {translate("computer.handshake.name")}
       </span>
 
-      <Register
-        name={translate("computer.handshake.state")}
-        title={translate("generics.io-register", "STATE", 0x41)}
-        valueAtom={STATEAtom}
-        springs="handshake.STATE"
-        className="mx-auto my-4"
-      />
+      <div className="my-4 ml-auto mr-8 w-fit">
+        <Register
+          name="STATE"
+          title={IOAddress.format(0x41)}
+          valueAtom={STATEAtom}
+          springs="handshake.STATE"
+        />
+      </div>
 
       <hr className="border-stone-600" />
 
-      <Register
-        name={translate("computer.handshake.data")}
-        title={translate("generics.io-register", "DATA", 0x40)}
-        valueAtom={DATAAtom}
-        springs="handshake.DATA"
-        className="mx-auto my-4"
-      />
+      <div className="my-4 ml-auto mr-8 w-fit">
+        <Register
+          name="DATA"
+          title={IOAddress.format(0x40)}
+          valueAtom={DATAAtom}
+          springs="handshake.DATA"
+        />
+      </div>
     </div>
   );
 }

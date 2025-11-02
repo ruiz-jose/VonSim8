@@ -1,3 +1,5 @@
+import { IOAddress } from "@vonsim/common/address";
+
 import { Register } from "@/computer/shared/Register";
 import { useSimulation } from "@/computer/simulation";
 import { useTranslate } from "@/lib/i18n";
@@ -19,13 +21,13 @@ export function Timer() {
       <div className="flex size-full flex-col items-center justify-evenly">
         <Register
           name="CONT"
-          title={translate("generics.io-register", "CONT", 0x10)}
+          title={IOAddress.format(0x10)}
           valueAtom={CONTAtom}
           springs="timer.CONT"
         />
         <Register
           name="COMP"
-          title={translate("generics.io-register", "COMP", 0x11)}
+          title={IOAddress.format(0x11)}
           valueAtom={COMPAtom}
           springs="timer.COMP"
         />

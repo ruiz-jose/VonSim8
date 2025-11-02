@@ -1,3 +1,5 @@
+import { IOAddress } from "@vonsim/common/address";
+
 import { Register } from "@/computer/shared/Register";
 import { useSimulation } from "@/computer/simulation";
 import { useTranslate } from "@/lib/i18n";
@@ -20,21 +22,21 @@ export function PIC() {
         <div className="flex h-16 grow items-center justify-evenly">
           <Register
             name="IMR"
-            title={translate("generics.io-register", "IMR", 0x21)}
+            title={IOAddress.format(0x21)}
             valueAtom={IMRAtom}
             springs="pic.IMR"
             emphasis
           />
           <Register
             name="IRR"
-            title={translate("generics.io-register", "IRR", 0x22)}
+            title={IOAddress.format(0x22)}
             valueAtom={IRRAtom}
             springs="pic.IRR"
             emphasis
           />
           <Register
             name="ISR"
-            title={translate("generics.io-register", "ISR", 0x23)}
+            title={IOAddress.format(0x23)}
             valueAtom={ISRAtom}
             springs="pic.ISR"
             emphasis
@@ -46,14 +48,14 @@ export function PIC() {
 
       <div className="grid size-full grid-cols-4 items-center">
         {linesAtoms.slice(0, 4).map((atom, i) => (
-          <Register
-            key={i}
-            name={`INT${i}`}
-            title={translate("generics.io-register", `INT${i}`, 0x24 + i)}
-            valueAtom={atom}
-            springs={`pic.INT${i}` as "pic.INT0"}
-            className="mx-auto"
-          />
+          <div key={i} className="mx-auto w-fit">
+            <Register
+              name={`INT${i}`}
+              title={IOAddress.format(0x24 + i)}
+              valueAtom={atom}
+              springs={`pic.INT${i}` as "pic.INT0"}
+            />
+          </div>
         ))}
       </div>
     </div>
