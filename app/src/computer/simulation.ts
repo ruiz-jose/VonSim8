@@ -9,6 +9,7 @@ import { atom, useAtomValue } from "jotai";
 import { useMemo } from "react";
 
 import {
+  hasINT0InstructionAtom,
   hasINT6InstructionAtom,
   hasINT7InstructionAtom,
   hasINTInstructionAtom,
@@ -3860,6 +3861,19 @@ async function dispatch(...args: Action) {
           return false;
         });
 
+        // Verificar si el programa usa INT 0 específicamente (para colorear la rutina de interrupción)
+        const hasINT0 = result.instructions.some(instruction => {
+          if (instruction.instruction === "INT") {
+            return instruction.operands.some((operand: any) => {
+              if (operand.type === "number-expression" && typeof operand.value.value === "number") {
+                return operand.value.value === 0;
+              }
+              return false;
+            });
+          }
+          return false;
+        });
+
         // Verificar si el programa usa INT 6 específicamente (para colorear la rutina de interrupción)
         const hasINT6 = result.instructions.some(instruction => {
           if (instruction.instruction === "INT") {
@@ -4101,6 +4115,7 @@ async function dispatch(...args: Action) {
         // Se muestra SOLO si hay INT o si se usa PIC (no otros dispositivos como Handshake, Timer)
         const hasINTOrInterruptDevices = hasINT || shouldActivatePIC;
         store.set(hasINTInstructionAtom, hasINTOrInterruptDevices);
+        store.set(hasINT0InstructionAtom, hasINT0);
         store.set(hasINT6InstructionAtom, hasINT6);
         store.set(hasINT7InstructionAtom, hasINT7);
         store.set(mayUsePICAtom, result.mayUsePIC ?? false);

@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover";
 import {
+  hasINT0InstructionAtom,
   hasINT6InstructionAtom,
   hasINT7InstructionAtom,
   hasINTInstructionAtom,
@@ -29,6 +30,7 @@ export function Memory() {
   const sp = useAtomValue(registerAtoms.SP);
   const showSP = useAtomValue(showSPAtom);
   const hasINT = useAtomValue(hasINTInstructionAtom);
+  const hasINT0 = useAtomValue(hasINT0InstructionAtom);
   const hasINT6 = useAtomValue(hasINT6InstructionAtom);
   const hasINT7 = useAtomValue(hasINT7InstructionAtom);
   const mayUsePIC = useAtomValue(mayUsePICAtom);
@@ -132,6 +134,7 @@ export function Memory() {
                         (showInterruptVector &&
                           cell.address.valueOf() >= 0 &&
                           cell.address.valueOf() <= 7) ||
+                        (hasINT0 && cell.address.valueOf() === 0xb0) ||
                         (hasINT6 &&
                           cell.address.valueOf() >= 0xc0 &&
                           cell.address.valueOf() <= 0xcb) ||

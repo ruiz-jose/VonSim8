@@ -87,6 +87,18 @@ export class Memory extends Component {
 
     // Si el programa contiene instrucciones INT, cargar las rutinas del sistema
     if (hasINTInstruction) {
+      // Cargar la rutina INT 0 en memoria (detener programa)
+      // Esta rutina simplemente ejecuta HLT para detener el programa
+      const int0Bytecodes = [
+        0xf1, // B0h: HLT
+      ];
+
+      const int0Address = 0xb0;
+      for (let i = 0; i < int0Bytecodes.length; i++) {
+        this.#buffer[int0Address + i] = int0Bytecodes[i];
+        this.#codeMemory.add(int0Address + i);
+      }
+
       // Cargar la rutina INT 6 en memoria (lectura de teclado)
       const int6Bytecodes = [
         0xd0, // C0h: push AL
