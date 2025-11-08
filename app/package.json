@@ -76,7 +76,7 @@
     "@types/wicg-file-system-access": "^2023.10.5",
     "@vitejs/plugin-react-swc": "^3.7.2",
     "@vitest/coverage-v8": "^1.6.1",
-    "@vitest/ui": "^1.6.1",
+    "@vitest/ui": "^4.0.8",
     "@vonsim/tsconfig": "workspace:^",
     "autoprefixer": "^10.4.20",
     "bundlewatch": "^0.3.2",
