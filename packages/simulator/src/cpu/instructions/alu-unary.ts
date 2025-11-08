@@ -124,13 +124,11 @@ export class ALUUnaryInstruction extends Instruction<"NOT" | "NEG" | "INC" | "DE
         const unsigned = left.unsigned + 1;
 
         if (unsigned > Byte.maxValue(this.operation.size)) {
-          flags.CF = true;
           result = Byte.fromUnsigned(
             unsigned - Byte.maxValue(this.operation.size) - 1,
             this.operation.size,
           ) as AnyByte;
         } else {
-          flags.CF = false;
           result = Byte.fromUnsigned(unsigned, this.operation.size) as AnyByte;
         }
 
@@ -147,13 +145,11 @@ export class ALUUnaryInstruction extends Instruction<"NOT" | "NEG" | "INC" | "DE
         const unsigned = left.unsigned - 1;
 
         if (unsigned < 0) {
-          flags.CF = true;
           result = Byte.fromUnsigned(
             unsigned + Byte.maxValue(this.operation.size) + 1,
             this.operation.size,
           ) as AnyByte;
         } else {
-          flags.CF = false;
           result = Byte.fromUnsigned(unsigned, this.operation.size) as AnyByte;
         }
 

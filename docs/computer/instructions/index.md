@@ -16,23 +16,23 @@ Aquí se listan todas las instrucciones que soporta el simulador. Cada instrucci
 
 ### Instrucciones aritméticas
 
-| Instrucción                 | Comentario                     | `Z` | `C` | `S` | `O` | `I` |
-| :-------------------------- | :----------------------------- | :-: | :-: | :-: | :-: | :-: |
-| [`ADD dest, fuente`](./add) | Suma _fuente_ a _dest_         |  X  |  X  |  X  |  X  |  -  |
-| [`SUB dest, fuente`](./sub) | Resta _fuente_ a _dest_        |  X  |  X  |  X  |  X  |  -  |
-| [`CMP dest, fuente`](./cmp) | Compara _fuente_ con _dest_    |  X  |  X  |  X  |  X  |  -  |
-| [`NEG dest`](./neg)         | Negativo de _dest_             |  X  |  X  |  X  |  X  |  -  |
-| [`INC dest`](./inc)         | Incrementa _dest_              |  X  |  X  |  X  |  X  |  -  |
-| [`DEC dest`](./dec)         | Decrementa _dest_              |  X  |  X  |  X  |  X  |  -  |
+| Instrucción                 | Comentario                  | `Z` | `C` | `S` | `O` | `I` |
+| :-------------------------- | :-------------------------- | :-: | :-: | :-: | :-: | :-: |
+| [`ADD dest, fuente`](./add) | Suma _fuente_ a _dest_      |  X  |  X  |  X  |  X  |  -  |
+| [`SUB dest, fuente`](./sub) | Resta _fuente_ a _dest_     |  X  |  X  |  X  |  X  |  -  |
+| [`CMP dest, fuente`](./cmp) | Compara _fuente_ con _dest_ |  X  |  X  |  X  |  X  |  -  |
+| [`NEG dest`](./neg)         | Negativo de _dest_          |  X  |  X  |  X  |  X  |  -  |
+| [`INC dest`](./inc)         | Incrementa _dest_           |  X  |  -  |  X  |  X  |  -  |
+| [`DEC dest`](./dec)         | Decrementa _dest_           |  X  |  -  |  X  |  X  |  -  |
 
 ### Instrucciones lógicas
 
-| Instrucción                   | Comentario                                          | `Z` | `C` | `S` | `O` | `I` |
-| :---------------------------- | :-------------------------------------------------- | :-: | :-: | :-: | :-: | :-: |
-| [`AND dest, fuente`](./and)   | Operación _dest_ AND _fuente_ bit a bit             |  X  |  0  |  X  |  0  |  -  |
-| [`OR dest, fuente`](./or)     | Operación _dest_ OR _fuente_ bit a bit              |  X  |  0  |  X  |  0  |  -  |
-| [`XOR dest, fuente`](./xor)   | Operación _dest_ XOR _fuente_ bit a bit             |  X  |  0  |  X  |  0  |  -  |
-| [`NOT dest`](./not)           | Operación NOT _dest_ bit a bit                      |  X  |  0  |  X  |  0  |  -  |
+| Instrucción                 | Comentario                              | `Z` | `C` | `S` | `O` | `I` |
+| :-------------------------- | :-------------------------------------- | :-: | :-: | :-: | :-: | :-: |
+| [`AND dest, fuente`](./and) | Operación _dest_ AND _fuente_ bit a bit |  X  |  0  |  X  |  0  |  -  |
+| [`OR dest, fuente`](./or)   | Operación _dest_ OR _fuente_ bit a bit  |  X  |  0  |  X  |  0  |  -  |
+| [`XOR dest, fuente`](./xor) | Operación _dest_ XOR _fuente_ bit a bit |  X  |  0  |  X  |  0  |  -  |
+| [`NOT dest`](./not)         | Operación NOT _dest_ bit a bit          |  X  |  0  |  X  |  0  |  -  |
 
 ### Instrucciones de transferencia de control
 
@@ -48,14 +48,14 @@ Aquí se listan todas las instrucciones que soporta el simulador. Cada instrucci
 | [`JO etiqueta`](./jo)     | Salta a _etiqueta_ si `O=1`                 |  -  |  -  |  -  |  -  |  -  |
 | [`JNO etiqueta`](./jno)   | Salta a _etiqueta_ si `O=0`                 |  -  |  -  |  -  |  -  |  -  |
 | [`CALL etiqueta`](./call) | Llama a subrutina cuyo inicio es _etiqueta_ |  -  |  -  |  -  |  -  |  -  |
-| [`INT N`](./int) | Ejecuta la interrupción por software _N_ |  -  |  -  |  -  |  -  |  0  |
+| [`INT N`](./int)          | Ejecuta la interrupción por software _N_    |  -  |  -  |  -  |  -  |  0  |
 
 ### Instrucciones de control
 
-| Instrucción    | Comentario           |  `Z` |  `C` |  `S` | `O` | `I` |
-| :------------- | :------------------- | :-: | :-: | :-: | :-: | :-: |
-| [`HLT`](./hlt) | Detiene la ejecución |  -  |  -  |  -  |  -  |  -  |
-| [`RET`](./ret) | Retorna de la subrutina                     |  -  |  -  |  -  |  -  |  -  |
-| [`IRET`](./iret) | Retorna de la rutina de interrupción     |  X  |  X  |  X  |  X  |  X  |
-| [`CLI`](./cli)   | Inhabilita interrupciones enmascarables  |  -  |  -  |  -  |  -  |  0  |
-| [`STI`](./sti)   | Habilita interrupciones enmascarables    |  -  |  -  |  -  |  -  |  1  |
+| Instrucción      | Comentario                              | `Z` | `C` | `S` | `O` | `I` |
+| :--------------- | :-------------------------------------- | :-: | :-: | :-: | :-: | :-: |
+| [`HLT`](./hlt)   | Detiene la ejecución                    |  -  |  -  |  -  |  -  |  -  |
+| [`RET`](./ret)   | Retorna de la subrutina                 |  -  |  -  |  -  |  -  |  -  |
+| [`IRET`](./iret) | Retorna de la rutina de interrupción    |  X  |  X  |  X  |  X  |  X  |
+| [`CLI`](./cli)   | Inhabilita interrupciones enmascarables |  -  |  -  |  -  |  -  |  0  |
+| [`STI`](./sti)   | Habilita interrupciones enmascarables   |  -  |  -  |  -  |  -  |  1  |
