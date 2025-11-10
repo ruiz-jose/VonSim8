@@ -50,7 +50,7 @@
     "@vonsim/simulator": "workspace:*",
     "clsx": "^2.1.1",
     "dedent": "^1.5.3",
-    "graphology": "^0.25.4",
+    "graphology": "^0.26.0",
     "graphology-shortest-path": "^2.1.0",
     "jotai": "^2.10.3",
     "posthog-js": "^1.190.2",
