@@ -1,7 +1,7 @@
 ; ===============================================================================
 ; PROGRAMA: Impresión de string usando Handshake con interrupciones
 ; DESCRIPCIÓN: Imprime el string "hola" en la impresora utilizando el módulo
-;              Handshake con interrupciones por hardware (INT2)
+;              Handshake con interrupciones por hardware (IRQ2)
 ; ===============================================================================
 
 ; --- SECCIÓN DE DATOS ---
@@ -17,7 +17,7 @@ HS_STATUS   EQU 41h        ; Registro de estado del Handshake (puerto E/S)
 ID          EQU 2          ; ID de la interrupción para Handshake (0-7)
 IMR         EQU 21h        ; Registro de máscara de interrupciones del PIC
 EOI         EQU 20h        ; Puerto para enviar End Of Interrupt al PIC
-INT2        EQU 26h        ; Puerto para configurar la línea INT2
+IRQ2        EQU 26h        ; Puerto para configurar la línea IRQ2
 ; ===============================================================================
 ; PROGRAMA PRINCIPAL
 ; ===============================================================================
@@ -34,13 +34,13 @@ out HS_STATUS, al         ; Escribir configuración al Handshake
 
 ; --- 3) CONFIGURACIÓN DEL PIC (Controlador de Interrupciones) ---
 
-; 3.1) Configurar máscara de interrupciones - Solo habilitar INT2
-mov al, 11111011b         ; Máscara: habilita solo INT2 (bit 2=0), resto deshabilitado
+; 3.1) Configurar máscara de interrupciones - Solo habilitar IRQ2
+mov al, 11111011b         ; Máscara: habilita solo IRQ2 (bit 2=0), resto deshabilitado
 out IMR, al               ; Aplicar máscara al PIC
 
-; 3.2) Asignar ID de interrupción a la línea INT2
+; 3.2) Asignar ID de interrupción a la línea IRQ2
 mov al, ID                ; Cargar ID de interrupción (2)
-out INT2, al              ; Configurar línea INT2 con este ID
+out IRQ2, al              ; Configurar línea IRQ2 con este ID
 
 ; 3.3) Configurar vector de interrupción en memoria
 mov bl, ID                ; BL = posición en tabla de vectores (ID=2)
@@ -82,7 +82,7 @@ fin:
 hlt                       ; Detener ejecución del programa
 
 ; ===============================================================================
-; RUTINA DE INTERRUPCIÓN INT2 - HANDSHAKE
+; RUTINA DE INTERRUPCIÓN IRQ2 - HANDSHAKE
 ; ===============================================================================
 ; DESCRIPCIÓN: Se ejecuta automáticamente cuando la impresora está lista
 ;              para recibir un nuevo carácter (busy = 0)

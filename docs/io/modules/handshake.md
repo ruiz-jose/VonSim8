@@ -18,7 +18,7 @@ En el registro de datos se almacenará carácter a imprimir, expresado en ASCII.
 
 En el registro de estado, los dos bits menos significativos son el _strobe_ y _busy_ ([leer más sobre los mismos](../devices/printer)), análogamente a como se usan en una impresora conectada con un PIO. La diferencia es que el bit de _busy_ no puede ser modificado por la CPU y el bit de _strobe_ siempre es `0`. Si la CPU trata de escribir un `1` en el bit de _strobe_, este causará un flanco ascendente en el _strobe_, enviando lo almacenado en el registro de datos, y el handshake lo volverá a `0` automáticamente.
 
-Además, el bit más significativo del registro de estado habilita/inhabilita las interrupciones. Si este bit es `1`, mientras la impresora no esté ocupada (`B=0`), el Handshake disparará una interrupción por hardware. Está conectado al puerto `INT2` del [PIC](./pic).
+Además, el bit más significativo del registro de estado habilita/inhabilita las interrupciones. Si este bit es `1`, mientras la impresora no esté ocupada (`B=0`), el Handshake disparará una interrupción por hardware. Está conectado al puerto `IRQ2` del [PIC](./pic).
 
 
 ```vonsim
@@ -64,7 +64,7 @@ Imprimir un string en la impresora a través del handshake en modo interrupcione
 ; ===============================================================================
 ; PROGRAMA: Impresión de string usando Handshake con interrupciones
 ; DESCRIPCIÓN: Imprime el string "hola" en la impresora utilizando el módulo
-;              Handshake con interrupciones por hardware (INT2)
+;              Handshake con interrupciones por hardware (IRQ2)
 ; ===============================================================================
 
 ; --- SECCIÓN DE DATOS ---
@@ -80,7 +80,7 @@ HS_STATUS   EQU 41h        ; Registro de estado del Handshake (puerto E/S)
 ID          EQU 2          ; ID de la interrupción para Handshake (0-7)
 IMR         EQU 21h        ; Registro de máscara de interrupciones del PIC
 EOI         EQU 20h        ; Puerto para enviar End Of Interrupt al PIC
-INT2        EQU 26h        ; Puerto para configurar la línea INT2
+IRQ2        EQU 26h        ; Puerto para configurar la línea IRQ2
 ; ===============================================================================
 ; PROGRAMA PRINCIPAL
 ; ===============================================================================
@@ -97,13 +97,13 @@ out HS_STATUS, al         ; Escribir configuración al Handshake
 
 ; --- 3) CONFIGURACIÓN DEL PIC (Controlador de Interrupciones) ---
 
-; 3.1) Configurar máscara de interrupciones - Solo habilitar INT2
-mov al, 11111011b         ; Máscara: habilita solo INT2 (bit 2=0), resto deshabilitado
+; 3.1) Configurar máscara de interrupciones - Solo habilitar IRQ2
+mov al, 11111011b         ; Máscara: habilita solo IRQ2 (bit 2=0), resto deshabilitado
 out IMR, al               ; Aplicar máscara al PIC
 
-; 3.2) Asignar ID de interrupción a la línea INT2
+; 3.2) Asignar ID de interrupción a la línea IRQ2
 mov al, ID                ; Cargar ID de interrupción (2)
-out INT2, al              ; Configurar línea INT2 con este ID
+out IRQ2, al              ; Configurar línea IRQ2 con este ID
 
 ; 3.3) Configurar vector de interrupción en memoria
 mov bl, ID                ; BL = posición en tabla de vectores (ID=2)
@@ -145,7 +145,7 @@ fin:
 hlt                       ; Detener ejecución del programa
 
 ; ===============================================================================
-; RUTINA DE INTERRUPCIÓN INT2 - HANDSHAKE
+; RUTINA DE INTERRUPCIÓN IRQ2 - HANDSHAKE
 ; ===============================================================================
 ; DESCRIPCIÓN: Se ejecuta automáticamente cuando la impresora está lista
 ;              para recibir un nuevo carácter (busy = 0)

@@ -6,7 +6,7 @@ EOI EQU 20h    ; Puerto para enviar End Of Interrupt al PIC
 
 inicio:
     ; Configurar PIC - estas instrucciones deberían activar automáticamente el PIC
-    mov al, 11111110b  ; Habilitar solo INT0 (deshabilitar el resto)
+    mov al, 11111110b  ; Habilitar solo IRQ0 (deshabilitar el resto)
     out IMR, al        ; Escribir al registro IMR (21h)
     
     ; Enviar EOI

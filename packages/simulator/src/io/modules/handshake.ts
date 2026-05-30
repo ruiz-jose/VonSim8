@@ -29,7 +29,7 @@ export type HandshakeOperation =
  * - 40h: DATA
  * - 41h: STATE
  *
- * Interrupt line: INT2
+ * Interrupt line: IRQ2
  *
  * @see {@link https://vonsim.github.io/en/io/modules/handshake}.
  *

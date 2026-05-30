@@ -6,7 +6,7 @@ Está basado en el PIC 8259A de Intel, pero con algunas modificaciones para simp
 
 ## Líneas
 
-El PIC cuenta con 8 líneas: de la `INT0` a la `INT7` (no todas son utilizadas). Cada línea tiene un registro de 8 bits en la memoria E/S relacionado. La línea `INT0` tiene la dirección `24h`, la línea `INT1` tiene la dirección `25h`, y así hasta la línea `INT7`, con la dirección `2Bh`. En cada uno de estos registros se almacena el número de interrupción corresponde a cada línea.
+El PIC cuenta con 8 líneas: de la `IRQ0` a la `IRQ7` (no todas son utilizadas). Cada línea tiene un registro de 8 bits en la memoria E/S relacionado. La línea `IRQ0` tiene la dirección `24h`, la línea `IRQ1` tiene la dirección `25h`, y así hasta la línea `IRQ7`, con la dirección `2Bh`. En cada uno de estos registros se almacena el número de interrupción corresponde a cada línea.
 
 Cuando uno de los módulos/dispositvos quiera interrumpir a la CPU, el número de interrupción que PIC enviará será el almacenado en el registro correspondiente a la línea que se interrumpió, independizando así el número de interrupción del número de línea.
 
@@ -14,18 +14,18 @@ Las líneas están conectadas a los siguientes dispositivos:
 
 | Línea  | Módulo/Disp.                |
 | :----: | :-------------------------- |
-| `INT0` | [Tecla F10](../devices/f10) |
-| `INT1` | [Timer](./timer)            |
-| `INT2` | [Handshake](./handshake)    |
-| `INT3` | --                          |
-| `INT4` | --                          |
-| `INT5` | --                          |
-| `INT6` | --                          |
-| `INT7` | --                          |
+| `IRQ0` | [Tecla F10](../devices/f10) |
+| `IRQ1` | [Timer](./timer)            |
+| `IRQ2` | [Handshake](./handshake)    |
+| `IRQ3` | --                          |
+| `IRQ4` | --                          |
+| `IRQ5` | --                          |
+| `IRQ6` | --                          |
+| `IRQ7` | --                          |
 
 ## Control
 
-El PIC cuenta con tres registros adiciones de control. En los siguientes registros, cada bit corresponde con una línea de interrupción: el bit menos significativo corresponde a la línea `INT0` y el más significativo a la línea `INT7`.
+El PIC cuenta con tres registros adiciones de control. En los siguientes registros, cada bit corresponde con una línea de interrupción: el bit menos significativo corresponde a la línea `IRQ0` y el más significativo a la línea `IRQ7`.
 
 El registro `IMR` o _interrupt mask register_ (dirección `21h` de la [memoria E/S](./index)) es el que se utiliza para enmascarar (o "inhabilitar") líneas de interrupción. Si el bit correspondiente a una línea es `1`, esta línea está enmascarada y no se emitirá la interrupción a la CPU. Si el bit es `0`, la línea está habilitada y se emitirá la interrupción a la CPU. Este puede ser modificado por la CPU.
 
@@ -53,4 +53,4 @@ Este PIC no soporta interrupciones anidadas. Si una interrupción ocurre mientra
 
 ### Prioridades
 
-Cuando hay más de una interrupción pendiente, el PIC atiende primero la de mayor prioridad. La prioridad de cada línea está determinada por su número de interrupción. Las líneas con menor número de interrupción tienen mayor prioridad. Por ejemplo, la línea `INT0` tiene mayor prioridad que la línea `INT1`.
+Cuando hay más de una interrupción pendiente, el PIC atiende primero la de mayor prioridad. La prioridad de cada línea está determinada por su número de interrupción. Las líneas con menor número de interrupción tienen mayor prioridad. Por ejemplo, la línea `IRQ0` tiene mayor prioridad que la línea `IRQ1`.

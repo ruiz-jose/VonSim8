@@ -17,7 +17,7 @@ COMP equ 11h             ; Registro de comparación del timer
 
 EOI  equ 20h             ; End Of Interrupt (para PIC)
 IMR  equ 21h             ; Interrupt Mask Register (PIC)
-INT1 equ 25h             ; Registro de vector de interrupción 1
+IRQ1 equ 25h             ; Registro de vector de interrupción 1
 
 org 20h                  ; Comienzo del código principal
 
@@ -28,7 +28,7 @@ out IMR, al
 
 ; --- Configurar vector de interrupción del timer ---
 mov al, 5                ; ID de interrupción del timer
-out INT1, al             ; Asigna rutina de atención a la posición 5
+out IRQ1, al             ; Asigna rutina de atención a la posición 5
 
 ; --- Instalar rutina de interrupción en el vector ---
 mov bl, 5                ; Vector de interrupción 5

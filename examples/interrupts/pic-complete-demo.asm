@@ -6,8 +6,8 @@
 ; Constantes para el PIC
 IMR     EQU 21h    ; Interrupt Mask Register (Registro de máscara)
 EOI     EQU 20h    ; End Of Interrupt (Fin de interrupción)
-INT0    EQU 24h    ; Línea de interrupción INT0
-INT1    EQU 25h    ; Línea de interrupción INT1
+IRQ0    EQU 24h    ; Línea de interrupción IRQ0
+IRQ1    EQU 25h    ; Línea de interrupción IRQ1
 
 org 20h            ; Código en 20h (automáticamente detectado)
 
@@ -19,15 +19,15 @@ inicio:
     ; Esta sección debería activar automáticamente el PIC y mostrar el flag I
     
     ; Configurar máscara de interrupciones
-    mov al, 11111100b   ; Habilitar INT0 e INT1 (bits 0 y 1 = 0)
+    mov al, 11111100b   ; Habilitar IRQ0 e IRQ1 (bits 0 y 1 = 0)
     out IMR, al         ; Escribir al IMR (esto activa automáticamente el PIC)
     
     ; Configurar líneas de interrupción
-    mov al, 55h         ; Valor para INT0
-    out INT0, al        ; Configurar INT0 (24h)
+    mov al, 55h         ; Valor para IRQ0
+    out IRQ0, al        ; Configurar IRQ0 (24h)
     
-    mov al, AAh         ; Valor para INT1
-    out INT1, al        ; Configurar INT1 (25h)
+    mov al, AAh         ; Valor para IRQ1
+    out IRQ1, al        ; Configurar IRQ1 (25h)
     
     ; ======== HABILITAR INTERRUPCIONES ========
     sti                 ; Habilitar interrupciones (I=1) - flag I debe verse iluminado

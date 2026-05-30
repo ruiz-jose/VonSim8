@@ -9,14 +9,14 @@ export const IMRAtom = atom(Byte.fromUnsigned(0xff, 8));
 export const IRRAtom = atom(Byte.fromUnsigned(0x00, 8));
 export const ISRAtom = atom(Byte.fromUnsigned(0x00, 8));
 export const linesAtoms: ByteAtom<8>[] = [
-  atom(Byte.zero(8)), // INT0
-  atom(Byte.zero(8)), // INT1
-  atom(Byte.zero(8)), // INT2
-  atom(Byte.zero(8)), // INT3
-  atom(Byte.zero(8)), // INT4
-  atom(Byte.zero(8)), // INT5
-  atom(Byte.zero(8)), // INT6
-  atom(Byte.zero(8)), // INT7
+  atom(Byte.zero(8)), // IRQ0
+  atom(Byte.zero(8)), // IRQ1
+  atom(Byte.zero(8)), // IRQ2
+  atom(Byte.zero(8)), // IRQ3
+  atom(Byte.zero(8)), // IRQ4
+  atom(Byte.zero(8)), // IRQ5
+  atom(Byte.zero(8)), // IRQ6
+  atom(Byte.zero(8)), // IRQ7
 ];
 
 export function resetPICState(computer: ComputerState) {

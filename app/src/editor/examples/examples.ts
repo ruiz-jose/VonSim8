@@ -107,7 +107,7 @@ fin:
     contenido: `; ===============================================================================
 ; PROGRAMA: Impresión de string usando Handshake con interrupciones
 ; DESCRIPCIÓN: Imprime el string "hola" en la impresora utilizando el módulo
-;              Handshake con interrupciones por hardware (INT2)
+;              Handshake con interrupciones por hardware (IRQ2)
 ; ===============================================================================
 
 ; --- SECCIÓN DE DATOS ---
@@ -123,7 +123,7 @@ HS_STATUS   EQU 41h        ; Registro de estado del Handshake (puerto E/S)
 ID          EQU 2          ; ID de la interrupción para Handshake (0-7)
 IMR         EQU 21h        ; Registro de máscara de interrupciones del PIC
 EOI         EQU 20h        ; Puerto para enviar End Of Interrupt al PIC
-INT2        EQU 26h        ; Puerto para configurar la línea INT2
+IRQ2        EQU 26h        ; Puerto para configurar la línea IRQ2
 ; ===============================================================================
 ; PROGRAMA PRINCIPAL
 ; ===============================================================================
@@ -140,13 +140,13 @@ out HS_STATUS, al         ; Escribir configuración al Handshake
 
 ; --- 3) CONFIGURACIÓN DEL PIC (Controlador de Interrupciones) ---
 
-; 3.1) Configurar máscara de interrupciones - Solo habilitar INT2
-mov al, 11111011b         ; Máscara: habilita solo INT2 (bit 2=0), resto deshabilitado
+; 3.1) Configurar máscara de interrupciones - Solo habilitar IRQ2
+mov al, 11111011b         ; Máscara: habilita solo IRQ2 (bit 2=0), resto deshabilitado
 out IMR, al               ; Aplicar máscara al PIC
 
-; 3.2) Asignar ID de interrupción a la línea INT2
+; 3.2) Asignar ID de interrupción a la línea IRQ2
 mov al, ID                ; Cargar ID de interrupción (2)
-out INT2, al              ; Configurar línea INT2 con este ID
+out IRQ2, al              ; Configurar línea IRQ2 con este ID
 
 ; 3.3) Configurar vector de interrupción en memoria
 mov bl, ID                ; BL = posición en tabla de vectores (ID=2)
@@ -188,7 +188,7 @@ fin:
 hlt                       ; Detener ejecución del programa
 
 ; ===============================================================================
-; RUTINA DE INTERRUPCIÓN INT2 - HANDSHAKE
+; RUTINA DE INTERRUPCIÓN IRQ2 - HANDSHAKE
 ; ===============================================================================
 ; DESCRIPCIÓN: Se ejecuta automáticamente cuando la impresora está lista
 ;              para recibir un nuevo carácter (busy = 0)
@@ -245,19 +245,19 @@ cantidad db 0          ; Variable: almacena la cantidad de veces que se presion�
 ID   EQU 1             ; ID de la interrupción para F10 (puede ser 0-7)
 IMR  EQU 21h           ; Dirección del registro IMR (máscara de interrupciones)
 EOI  EQU 20h           ; Dirección para enviar End Of Interrupt al PIC
-INT0 EQU 24h           ; Dirección para configurar la línea INT0 (F10)
+IRQ0 EQU 24h           ; Dirección para configurar la línea IRQ0 (F10)
 
 ;-----------------------------------------------
 ; 2) Inicialización del PIC y vector de interrupción
 ;-----------------------------------------------
 
-; 2.1) Habilitar solo la interrupción de F10 (INT0)
-mov al, 11111110b      ; Habilita solo INT0 (bit 0 en 0), el resto deshabilitado
+; 2.1) Habilitar solo la interrupción de F10 (IRQ0)
+mov al, 11111110b      ; Habilita solo IRQ0 (bit 0 en 0), el resto deshabilitado
 out IMR, al
 
-; 2.2) Configurar el ID de la interrupción para INT0
+; 2.2) Configurar el ID de la interrupción para IRQ0
 mov al, ID             ; Cargar el ID elegido para F10
-out INT0, al
+out IRQ0, al
 
 ; 2.3) Asociar el vector de interrupción con la subrutina atenderf10
 mov bl, ID             ; BL = ID de la interrupción
@@ -298,7 +298,7 @@ COMP equ 11h             ; Registro de comparación del timer
 
 EOI  equ 20h             ; End Of Interrupt (para PIC)
 IMR  equ 21h             ; Interrupt Mask Register (PIC)
-INT1 equ 25h             ; Registro de vector de interrupción 1
+IRQ1 equ 25h             ; Registro de vector de interrupción 1
 
 ; --- Habilitar interrupciones del timer ---
 ; IMR = 1111 1101b (solo habilita interrupciones del timer y teclado)
@@ -307,7 +307,7 @@ out IMR, al
 
 ; --- Configurar vector de interrupción del timer ---
 mov al, 5                ; ID de interrupción del timer
-out INT1, al             ; Asigna rutina de atención a la posición 5
+out IRQ1, al             ; Asigna rutina de atención a la posición 5
 
 ; --- Instalar rutina de interrupción en el vector ---
 mov bl, 5                ; Vector de interrupción 5

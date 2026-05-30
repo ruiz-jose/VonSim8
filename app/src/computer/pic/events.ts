@@ -41,14 +41,14 @@ export async function handlePICEvent(event: SimulatorEvent<"pic:">): Promise<voi
           break;
         }
 
-        case "INT0":
-        case "INT1":
-        case "INT2":
-        case "INT3":
-        case "INT4":
-        case "INT5":
-        case "INT6":
-        case "INT7": {
+        case "IRQ0":
+        case "IRQ1":
+        case "IRQ2":
+        case "IRQ3":
+        case "IRQ4":
+        case "IRQ5":
+        case "IRQ6":
+        case "IRQ7": {
           const n = Number(event.register.slice(3));
           store.set(linesAtoms[n], event.value);
           break;

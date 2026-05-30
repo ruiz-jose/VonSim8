@@ -4,18 +4,18 @@
 ; Definir constantes EQU para registros PIC
 IMR     EQU 21h    ; Interrupt Mask Register
 EOI     EQU 20h    ; End Of Interrupt
-INT2    EQU 26h    ; Interrupt line 2
+IRQ2    EQU 26h    ; Interrupt line 2
 
 org 20h
 
 inicio:
     ; Configurar máscara de interrupciones
-    mov al, 11111110b  ; Habilitar solo INT0
+    mov al, 11111110b  ; Habilitar solo IRQ0
     out IMR, al        ; Usar constante EQU (21h)
     
     ; Configurar línea de interrupción
     mov al, 00000001b
-    out INT2, al       ; Usar constante EQU (26h)
+    out IRQ2, al       ; Usar constante EQU (26h)
     
     ; Enviar EOI
     mov al, 20h

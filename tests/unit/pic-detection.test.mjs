@@ -8,7 +8,7 @@ try {
   console.log('=== ENSAMBLANDO PROGRAMA HANDSHAKE CON PIC ===');
   console.log('Instrucciones relevantes:');
   console.log('- out IMR, al    ; IMR EQU 21h (0x21)');
-  console.log('- out INT2, al   ; INT2 EQU 26h (0x26)');
+  console.log('- out IRQ2, al   ; IRQ2 EQU 26h (0x26)');
   console.log('- out EOI, al    ; EOI EQU 20h (0x20)');
   console.log('');
 

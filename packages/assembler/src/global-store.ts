@@ -207,14 +207,14 @@ export class GlobalStore {
             const picConstants = {
               IMR: 0x21,
               EOI: 0x20,
-              INT0: 0x24,
-              INT1: 0x25,
-              INT2: 0x26,
-              INT3: 0x27,
-              INT4: 0x28,
-              INT5: 0x29,
-              INT6: 0x2a,
-              INT7: 0x2b,
+              IRQ0: 0x24,
+              IRQ1: 0x25,
+              IRQ2: 0x26,
+              IRQ3: 0x27,
+              IRQ4: 0x28,
+              IRQ5: 0x29,
+              IRQ6: 0x2a,
+              IRQ7: 0x2b,
             };
             if (Object.hasOwnProperty.call(picConstants, constName)) {
               const addr = picConstants[constName as keyof typeof picConstants];

@@ -22,7 +22,7 @@ Ejemplos que demuestran el funcionamiento del Controlador de Interrupciones Prog
 - **[`pic-constants.asm`](./pic-constants.asm)** - Definición y uso de constantes del PIC
 
 ### Especializados
-- **[`keyboard-int6.asm`](./keyboard-int6.asm)** - Manejo de interrupción de teclado (INT6)
+- **[`keyboard-int6.asm`](./keyboard-int6.asm)** - Manejo de interrupción de teclado (IRQ6)
 - **[`pic-usage.asm`](./pic-usage.asm)** - Casos de uso comunes del PIC
 - **[`pic-con.asm`](./pic-con.asm)** - PIC con configuración específica
 - **[`pic-sin.asm`](./pic-sin.asm)** - PIC sin configuraciones adicionales

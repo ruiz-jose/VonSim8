@@ -156,14 +156,14 @@ export async function handleBusEvent(event: SimulatorEvent<"bus:">): Promise<voi
               0x21: "IMR",
               0x22: "IRR",
               0x23: "ISR",
-              0x24: "INT0",
-              0x25: "INT1",
-              0x26: "INT2",
-              0x27: "INT3",
-              0x28: "INT4",
-              0x29: "INT5",
-              0x2a: "INT6",
-              0x2b: "INT7",
+              0x24: "IRQ0",
+              0x25: "IRQ1",
+              0x26: "IRQ2",
+              0x27: "IRQ3",
+              0x28: "IRQ4",
+              0x29: "IRQ5",
+              0x2a: "IRQ6",
+              0x2b: "IRQ7",
             };
             const registerName =
               registerNames[address] || `PIC_REG_${address.toString(16).toUpperCase()}h`;

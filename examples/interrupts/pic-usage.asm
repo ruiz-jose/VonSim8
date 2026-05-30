@@ -2,7 +2,7 @@
 org 2000h
 
 ; Configurar PIC
-mov al, 0FCh    ; Enmascarar todas las interrupciones excepto INT0 e INT1  
+mov al, 0FCh    ; Enmascarar todas las interrupciones excepto IRQ0 e IRQ1  
 out 21h, al     ; Escribir al IMR (Interrupt Mask Register)
 
 mov al, 20h     ; EOI (End Of Interrupt)

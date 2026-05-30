@@ -6,7 +6,7 @@ export type F10Event = { type: "f10:press" };
 /**
  * The F10 key is a device that sends an interrupt to the PIC module.
  *
- * Interrupt line: INT0
+ * Interrupt line: IRQ0
  *
  * @see {@link https://vonsim.github.io/en/io/devices/f10}.
  *

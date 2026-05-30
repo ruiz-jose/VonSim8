@@ -7,7 +7,7 @@ import type { EventGenerator } from "../../events";
 import { IOModule } from "../module";
 
 type InterruptLine = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
-export type PICRegister = "EOI" | "IMR" | "IRR" | "ISR" | `INT${InterruptLine}`;
+export type PICRegister = "EOI" | "IMR" | "IRR" | "ISR" | `IRQ${InterruptLine}`;
 
 export type PICOperation =
   | { type: "pic:read"; register: PICRegister }
@@ -27,7 +27,7 @@ export type PICOperation =
  * - 21h: IMR
  * - 22h: IRR
  * - 23h: ISR
- * - 24h to 2Bh: INT0 to INT7
+ * - 24h to 2Bh: IRQ0 to IRQ7
  *
  * @see {@link https://vonsim.github.io/en/io/modules/pic}.
  *
@@ -96,7 +96,7 @@ export class PIC extends IOModule<PICRegister> {
     else if (address === 1) return "IMR";
     else if (address === 2) return "IRR";
     else if (address === 3) return "ISR";
-    else return `INT${address - 4}` as PICRegister;
+    else return `IRQ${address - 4}` as PICRegister;
   }
 
   *read(register: PICRegister): EventGenerator<Byte<8>> {

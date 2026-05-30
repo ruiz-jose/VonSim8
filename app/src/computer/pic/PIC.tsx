@@ -50,10 +50,10 @@ export function PIC() {
         {linesAtoms.slice(0, 4).map((atom, i) => (
           <div key={i} className="mx-auto w-fit">
             <Register
-              name={`INT${i}`}
+              name={`IRQ${i}`}
               title={IOAddress.format(0x24 + i)}
               valueAtom={atom}
-              springs={`pic.INT${i}` as "pic.INT0"}
+              springs={`pic.IRQ${i}` as "pic.IRQ0"}
             />
           </div>
         ))}

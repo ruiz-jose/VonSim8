@@ -25,7 +25,7 @@ export type TimerOperation =
  * - 10h: CONT
  * - 11h: COMP
  *
- * Interrupt line: INT1
+ * Interrupt line: IRQ1
  *
  * @see {@link https://vonsim.github.io/en/io/modules/timer}.
  *
