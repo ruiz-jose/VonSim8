@@ -4518,21 +4518,33 @@ async function startPrinter(): Promise<void> {
 
   // Procesar buffer de impresora periódicamente sin bucle infinito
   const processPrinterBuffer = async () => {
-    if (store.get(simulationAtom).type === "stopped") return;
+    const isStopped = store.get(simulationAtom).type === "stopped";
+
+    // Salir solo cuando la simulación está detenida Y el buffer está vacío
+    if (isStopped && !simulator.devices.printer.hasPending()) return;
+
+    let charPrinted = false;
 
     // Solo procesar si hay caracteres pendientes en el buffer
     if (simulator.devices.printer.hasPending()) {
       console.log("🖨️ [DEBUG] Procesando caracteres pendientes en buffer de impresora");
 
       const duration = getSettings().printerSpeed;
-      await anim(
-        [
-          { key: "printer.printing.opacity", from: 1 },
-          { key: "printer.printing.progress", from: 0, to: 1 },
-        ],
-        { duration, forceMs: true, easing: "easeInOutSine" },
-      );
-      await anim({ key: "printer.printing.opacity", to: 0 }, { duration: 1, easing: "easeInSine" });
+
+      if (!isStopped && getSettings().animations) {
+        // Con animaciones activas: la barra de progreso es el tiempo de impresión
+        await anim(
+          [
+            { key: "printer.printing.opacity", from: 1 },
+            { key: "printer.printing.progress", from: 0, to: 1 },
+          ],
+          { duration, forceMs: true, easing: "easeInOutSine" },
+        );
+        await anim({ key: "printer.printing.opacity", to: 0 }, { duration: 1, easing: "easeInSine" });
+      } else {
+        // Sin animaciones o simulación detenida: esperar el tiempo de impresión igual
+        await new Promise<void>(resolve => setTimeout(resolve, duration));
+      }
 
       // Procesar un carácter del buffer
       const printGenerator = simulator.devices.printer.print();
@@ -4545,11 +4557,15 @@ async function startPrinter(): Promise<void> {
           result = printGenerator.next();
         }
       }
+
+      charPrinted = true;
     }
 
-    // Programar el siguiente procesamiento si la simulación sigue activa
-    if (store.get(simulationAtom).type !== "stopped") {
-      setTimeout(processPrinterBuffer, getSettings().printerSpeed);
+    if (store.get(simulationAtom).type !== "stopped" || simulator.devices.printer.hasPending()) {
+      // Si se imprimió un carácter, la animación ya consumió el tiempo de impresión:
+      // pasar al siguiente carácter inmediatamente.
+      // Si el buffer estaba vacío, esperar printerSpeed ms antes de verificar de nuevo.
+      setTimeout(processPrinterBuffer, charPrinted ? 0 : getSettings().printerSpeed);
     }
   };
 

@@ -58,7 +58,7 @@ export const settingsSchema = z.object({
    * This property states how many milliseconds one execution unit takes.
    */
   // Reducimos el máximo permitido para evitar animaciones extremadamente lentas
-  executionUnit: z.number().min(1).max(250).catch(150),
+  executionUnit: z.number().min(1).max(250).catch(20),
 
   /**
    * This property states how many milliseconds takes for the clock to tick.
@@ -75,7 +75,7 @@ export const settingsSchema = z.object({
    * This property states how many milliseconds units takes for the printer
    * to print a character.
    */
-  printerSpeed: z.number().min(500).max(20000).catch(5000),
+  printerSpeed: z.number().min(500).max(5000).catch(5000),
 
   /**
    * Flags visibility setting.

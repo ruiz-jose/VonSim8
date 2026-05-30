@@ -291,18 +291,30 @@ export function Settings({ className }: { className?: string }) {
               <span className="icon-[lucide--printer] size-6" />
               {translate("settings.speeds.printerSpeed")}
             </SettingTitle>
+            <SettingSubtitle>
+              Actual:{" "}
+              <span className="font-medium text-stone-300">
+                {(settings.printerSpeed / 1000).toFixed(1)} s/carácter
+              </span>
+            </SettingSubtitle>
           </SettingInfo>
 
-          <Slider
-            className="w-44"
-            {...logSlider({
-              value: settings.printerSpeed,
-              onValueChange: (value: number) =>
-                setSettings(prev => ({ ...prev, printerSpeed: value })),
-              min: 20000,
-              max: 500,
-            })}
-          />
+          <div className="flex flex-col items-end gap-1">
+            <Slider
+              className="w-44"
+              {...logSlider({
+                value: settings.printerSpeed,
+                onValueChange: (value: number) =>
+                  setSettings(prev => ({ ...prev, printerSpeed: value })),
+                min: 5000,
+                max: 500,
+              })}
+            />
+            <div className="flex w-44 justify-between text-xs text-stone-400">
+              <span>Lento: 5 s/car.</span>
+              <span>Rápido: 0.5 s/car.</span>
+            </div>
+          </div>
         </Setting>
       )}
 
