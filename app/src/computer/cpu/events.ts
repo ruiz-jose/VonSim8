@@ -202,9 +202,9 @@ const drawDataPath = (from: DataRegister, to: DataRegister, instruction: string,
     // Usar la configuración de velocidad de animación
     const settings = getSettings();
 
-    const duration = settings.animations ? settings.executionUnit : 1;
+    const duration = settings.animations ? 1000 / settings.simulationSpeed : 1;
     console.log("🔧 settings.animations:", settings.animations);
-    console.log("🔧 settings.executionUnit:", settings.executionUnit);
+    console.log("🔧 1000 / settings.simulationSpeed:", 1000 / settings.simulationSpeed);
     console.log("🔧 Duración de la animación:", duration);
 
     return anim(
@@ -230,7 +230,7 @@ const drawSimultaneousLeftRightPath = (from: DataRegister, instruction: string, 
 
     // Usar la configuración de velocidad de animación
     const settings = getSettings();
-    const duration = settings.animations ? settings.executionUnit : 1;
+    const duration = settings.animations ? 1000 / settings.simulationSpeed : 1;
 
     return anim(
       [
@@ -261,7 +261,7 @@ const drawAddressPath = (from: string, to: string) => {
     }
 
     const settings = getSettings();
-    const duration = settings.animations ? settings.executionUnit : 1;
+    const duration = settings.animations ? 1000 / settings.simulationSpeed : 1;
     console.log("🔧 Duración de la animación (bus de direcciones):", duration);
 
     return anim(
@@ -397,7 +397,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       const settings = getSettings();
       const MAX_EXECUTION_UNIT_MS = 250;
       const duration = settings.animations
-        ? Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS)
+        ? Math.min(1000 / settings.simulationSpeed, MAX_EXECUTION_UNIT_MS)
         : 1;
       const pathsDrawConfig = {
         duration,
@@ -863,7 +863,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
                 const settings = getSettings();
                 const MAX_EXECUTION_UNIT_MS = 250;
                 const duration = settings.animations
-                  ? Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS)
+                  ? Math.min(1000 / settings.simulationSpeed, MAX_EXECUTION_UNIT_MS)
                   : 1;
                 return anim(
                   [
@@ -911,7 +911,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
                 const settings = getSettings();
                 const MAX_EXECUTION_UNIT_MS = 250;
                 const duration = settings.animations
-                  ? Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS)
+                  ? Math.min(1000 / settings.simulationSpeed, MAX_EXECUTION_UNIT_MS)
                   : 1;
                 return anim(
                   [
@@ -961,7 +961,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
             const settings = getSettings();
             const MAX_EXECUTION_UNIT_MS = 250;
             const duration = settings.animations
-              ? Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS)
+              ? Math.min(1000 / settings.simulationSpeed, MAX_EXECUTION_UNIT_MS)
               : 1;
             await anim(
               [
@@ -1122,7 +1122,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         const settings = getSettings();
         const MAX_EXECUTION_UNIT_MS = 250;
         const duration = settings.animations
-          ? Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS)
+          ? Math.min(1000 / settings.simulationSpeed, MAX_EXECUTION_UNIT_MS)
           : 1;
 
         console.log("🚌 Iniciando animación del bus de direcciones BL → MAR");
@@ -1430,7 +1430,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         });
         // Mostrar SIEMPRE el bus de direcciones (azul) para MBR → MAR aquí
         const settings = getSettings();
-        const duration = settings.animations ? settings.executionUnit : 1;
+        const duration = settings.animations ? 1000 / settings.simulationSpeed : 1;
         await anim(
           [
             { key: "cpu.internalBus.address.path", from: generateMBRtoMARPath() },
@@ -1568,7 +1568,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
                   const settings = getSettings();
                   const MAX_EXECUTION_UNIT_MS = 250;
                   const duration = settings.animations
-                    ? Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS)
+                    ? Math.min(1000 / settings.simulationSpeed, MAX_EXECUTION_UNIT_MS)
                     : 1;
                   return anim(
                     [
@@ -2160,7 +2160,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
               const settings = getSettings();
               const MAX_EXECUTION_UNIT_MS = 250;
               const duration = settings.animations
-                ? Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS)
+                ? Math.min(1000 / settings.simulationSpeed, MAX_EXECUTION_UNIT_MS)
                 : 1;
               return anim(
                 [

@@ -326,11 +326,7 @@ function ReadBusAnimation({ pathRef }: ReadBusAnimationProps) {
   useEffect(() => {
     if (visible && ready) {
       const startTime = Date.now();
-      // Usar la duración del sistema de springs (executionUnit) para sincronizar
-      const MAX_EXECUTION_UNIT_MS = 250;
-      const duration = settings.animations
-        ? Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS)
-        : 1; // Misma duración que drawRDControlPath
+      const duration = settings.animations ? 1000 / settings.simulationSpeed : 1; // Misma duración que drawRDControlPath
 
       const animate = () => {
         const elapsed = Date.now() - startTime;
@@ -348,7 +344,7 @@ function ReadBusAnimation({ pathRef }: ReadBusAnimationProps) {
 
       animate();
     }
-  }, [visible, ready, setShowReadAnim, settings.animations, settings.executionUnit]);
+  }, [visible, ready, setShowReadAnim, settings.animations, settings.simulationSpeed]);
 
   useEffect(() => {
     // Esperar a que el path esté disponible con retry
@@ -418,11 +414,7 @@ function WriteBusAnimation({ pathRef }: WriteBusAnimationProps) {
   useEffect(() => {
     if (visible && ready) {
       const startTime = Date.now();
-      // Usar la duración del sistema de springs (executionUnit) para sincronizar
-      const MAX_EXECUTION_UNIT_MS = 250;
-      const duration = settings.animations
-        ? Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS)
-        : 1; // Misma duración que drawWRControlPath
+      const duration = settings.animations ? 1000 / settings.simulationSpeed : 1; // Misma duración que drawWRControlPath
 
       const animate = () => {
         const elapsed = Date.now() - startTime;
@@ -440,7 +432,7 @@ function WriteBusAnimation({ pathRef }: WriteBusAnimationProps) {
 
       animate();
     }
-  }, [visible, ready, setShowWriteAnim, settings.animations, settings.executionUnit]);
+  }, [visible, ready, setShowWriteAnim, settings.animations, settings.simulationSpeed]);
 
   useEffect(() => {
     // Esperar a que el path esté disponible con retry

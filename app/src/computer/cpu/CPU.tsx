@@ -24,9 +24,8 @@ function IPPlusOneAnimation() {
       setIsVisible(true);
       setAnimationKey(prev => prev + 1);
 
-      // Usar la velocidad de animación global (executionUnit)
       const settings = getSettings();
-      const animationDuration = settings.executionUnit * 10;
+      const animationDuration = (1000 / settings.simulationSpeed) * 10;
 
       setTimeout(() => {
         setIsVisible(false);
@@ -76,7 +75,7 @@ function IPPlusOneAnimation() {
           )}
           style={{
             color: "#ff6347",
-            animation: `slideUpAndFade ${getSettings().executionUnit * 10}ms ease-out forwards`,
+            animation: `slideUpAndFade ${(1000 / getSettings().simulationSpeed) * 10}ms ease-out forwards`,
           }}
         >
           +1
@@ -98,9 +97,8 @@ function SPAnimation() {
       setIsVisible(true);
       setAnimationKey(prev => prev + 1);
 
-      // Usar la velocidad de animación global (executionUnit)
       const settings = getSettings();
-      const animationDuration = settings.executionUnit * 10;
+      const animationDuration = (1000 / settings.simulationSpeed) * 10;
 
       setTimeout(() => {
         setIsVisible(false);
@@ -129,7 +127,7 @@ function SPAnimation() {
           )}
           style={{
             color: "#facc15", // Amarillo similar al del registro SP (yellow-400)
-            animation: `slideUpAndFade ${getSettings().executionUnit * 10}ms ease-out forwards`,
+            animation: `slideUpAndFade ${(1000 / getSettings().simulationSpeed) * 10}ms ease-out forwards`,
           }}
         >
           {animationType}

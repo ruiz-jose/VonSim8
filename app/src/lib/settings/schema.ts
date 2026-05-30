@@ -1,4 +1,4 @@
-import type { Language } from "@vonsim/common/i18n";
+﻿import type { Language } from "@vonsim/common/i18n";
 import { z } from "zod";
 
 import { DATA_ON_LOAD_VALUES, LANGUAGES } from "./consts";
@@ -45,31 +45,26 @@ export const settingsSchema = z.object({
 
   /**
    * Disable animations for faster running. Only affects animations affected
-   * by the `executionUnit` (e.g. the cpu). Other animations (like the clock
+   * by the simulation speed (e.g. the cpu). Other animations (like the clock
    * tick and the printer "printing bar") will run normally.
    */
   animations: z.boolean().catch(true),
 
   /**
-   * CPU speeds are loosely based on "execution units".
-   * Let's say, for example, that updating a register takes 1 execution unit
-   * and adding two registers takes 3 execution units.
-   *
-   * This property states how many milliseconds one execution unit takes.
+   * Unified simulation speed in Hz.
+   * Controls both animation timing and CPU statistics.
+   * Maps to ms per execution unit as: 1000 / simulationSpeed
+   *   1 Hz  -> 1000 ms/cycle  (Muy lenta)
+   *   2 Hz  ->  500 ms/cycle  (Lenta)
+   *   4 Hz  ->  250 ms/cycle  (Normal)
+   *  10 Hz  ->  100 ms/cycle  (Rapida)
    */
-  // Reducimos el máximo permitido para evitar animaciones extremadamente lentas
-  executionUnit: z.number().min(1).max(250).catch(20),
+  simulationSpeed: z.union([z.literal(1), z.literal(2), z.literal(4), z.literal(10)]).catch(4),
 
   /**
    * This property states how many milliseconds takes for the clock to tick.
    */
   clockSpeed: z.number().min(100).max(1000).catch(1000),
-
-  /**
-   * CPU speed in Hz. This determines the cycle time of the CPU.
-   * Higher Hz means faster CPU cycles.
-   */
-  cpuSpeed: z.union([z.literal(1), z.literal(2), z.literal(4), z.literal(10)]).catch(1),
 
   /**
    * This property states how many milliseconds units takes for the printer

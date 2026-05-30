@@ -73,7 +73,7 @@ export const useDevices = () => useAtomValue(devicesAtom);
 const speedsAtom = atom(get => {
   const settings = get(settingsAtom);
   return {
-    executionUnit: settings.executionUnit,
+    simulationSpeed: settings.simulationSpeed,
     clock: settings.clockSpeed,
     printer: settings.printerSpeed,
   };

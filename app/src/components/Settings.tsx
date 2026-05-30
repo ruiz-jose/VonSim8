@@ -58,18 +58,43 @@ export function Settings({ className }: { className?: string }) {
             <span className="icon-[lucide--gauge] size-6" />
             {translate("settings.speeds.executionUnit")}
           </SettingTitle>
+          <SettingSubtitle>
+            <span className="font-medium text-stone-300">{settings.simulationSpeed} Hz</span> (
+            {(1 / settings.simulationSpeed).toFixed(2)}s por ciclo)
+            {settings.simulationSpeed === 1 && " — Muy lenta"}
+            {settings.simulationSpeed === 2 && " — Lenta"}
+            {settings.simulationSpeed === 4 && " — Normal"}
+            {settings.simulationSpeed === 10 && " — Rápida"}
+          </SettingSubtitle>
         </SettingInfo>
 
-        <Slider
-          className="w-44"
-          {...logSlider({
-            value: Math.min(settings.executionUnit, 250),
-            onValueChange: (value: number) =>
-              setSettings(prev => ({ ...prev, executionUnit: Math.min(value, 250) })),
-            min: 250,
-            max: 1,
-          })}
-        />
+        <div className="flex flex-col items-end gap-2">
+          <Slider
+            className="w-44"
+            value={[
+              settings.simulationSpeed === 1
+                ? 0
+                : settings.simulationSpeed === 2
+                  ? 1
+                  : settings.simulationSpeed === 4
+                    ? 2
+                    : 3,
+            ]}
+            onValueChange={([value]) => {
+              const speeds = [1, 2, 4, 10] as const;
+              setSettings(prev => ({ ...prev, simulationSpeed: speeds[value] }));
+            }}
+            min={0}
+            max={3}
+            step={1}
+          />
+          <div className="flex w-44 justify-between text-xs text-stone-500">
+            <span>1 Hz</span>
+            <span>2 Hz</span>
+            <span>4 Hz</span>
+            <span>10 Hz</span>
+          </div>
+        </div>
       </Setting>
 
       <hr className="border-stone-600" />
@@ -96,52 +121,6 @@ export function Settings({ className }: { className?: string }) {
           checked={settings.showStatsCPU}
           onCheckedChange={value => setSettings(prev => ({ ...prev, showStatsCPU: value }))}
         />
-      </Setting>
-
-      <Setting>
-        <SettingInfo>
-          <SettingTitle>
-            <span className="icon-[lucide--cpu] size-6" />
-            Velocidad CPU (Hz)
-          </SettingTitle>
-          <SettingSubtitle>
-            <span className="font-medium text-stone-300">{settings.cpuSpeed} Hz</span> (
-            {(1 / settings.cpuSpeed).toFixed(2)}s por ciclo)
-            {settings.cpuSpeed === 1 && " - Muy lenta"}
-            {settings.cpuSpeed === 2 && " - Lenta"}
-            {settings.cpuSpeed === 4 && " - Normal"}
-            {settings.cpuSpeed === 10 && " - Rápida"}
-          </SettingSubtitle>
-        </SettingInfo>
-
-        <div className="flex flex-col items-end gap-2">
-          {/* Slider para cpuSpeed con opciones discretas: 1, 2, 4, 10 Hz */}
-          <Slider
-            className="w-44"
-            value={[
-              settings.cpuSpeed === 1
-                ? 0
-                : settings.cpuSpeed === 2
-                  ? 1
-                  : settings.cpuSpeed === 4
-                    ? 2
-                    : 3,
-            ]}
-            onValueChange={([value]) => {
-              const speeds = [1, 2, 4, 10] as const;
-              setSettings(prev => ({ ...prev, cpuSpeed: speeds[value] }));
-            }}
-            min={0}
-            max={3}
-            step={1}
-          />
-          <div className="flex w-44 justify-between text-xs text-stone-500">
-            <span>1 Hz</span>
-            <span>2 Hz</span>
-            <span>4 Hz</span>
-            <span>10 Hz</span>
-          </div>
-        </div>
       </Setting>
 
       <Setting>

@@ -65,8 +65,7 @@ export const drawExternalDataPath = (
 
     // Usar la configuración de velocidad de animación si no se especifica duración
     const settings = getSettings();
-    const MAX_EXECUTION_UNIT_MS = 250;
-    const eu = Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS);
+    const eu = 1000 / settings.simulationSpeed;
     const actualDuration = duration ?? (settings.animations ? eu : 1);
 
     return anim(
@@ -135,8 +134,7 @@ export const drawDataPathToPIO = (duration?: number) => {
     }
 
     const settings = getSettings();
-    const MAX_EXECUTION_UNIT_MS = 250;
-    const eu = Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS);
+    const eu = 1000 / settings.simulationSpeed;
     const actualDuration = duration ?? (settings.animations ? eu : 1);
 
     return anim(
@@ -165,8 +163,7 @@ export const drawDataPathFromPIO = (duration?: number) => {
     }
 
     const settings = getSettings();
-    const MAX_EXECUTION_UNIT_MS = 250;
-    const eu = Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS);
+    const eu = 1000 / settings.simulationSpeed;
     const actualDuration = duration ?? (settings.animations ? eu : 1);
 
     console.log("🎯 Animando bus de datos desde PIO → MBR");
@@ -207,8 +204,7 @@ export const drawAddressPathToPIO = (duration?: number) => {
     }
 
     const settings = getSettings();
-    const MAX_EXECUTION_UNIT_MS = 250;
-    const eu = Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS);
+    const eu = 1000 / settings.simulationSpeed;
     const actualDuration = duration ?? (settings.animations ? eu : 1);
 
     return anim(
@@ -244,8 +240,7 @@ export const drawExternalAddressPath = (duration?: number) => {
 
     // Usar la configuración de velocidad de animación si no se especifica duración
     const settings = getSettings();
-    const MAX_EXECUTION_UNIT_MS = 250;
-    const eu = Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS);
+    const eu = 1000 / settings.simulationSpeed;
     const actualDuration = duration ?? (settings.animations ? eu : 1);
 
     return anim(
@@ -274,8 +269,7 @@ const drawRDControlPath = (duration?: number) => {
 
     // Usar la configuración de velocidad de animación si no se especifica duración
     const settings = getSettings();
-    const MAX_EXECUTION_UNIT_MS = 250;
-    const eu = Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS);
+    const eu = 1000 / settings.simulationSpeed;
     const actualDuration = duration ?? (settings.animations ? eu : 1);
 
     return anim(
@@ -300,8 +294,7 @@ const drawWRControlPath = (duration?: number) => {
 
     // Usar la configuración de velocidad de animación si no se especifica duración
     const settings = getSettings();
-    const MAX_EXECUTION_UNIT_MS = 250;
-    const eu = Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS);
+    const eu = 1000 / settings.simulationSpeed;
     const actualDuration = duration ?? (settings.animations ? eu : 1);
 
     return anim(
@@ -339,8 +332,7 @@ export const drawWRControlPathToPIO = (duration?: number) => {
     }
 
     const settings = getSettings();
-    const MAX_EXECUTION_UNIT_MS = 250;
-    const eu = Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS);
+    const eu = 1000 / settings.simulationSpeed;
     const actualDuration = duration ?? (settings.animations ? eu : 1);
 
     return anim(
@@ -378,8 +370,7 @@ export const drawRDControlPathToPIO = (duration?: number) => {
     }
 
     const settings = getSettings();
-    const MAX_EXECUTION_UNIT_MS = 250;
-    const eu = Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS);
+    const eu = 1000 / settings.simulationSpeed;
     const actualDuration = duration ?? (settings.animations ? eu : 1);
 
     return anim(
@@ -404,8 +395,7 @@ export const drawRDControlPathToPIO = (duration?: number) => {
 export const drawPIOControlLine = (duration?: number) => {
   try {
     const settings = getSettings();
-    const MAX_EXECUTION_UNIT_MS = 250;
-    const eu = Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS);
+    const eu = 1000 / settings.simulationSpeed;
     const actualDuration = duration ?? (settings.animations ? eu : 1);
 
     return anim(

@@ -40,7 +40,7 @@ const runningAnimations = new Set<SpringAnimation["key"]>();
  * @param animations.to The final value of the spring.
  * @param config Configuration of the animation. Can be a preset (string) or a custom configuration (object).
  * @param config.duration The duration of the animation in execution units (should be integer).
- * @param config.forceMs Whether the duration is in milliseconds (true) or relative to the `executionUnit` (false, default).
+ * @param config.forceMs Whether the duration is in milliseconds (true) or relative to the simulation speed (false, default).
  * @param config.easing The easing function to use (see {@link easings}).
  * @returns A promise that resolves when the animation is finished.
  */
@@ -83,16 +83,13 @@ export async function anim(
   // Don't run animations if disabled AND not forced
   if (!settings.animations && !config.forceMs) return null;
 
-  // Limitar la duración efectiva para evitar animaciones excesivamente lentas
-  // incluso si el valor almacenado en settings supera el rango recomendado.
-  const MAX_EXECUTION_UNIT_MS = 250; // tope superior efectivo (ms por unidad)
-  const effectiveExecutionUnit = Math.min(settings.executionUnit, MAX_EXECUTION_UNIT_MS);
+  const executionUnitMs = 1000 / settings.simulationSpeed;
 
   const springConfig = {
     duration: config.forceMs
       ? config.duration
       : settings.animations
-        ? config.duration * effectiveExecutionUnit
+        ? config.duration * executionUnitMs
         : 1, // Use minimal duration when animations are disabled
     easing: easings[config.easing],
   };
