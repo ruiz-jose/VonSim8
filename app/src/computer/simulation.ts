@@ -4540,7 +4540,10 @@ async function startPrinter(): Promise<void> {
           ],
           { duration, forceMs: true, easing: "easeInOutSine" },
         );
-        await anim({ key: "printer.printing.opacity", to: 0 }, { duration: 1, easing: "easeInSine" });
+        await anim(
+          { key: "printer.printing.opacity", to: 0 },
+          { duration: 1, easing: "easeInSine" },
+        );
       } else {
         // Sin animaciones o simulación detenida: esperar el tiempo de impresión igual
         await new Promise<void>(resolve => setTimeout(resolve, duration));
