@@ -770,7 +770,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
     }
 
     case "cpu:halt":
-    case "cpu:int.0": {
+    case "cpu:int.5": {
       // Para HLT, establecer la bandera ANTES de detener la simulación para preservar el historial
       if (event.type === "cpu:halt") {
         // Establecer la bandera de HLT inmediatamente para preservar el historial

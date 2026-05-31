@@ -39,6 +39,6 @@ export type CPUMicroOperation =
   | { type: "cpu:iom.on" }
   | { type: "cpu:inta.on" }
   | { type: "cpu:inta.off" }
-  | { type: `cpu:int.${0 | 6 | 7}` }
+  | { type: `cpu:int.${5 | 6 | 7}` }
   | { type: "cpu:error"; error: SimulatorError<any> }
   | { type: "cpu:halt" };

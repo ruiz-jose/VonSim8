@@ -6,7 +6,7 @@ import { Byte } from "@vonsim/common/byte";
  * @see {@link https://vonsim.github.io/docs/cpu/#llamadas-al-sistema}.
  */
 export const syscalls = [
-  [0, Byte.fromUnsigned(0xb0, 8)], // INT 0 movido a 0xB0
+  [5, Byte.fromUnsigned(0xb0, 8)], // INT 5 retorna el control al sistema operativo (HLT)
   [6, Byte.fromUnsigned(0xc0, 8)],
   [7, Byte.fromUnsigned(0xd0, 8)],
 ] as const;

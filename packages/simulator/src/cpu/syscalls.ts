@@ -31,9 +31,9 @@ export function* handleSyscall(
   syscall: SyscallNumber,
 ): EventGenerator<boolean> {
   switch (syscall) {
-    case 0: {
-      // INT 0 - Halt
-      yield { type: "cpu:int.0" };
+    case 5: {
+      // INT 5 - Halt (retorna el control al sistema operativo)
+      yield { type: "cpu:int.5" };
       return false; // Halt
     }
 
