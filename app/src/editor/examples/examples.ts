@@ -232,36 +232,36 @@ fin_interrupcion:
     iret                  ; Retorno de interrupción`,
   },
   {
-    nombre: "Contador F10",
-    filename: "contador_f10.asm",
-    contenido: `; Programa: Contador de pulsaciones de la tecla F10 usando interrupciones
+    nombre: "Contador Enter",
+    filename: "contador_enter.asm",
+    contenido: `; Programa: Contador de pulsaciones de la tecla Enter usando interrupciones
 
 ;-----------------------------------------------
 ; 1) Definiciones y variables
 ;-----------------------------------------------
 
-cantidad db 0          ; Variable: almacena la cantidad de veces que se presionó F10
+cantidad db 0          ; Variable: almacena la cantidad de veces que se presionó Enter
 
-ID   EQU 1             ; ID de la interrupción para F10 (puede ser 0-7)
+ID   EQU 1             ; ID de la interrupción para Enter (puede ser 0-7)
 IMR  EQU 21h           ; Dirección del registro IMR (máscara de interrupciones)
 EOI  EQU 20h           ; Dirección para enviar End Of Interrupt al PIC
-IRQ1 EQU 25h           ; Dirección para configurar la línea IRQ1 (F10)
+IRQ1 EQU 25h           ; Dirección para configurar la línea IRQ1 (Enter)
 
 ;-----------------------------------------------
 ; 2) Inicialización del PIC y vector de interrupción
 ;-----------------------------------------------
 
-; 2.1) Habilitar solo la interrupción de F10 (IRQ1)
+; 2.1) Habilitar solo la interrupción de Enter (IRQ1)
 mov al, 11111101b      ; Habilita solo IRQ1 (bit 1 en 0), el resto deshabilitado
 out IMR, al
 
 ; 2.2) Configurar el ID de la interrupción para IRQ1
-mov al, ID             ; Cargar el ID elegido para F10
+mov al, ID             ; Cargar el ID elegido para Enter
 out IRQ1, al
 
-; 2.3) Asociar el vector de interrupción con la subrutina atenderf10
+; 2.3) Asociar el vector de interrupción con la subrutina atenderEnter
 mov bl, ID             ; BL = ID de la interrupción
-mov [bl], atenderf10   ; Vector de interrupción: dirección de la rutina
+mov [bl], atenderEnter ; Vector de interrupción: dirección de la rutina
 
 ;-----------------------------------------------
 ; 3) Bucle principal (espera activa)
@@ -272,13 +272,13 @@ loop: jmp loop         ; Espera indefinida (el programa queda esperando interrup
 hlt                    ; (Opcional) Detiene la CPU si sale del bucle
 
 ;-----------------------------------------------
-; 4) Rutina de atención de la interrupción F10
+; 4) Rutina de atención de la interrupción Enter
 ;-----------------------------------------------
 
 org 50h                ; Dirección de la subrutina de atención
 
-atenderf10:
-    inc cantidad       ; Incrementa el contador cada vez que se presiona F10
+atenderEnter:
+    inc cantidad       ; Incrementa el contador cada vez que se presiona Enter
     mov al, 20h        ; Código de End Of Interrupt (EOI)
     out EOI, al        ; Notifica al PIC que terminó la atención
     iret               ; Retorna de la interrupción`,

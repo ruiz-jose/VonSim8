@@ -4585,7 +4585,7 @@ export function useSimulation() {
       hasIOBus: settings.pic || settings.pio !== null || settings.handshake !== null,
 
       clock: settings.pic,
-      f10: settings.pic,
+      f10: false,
       keyboard: settings.keyboardAndScreen,
       handshake: settings.handshake,
       leds: settings.pio === "switches-and-leds",
