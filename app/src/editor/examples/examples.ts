@@ -242,7 +242,7 @@ fin_interrupcion:
 
 cantidad db 0          ; Variable: almacena la cantidad de veces que se presionó F10
 
-ID   EQU 1             ; ID de la interrupción para F10 (puede ser 0-7)
+ID   EQU 0             ; ID de la interrupción para F10 (puede ser 0-7)
 IMR  EQU 21h           ; Dirección del registro IMR (máscara de interrupciones)
 EOI  EQU 20h           ; Dirección para enviar End Of Interrupt al PIC
 IRQ0 EQU 24h           ; Dirección para configurar la línea IRQ0 (F10)
@@ -287,7 +287,7 @@ atenderf10:
     nombre: "Timer con mensaje",
     filename: "timer_mensaje.asm",
     contenido: `; Programa: Imprime "Hola" a los 10 segundos de iniciado y luego termina.
-; Utiliza la interrupción del TIMER (ID = 5).
+; Utiliza la interrupción del TIMER (ID = 1).
 
 mensaje db "hola"        ; Mensaje a imprimir
 imprimio db 0            ; Flag para saber si ya imprimió
@@ -299,6 +299,7 @@ COMP equ 11h             ; Registro de comparación del timer
 EOI  equ 20h             ; End Of Interrupt (para PIC)
 IMR  equ 21h             ; Interrupt Mask Register (PIC)
 IRQ1 equ 25h             ; Registro de vector de interrupción 1
+ID   equ 1               ; ID de la interrupción para el timer (puede ser 0-7)
 
 ; --- Habilitar interrupciones del timer ---
 ; IMR = 1111 1101b (solo habilita interrupciones del timer y teclado)
@@ -306,11 +307,11 @@ mov al, 11111101b        ; Habilita interrupciones del timer (bit 1 en 0)
 out IMR, al
 
 ; --- Configurar vector de interrupción del timer ---
-mov al, 5                ; ID de interrupción del timer
-out IRQ1, al             ; Asigna rutina de atención a la posición 5
+mov al, ID               ; ID de interrupción del timer
+out IRQ1, al             ; Asigna rutina de atención a la posición ID
 
 ; --- Instalar rutina de interrupción en el vector ---
-mov bl, 5                ; Vector de interrupción 5
+mov bl, ID               ; Vector de interrupción ID
 mov [bl], imp_msj        ; Apunta a la rutina imp_msj
 
 ; --- Configurar timer para 3 segundos ---
