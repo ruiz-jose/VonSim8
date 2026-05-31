@@ -166,6 +166,7 @@ export function Keyboard() {
                 setAccent(false);
                 if (shift === "once") setShift("none");
                 handleChar(button);
+                if (status.type === "running" && devices.pic) dispatch("f10.press");
               }
               return;
             } else if (button === "\u0301") {
@@ -179,6 +180,7 @@ export function Keyboard() {
                 setDiaeresis(false);
                 if (shift === "once") setShift("none");
                 handleChar(button);
+                if (status.type === "running" && devices.pic) dispatch("f10.press");
               }
               return;
             } else if (button === "\u0308") {
@@ -192,13 +194,12 @@ export function Keyboard() {
           if (shift === "once") setShift("none");
 
           if (button === "{bksp}") handleChar("\b");
-          else if (button === "{enter}") {
-            handleChar("\n");
-            if (status.type === "running" && devices.pic) dispatch("f10.press");
-          }
+          else if (button === "{enter}") handleChar("\n");
           else if (button === "{tab}") handleChar("\t");
           else if (button === "{space}") handleChar(" ");
           else handleChar(button);
+
+          if (status.type === "running" && devices.pic) dispatch("f10.press");
         }}
       />
     </div>
