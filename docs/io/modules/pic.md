@@ -14,8 +14,8 @@ Las líneas están conectadas a los siguientes dispositivos:
 
 | Línea  | Módulo/Disp.                |
 | :----: | :-------------------------- |
-| `IRQ0` | [Tecla F10](../devices/f10) |
-| `IRQ1` | [Timer](./timer)            |
+| `IRQ0` | [Timer](./timer)            |
+| `IRQ1` | [Tecla F10](../devices/f10) |
 | `IRQ2` | [Handshake](./handshake)    |
 | `IRQ3` | --                          |
 | `IRQ4` | --                          |

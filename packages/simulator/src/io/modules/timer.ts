@@ -25,7 +25,7 @@ export type TimerOperation =
  * - 10h: CONT
  * - 11h: COMP
  *
- * Interrupt line: IRQ1
+ * Interrupt line: IRQ0
  *
  * @see {@link https://vonsim.github.io/en/io/modules/timer}.
  *
@@ -85,7 +85,7 @@ export class Timer extends IOModule<TimerRegister> {
     yield { type: "timer:register.update", register: "CONT", value };
     if (this.#COMP.equals(value)) {
       yield { type: "timer:int.on" };
-      if (this.computer.io.pic) yield* this.computer.io.pic.interrupt(1);
+      if (this.computer.io.pic) yield* this.computer.io.pic.interrupt(0);
     } else {
       yield { type: "timer:int.off" };
     }

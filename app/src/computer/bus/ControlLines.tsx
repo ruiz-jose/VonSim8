@@ -55,6 +55,12 @@ export function ControlLines() {
     <>
       {showReadAnim && <ReadBusAnimation pathRef={rdAnimatedPathRef} />}
       {showWriteAnim && <WriteBusAnimation pathRef={wrAnimatedPathRef} />}
+      {/* SVG a z-[5]: líneas que deben quedar detrás de los componentes (z-10) */}
+      <svg className="pointer-events-none absolute inset-0 z-[5] size-full">
+        {devices.pic && devices.timer && (
+          <ControlLine springs="bus.int0" d="M 475 955 H 70 V 900" />
+        )}
+      </svg>
       <svg className="pointer-events-none absolute inset-0 z-[15] size-full">
         <path
           ref={rdPathRef}
@@ -153,10 +159,7 @@ export function ControlLines() {
         )}
         {/* Interrupt lines */}
 
-        {devices.pic && devices.f10 && <ControlLine springs="bus.int0" d="M 70 950 V 900" />}
-        {devices.pic && devices.timer && (
-          <ControlLine springs="bus.int1" d="M 475 955 H 180 V 900" />
-        )}
+        {devices.pic && devices.f10 && <ControlLine springs="bus.int1" d="M 180 950 V 900" />}
         {devices.pic && devices.handshake && (
           <ControlLine springs="bus.int2" d="M 900 1075 H 300 V 900" />
         )}

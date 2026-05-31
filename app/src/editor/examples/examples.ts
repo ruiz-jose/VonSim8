@@ -242,22 +242,22 @@ fin_interrupcion:
 
 cantidad db 0          ; Variable: almacena la cantidad de veces que se presionó F10
 
-ID   EQU 0             ; ID de la interrupción para F10 (puede ser 0-7)
+ID   EQU 1             ; ID de la interrupción para F10 (puede ser 0-7)
 IMR  EQU 21h           ; Dirección del registro IMR (máscara de interrupciones)
 EOI  EQU 20h           ; Dirección para enviar End Of Interrupt al PIC
-IRQ0 EQU 24h           ; Dirección para configurar la línea IRQ0 (F10)
+IRQ1 EQU 25h           ; Dirección para configurar la línea IRQ1 (F10)
 
 ;-----------------------------------------------
 ; 2) Inicialización del PIC y vector de interrupción
 ;-----------------------------------------------
 
-; 2.1) Habilitar solo la interrupción de F10 (IRQ0)
-mov al, 11111110b      ; Habilita solo IRQ0 (bit 0 en 0), el resto deshabilitado
+; 2.1) Habilitar solo la interrupción de F10 (IRQ1)
+mov al, 11111101b      ; Habilita solo IRQ1 (bit 1 en 0), el resto deshabilitado
 out IMR, al
 
-; 2.2) Configurar el ID de la interrupción para IRQ0
+; 2.2) Configurar el ID de la interrupción para IRQ1
 mov al, ID             ; Cargar el ID elegido para F10
-out IRQ0, al
+out IRQ1, al
 
 ; 2.3) Asociar el vector de interrupción con la subrutina atenderf10
 mov bl, ID             ; BL = ID de la interrupción
@@ -298,17 +298,17 @@ COMP equ 11h             ; Registro de comparación del timer
 
 EOI  equ 20h             ; End Of Interrupt (para PIC)
 IMR  equ 21h             ; Interrupt Mask Register (PIC)
-IRQ1 equ 25h             ; Registro de vector de interrupción 1
-ID   equ 1               ; ID de la interrupción para el timer (puede ser 0-7)
+IRQ0 equ 24h             ; Registro de vector de interrupción 0
+ID   equ 0               ; ID de la interrupción para el timer (puede ser 0-7)
 
 ; --- Habilitar interrupciones del timer ---
-; IMR = 1111 1101b (solo habilita interrupciones del timer y teclado)
-mov al, 11111101b        ; Habilita interrupciones del timer (bit 1 en 0)
+; IMR = 1111 1110b (solo habilita interrupciones del timer)
+mov al, 11111110b        ; Habilita interrupciones del timer (bit 0 en 0)
 out IMR, al
 
 ; --- Configurar vector de interrupción del timer ---
 mov al, ID               ; ID de interrupción del timer
-out IRQ1, al             ; Asigna rutina de atención a la posición ID
+out IRQ0, al             ; Asigna rutina de atención a la posición ID
 
 ; --- Instalar rutina de interrupción en el vector ---
 mov bl, ID               ; Vector de interrupción ID

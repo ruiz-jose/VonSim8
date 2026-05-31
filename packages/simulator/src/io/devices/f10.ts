@@ -6,7 +6,7 @@ export type F10Event = { type: "f10:press" };
 /**
  * The F10 key is a device that sends an interrupt to the PIC module.
  *
- * Interrupt line: IRQ0
+ * Interrupt line: IRQ1
  *
  * @see {@link https://vonsim.github.io/en/io/devices/f10}.
  *
@@ -22,7 +22,7 @@ export class F10 extends Component {
    */
   *press(): EventGenerator {
     yield { type: "f10:press" };
-    if (this.computer.io.pic) yield* this.computer.io.pic.interrupt(0);
+    if (this.computer.io.pic) yield* this.computer.io.pic.interrupt(1);
   }
 
   toJSON() {

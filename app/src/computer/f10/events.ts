@@ -4,8 +4,8 @@ import type { SimulatorEvent } from "@/computer/shared/types";
 export async function handleF10Event(event: SimulatorEvent<"f10:">): Promise<void> {
   switch (event.type) {
     case "f10:press":
-      await turnLineOn("bus.int0", 2);
-      await turnLineOff("bus.int0");
+      await turnLineOn("bus.int1", 2);
+      await turnLineOff("bus.int1");
       return;
 
     default: {
