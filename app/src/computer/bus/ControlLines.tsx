@@ -60,7 +60,9 @@ export function ControlLines() {
         {devices.pic && devices.timer && (
           <ControlLine springs="bus.int0" d="M 475 955 H 70 V 900" />
         )}
-        {devices.pic && devices.keyboard && <ControlLine springs="bus.int1" d="M 1850 500 V 1200 H 180 V 900" />}
+        {devices.pic && devices.keyboard && (
+          <ControlLine springs="bus.int1" d="M 1850 500 V 1200 H 180 V 900" />
+        )}
       </svg>
       <svg className="pointer-events-none absolute inset-0 z-[15] size-full">
         <path
