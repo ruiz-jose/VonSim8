@@ -119,9 +119,15 @@ export function StatusBar() {
       window.codemirror!.dispatch({
         changes: { from: 0, to: window.codemirror!.state.doc.length, insert: ejemplo.contenido },
       });
+      if (ejemplo.filename === "contador_enter.asm") {
+        setSettings(prev => ({
+          ...prev,
+          devices: { ...prev.devices, keyboardAndScreen: true },
+        }));
+      }
       toast({ title: `Ejemplo cargado: ${ejemplo.nombre}`, variant: "info" });
     },
-    [unsavedChanges, setFileHandle, setLastSavedProgram],
+    [unsavedChanges, setFileHandle, setLastSavedProgram, setSettings],
   );
 
   const saveFile = useCallback(async () => {
