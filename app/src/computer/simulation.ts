@@ -3848,12 +3848,33 @@ async function dispatch(...args: Action) {
           ["INT", "CLI", "STI", "IRET"].includes(instruction),
         );
 
-        // Verificar si el programa contiene INT 6 o INT 7
+        // Verificar si el programa contiene INT 6, INT 7 o usa el teclado via IRQ1 (puerto 0x25)
         const connectScreenAndKeyboard = result.instructions.some(instruction => {
           if (instruction.instruction === "INT") {
             return instruction.operands.some((operand: any) => {
               if (operand.type === "number-expression" && typeof operand.value.value === "number") {
                 return operand.value.value === 6 || operand.value.value === 7;
+              }
+              return false;
+            });
+          }
+          // Detectar teclado via PIC IRQ1 (puerto 0x25)
+          if (instruction.instruction === "OUT") {
+            return instruction.operands.some((operand: any) => {
+              if (operand.type === "number-expression") {
+                if (typeof operand.value.value === "number") {
+                  return operand.value.value === 0x25;
+                }
+                try {
+                  if (operand.value && typeof operand.value.resolve === "function") {
+                    const resolvedValue = operand.value.resolve();
+                    if (typeof resolvedValue === "number") {
+                      return resolvedValue === 0x25;
+                    }
+                  }
+                } catch (error) {
+                  console.warn("No se pudo resolver operando IRQ1:", error);
+                }
               }
               return false;
             });
@@ -4092,7 +4113,7 @@ async function dispatch(...args: Action) {
           ...prev,
           devices: {
             ...prev.devices,
-            keyboardAndScreen: connectScreenAndKeyboard,
+            keyboardAndScreen: connectScreenAndKeyboard || prev.devices.keyboardAndScreen,
             pio: usesPIO ? "switches-and-leds" : usesHandshake ? "printer" : prev.devices.pio,
             handshake: usesHandshake ? "printer" : prev.devices.handshake,
             pic: shouldActivatePIC || usesTimer || prev.devices.pic,

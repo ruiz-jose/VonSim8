@@ -119,7 +119,7 @@ export function StatusBar() {
       window.codemirror!.dispatch({
         changes: { from: 0, to: window.codemirror!.state.doc.length, insert: ejemplo.contenido },
       });
-      if (ejemplo.filename === "contador_enter.asm") {
+      if (ejemplo.filename === "contador_press.asm") {
         setSettings(prev => ({
           ...prev,
           devices: { ...prev.devices, keyboardAndScreen: true },

@@ -232,36 +232,36 @@ fin_interrupcion:
     iret                  ; Retorno de interrupción`,
   },
   {
-    nombre: "Contador Enter",
-    filename: "contador_enter.asm",
-    contenido: `; Programa: Contador de pulsaciones de la tecla Enter usando interrupciones
+    nombre: "Contador Press",
+    filename: "contador_press.asm",
+    contenido: `; Programa: Contador de pulsaciones de cualquier tecla usando interrupciones
 
 ;-----------------------------------------------
 ; 1) Definiciones y variables
 ;-----------------------------------------------
 
-cantidad db 0          ; Variable: almacena la cantidad de veces que se presionó Enter
+cantidad db 0          ; Variable: almacena la cantidad de veces que se presionó una tecla
 
-ID   EQU 1             ; ID de la interrupción para Enter (puede ser 0-7)
+ID   EQU 1             ; ID de la interrupción de teclado (puede ser 0-7)
 IMR  EQU 21h           ; Dirección del registro IMR (máscara de interrupciones)
 EOI  EQU 20h           ; Dirección para enviar End Of Interrupt al PIC
-IRQ1 EQU 25h           ; Dirección para configurar la línea IRQ1 (Enter)
+IRQ1 EQU 25h           ; Dirección para configurar la línea IRQ1 (teclado)
 
 ;-----------------------------------------------
 ; 2) Inicialización del PIC y vector de interrupción
 ;-----------------------------------------------
 
-; 2.1) Habilitar solo la interrupción de Enter (IRQ1)
+; 2.1) Habilitar solo la interrupción de teclado (IRQ1)
 mov al, 11111101b      ; Habilita solo IRQ1 (bit 1 en 0), el resto deshabilitado
 out IMR, al
 
 ; 2.2) Configurar el ID de la interrupción para IRQ1
-mov al, ID             ; Cargar el ID elegido para Enter
+mov al, ID             ; Cargar el ID elegido para teclado
 out IRQ1, al
 
-; 2.3) Asociar el vector de interrupción con la subrutina atenderEnter
+; 2.3) Asociar el vector de interrupción con la subrutina atenderPress
 mov bl, ID             ; BL = ID de la interrupción
-mov [bl], atenderEnter ; Vector de interrupción: dirección de la rutina
+mov [bl], atenderPress ; Vector de interrupción: dirección de la rutina
 
 ;-----------------------------------------------
 ; 3) Bucle principal (espera activa)
@@ -272,13 +272,13 @@ loop: jmp loop         ; Espera indefinida (el programa queda esperando interrup
 hlt                    ; (Opcional) Detiene la CPU si sale del bucle
 
 ;-----------------------------------------------
-; 4) Rutina de atención de la interrupción Enter
+; 4) Rutina de atención de la interrupción de teclado
 ;-----------------------------------------------
 
 org 50h                ; Dirección de la subrutina de atención
 
-atenderEnter:
-    inc cantidad       ; Incrementa el contador cada vez que se presiona Enter
+atenderPress:
+    inc cantidad       ; Incrementa el contador cada vez que se presiona una tecla
     mov al, 20h        ; Código de End Of Interrupt (EOI)
     out EOI, al        ; Notifica al PIC que terminó la atención
     iret               ; Retorna de la interrupción`,
