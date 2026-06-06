@@ -1112,7 +1112,7 @@ async function startThread(generator: EventGenerator, allowConcurrent = false): 
 async function executeThread(generator: EventGenerator): Promise<void> {
   try {
     let iterationCount = 0;
-    const MAX_ITERATIONS = 10000; // Límite de seguridad para detectar bucles infinitos
+    const MAX_ITERATIONS = 500000; // Límite de seguridad para detectar bucles infinitos
 
     // eslint-disable-next-line no-constant-condition
     while (true) {
@@ -4113,7 +4113,7 @@ async function dispatch(...args: Action) {
           ...prev,
           devices: {
             ...prev.devices,
-            keyboardAndScreen: connectScreenAndKeyboard || prev.devices.keyboardAndScreen,
+            keyboardAndScreen: connectScreenAndKeyboard,
             pio: usesPIO ? "switches-and-leds" : usesHandshake ? "printer" : prev.devices.pio,
             handshake: usesHandshake ? "printer" : prev.devices.handshake,
             pic: shouldActivatePIC || usesTimer || prev.devices.pic,

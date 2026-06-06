@@ -43,24 +43,26 @@ export const ejemplos = [
   {
     nombre: "Leer Contraseña",
     filename: "leer_contrasena.asm",
-    contenido: `; Leer el valor de interruptores como una contraseña hasta que el usuario la adivine
-clave DB 15               ; Contraseña esperada: 00001111 (en decimal 15)
-mensaje_ok DB "Bienvenido!" ; Mensaje a mostrar si la contraseña es correcta
+    contenido: `; Leer el valor de las llaves como contraseña hasta que el usuario la adivine
+; Contraseña: 00001111b = 15 decimal (llaves 0-3 encendidas)
+; Cuando se acierta, se encienden todos los LEDs como confirmación
+clave DB 15               ; Contraseña esperada: 00001111b
 
-; Configurar PA (Puerto A) como entrada
-MOV AL, 15                ; 00001111b: configura los primeros 4 bits de PA como entrada
+; Configurar PB como salida (LEDs) y PA como entrada (llaves)
+MOV AL, 0                 ; 00000000b: todos los bits de PB como salida
+OUT 33h, AL               ; Escribe en CB para configurar PB
+MOV AL, 255               ; 11111111b: todos los bits de PA como entrada
 OUT 32h, AL               ; Escribe en CA para configurar PA
 
 bucle:
     IN AL, 30h            ; Lee el valor actual de las llaves desde PA
-    CMP AL, clave         ; Compara el valor leído con la contraseña
-    JZ Mostrar_Mensaje    ; Si coincide, salta a Mostrar_Mensaje
+    CMP AL, clave         ; Compara con la contraseña (15)
+    JZ correcto           ; Si coincide, salta a correcto
     JMP bucle             ; Si no coincide, vuelve a intentar
 
-Mostrar_Mensaje:
-    MOV BL, OFFSET mensaje_ok ; BL apunta al mensaje de éxito
-    MOV AL, 11                ; Longitud del mensaje (Bienvenido! tiene 11 caracteres)
-    INT 7
+correcto:
+    MOV AL, 255           ; 11111111b: enciende todos los LEDs
+    OUT 31h, AL           ; Escribe en PB para encender LEDs
     HLT`,
   },
   {

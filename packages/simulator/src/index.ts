@@ -70,14 +70,14 @@ export class Simulator {
         },
       },
       f10: {
-        connected: () => "f10" in this.#computer.io,
+        connected: () => this.#computer.io.f10 !== null,
         press: () => {
           if (this.#computer.io.f10) return this.#computer.io.f10.press();
           else console.warn("Called f10.press() when no f10 was connected to the computer");
         },
       },
       keyboard: {
-        connected: () => "keyboard" in this.#computer.io,
+        connected: () => this.#computer.io.keyboard !== null,
         readChar: (char: Byte<8>) => {
           // Si el PIO es PIOKeyboard, copiar la tecla en los puertos
           // IMPORTANTE: setKeyPressed ahora es un generador, pero aquí
@@ -96,7 +96,7 @@ export class Simulator {
         },
       },
       leds: {
-        connected: () => "leds" in this.#computer.io,
+        connected: () => this.#computer.io.leds !== null,
       },
       printer: {
         connected: () => this.#computer.io.printer !== null,
@@ -111,14 +111,14 @@ export class Simulator {
         hasPending: () => this.#computer.io.printer?.hasPending ?? false, // <-- usa función, no getter
       },
       screen: {
-        connected: () => "screen" in this.#computer.io,
+        connected: () => this.#computer.io.screen !== null,
         clear: () => {
           if (this.#computer.io.screen) return this.#computer.io.screen.clear();
           else console.warn("Called screen.clear() when no screen was connected to the computer");
         },
       },
       switches: {
-        connected: () => "switches" in this.#computer.io,
+        connected: () => this.#computer.io.switches !== null,
         toggle: (index: number) => {
           if (this.#computer.io.switches) return this.#computer.io.switches.toggle(index);
           else

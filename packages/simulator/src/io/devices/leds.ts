@@ -39,6 +39,7 @@ export abstract class Leds extends Component {
    * Called by the PIO.
    */
   *update(state: Byte<8>): EventGenerator {
+    this.#state = state;
     yield { type: "leds:update", state };
   }
 
