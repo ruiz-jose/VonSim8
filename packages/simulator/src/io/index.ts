@@ -66,9 +66,10 @@ export class IOInterface extends Component {
       this.pic = new PIC(options);
     }
 
-    // Si hay keyboard y screen, usar PIOKeyboard
-    // De lo contrario, usar el PIO especificado
-    if (options.devices.keyboardAndScreen) {
+    // Si hay keyboard y screen, usar PIOKeyboard — excepto cuando también se
+    // necesitan llaves (switches-and-leds), en cuyo caso la pantalla funciona
+    // con el PIOSwitchesAndLeds (INT 7 escribe directamente a memoria de video).
+    if (options.devices.keyboardAndScreen && options.devices.pio !== "switches-and-leds") {
       this.pio = new PIOKeyboard(options);
     } else {
       this.pio =

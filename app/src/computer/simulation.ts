@@ -4607,7 +4607,7 @@ export function useSimulation() {
 
       clock: settings.pic,
       f10: false,
-      keyboard: settings.keyboardAndScreen,
+      keyboard: settings.keyboardAndScreen && settings.pio !== "switches-and-leds",
       handshake: settings.handshake,
       leds: settings.pio === "switches-and-leds",
       pic: settings.pic,

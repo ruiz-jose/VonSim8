@@ -9,9 +9,11 @@ Las llaves o interruptores están conectados al puerto `PA`/`CA` del [PIO](../mo
 clave db 15               ; Contraseña esperada: 00001111 (en decimal 15)
 mensaje_ok db "Bienvenido!" ; Mensaje a mostrar si la contraseña es correcta
 
-; Configurar PA (Puerto A) como entrada
-mov al, 15                ; 00001111b: configura los primeros 4 bits de PA como entrada
-out 32h, al               ; Escribe en CA para configurar PA
+; Configurar PB como salida (LEDs) y PA como entrada (llaves)
+MOV AL, 0                 ; 00000000b: todos los bits de PB como salida
+OUT 33h, AL               ; Escribe en CB para configurar PB
+MOV AL, 255               ; 11111111b: todos los bits de PA como entrada
+OUT 32h, AL               ; Escribe en CA para configurar PA
 
 bucle:
     in al, 30h            ; Lee el valor actual de las llaves desde PA
@@ -22,6 +24,7 @@ bucle:
 Mostrar_Mensaje:
     mov bl, offset mensaje_ok ; BL apunta al mensaje de éxito
     mov al, 11                ; Longitud del mensaje ("Bienvenido!" tiene 11 caracteres)
+    int 7
     hlt                       ; Detiene la ejecución del programa
 
 ```
