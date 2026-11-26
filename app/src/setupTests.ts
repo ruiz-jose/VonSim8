@@ -223,11 +223,14 @@ vi.mock("@/hooks/usePWAUpdate", () => ({
 }));
 
 // Mock para ResizeObserver
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
-  observe: vi.fn(),
-  unobserve: vi.fn(),
-  disconnect: vi.fn(),
-}));
+// Vitest 4: un mock usado con `new` necesita una función normal (no flecha)
+global.ResizeObserver = vi.fn().mockImplementation(function () {
+  return {
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
+  };
+});
 
 // Mock para matchMedia
 Object.defineProperty(window, "matchMedia", {
@@ -245,11 +248,14 @@ Object.defineProperty(window, "matchMedia", {
 });
 
 // Mock para IntersectionObserver
-global.IntersectionObserver = vi.fn().mockImplementation(() => ({
-  observe: vi.fn(),
-  unobserve: vi.fn(),
-  disconnect: vi.fn(),
-}));
+// Vitest 4: un mock usado con `new` necesita una función normal (no flecha)
+global.IntersectionObserver = vi.fn().mockImplementation(function () {
+  return {
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
+  };
+});
 
 // Mock para getComputedStyle
 Object.defineProperty(window, "getComputedStyle", {
