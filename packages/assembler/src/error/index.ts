@@ -1,6 +1,7 @@
 import { initTranlate, Language, LocaleCode, LocaleContext } from "@vonsim/common/i18n";
 import { Position } from "@vonsim/common/position";
 
+import { getHint } from "./hints";
 import { english } from "./messages/english";
 import { spanish } from "./messages/spanish";
 
@@ -58,6 +59,14 @@ export class AssemblerError<Code extends AssemblerErrorCode> extends Error {
 
   translate(lang: Language) {
     return translate(lang, this.code, ...this.context);
+  }
+
+  /**
+   * A short hint on how to fix the error, meant for beginners.
+   * Only the most common errors have one.
+   */
+  hint(lang: Language): string | null {
+    return getHint(lang, this.code);
   }
 
   // Just for internal use, should never be shown to the user.
