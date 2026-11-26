@@ -1,68 +1,61 @@
-
 <!doctype html>
 <html lang="en">
-
-<head>
+  <head>
     <title>Code coverage report for src/memory.ts</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../prettify.css" />
     <link rel="stylesheet" href="../base.css" />
     <link rel="shortcut icon" type="image/x-icon" href="../favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <style type='text/css'>
-        .coverage-summary .sorter {
-            background-image: url(../sort-arrow-sprite.png);
-        }
+    <style type="text/css">
+      .coverage-summary .sorter {
+        background-image: url(../sort-arrow-sprite.png);
+      }
     </style>
-</head>
-    
-<body>
-<div class='wrapper'>
-    <div class='pad1'>
+  </head>
+
+  <body>
+    <div class="wrapper">
+      <div class="pad1">
         <h1><a href="../index.html">All files</a> / <a href="index.html">src</a> memory.ts</h1>
-        <div class='clearfix'>
-            
-            <div class='fl pad1y space-right2'>
-                <span class="strong">26.02% </span>
-                <span class="quiet">Statements</span>
-                <span class='fraction'>19/73</span>
-            </div>
-        
-            
-            <div class='fl pad1y space-right2'>
-                <span class="strong">19.04% </span>
-                <span class="quiet">Branches</span>
-                <span class='fraction'>4/21</span>
-            </div>
-        
-            
-            <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
-                <span class="quiet">Functions</span>
-                <span class='fraction'>3/6</span>
-            </div>
-        
-            
-            <div class='fl pad1y space-right2'>
-                <span class="strong">26.86% </span>
-                <span class="quiet">Lines</span>
-                <span class='fraction'>18/67</span>
-            </div>
-        
-            
+        <div class="clearfix">
+          <div class="fl pad1y space-right2">
+            <span class="strong">48.07% </span>
+            <span class="quiet">Statements</span>
+            <span class="fraction">100/208</span>
+          </div>
+
+          <div class="fl pad1y space-right2">
+            <span class="strong">63.63% </span>
+            <span class="quiet">Branches</span>
+            <span class="fraction">7/11</span>
+          </div>
+
+          <div class="fl pad1y space-right2">
+            <span class="strong">66.66% </span>
+            <span class="quiet">Functions</span>
+            <span class="fraction">4/6</span>
+          </div>
+
+          <div class="fl pad1y space-right2">
+            <span class="strong">48.07% </span>
+            <span class="quiet">Lines</span>
+            <span class="fraction">100/208</span>
+          </div>
         </div>
         <p class="quiet">
-            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+          Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>,
+          <em>p</em> or <em>k</em> for the previous block.
         </p>
         <template id="filterTemplate">
-            <div class="quiet">
-                Filter:
-                <input type="search" id="fileSearch">
-            </div>
+          <div class="quiet">
+            Filter:
+            <input type="search" id="fileSearch" />
+          </div>
         </template>
-    </div>
-    <div class='status-line low'></div>
-    <pre><table class="coverage">
+      </div>
+      <div class="status-line low"></div>
+      <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
 <a name='L3'></a><a href='#L3'>3</a>
@@ -271,322 +264,214 @@
 <a name='L206'></a><a href='#L206'>206</a>
 <a name='L207'></a><a href='#L207'>207</a>
 <a name='L208'></a><a href='#L208'>208</a>
-<a name='L209'></a><a href='#L209'>209</a>
-<a name='L210'></a><a href='#L210'>210</a>
-<a name='L211'></a><a href='#L211'>211</a>
-<a name='L212'></a><a href='#L212'>212</a>
-<a name='L213'></a><a href='#L213'>213</a>
-<a name='L214'></a><a href='#L214'>214</a>
-<a name='L215'></a><a href='#L215'>215</a>
-<a name='L216'></a><a href='#L216'>216</a>
-<a name='L217'></a><a href='#L217'>217</a>
-<a name='L218'></a><a href='#L218'>218</a>
-<a name='L219'></a><a href='#L219'>219</a>
-<a name='L220'></a><a href='#L220'>220</a>
-<a name='L221'></a><a href='#L221'>221</a>
-<a name='L222'></a><a href='#L222'>222</a>
-<a name='L223'></a><a href='#L223'>223</a>
-<a name='L224'></a><a href='#L224'>224</a>
-<a name='L225'></a><a href='#L225'>225</a>
-<a name='L226'></a><a href='#L226'>226</a>
-<a name='L227'></a><a href='#L227'>227</a>
-<a name='L228'></a><a href='#L228'>228</a>
-<a name='L229'></a><a href='#L229'>229</a>
-<a name='L230'></a><a href='#L230'>230</a>
-<a name='L231'></a><a href='#L231'>231</a>
-<a name='L232'></a><a href='#L232'>232</a>
-<a name='L233'></a><a href='#L233'>233</a>
-<a name='L234'></a><a href='#L234'>234</a>
-<a name='L235'></a><a href='#L235'>235</a>
-<a name='L236'></a><a href='#L236'>236</a>
-<a name='L237'></a><a href='#L237'>237</a>
-<a name='L238'></a><a href='#L238'>238</a>
-<a name='L239'></a><a href='#L239'>239</a>
-<a name='L240'></a><a href='#L240'>240</a>
-<a name='L241'></a><a href='#L241'>241</a>
-<a name='L242'></a><a href='#L242'>242</a>
-<a name='L243'></a><a href='#L243'>243</a>
-<a name='L244'></a><a href='#L244'>244</a>
-<a name='L245'></a><a href='#L245'>245</a>
-<a name='L246'></a><a href='#L246'>246</a>
-<a name='L247'></a><a href='#L247'>247</a>
-<a name='L248'></a><a href='#L248'>248</a>
-<a name='L249'></a><a href='#L249'>249</a>
-<a name='L250'></a><a href='#L250'>250</a>
-<a name='L251'></a><a href='#L251'>251</a>
-<a name='L252'></a><a href='#L252'>252</a>
-<a name='L253'></a><a href='#L253'>253</a>
-<a name='L254'></a><a href='#L254'>254</a>
-<a name='L255'></a><a href='#L255'>255</a>
-<a name='L256'></a><a href='#L256'>256</a>
-<a name='L257'></a><a href='#L257'>257</a>
-<a name='L258'></a><a href='#L258'>258</a>
-<a name='L259'></a><a href='#L259'>259</a>
-<a name='L260'></a><a href='#L260'>260</a>
-<a name='L261'></a><a href='#L261'>261</a>
-<a name='L262'></a><a href='#L262'>262</a>
-<a name='L263'></a><a href='#L263'>263</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L209'></a><a href='#L209'>209</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { syscalls, unassigned } from "@vonsim/assembler";
 import { MemoryAddress, MemoryAddressLike } from "@vonsim/common/address";
 import { Byte } from "@vonsim/common/byte";
@@ -609,8 +494,7 @@ export type MemoryOperation =
         | SimulatorError&lt;"address-is-reserved"&gt;
         | SimulatorError&lt;"address-out-of-range"&gt;;
     }
-  | { type: "memory:write.warning"; warning: string }
-  | { type: "memory:write.screen"; address: MemoryAddress; value: Byte&lt;8&gt; };
+  | { type: "memory:write.warning"; warning: string };
 &nbsp;
 /**
  * Memory.
@@ -632,10 +516,10 @@ export class Memory extends Component {
 &nbsp;
   constructor(options: ComponentInit) {
     super(options);
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (options.data === "unchanged") {
+    if (options.data === "unchanged") <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
 <span class="cstat-no" title="statement not covered" >      this.#buffer = options.previous.memory.#buffer;</span>
-    <span class="missing-if-branch" title="if path not taken" >I</span>} else if (options.data === "randomize") {
-<span class="cstat-no" title="statement not covered" >      this.#buffer = new Uint8Array(Memory.SIZE).map(<span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >B</span>yte.random(8).unsigned)</span>;</span>
+    } else if (options.data === "randomize") <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
+<span class="cstat-no" title="statement not covered" >      this.#buffer = new Uint8Array(Memory.SIZE).map(() =&gt; Byte.random(8).unsigned);</span>
     } else {
       this.#buffer = new Uint8Array(Memory.SIZE).fill(0);
     }
@@ -650,101 +534,61 @@ export class Memory extends Component {
 &nbsp;
     // Load syscalls addresses into memory only if hasINTInstruction is true
     this.#reservedMemory = new Set();
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (hasINTInstruction) {
+    if (hasINTInstruction) <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
 <span class="cstat-no" title="statement not covered" >      for (const [number, address] of syscalls) {</span>
-        const start = <span class="cstat-no" title="statement not covered" >number; // Interrupt vector position</span>
+<span class="cstat-no" title="statement not covered" >        const start = number; // Interrupt vector position</span>
 <span class="cstat-no" title="statement not covered" >        this.#buffer[start] = address.unsigned;</span>
 <span class="cstat-no" title="statement not covered" >        this.#reservedMemory.add(start);</span>
-&nbsp;
-        // Las instrucciones de las rutinas de interrupción (como INT 6)
-        // se inyectan automáticamente en la CPU, no es necesario
-        // inyectarlas aquí como bytecodes
-      }
-    }
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        // Inject the INT 6 handler routine at address C0h</span>
+<span class="cstat-no" title="statement not covered" >        if (number === 6) {</span>
+<span class="cstat-no" title="statement not covered" >          const int6Handler = [</span>
+<span class="cstat-no" title="statement not covered" >            0xd0, // push AL</span>
+<span class="cstat-no" title="statement not covered" >            0xd8,</span>
+<span class="cstat-no" title="statement not covered" >            0x30, // in AL, 30h</span>
+<span class="cstat-no" title="statement not covered" >            0x12,</span>
+<span class="cstat-no" title="statement not covered" >            0x01, // cmp AL, 1</span>
+<span class="cstat-no" title="statement not covered" >            0xc1,</span>
+<span class="cstat-no" title="statement not covered" >            0xc1, // jz wait_for_key (-6 bytes)</span>
+<span class="cstat-no" title="statement not covered" >            0xd8,</span>
+<span class="cstat-no" title="statement not covered" >            0x31, // in AL, 31h</span>
+<span class="cstat-no" title="statement not covered" >            0xd4, // pop AL</span>
+<span class="cstat-no" title="statement not covered" >            0x41, // mov [BX], AL</span>
+<span class="cstat-no" title="statement not covered" >            0xe1, // iret</span>
+<span class="cstat-no" title="statement not covered" >          ];</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >          // Inject the INT 6 handler routine at address C0h</span>
+<span class="cstat-no" title="statement not covered" >          /*  if (number === 6) {</span>
+<span class="cstat-no" title="statement not covered" >          const int6Handler = [</span>
+<span class="cstat-no" title="statement not covered" >            0xD0, // push AL</span>
+<span class="cstat-no" title="statement not covered" >            0xd8, 0x64, // in AL, 64h</span>
+<span class="cstat-no" title="statement not covered" >            0x12, 0x01, // cmp AL, 1</span>
+<span class="cstat-no" title="statement not covered" >            0xC1, 0xC1, // jz wait_for_key (-6 bytes)</span>
+<span class="cstat-no" title="statement not covered" >            0xd8, 0x60, // in AL, 60h</span>
+<span class="cstat-no" title="statement not covered" >            0xD4, // pop AL</span>
+<span class="cstat-no" title="statement not covered" >            0x41, // mov [BX], AL</span>
+<span class="cstat-no" title="statement not covered" >            0xE1, // iret</span>
+<span class="cstat-no" title="statement not covered" >          ];*/</span>
+<span class="cstat-no" title="statement not covered" >          const int6HandlerAddress = address.unsigned;</span>
+<span class="cstat-no" title="statement not covered" >          for (let i = 0; i &lt; int6Handler.length; i++) {</span>
+<span class="cstat-no" title="statement not covered" >            this.#buffer[int6HandlerAddress + i] = int6Handler[i];</span>
+<span class="cstat-no" title="statement not covered" >            this.#reservedMemory.add(int6HandlerAddress + i);</span>
+<span class="cstat-no" title="statement not covered" >          }</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >      }</span>
+<span class="cstat-no" title="statement not covered" >    }</span>
 &nbsp;
     // Load data directives into memory
-    for (const directive of options.program.data) {
-      let offset = <span class="cstat-no" title="statement not covered" >directive.start.value;</span>
+    for (const directive of options.program.data) <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
+<span class="cstat-no" title="statement not covered" >      let offset = directive.start.value;</span>
 <span class="cstat-no" title="statement not covered" >      for (const value of directive.getValues()) {</span>
-<span class="cstat-no" title="statement not covered" >        if (value !== unassigned) <span class="cstat-no" title="statement not covered" >this.#buffer.set(value.toUint8Array(), offset);</span></span>
+<span class="cstat-no" title="statement not covered" >        if (value !== unassigned) this.#buffer.set(value.toUint8Array(), offset);</span>
 <span class="cstat-no" title="statement not covered" >        offset += directive.size / 8;</span>
-      }
-    }
+<span class="cstat-no" title="statement not covered" >      }</span>
+<span class="cstat-no" title="statement not covered" >    }</span>
 &nbsp;
     // Load instructions into memory
     this.#codeMemory = new Set();
-&nbsp;
-    // Si el programa contiene instrucciones INT, cargar las rutinas del sistema
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (hasINTInstruction) {
-      // Cargar la rutina INT 0 en memoria (detener programa)
-      // Esta rutina simplemente ejecuta HLT para detener el programa
-      const int0Bytecodes = <span class="cstat-no" title="statement not covered" >[</span>
-        0xf1, // B0h: HLT
-      ];
-&nbsp;
-      const int0Address = <span class="cstat-no" title="statement not covered" >0xb0;</span>
-<span class="cstat-no" title="statement not covered" >      for (let i = <span class="cstat-no" title="statement not covered" >0; i</span> &lt; int0Bytecodes.length; i++) {</span>
-<span class="cstat-no" title="statement not covered" >        this.#buffer[int0Address + i] = int0Bytecodes[i];</span>
-<span class="cstat-no" title="statement not covered" >        this.#codeMemory.add(int0Address + i);</span>
-      }
-&nbsp;
-      // Cargar la rutina INT 6 en memoria (lectura de teclado)
-      const int6Bytecodes = <span class="cstat-no" title="statement not covered" >[</span>
-        0xd0, // C0h: push AL
-        0xd8,
-        0x32, // C1h: in AL, 32h (wait_for_key) - leer estado (CA)
-        0xa2,
-        0x01, // C3h: cmp AL, 1 - comparar con 1 (sin tecla)
-        0xc2,
-        0xc1, // C5h: jnz wait_for_key
-        0xd8,
-        0x30, // C7h: in AL, 30h - leer carácter (PA)
-        0x24, // CAh: mov [BL], AL
-        0xd4, // C9h: pop AL
-        0xe1, // CBh: iret
-      ];
-&nbsp;
-      const int6Address = <span class="cstat-no" title="statement not covered" >0xc0;</span>
-<span class="cstat-no" title="statement not covered" >      for (let i = <span class="cstat-no" title="statement not covered" >0; i</span> &lt; int6Bytecodes.length; i++) {</span>
-<span class="cstat-no" title="statement not covered" >        this.#buffer[int6Address + i] = int6Bytecodes[i];</span>
-<span class="cstat-no" title="statement not covered" >        this.#codeMemory.add(int6Address + i);</span>
-      }
-&nbsp;
-      // Cargar la rutina INT 7 en memoria (escritura en pantalla)
-      // NOTA: Los bytecodes se generan automáticamente desde cpu/index.ts
-      // La rutina se ejecuta desde las instrucciones ensambladas, no desde estos bytecodes
-      const int7Bytecodes = <span class="cstat-no" title="statement not covered" >[</span>
-        0xd3, // D0h: push DL
-        0xd2, // D1h: push CL
-        0x1e,
-        0xe5, // D2h: mov DL, 0E5h
-        0xa2,
-        0x00, // D4h: cmp AL, 0 (int7_loop)
-        0xc1,
-        0xe2, // D6h: jz int7_end
-        0x19, // D8h: mov CL, [BL]
-        0xd1, // D9h: push BL
-        0x07, // DAh: mov BL, DL
-        0x26, // DBh: mov [BL], CL
-        0xd5, // DEh: pop BL
-        0x45, // DFh: inc BL
-        0x47, // E0h: inc DL
-        0x46, // E1h: dec AL
-        0xc0,
-        0xd4, // E2h: jmp int7_loop
-        0xd6, // E4h: pop CL
-        0xd7, // E5h: pop DL
-        0xe1, // E6h: iret
-      ];
-&nbsp;
-      const int7Address = <span class="cstat-no" title="statement not covered" >0xd0;</span>
-<span class="cstat-no" title="statement not covered" >      for (let i = <span class="cstat-no" title="statement not covered" >0; i</span> &lt; int7Bytecodes.length; i++) {</span>
-<span class="cstat-no" title="statement not covered" >        this.#buffer[int7Address + i] = int7Bytecodes[i];</span>
-<span class="cstat-no" title="statement not covered" >        this.#codeMemory.add(int7Address + i);</span>
-      }
-    }
-&nbsp;
-    // Cargar las instrucciones del programa del usuario
     for (const instruction of options.program.instructions) {
       this.#buffer.set(instruction.toBytes(), instruction.start.value);
       for (let i = 0; i &lt; instruction.length; i++) {
@@ -761,22 +605,22 @@ export class Memory extends Component {
    * ---
    * Called by the CPU.
    */
-<span class="fstat-no" title="function not covered" >  *r</span>ead(address: MemoryAddressLike): EventGenerator&lt;Byte&lt;8&gt; | null&gt; {
+<span class="fstat-no" title="function not covered" >  *read(address: MemoryAddressLike): EventGenerator&lt;Byte&lt;8&gt; | null&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    address = Number(address);</span>
 <span class="cstat-no" title="statement not covered" >    yield { type: "memory:read", address };</span>
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    if (!MemoryAddress.inRange(address)) {</span>
 <span class="cstat-no" title="statement not covered" >      yield {</span>
-        type: "memory:read.error",
-        error: new SimulatorError("address-out-of-range", address),
-      };
+<span class="cstat-no" title="statement not covered" >        type: "memory:read.error",</span>
+<span class="cstat-no" title="statement not covered" >        error: new SimulatorError("address-out-of-range", address),</span>
+<span class="cstat-no" title="statement not covered" >      };</span>
 <span class="cstat-no" title="statement not covered" >      return null;</span>
-    }
-&nbsp;
-    const value = <span class="cstat-no" title="statement not covered" >Byte.fromUnsigned(this.#buffer.at(address)!, 8);</span>
+<span class="cstat-no" title="statement not covered" >    }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    const value = Byte.fromUnsigned(this.#buffer.at(address)!, 8);</span>
 <span class="cstat-no" title="statement not covered" >    yield { type: "memory:read.ok", address: MemoryAddress.from(address), value };</span>
 <span class="cstat-no" title="statement not covered" >    return value;</span>
-  }
+<span class="cstat-no" title="statement not covered" >  }</span>
 &nbsp;
   /**
    * Writes a byte to memory at the specified address.
@@ -787,63 +631,50 @@ export class Memory extends Component {
    * ---
    * Called by the CPU.
    */
-<span class="fstat-no" title="function not covered" >  *w</span>rite(address: MemoryAddressLike, value: Byte&lt;8&gt;): EventGenerator&lt;boolean&gt; {
+<span class="fstat-no" title="function not covered" >  *write(address: MemoryAddressLike, value: Byte&lt;8&gt;): EventGenerator&lt;boolean&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    address = Number(address);</span>
 <span class="cstat-no" title="statement not covered" >    yield { type: "memory:write", address, value };</span>
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    if (!MemoryAddress.inRange(address)) {</span>
 <span class="cstat-no" title="statement not covered" >      yield {</span>
-        type: "memory:write.error",
-        error: new SimulatorError("address-out-of-range", address),
-      };
+<span class="cstat-no" title="statement not covered" >        type: "memory:write.error",</span>
+<span class="cstat-no" title="statement not covered" >        error: new SimulatorError("address-out-of-range", address),</span>
+<span class="cstat-no" title="statement not covered" >      };</span>
 <span class="cstat-no" title="statement not covered" >      return false;</span>
-    }
-&nbsp;
-    /* if (this.#codeMemory.has(address)) {
-      yield {
-        type: "memory:write.error",
-        error: new SimulatorError("address-has-instruction", address),
-      };
-      return false;
-    }*/
-&nbsp;
-<span class="cstat-no" title="statement not covered" >    if (this.#codeMemory.has(address)) {</span>
-      // Emitir un evento de advertencia en lugar de un error
+<span class="cstat-no" title="statement not covered" >    }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    /* if (this.#codeMemory.has(address)) {</span>
 <span class="cstat-no" title="statement not covered" >      yield {</span>
-        type: "memory:write.warning",
-        warning: `Sobrescribiendo instrucción en la dirección ${MemoryAddress.format(address)}`,
-      };
+<span class="cstat-no" title="statement not covered" >        type: "memory:write.error",</span>
+<span class="cstat-no" title="statement not covered" >        error: new SimulatorError("address-has-instruction", address),</span>
+<span class="cstat-no" title="statement not covered" >      };</span>
+<span class="cstat-no" title="statement not covered" >      return false;</span>
+<span class="cstat-no" title="statement not covered" >    }*/</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    if (this.#codeMemory.has(address)) {</span>
+<span class="cstat-no" title="statement not covered" >      // Emitir un evento de advertencia en lugar de un error</span>
+<span class="cstat-no" title="statement not covered" >      yield {</span>
+<span class="cstat-no" title="statement not covered" >        type: "memory:write.warning",</span>
+<span class="cstat-no" title="statement not covered" >        warning: `Sobrescribiendo instrucción en la dirección ${MemoryAddress.format(address)}`,</span>
+<span class="cstat-no" title="statement not covered" >      };</span>
 <span class="cstat-no" title="statement not covered" >      console.warn(</span>
-        `Advertencia: Sobrescribiendo instrucción en la dirección ${MemoryAddress.format(address)}`,
-      );
-      // Continuar la ejecución sin detener el programa
-    }
-&nbsp;
-    /*if (this.#reservedMemory.has(address)) {
-      yield {
-        type: "memory:write.error",
-        error: new SimulatorError("address-is-reserved", address),
-      };
-      return false;
-    }*/
-&nbsp;
-    // Interceptar escritura en direcciones de pantalla para mostrar el carácter automáticamente
-    // Condiciones:
-    // 1. Si estamos ejecutando INT 7 (CPU flag activo)
-    // 2. Y NO es una operación de stack (PUSH/POP detectada explícitamente)
-    // 3. Entonces mostrar el carácter en pantalla
-    const isExecutingINT7 = <span class="cstat-no" title="statement not covered" >this.computer.cpu.isExecutingINT7();</span>
-    const isStackOperation = <span class="cstat-no" title="statement not covered" >this.computer.cpu.isStackOperation();</span>
-&nbsp;
-<span class="cstat-no" title="statement not covered" >    if (isExecutingINT7 &amp;&amp; !isStackOperation &amp;&amp; "screen" in this.computer.io) {</span>
-<span class="cstat-no" title="statement not covered" >      yield { type: "memory:write.screen", address: MemoryAddress.from(address), value };</span>
-<span class="cstat-no" title="statement not covered" >      yield* this.computer.io.screen.sendChar(value);</span>
-    }
-&nbsp;
+<span class="cstat-no" title="statement not covered" >        `Advertencia: Sobrescribiendo instrucción en la dirección ${MemoryAddress.format(address)}`,</span>
+<span class="cstat-no" title="statement not covered" >      );</span>
+<span class="cstat-no" title="statement not covered" >      // Continuar la ejecución sin detener el programa</span>
+<span class="cstat-no" title="statement not covered" >    }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    /*if (this.#reservedMemory.has(address)) {</span>
+<span class="cstat-no" title="statement not covered" >      yield {</span>
+<span class="cstat-no" title="statement not covered" >        type: "memory:write.error",</span>
+<span class="cstat-no" title="statement not covered" >        error: new SimulatorError("address-is-reserved", address),</span>
+<span class="cstat-no" title="statement not covered" >      };</span>
+<span class="cstat-no" title="statement not covered" >      return false;</span>
+<span class="cstat-no" title="statement not covered" >    }*/</span>
+<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    this.#buffer.set([value.unsigned], address);</span>
 <span class="cstat-no" title="statement not covered" >    yield { type: "memory:write.ok", address: MemoryAddress.from(address), value };</span>
 <span class="cstat-no" title="statement not covered" >    return true;</span>
-  }
+<span class="cstat-no" title="statement not covered" >  }</span>
 &nbsp;
   toJSON() {
     return [...this.#buffer] satisfies JsonValue;
@@ -851,21 +682,22 @@ export class Memory extends Component {
 }
 &nbsp;</pre></td></tr></table></pre>
 
-                <div class='push'></div><!-- for sticky footer -->
-            </div><!-- /wrapper -->
-            <div class='footer quiet pad2 space-top1 center small'>
-                Code coverage generated by
-                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-11-26T16:38:26.695Z
-            </div>
-        <script src="../prettify.js"></script>
-        <script>
-            window.onload = function () {
-                prettyPrint();
-            };
-        </script>
-        <script src="../sorter.js"></script>
-        <script src="../block-navigation.js"></script>
-    </body>
+      <div class="push"></div>
+      <!-- for sticky footer -->
+    </div>
+    <!-- /wrapper -->
+    <div class="footer quiet pad2 space-top1 center small">
+      Code coverage generated by
+      <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+      at 2025-07-14T12:36:49.915Z
+    </div>
+    <script src="../prettify.js"></script>
+    <script>
+      window.onload = function () {
+        prettyPrint();
+      };
+    </script>
+    <script src="../sorter.js"></script>
+    <script src="../block-navigation.js"></script>
+  </body>
 </html>
-    

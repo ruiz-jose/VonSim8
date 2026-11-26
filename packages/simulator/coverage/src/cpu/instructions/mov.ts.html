@@ -1,68 +1,64 @@
-
 <!doctype html>
 <html lang="en">
-
-<head>
+  <head>
     <title>Code coverage report for src/cpu/instructions/mov.ts</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../../prettify.css" />
     <link rel="stylesheet" href="../../../base.css" />
     <link rel="shortcut icon" type="image/x-icon" href="../../../favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <style type='text/css'>
-        .coverage-summary .sorter {
-            background-image: url(../../../sort-arrow-sprite.png);
-        }
+    <style type="text/css">
+      .coverage-summary .sorter {
+        background-image: url(../../../sort-arrow-sprite.png);
+      }
     </style>
-</head>
-    
-<body>
-<div class='wrapper'>
-    <div class='pad1'>
-        <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/cpu/instructions</a> mov.ts</h1>
-        <div class='clearfix'>
-            
-            <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
-                <span class="quiet">Statements</span>
-                <span class='fraction'>0/95</span>
-            </div>
-        
-            
-            <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
-                <span class="quiet">Branches</span>
-                <span class='fraction'>0/71</span>
-            </div>
-        
-            
-            <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
-                <span class="quiet">Functions</span>
-                <span class='fraction'>0/4</span>
-            </div>
-        
-            
-            <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
-                <span class="quiet">Lines</span>
-                <span class='fraction'>0/87</span>
-            </div>
-        
-            
+  </head>
+
+  <body>
+    <div class="wrapper">
+      <div class="pad1">
+        <h1>
+          <a href="../../../index.html">All files</a> /
+          <a href="index.html">src/cpu/instructions</a> mov.ts
+        </h1>
+        <div class="clearfix">
+          <div class="fl pad1y space-right2">
+            <span class="strong">11.21% </span>
+            <span class="quiet">Statements</span>
+            <span class="fraction">23/205</span>
+          </div>
+
+          <div class="fl pad1y space-right2">
+            <span class="strong">100% </span>
+            <span class="quiet">Branches</span>
+            <span class="fraction">0/0</span>
+          </div>
+
+          <div class="fl pad1y space-right2">
+            <span class="strong">0% </span>
+            <span class="quiet">Functions</span>
+            <span class="fraction">0/3</span>
+          </div>
+
+          <div class="fl pad1y space-right2">
+            <span class="strong">11.21% </span>
+            <span class="quiet">Lines</span>
+            <span class="fraction">23/205</span>
+          </div>
         </div>
         <p class="quiet">
-            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+          Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>,
+          <em>p</em> or <em>k</em> for the previous block.
         </p>
         <template id="filterTemplate">
-            <div class="quiet">
-                Filter:
-                <input type="search" id="fileSearch">
-            </div>
+          <div class="quiet">
+            Filter:
+            <input type="search" id="fileSearch" />
+          </div>
         </template>
-    </div>
-    <div class='status-line low'></div>
-    <pre><table class="coverage">
+      </div>
+      <div class="status-line low"></div>
+      <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
 <a name='L3'></a><a href='#L3'>3</a>
@@ -268,342 +264,215 @@
 <a name='L203'></a><a href='#L203'>203</a>
 <a name='L204'></a><a href='#L204'>204</a>
 <a name='L205'></a><a href='#L205'>205</a>
-<a name='L206'></a><a href='#L206'>206</a>
-<a name='L207'></a><a href='#L207'>207</a>
-<a name='L208'></a><a href='#L208'>208</a>
-<a name='L209'></a><a href='#L209'>209</a>
-<a name='L210'></a><a href='#L210'>210</a>
-<a name='L211'></a><a href='#L211'>211</a>
-<a name='L212'></a><a href='#L212'>212</a>
-<a name='L213'></a><a href='#L213'>213</a>
-<a name='L214'></a><a href='#L214'>214</a>
-<a name='L215'></a><a href='#L215'>215</a>
-<a name='L216'></a><a href='#L216'>216</a>
-<a name='L217'></a><a href='#L217'>217</a>
-<a name='L218'></a><a href='#L218'>218</a>
-<a name='L219'></a><a href='#L219'>219</a>
-<a name='L220'></a><a href='#L220'>220</a>
-<a name='L221'></a><a href='#L221'>221</a>
-<a name='L222'></a><a href='#L222'>222</a>
-<a name='L223'></a><a href='#L223'>223</a>
-<a name='L224'></a><a href='#L224'>224</a>
-<a name='L225'></a><a href='#L225'>225</a>
-<a name='L226'></a><a href='#L226'>226</a>
-<a name='L227'></a><a href='#L227'>227</a>
-<a name='L228'></a><a href='#L228'>228</a>
-<a name='L229'></a><a href='#L229'>229</a>
-<a name='L230'></a><a href='#L230'>230</a>
-<a name='L231'></a><a href='#L231'>231</a>
-<a name='L232'></a><a href='#L232'>232</a>
-<a name='L233'></a><a href='#L233'>233</a>
-<a name='L234'></a><a href='#L234'>234</a>
-<a name='L235'></a><a href='#L235'>235</a>
-<a name='L236'></a><a href='#L236'>236</a>
-<a name='L237'></a><a href='#L237'>237</a>
-<a name='L238'></a><a href='#L238'>238</a>
-<a name='L239'></a><a href='#L239'>239</a>
-<a name='L240'></a><a href='#L240'>240</a>
-<a name='L241'></a><a href='#L241'>241</a>
-<a name='L242'></a><a href='#L242'>242</a>
-<a name='L243'></a><a href='#L243'>243</a>
-<a name='L244'></a><a href='#L244'>244</a>
-<a name='L245'></a><a href='#L245'>245</a>
-<a name='L246'></a><a href='#L246'>246</a>
-<a name='L247'></a><a href='#L247'>247</a>
-<a name='L248'></a><a href='#L248'>248</a>
-<a name='L249'></a><a href='#L249'>249</a>
-<a name='L250'></a><a href='#L250'>250</a>
-<a name='L251'></a><a href='#L251'>251</a>
-<a name='L252'></a><a href='#L252'>252</a>
-<a name='L253'></a><a href='#L253'>253</a>
-<a name='L254'></a><a href='#L254'>254</a>
-<a name='L255'></a><a href='#L255'>255</a>
-<a name='L256'></a><a href='#L256'>256</a>
-<a name='L257'></a><a href='#L257'>257</a>
-<a name='L258'></a><a href='#L258'>258</a>
-<a name='L259'></a><a href='#L259'>259</a>
-<a name='L260'></a><a href='#L260'>260</a>
-<a name='L261'></a><a href='#L261'>261</a>
-<a name='L262'></a><a href='#L262'>262</a>
-<a name='L263'></a><a href='#L263'>263</a>
-<a name='L264'></a><a href='#L264'>264</a>
-<a name='L265'></a><a href='#L265'>265</a>
-<a name='L266'></a><a href='#L266'>266</a>
-<a name='L267'></a><a href='#L267'>267</a>
-<a name='L268'></a><a href='#L268'>268</a>
-<a name='L269'></a><a href='#L269'>269</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L206'></a><a href='#L206'>206</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">//import { Byte } from "@vonsim/common/byte";
 &nbsp;
 import { ByteRegister } from "../../../../assembler/src/types";
 import type { Computer } from "../../computer";
-import type { WordRegister } from "../../cpu/types";
 import type { EventGenerator } from "../../events";
 import { Instruction } from "../instruction";
 import { splitRegister } from "../utils";
@@ -617,273 +486,212 @@ import { splitRegister } from "../utils";
  * This class is: IMMUTABLE
  */
 export class MOVInstruction extends Instruction&lt;"MOV"&gt; {
-<span class="fstat-no" title="function not covered" >  get o</span>peration() {
+<span class="fstat-no" title="function not covered" >  get operation() {</span>
 <span class="cstat-no" title="statement not covered" >    return this.statement.operation;</span>
-  }
+<span class="cstat-no" title="statement not covered" >  }</span>
 &nbsp;
 <span class="fstat-no" title="function not covered" >  #formatOperands(): string[] {</span>
-    const { mode, out, src } = <span class="cstat-no" title="statement not covered" >this.operation;</span>
-&nbsp;
+<span class="cstat-no" title="statement not covered" >    const { mode, out, src } = this.operation;</span>
+<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    switch (mode) {</span>
-      case "reg&lt;-reg":
+<span class="cstat-no" title="statement not covered" >      case "reg&lt;-reg":</span>
 <span class="cstat-no" title="statement not covered" >        return [out, src];</span>
-&nbsp;
-      case "reg&lt;-mem": {
-        const addr = <span class="cstat-no" title="statement not covered" >src.mode === "direct" ? src.address.toString() : "BL";</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >      case "reg&lt;-mem": {</span>
+<span class="cstat-no" title="statement not covered" >        const addr = src.mode === "direct" ? src.address.toString() : "BL";</span>
 <span class="cstat-no" title="statement not covered" >        return [out, `[${addr}]`];</span>
-      }
-&nbsp;
-      case "reg&lt;-imd":
+<span class="cstat-no" title="statement not covered" >      }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >      case "reg&lt;-imd":</span>
 <span class="cstat-no" title="statement not covered" >        return [out, `${src.toString("hex")}h`];</span>
-&nbsp;
-      case "mem&lt;-reg": {
-        const addr = <span class="cstat-no" title="statement not covered" >out.mode === "direct" ? out.address.toString() : "BL";</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >      case "mem&lt;-reg": {</span>
+<span class="cstat-no" title="statement not covered" >        const addr = out.mode === "direct" ? out.address.toString() : "BL";</span>
 <span class="cstat-no" title="statement not covered" >        return [`[${addr}]`, src];</span>
-      }
-&nbsp;
-      case "mem&lt;-imd": {
-        const addr = <span class="cstat-no" title="statement not covered" >out.mode === "direct" ? out.address.toString() : "BL";</span>
+<span class="cstat-no" title="statement not covered" >      }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >      case "mem&lt;-imd": {</span>
+<span class="cstat-no" title="statement not covered" >        const addr = out.mode === "direct" ? out.address.toString() : "BL";</span>
 <span class="cstat-no" title="statement not covered" >        return [`[${addr}]`, `${src.toString("hex")}h`];</span>
-      }
-&nbsp;
-      default: {
-        const _exhaustiveCheck: never = <span class="cstat-no" title="statement not covered" >mode;</span>
+<span class="cstat-no" title="statement not covered" >      }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >      default: {</span>
+<span class="cstat-no" title="statement not covered" >        const _exhaustiveCheck: never = mode;</span>
 <span class="cstat-no" title="statement not covered" >        return _exhaustiveCheck;</span>
-      }
-    }
-  }
+<span class="cstat-no" title="statement not covered" >      }</span>
+<span class="cstat-no" title="statement not covered" >    }</span>
+<span class="cstat-no" title="statement not covered" >  }</span>
 &nbsp;
-<span class="fstat-no" title="function not covered" >  *e</span>xecute(computer: Computer): EventGenerator&lt;boolean&gt; {
-    const { mode, size, out, src } = <span class="cstat-no" title="statement not covered" >this.operation;</span>
-&nbsp;
+<span class="fstat-no" title="function not covered" >  *execute(computer: Computer): EventGenerator&lt;boolean&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    const { mode, size, out, src } = this.operation;</span>
+<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    yield {</span>
-      type: "cpu:cycle.start",
-      instruction: {
-        name: this.name,
-        position: this.position,
-        operands: this.#formatOperands(),
-        willUse: {
-          //ri: mode === "mem&lt;-imd",
-          id: false,
-          ri: this.operation.mode === "mem&lt;-imd" &amp;&amp; this.operation.out.mode === "direct", // Solo marcar `id` como true si es "mem&lt;-imd" y "direct"
-          //id: mode === "reg&lt;-mem" || mode === "reg&lt;-imd" || mode === "mem&lt;-imd",
-        },
-      },
-    };
-&nbsp;
-    // All intructions are, at least, 2 bytes long.
-    //yield* super.consumeInstruction(computer, "IR");
-    //yield { type: "cpu:decode" };
+<span class="cstat-no" title="statement not covered" >      type: "cpu:cycle.start",</span>
+<span class="cstat-no" title="statement not covered" >      instruction: {</span>
+<span class="cstat-no" title="statement not covered" >        name: this.name,</span>
+<span class="cstat-no" title="statement not covered" >        position: this.position,</span>
+<span class="cstat-no" title="statement not covered" >        operands: this.#formatOperands(),</span>
+<span class="cstat-no" title="statement not covered" >        willUse: {</span>
+<span class="cstat-no" title="statement not covered" >          //ri: mode === "mem&lt;-imd",</span>
+<span class="cstat-no" title="statement not covered" >          id: false,</span>
+<span class="cstat-no" title="statement not covered" >          ri: this.operation.mode === "mem&lt;-imd" &amp;&amp; this.operation.out.mode === "direct", // Solo marcar `id` como true si es "mem&lt;-imd" y "direct"</span>
+<span class="cstat-no" title="statement not covered" >          //id: mode === "reg&lt;-mem" || mode === "reg&lt;-imd" || mode === "mem&lt;-imd",</span>
+<span class="cstat-no" title="statement not covered" >        },</span>
+<span class="cstat-no" title="statement not covered" >      },</span>
+<span class="cstat-no" title="statement not covered" >    };</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    // All intructions are, at least, 2 bytes long.</span>
+<span class="cstat-no" title="statement not covered" >    //yield* super.consumeInstruction(computer, "IR");</span>
+<span class="cstat-no" title="statement not covered" >    //yield { type: "cpu:decode" };</span>
 <span class="cstat-no" title="statement not covered" >    yield* super.consumeInstruction(computer, "IR");</span>
 <span class="cstat-no" title="statement not covered" >    yield { type: "cpu:decode" };</span>
 <span class="cstat-no" title="statement not covered" >    yield { type: "cpu:cycle.update", phase: "decoded", next: "fetch-operands" };</span>
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    if (</span>
-      this.operation.mode === "reg&lt;-mem" ||
-      this.operation.mode === "mem&lt;-reg" ||
-      this.operation.mode === "mem&lt;-imd"
-    ) {
-      const mode =
+<span class="cstat-no" title="statement not covered" >      this.operation.mode === "reg&lt;-mem" ||</span>
+<span class="cstat-no" title="statement not covered" >      this.operation.mode === "mem&lt;-reg" ||</span>
+<span class="cstat-no" title="statement not covered" >      this.operation.mode === "mem&lt;-imd"</span>
+<span class="cstat-no" title="statement not covered" >    ) {</span>
+<span class="cstat-no" title="statement not covered" >      const mode =</span>
 <span class="cstat-no" title="statement not covered" >        this.operation.mode === "reg&lt;-mem" ? this.operation.src.mode : this.operation.out.mode;</span>
 <span class="cstat-no" title="statement not covered" >      if (mode === "direct") {</span>
-        // Fetch memory address
-        //if (this.operation.mode === "mem&lt;-imd") yield* super.consumeInstruction(computer, "ri.l");
-        //else yield* super.consumeInstruction(computer, "ri.l");
+<span class="cstat-no" title="statement not covered" >        // Fetch memory address</span>
+<span class="cstat-no" title="statement not covered" >        //if (this.operation.mode === "mem&lt;-imd") yield* super.consumeInstruction(computer, "ri.l");</span>
+<span class="cstat-no" title="statement not covered" >        //else yield* super.consumeInstruction(computer, "ri.l");</span>
 <span class="cstat-no" title="statement not covered" >        yield* super.consumeInstruction(computer, "ri.l");</span>
-        // yield* super.consumeInstruction(computer, "ri.h");
-      }
-      // NOTA: La copia de BL a ri.l para direccionamiento indirecto
-      // se hace ahora justo antes de setMAR en cada caso específico
-    }
+<span class="cstat-no" title="statement not covered" >        // yield* super.consumeInstruction(computer, "ri.h");</span>
+<span class="cstat-no" title="statement not covered" >      } else {</span>
+<span class="cstat-no" title="statement not covered" >        if (this.operation.mode === "mem&lt;-reg" || this.operation.mode === "reg&lt;-mem") {</span>
+<span class="cstat-no" title="statement not covered" >          // Move BX to ri</span>
+<span class="cstat-no" title="statement not covered" >          yield* computer.cpu.copyByteRegister("BL", "ri.l");</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >      }</span>
+<span class="cstat-no" title="statement not covered" >    }</span>
 <span class="cstat-no" title="statement not covered" >    if (this.operation.mode === "reg&lt;-imd") {</span>
-      // Emitir el evento de cambio de fase antes de copiar el valor inmediato
-<span class="cstat-no" title="statement not covered" >      yield { type: "cpu:cycle.update", phase: "writeback" };</span>
-      // Fetch immediate value and store it in id
+<span class="cstat-no" title="statement not covered" >      // Fetch immediate value and store it in id</span>
 <span class="cstat-no" title="statement not covered" >      if (size === 8 &amp;&amp; typeof out === "string") {</span>
 <span class="cstat-no" title="statement not covered" >        yield* super.consumeInstruction(computer, out as ByteRegister); // Copiar directamente al registro `out`</span>
-      }
-      //yield* super.consumeInstruction(computer, "id.l");
-<span class="cstat-no" title="statement not covered" >      if (this.operation.size === 16) <span class="cstat-no" title="statement not covered" >yield* super.consumeInstruction(computer, "id.h");</span></span>
-    }
-&nbsp;
+<span class="cstat-no" title="statement not covered" >      }</span>
+<span class="cstat-no" title="statement not covered" >      //yield* super.consumeInstruction(computer, "id.l");</span>
+<span class="cstat-no" title="statement not covered" >      if (this.operation.size === 16) yield* super.consumeInstruction(computer, "id.h");</span>
+<span class="cstat-no" title="statement not covered" >    }</span>
+<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    if (this.operation.mode === "mem&lt;-imd") {</span>
-      // Fetch immediate value and store it in id
+<span class="cstat-no" title="statement not covered" >      // Fetch immediate value and store it in id</span>
 <span class="cstat-no" title="statement not covered" >      yield* super.consumeInstruction(computer, "ri.l", true); // Pasar true para saltar getMBR</span>
-<span class="cstat-no" title="statement not covered" >      if (this.operation.size === 16) <span class="cstat-no" title="statement not covered" >yield* super.consumeInstruction(computer, "id.h");</span></span>
-    }
-&nbsp;
+<span class="cstat-no" title="statement not covered" >      if (this.operation.size === 16) yield* super.consumeInstruction(computer, "id.h");</span>
+<span class="cstat-no" title="statement not covered" >    }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    yield { type: "cpu:cycle.update", phase: "writeback" };</span>
+<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    switch (mode) {</span>
-      case "reg&lt;-reg": {
-        // DEBUG: Log temporal para diagnóstico
-<span class="cstat-no" title="statement not covered" >        console.log(`[DEBUG MOV reg&lt;-reg] src=${src}, dest=${out}, size=${size}`);</span>
-<span class="cstat-no" title="statement not covered" >        if (size === 8) {</span>
-          const srcVal = <span class="cstat-no" title="statement not covered" >computer.cpu.getRegister(src as ByteRegister);</span>
-          const outVal = <span class="cstat-no" title="statement not covered" >computer.cpu.getRegister(out as ByteRegister);</span>
-<span class="cstat-no" title="statement not covered" >          console.log(</span>
-            `[DEBUG MOV reg&lt;-reg] ANTES: ${src}=${srcVal.toString("hex")} (${srcVal.unsigned})`,
-          );
-<span class="cstat-no" title="statement not covered" >          console.log(</span>
-            `[DEBUG MOV reg&lt;-reg] ANTES: ${out}=${outVal.toString("hex")} (${outVal.unsigned})`,
-          );
-        }
-&nbsp;
-        // Emitir el evento de cambio de fase antes de la transferencia
-<span class="cstat-no" title="statement not covered" >        yield { type: "cpu:cycle.update", phase: "writeback" };</span>
-        // Simular transferencia por el bus de datos interno usando el MBR
-<span class="cstat-no" title="statement not covered" >        if (size === 8) {</span>
-<span class="cstat-no" title="statement not covered" >          yield { type: "cpu:register.buscopy", src, dest: out, size: 8 };</span>
-&nbsp;
-          // CRITICAL: Actualizar el registro en el backend del simulador
-<span class="cstat-no" title="statement not covered" >          yield* computer.cpu.copyByteRegister(src as ByteRegister, out as ByteRegister);</span>
-&nbsp;
-          // DEBUG: Log después de la copia
-          const outValAfter = <span class="cstat-no" title="statement not covered" >computer.cpu.getRegister(out as ByteRegister);</span>
-<span class="cstat-no" title="statement not covered" >          console.log(</span>
-            `[DEBUG MOV reg&lt;-reg] DESPUÉS: ${out}=${outValAfter.toString("hex")} (${outValAfter.unsigned})`,
-          );
-        } else {
-          const [srcLow, srcHigh<span class="cstat-no" title="statement not covered" >] = splitRegister(src);</span>
-          const [outLow, outHigh<span class="cstat-no" title="statement not covered" >] = splitRegister(out);</span>
-<span class="cstat-no" title="statement not covered" >          yield { type: "cpu:register.buscopy", src: srcLow, dest: outLow, size: 8 };</span>
-<span class="cstat-no" title="statement not covered" >          if (srcHigh &amp;&amp; outHigh) {</span>
-<span class="cstat-no" title="statement not covered" >            yield { type: "cpu:register.buscopy", src: srcHigh, dest: outHigh, size: 8 };</span>
-          }
-&nbsp;
-          // CRITICAL: Actualizar el registro en el backend del simulador
-<span class="cstat-no" title="statement not covered" >          yield* computer.cpu.copyWordRegister(src as WordRegister, out as WordRegister);</span>
-        }
+<span class="cstat-no" title="statement not covered" >      case "reg&lt;-reg": {</span>
+<span class="cstat-no" title="statement not covered" >        // Copy register</span>
+<span class="cstat-no" title="statement not covered" >        if (size === 8) yield* computer.cpu.copyByteRegister(src, out);</span>
+<span class="cstat-no" title="statement not covered" >        else yield* computer.cpu.copyWordRegister(src, out);</span>
+<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >        return true;</span>
-      }
-      case "reg&lt;-mem": {
-        // Si es direccionamiento indirecto, copiar BL a ri justo antes de usarlo
-<span class="cstat-no" title="statement not covered" >        if (this.operation.src.mode === "indirect") {</span>
-<span class="cstat-no" title="statement not covered" >          yield* computer.cpu.copyByteRegister("BL", "ri.l");</span>
-        }
+<span class="cstat-no" title="statement not covered" >      }</span>
+<span class="cstat-no" title="statement not covered" >      case "reg&lt;-mem": {</span>
 <span class="cstat-no" title="statement not covered" >        yield* computer.cpu.setMAR("ri");</span>
-<span class="cstat-no" title="statement not covered" >        if (!(yield* computer.cpu.useBus("mem-read"))) <span class="cstat-no" title="statement not covered" >return false;</span></span>
-        // Emitir el evento de cambio de fase antes de copiar al registro destino
-<span class="cstat-no" title="statement not covered" >        yield { type: "cpu:cycle.update", phase: "writeback" };</span>
+<span class="cstat-no" title="statement not covered" >        if (!(yield* computer.cpu.useBus("mem-read"))) return false;</span>
 <span class="cstat-no" title="statement not covered" >        if (size === 8) {</span>
 <span class="cstat-no" title="statement not covered" >          yield* computer.cpu.getMBR(out); // Copiar directamente al registro `out`</span>
-        }
+<span class="cstat-no" title="statement not covered" >        }</span>
 <span class="cstat-no" title="statement not covered" >        return true;</span>
-      }
-      /*
-      case "reg&lt;-mem": {
-        // Fetch low byte
-        yield* computer.cpu.setMAR("ri");
-        if (!(yield* computer.cpu.useBus("mem-read"))) return false; // Error reading from memory
-        yield* computer.cpu.getMBR("id.l");
-        if (size === 16) {
-          // Write to register
-          yield* computer.cpu.copyWordRegister("id", out);
-        } else {
-          yield* computer.cpu.copyByteRegister("id.l", out);
-        }
-          // Update high byte of ri with zero
-        yield* computer.cpu.updateByteRegister("ri.h",Byte.zero(8));
-        return true;
-      }*/
-&nbsp;
-      case "reg&lt;-imd": {
-        // Write to register
-        //yield* computer.cpu.setMBR("id.l");
-<span class="cstat-no" title="statement not covered" >        if (size === 16) <span class="cstat-no" title="statement not covered" >yield* computer.cpu.setMBR("id.h");</span></span>
-<span class="cstat-no" title="statement not covered" >        if (size === 8) {</span>
-          //yield* computer.cpu.getMBR(out); // Copiar directamente al registro `out`
-        }
-<span class="cstat-no" title="statement not covered" >        return true;</span>
-      }
-&nbsp;
-      case "mem&lt;-reg": {
-        //const [low, high] = splitRegister(src);
-        const [low<span class="cstat-no" title="statement not covered" >] = splitRegister(src);</span>
-&nbsp;
-        // Si es direccionamiento indirecto, copiar BL a ri justo antes de usarlo
-<span class="cstat-no" title="statement not covered" >        if (this.operation.out.mode === "indirect") {</span>
-<span class="cstat-no" title="statement not covered" >          yield* computer.cpu.copyByteRegister("BL", "ri.l");</span>
-        }
-&nbsp;
-        // DEBUG: Log temporal para diagnóstico
-<span class="cstat-no" title="statement not covered" >        console.log(`[DEBUG MOV mem&lt;-reg] ANTES de setMAR`);</span>
-<span class="cstat-no" title="statement not covered" >        console.log(</span>
-          `[DEBUG MOV mem&lt;-reg] BL=${computer.cpu.getRegister("BL").toString("hex")} (${computer.cpu.getRegister("BL").unsigned})`,
-        );
-<span class="cstat-no" title="statement not covered" >        console.log(</span>
-          `[DEBUG MOV mem&lt;-reg] ri=${computer.cpu.getRegister("ri").toString("hex")} (${computer.cpu.getRegister("ri").unsigned})`,
-        );
-<span class="cstat-no" title="statement not covered" >        console.log(</span>
-          `[DEBUG MOV mem&lt;-reg] ri.l=${computer.cpu.getRegister("ri.l").toString("hex")} (${computer.cpu.getRegister("ri.l").unsigned})`,
-        );
-<span class="cstat-no" title="statement not covered" >        console.log(</span>
-          `[DEBUG MOV mem&lt;-reg] ${low}=${computer.cpu.getRegister(low).toString("hex")} (${computer.cpu.getRegister(low).unsigned})`,
-        );
-&nbsp;
-        // Write low byte
+<span class="cstat-no" title="statement not covered" >      }</span>
+<span class="cstat-no" title="statement not covered" >      /*</span>
+<span class="cstat-no" title="statement not covered" >      case "reg&lt;-mem": {</span>
+<span class="cstat-no" title="statement not covered" >        // Fetch low byte</span>
 <span class="cstat-no" title="statement not covered" >        yield* computer.cpu.setMAR("ri");</span>
-        // Emitir el evento de cambio de fase antes de copiar el registro al MBR
-<span class="cstat-no" title="statement not covered" >        yield { type: "cpu:cycle.update", phase: "writeback" };</span>
-<span class="cstat-no" title="statement not covered" >        yield* computer.cpu.setMBR(low);</span>
-<span class="cstat-no" title="statement not covered" >        if (!(yield* computer.cpu.useBus("mem-write"))) <span class="cstat-no" title="statement not covered" >return false; // Error writing to memory</span></span>
-        /*  if (high) {
-          // Write high byte
-          yield* computer.cpu.updateWordRegister("ri", ri =&gt; ri.add(1));
-          yield* computer.cpu.setMAR("ri");
-          yield* computer.cpu.setMBR("id.h");
-          if (!(yield* computer.cpu.useBus("mem-write"))) return false; // Error writing to memory
-        }*/
-<span class="cstat-no" title="statement not covered" >        return true;</span>
-      }
-&nbsp;
-      case "mem&lt;-imd": {
-        // Write low byte
-        // Verificar si el direccionamiento es directo
-<span class="cstat-no" title="statement not covered" >        if (out.mode === "direct") {</span>
-          // Copiar de ID a RI si no es indirecto
-          //yield* computer.cpu.copyByteRegister("id.l", "ri.l");
-        } else {
-          // Copiar de BL a RI si es indirecto
-<span class="cstat-no" title="statement not covered" >          yield* computer.cpu.copyByteRegister("BL", "ri.l");</span>
-        }
-<span class="cstat-no" title="statement not covered" >        yield* computer.cpu.setMAR("ri");</span>
-        // Emitir el evento de cambio de fase antes de copiar el valor al MBR
-<span class="cstat-no" title="statement not covered" >        yield { type: "cpu:cycle.update", phase: "writeback" };</span>
-        //yield* computer.cpu.setMBR("id.l");
-<span class="cstat-no" title="statement not covered" >        if (!(yield* computer.cpu.useBus("mem-write"))) <span class="cstat-no" title="statement not covered" >return false; // Error writing to memory</span></span>
+<span class="cstat-no" title="statement not covered" >        if (!(yield* computer.cpu.useBus("mem-read"))) return false; // Error reading from memory</span>
+<span class="cstat-no" title="statement not covered" >        yield* computer.cpu.getMBR("id.l");</span>
 <span class="cstat-no" title="statement not covered" >        if (size === 16) {</span>
-          // Write high byte
-<span class="cstat-no" title="statement not covered" >          yield* computer.cpu.updateWordRegister("ri", <span class="fstat-no" title="function not covered" >ri =&gt; <span class="cstat-no" title="statement not covered" >r</span>i.add(1))</span>;</span>
+<span class="cstat-no" title="statement not covered" >          // Write to register</span>
+<span class="cstat-no" title="statement not covered" >          yield* computer.cpu.copyWordRegister("id", out);</span>
+<span class="cstat-no" title="statement not covered" >        } else {</span>
+<span class="cstat-no" title="statement not covered" >          yield* computer.cpu.copyByteRegister("id.l", out);</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >          // Update high byte of ri with zero</span>
+<span class="cstat-no" title="statement not covered" >        yield* computer.cpu.updateByteRegister("ri.h",Byte.zero(8));</span>
+<span class="cstat-no" title="statement not covered" >        return true;</span>
+<span class="cstat-no" title="statement not covered" >      }*/</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >      case "reg&lt;-imd": {</span>
+<span class="cstat-no" title="statement not covered" >        // Write to register</span>
+<span class="cstat-no" title="statement not covered" >        //yield* computer.cpu.setMBR("id.l");</span>
+<span class="cstat-no" title="statement not covered" >        if (size === 16) yield* computer.cpu.setMBR("id.h");</span>
+<span class="cstat-no" title="statement not covered" >        if (size === 8) {</span>
+<span class="cstat-no" title="statement not covered" >          //yield* computer.cpu.getMBR(out); // Copiar directamente al registro `out`</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >        return true;</span>
+<span class="cstat-no" title="statement not covered" >      }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >      case "mem&lt;-reg": {</span>
+<span class="cstat-no" title="statement not covered" >        //const [low, high] = splitRegister(src);</span>
+<span class="cstat-no" title="statement not covered" >        const [low] = splitRegister(src);</span>
+<span class="cstat-no" title="statement not covered" >        // Write low byte</span>
+<span class="cstat-no" title="statement not covered" >        yield* computer.cpu.setMAR("ri");</span>
+<span class="cstat-no" title="statement not covered" >        yield* computer.cpu.setMBR(low);</span>
+<span class="cstat-no" title="statement not covered" >        if (!(yield* computer.cpu.useBus("mem-write"))) return false; // Error writing to memory</span>
+<span class="cstat-no" title="statement not covered" >        /*  if (high) {</span>
+<span class="cstat-no" title="statement not covered" >          // Write high byte</span>
+<span class="cstat-no" title="statement not covered" >          yield* computer.cpu.updateWordRegister("ri", ri =&gt; ri.add(1));</span>
+<span class="cstat-no" title="statement not covered" >          yield* computer.cpu.setMAR("ri");</span>
+<span class="cstat-no" title="statement not covered" >          yield* computer.cpu.setMBR(high);</span>
+<span class="cstat-no" title="statement not covered" >          if (!(yield* computer.cpu.useBus("mem-write"))) return false; // Error writing to memory</span>
+<span class="cstat-no" title="statement not covered" >        }*/</span>
+<span class="cstat-no" title="statement not covered" >        return true;</span>
+<span class="cstat-no" title="statement not covered" >      }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >      case "mem&lt;-imd": {</span>
+<span class="cstat-no" title="statement not covered" >        // Write low byte</span>
+<span class="cstat-no" title="statement not covered" >        // Verificar si el direccionamiento es directo</span>
+<span class="cstat-no" title="statement not covered" >        if (out.mode === "direct") {</span>
+<span class="cstat-no" title="statement not covered" >          // Copiar de ID a RI si no es indirecto</span>
+<span class="cstat-no" title="statement not covered" >          //yield* computer.cpu.copyByteRegister("id.l", "ri.l");</span>
+<span class="cstat-no" title="statement not covered" >        } else {</span>
+<span class="cstat-no" title="statement not covered" >          // Copiar de BL a RI si es indirecto</span>
+<span class="cstat-no" title="statement not covered" >          yield* computer.cpu.copyByteRegister("BL", "ri.l");</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >        yield* computer.cpu.setMAR("ri");</span>
+<span class="cstat-no" title="statement not covered" >        //yield* computer.cpu.setMBR("id.l");</span>
+<span class="cstat-no" title="statement not covered" >        if (!(yield* computer.cpu.useBus("mem-write"))) return false; // Error writing to memory</span>
+<span class="cstat-no" title="statement not covered" >        if (size === 16) {</span>
+<span class="cstat-no" title="statement not covered" >          // Write high byte</span>
+<span class="cstat-no" title="statement not covered" >          yield* computer.cpu.updateWordRegister("ri", ri =&gt; ri.add(1));</span>
 <span class="cstat-no" title="statement not covered" >          yield* computer.cpu.setMAR("ri");</span>
 <span class="cstat-no" title="statement not covered" >          yield* computer.cpu.setMBR("id.h");</span>
-<span class="cstat-no" title="statement not covered" >          if (!(yield* computer.cpu.useBus("mem-write"))) <span class="cstat-no" title="statement not covered" >return false; // Error writing to memory</span></span>
-        }
+<span class="cstat-no" title="statement not covered" >          if (!(yield* computer.cpu.useBus("mem-write"))) return false; // Error writing to memory</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
 <span class="cstat-no" title="statement not covered" >        return true;</span>
-      }
-&nbsp;
-      default: {
-        const _exhaustiveCheck: never = <span class="cstat-no" title="statement not covered" >mode;</span>
+<span class="cstat-no" title="statement not covered" >      }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >      default: {</span>
+<span class="cstat-no" title="statement not covered" >        const _exhaustiveCheck: never = mode;</span>
 <span class="cstat-no" title="statement not covered" >        return _exhaustiveCheck;</span>
-      }
-    }
-  }
+<span class="cstat-no" title="statement not covered" >      }</span>
+<span class="cstat-no" title="statement not covered" >    }</span>
+<span class="cstat-no" title="statement not covered" >  }</span>
 }
 &nbsp;</pre></td></tr></table></pre>
 
-                <div class='push'></div><!-- for sticky footer -->
-            </div><!-- /wrapper -->
-            <div class='footer quiet pad2 space-top1 center small'>
-                Code coverage generated by
-                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-11-26T16:38:26.695Z
-            </div>
-        <script src="../../../prettify.js"></script>
-        <script>
-            window.onload = function () {
-                prettyPrint();
-            };
-        </script>
-        <script src="../../../sorter.js"></script>
-        <script src="../../../block-navigation.js"></script>
-    </body>
+      <div class="push"></div>
+      <!-- for sticky footer -->
+    </div>
+    <!-- /wrapper -->
+    <div class="footer quiet pad2 space-top1 center small">
+      Code coverage generated by
+      <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+      at 2025-07-14T12:36:49.915Z
+    </div>
+    <script src="../../../prettify.js"></script>
+    <script>
+      window.onload = function () {
+        prettyPrint();
+      };
+    </script>
+    <script src="../../../sorter.js"></script>
+    <script src="../../../block-navigation.js"></script>
+  </body>
 </html>
-    
