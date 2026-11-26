@@ -6,9 +6,18 @@ import { memo, useCallback, useEffect, useMemo, useState } from "react";
 
 import { Controls } from "@/components/Controls";
 import { EducationalMenu, EducationalProgress } from "@/components/educational";
+import { firstStepsOpenAtom } from "@/components/FirstStepsTour";
 // Eliminada referencia a NotificationCenter
 import { settingsOpenAtom } from "@/components/Settings";
 import { IconButton } from "@/components/ui/Button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/DropdownMenu";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { cycleAtom } from "@/computer/cpu/state";
 import { useSimulation } from "@/computer/simulation";
@@ -17,7 +26,14 @@ import { useSettings } from "@/lib/settings";
 
 // Hook personalizado para manejar el tour
 const useTourControl = () => {
+  const [, setFirstStepsOpen] = useAtom(firstStepsOpenAtom);
+
+  const handleShowFirstSteps = useCallback(() => {
+    setFirstStepsOpen(true);
+  }, [setFirstStepsOpen]);
+
   const handleShowTour = useCallback(() => {
+    setFirstStepsOpen(false);
     // Usar la función global startWelcomeTour si está disponible
     if ((window as any).startWelcomeTour) {
       (window as any).startWelcomeTour();
@@ -26,9 +42,9 @@ const useTourControl = () => {
       localStorage.removeItem("vonsim8-tour-completed");
       window.location.reload();
     }
-  }, []);
+  }, [setFirstStepsOpen]);
 
-  return { handleShowTour };
+  return { handleShowTour, handleShowFirstSteps };
 };
 
 // Componente de estado de simulación optimizado
@@ -213,12 +229,14 @@ SimulationStatus.displayName = "SimulationStatus";
 const ActionButtons = memo(
   ({
     onShowTour,
+    onShowFirstSteps,
     onToggleSettings,
     settingsOpen,
     onToggleEducational,
     educationalOpen,
   }: {
     onShowTour: () => void;
+    onShowFirstSteps: () => void;
     onToggleSettings: () => void;
     settingsOpen: boolean;
     onToggleEducational: () => void;
@@ -242,16 +260,38 @@ const ActionButtons = memo(
           />
         </Tooltip>
 
-        <Tooltip content="Mostrar tour de bienvenida" position="bottom">
-          <IconButton
-            icon={<FontAwesomeIcon icon={faQuestionCircle} className="size-4" />}
-            onClick={onShowTour}
-            variant="ghost"
-            size="md"
-            aria-label="Mostrar tour de bienvenida"
-            className="hover-lift"
-          />
-        </Tooltip>
+        <DropdownMenu>
+          <Tooltip content="Ayuda" position="bottom">
+            <DropdownMenuTrigger asChild>
+              <IconButton
+                icon={<FontAwesomeIcon icon={faQuestionCircle} className="size-4" />}
+                variant="ghost"
+                size="md"
+                aria-label="Ayuda"
+                className="hover-lift"
+                data-testid="help-button"
+              />
+            </DropdownMenuTrigger>
+          </Tooltip>
+          <DropdownMenuContent className="w-72" align="end">
+            <DropdownMenuLabel>Ayuda</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={onShowFirstSteps} data-testid="help-first-steps">
+              <span className="icon-[lucide--rocket] mr-2 size-4 shrink-0" />
+              <div className="flex flex-col">
+                <span>Primeros pasos</span>
+                <span className="text-xs text-stone-400">Tu primer programa, paso a paso</span>
+              </div>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={onShowTour} data-testid="help-interface-tour">
+              <span className="icon-[lucide--map] mr-2 size-4 shrink-0" />
+              <div className="flex flex-col">
+                <span>Recorrido por la interfaz</span>
+                <span className="text-xs text-stone-400">Para qué sirve cada parte</span>
+              </div>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         <Tooltip content={translate("settings.title")} position="bottom">
           <IconButton
@@ -277,7 +317,7 @@ export const Header = memo(() => {
   const [educationalOpen, setEducationalOpen] = useState(false);
   const [progressOpen, setProgressOpen] = useState(false);
   const { status } = useSimulation();
-  const { handleShowTour } = useTourControl();
+  const { handleShowTour, handleShowFirstSteps } = useTourControl();
 
   // Detectar diferentes tamaños de pantalla para mejor responsividad
   const [screenSize, setScreenSize] = useState<"mobile" | "compact" | "tablet" | "desktop">(
@@ -443,6 +483,7 @@ export const Header = memo(() => {
             {layout.showActionButtons && (
               <ActionButtons
                 onShowTour={handleShowTour}
+                onShowFirstSteps={handleShowFirstSteps}
                 onToggleSettings={handleToggleSettings}
                 settingsOpen={settingsOpen}
                 onToggleEducational={handleToggleEducational}

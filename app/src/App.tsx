@@ -4,6 +4,7 @@ import { memo, useCallback, useMemo, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useMedia } from "react-use";
 
+import { FirstStepsTour } from "@/components/FirstStepsTour";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { InlineNotificationProvider } from "@/components/InlineNotification";
@@ -47,6 +48,7 @@ const App = memo(() => {
       <Footer data-testid="footer" />
 
       <WelcomeTour />
+      <FirstStepsTour />
       <KeyboardShortcuts />
       <InlineNotificationProvider />
       <KeyboardInputNotification />

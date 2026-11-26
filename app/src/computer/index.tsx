@@ -15,6 +15,7 @@ import { SystemBus } from "./bus/SystemBus";
 import { Clock } from "./clock/Clock";
 import { CPU } from "./cpu/CPU";
 import { CPUStats } from "./cpu/CPUStats";
+import { COMPUTER_FOCUS_EVENT } from "./focus";
 import { Handshake } from "./handshake/Handshake";
 import { Keyboard } from "./keyboard/Keyboard";
 import { Leds } from "./leds/Leds";
@@ -53,6 +54,28 @@ export function ComputerContainer() {
     }, 100);
 
     return () => clearTimeout(retryTimer);
+  }, []);
+
+  // Permite que otras partes de la app (p. ej. la guía de primeros pasos)
+  // centren la vista en un componente (ver ./focus.ts)
+  useEffect(() => {
+    const onFocus = (event: Event) => {
+      const selector = (event as CustomEvent<{ selector?: string }>).detail?.selector;
+      const wrapper = wrapperRef.current;
+      if (!selector || !wrapper) return;
+      const node = document.querySelector<HTMLElement>(selector);
+      const container = wrapper.instance.wrapperComponent;
+      if (!node || !container) return;
+      // Escala que hace entrar el componente completo, sin superar el 100 %
+      const fit = Math.min(
+        (container.clientWidth * 0.9) / node.offsetWidth,
+        (container.clientHeight * 0.9) / node.offsetHeight,
+        1,
+      );
+      wrapper.zoomToElement(node, Math.max(fit, 0.3), 400);
+    };
+    window.addEventListener(COMPUTER_FOCUS_EVENT, onFocus);
+    return () => window.removeEventListener(COMPUTER_FOCUS_EVENT, onFocus);
   }, []);
 
   return (
