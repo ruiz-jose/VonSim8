@@ -1,63 +1,68 @@
+
 <!doctype html>
 <html lang="en">
-  <head>
+
+<head>
     <title>Code coverage report for src/cpu/index.ts</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../prettify.css" />
     <link rel="stylesheet" href="../../base.css" />
     <link rel="shortcut icon" type="image/x-icon" href="../../favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <style type="text/css">
-      .coverage-summary .sorter {
-        background-image: url(../../sort-arrow-sprite.png);
-      }
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../sort-arrow-sprite.png);
+        }
     </style>
-  </head>
-
-  <body>
-    <div class="wrapper">
-      <div class="pad1">
-        <h1>
-          <a href="../../index.html">All files</a> / <a href="index.html">src/cpu</a> index.ts
-        </h1>
-        <div class="clearfix">
-          <div class="fl pad1y space-right2">
-            <span class="strong">52.34% </span>
-            <span class="quiet">Statements</span>
-            <span class="fraction">335/640</span>
-          </div>
-
-          <div class="fl pad1y space-right2">
-            <span class="strong">46.66% </span>
-            <span class="quiet">Branches</span>
-            <span class="fraction">7/15</span>
-          </div>
-
-          <div class="fl pad1y space-right2">
-            <span class="strong">19.04% </span>
-            <span class="quiet">Functions</span>
-            <span class="fraction">4/21</span>
-          </div>
-
-          <div class="fl pad1y space-right2">
-            <span class="strong">52.34% </span>
-            <span class="quiet">Lines</span>
-            <span class="fraction">335/640</span>
-          </div>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/cpu</a> index.ts</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">15.13% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>38/251</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">14.49% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>20/138</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">25.92% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>7/27</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">17.04% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>38/223</span>
+            </div>
+        
+            
         </div>
         <p class="quiet">
-          Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>,
-          <em>p</em> or <em>k</em> for the previous block.
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
         </p>
         <template id="filterTemplate">
-          <div class="quiet">
-            Filter:
-            <input type="search" id="fileSearch" />
-          </div>
+            <div class="quiet">
+                Filter:
+                <input type="search" id="fileSearch">
+            </div>
         </template>
-      </div>
-      <div class="status-line medium"></div>
-      <pre><table class="coverage">
+    </div>
+    <div class='status-line low'></div>
+    <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
 <a name='L3'></a><a href='#L3'>3</a>
@@ -698,516 +703,716 @@
 <a name='L638'></a><a href='#L638'>638</a>
 <a name='L639'></a><a href='#L639'>639</a>
 <a name='L640'></a><a href='#L640'>640</a>
-<a name='L641'></a><a href='#L641'>641</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<a name='L641'></a><a href='#L641'>641</a>
+<a name='L642'></a><a href='#L642'>642</a>
+<a name='L643'></a><a href='#L643'>643</a>
+<a name='L644'></a><a href='#L644'>644</a>
+<a name='L645'></a><a href='#L645'>645</a>
+<a name='L646'></a><a href='#L646'>646</a>
+<a name='L647'></a><a href='#L647'>647</a>
+<a name='L648'></a><a href='#L648'>648</a>
+<a name='L649'></a><a href='#L649'>649</a>
+<a name='L650'></a><a href='#L650'>650</a>
+<a name='L651'></a><a href='#L651'>651</a>
+<a name='L652'></a><a href='#L652'>652</a>
+<a name='L653'></a><a href='#L653'>653</a>
+<a name='L654'></a><a href='#L654'>654</a>
+<a name='L655'></a><a href='#L655'>655</a>
+<a name='L656'></a><a href='#L656'>656</a>
+<a name='L657'></a><a href='#L657'>657</a>
+<a name='L658'></a><a href='#L658'>658</a>
+<a name='L659'></a><a href='#L659'>659</a>
+<a name='L660'></a><a href='#L660'>660</a>
+<a name='L661'></a><a href='#L661'>661</a>
+<a name='L662'></a><a href='#L662'>662</a>
+<a name='L663'></a><a href='#L663'>663</a>
+<a name='L664'></a><a href='#L664'>664</a>
+<a name='L665'></a><a href='#L665'>665</a>
+<a name='L666'></a><a href='#L666'>666</a>
+<a name='L667'></a><a href='#L667'>667</a>
+<a name='L668'></a><a href='#L668'>668</a>
+<a name='L669'></a><a href='#L669'>669</a>
+<a name='L670'></a><a href='#L670'>670</a>
+<a name='L671'></a><a href='#L671'>671</a>
+<a name='L672'></a><a href='#L672'>672</a>
+<a name='L673'></a><a href='#L673'>673</a>
+<a name='L674'></a><a href='#L674'>674</a>
+<a name='L675'></a><a href='#L675'>675</a>
+<a name='L676'></a><a href='#L676'>676</a>
+<a name='L677'></a><a href='#L677'>677</a>
+<a name='L678'></a><a href='#L678'>678</a>
+<a name='L679'></a><a href='#L679'>679</a>
+<a name='L680'></a><a href='#L680'>680</a>
+<a name='L681'></a><a href='#L681'>681</a>
+<a name='L682'></a><a href='#L682'>682</a>
+<a name='L683'></a><a href='#L683'>683</a>
+<a name='L684'></a><a href='#L684'>684</a>
+<a name='L685'></a><a href='#L685'>685</a>
+<a name='L686'></a><a href='#L686'>686</a>
+<a name='L687'></a><a href='#L687'>687</a>
+<a name='L688'></a><a href='#L688'>688</a>
+<a name='L689'></a><a href='#L689'>689</a>
+<a name='L690'></a><a href='#L690'>690</a>
+<a name='L691'></a><a href='#L691'>691</a>
+<a name='L692'></a><a href='#L692'>692</a>
+<a name='L693'></a><a href='#L693'>693</a>
+<a name='L694'></a><a href='#L694'>694</a>
+<a name='L695'></a><a href='#L695'>695</a>
+<a name='L696'></a><a href='#L696'>696</a>
+<a name='L697'></a><a href='#L697'>697</a>
+<a name='L698'></a><a href='#L698'>698</a>
+<a name='L699'></a><a href='#L699'>699</a>
+<a name='L700'></a><a href='#L700'>700</a>
+<a name='L701'></a><a href='#L701'>701</a>
+<a name='L702'></a><a href='#L702'>702</a>
+<a name='L703'></a><a href='#L703'>703</a>
+<a name='L704'></a><a href='#L704'>704</a>
+<a name='L705'></a><a href='#L705'>705</a>
+<a name='L706'></a><a href='#L706'>706</a>
+<a name='L707'></a><a href='#L707'>707</a>
+<a name='L708'></a><a href='#L708'>708</a>
+<a name='L709'></a><a href='#L709'>709</a>
+<a name='L710'></a><a href='#L710'>710</a>
+<a name='L711'></a><a href='#L711'>711</a>
+<a name='L712'></a><a href='#L712'>712</a>
+<a name='L713'></a><a href='#L713'>713</a>
+<a name='L714'></a><a href='#L714'>714</a>
+<a name='L715'></a><a href='#L715'>715</a>
+<a name='L716'></a><a href='#L716'>716</a>
+<a name='L717'></a><a href='#L717'>717</a>
+<a name='L718'></a><a href='#L718'>718</a>
+<a name='L719'></a><a href='#L719'>719</a>
+<a name='L720'></a><a href='#L720'>720</a>
+<a name='L721'></a><a href='#L721'>721</a>
+<a name='L722'></a><a href='#L722'>722</a>
+<a name='L723'></a><a href='#L723'>723</a>
+<a name='L724'></a><a href='#L724'>724</a>
+<a name='L725'></a><a href='#L725'>725</a>
+<a name='L726'></a><a href='#L726'>726</a>
+<a name='L727'></a><a href='#L727'>727</a>
+<a name='L728'></a><a href='#L728'>728</a>
+<a name='L729'></a><a href='#L729'>729</a>
+<a name='L730'></a><a href='#L730'>730</a>
+<a name='L731'></a><a href='#L731'>731</a>
+<a name='L732'></a><a href='#L732'>732</a>
+<a name='L733'></a><a href='#L733'>733</a>
+<a name='L734'></a><a href='#L734'>734</a>
+<a name='L735'></a><a href='#L735'>735</a>
+<a name='L736'></a><a href='#L736'>736</a>
+<a name='L737'></a><a href='#L737'>737</a>
+<a name='L738'></a><a href='#L738'>738</a>
+<a name='L739'></a><a href='#L739'>739</a>
+<a name='L740'></a><a href='#L740'>740</a>
+<a name='L741'></a><a href='#L741'>741</a>
+<a name='L742'></a><a href='#L742'>742</a>
+<a name='L743'></a><a href='#L743'>743</a>
+<a name='L744'></a><a href='#L744'>744</a>
+<a name='L745'></a><a href='#L745'>745</a>
+<a name='L746'></a><a href='#L746'>746</a>
+<a name='L747'></a><a href='#L747'>747</a>
+<a name='L748'></a><a href='#L748'>748</a>
+<a name='L749'></a><a href='#L749'>749</a>
+<a name='L750'></a><a href='#L750'>750</a>
+<a name='L751'></a><a href='#L751'>751</a>
+<a name='L752'></a><a href='#L752'>752</a>
+<a name='L753'></a><a href='#L753'>753</a>
+<a name='L754'></a><a href='#L754'>754</a>
+<a name='L755'></a><a href='#L755'>755</a>
+<a name='L756'></a><a href='#L756'>756</a>
+<a name='L757'></a><a href='#L757'>757</a>
+<a name='L758'></a><a href='#L758'>758</a>
+<a name='L759'></a><a href='#L759'>759</a>
+<a name='L760'></a><a href='#L760'>760</a>
+<a name='L761'></a><a href='#L761'>761</a>
+<a name='L762'></a><a href='#L762'>762</a>
+<a name='L763'></a><a href='#L763'>763</a>
+<a name='L764'></a><a href='#L764'>764</a>
+<a name='L765'></a><a href='#L765'>765</a>
+<a name='L766'></a><a href='#L766'>766</a>
+<a name='L767'></a><a href='#L767'>767</a>
+<a name='L768'></a><a href='#L768'>768</a>
+<a name='L769'></a><a href='#L769'>769</a>
+<a name='L770'></a><a href='#L770'>770</a>
+<a name='L771'></a><a href='#L771'>771</a>
+<a name='L772'></a><a href='#L772'>772</a>
+<a name='L773'></a><a href='#L773'>773</a>
+<a name='L774'></a><a href='#L774'>774</a>
+<a name='L775'></a><a href='#L775'>775</a>
+<a name='L776'></a><a href='#L776'>776</a>
+<a name='L777'></a><a href='#L777'>777</a>
+<a name='L778'></a><a href='#L778'>778</a>
+<a name='L779'></a><a href='#L779'>779</a>
+<a name='L780'></a><a href='#L780'>780</a>
+<a name='L781'></a><a href='#L781'>781</a>
+<a name='L782'></a><a href='#L782'>782</a>
+<a name='L783'></a><a href='#L783'>783</a>
+<a name='L784'></a><a href='#L784'>784</a>
+<a name='L785'></a><a href='#L785'>785</a>
+<a name='L786'></a><a href='#L786'>786</a>
+<a name='L787'></a><a href='#L787'>787</a>
+<a name='L788'></a><a href='#L788'>788</a>
+<a name='L789'></a><a href='#L789'>789</a>
+<a name='L790'></a><a href='#L790'>790</a>
+<a name='L791'></a><a href='#L791'>791</a>
+<a name='L792'></a><a href='#L792'>792</a>
+<a name='L793'></a><a href='#L793'>793</a>
+<a name='L794'></a><a href='#L794'>794</a>
+<a name='L795'></a><a href='#L795'>795</a>
+<a name='L796'></a><a href='#L796'>796</a>
+<a name='L797'></a><a href='#L797'>797</a>
+<a name='L798'></a><a href='#L798'>798</a>
+<a name='L799'></a><a href='#L799'>799</a>
+<a name='L800'></a><a href='#L800'>800</a>
+<a name='L801'></a><a href='#L801'>801</a>
+<a name='L802'></a><a href='#L802'>802</a>
+<a name='L803'></a><a href='#L803'>803</a>
+<a name='L804'></a><a href='#L804'>804</a>
+<a name='L805'></a><a href='#L805'>805</a>
+<a name='L806'></a><a href='#L806'>806</a>
+<a name='L807'></a><a href='#L807'>807</a>
+<a name='L808'></a><a href='#L808'>808</a>
+<a name='L809'></a><a href='#L809'>809</a>
+<a name='L810'></a><a href='#L810'>810</a>
+<a name='L811'></a><a href='#L811'>811</a>
+<a name='L812'></a><a href='#L812'>812</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1215,30 +1420,111 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1248,97 +1534,159 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { MemoryAddress } from "@vonsim/common/address";
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { assemble } from "@vonsim/assembler";
+import { MemoryAddress } from "@vonsim/common/address";
 import { AnyByte, Byte } from "@vonsim/common/byte";
 &nbsp;
 import { Component, ComponentInit } from "../component";
@@ -1380,32 +1728,34 @@ export class CPU extends Component {
   #registers: RegistersMap;
   #MAR: Byte&lt;16&gt;;
   #MBR: Byte&lt;8&gt;;
+  #isExecutingINT7 = false;
+  #isStackOperation = false;
 &nbsp;
   constructor(options: ComponentInit) {
     super(options);
 &nbsp;
-    if (options.data === "unchanged") <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (options.data === "unchanged") {
 <span class="cstat-no" title="statement not covered" >      this.#registers = options.previous.cpu.#registers;</span>
 <span class="cstat-no" title="statement not covered" >      this.#MAR = options.previous.cpu.#MAR;</span>
 <span class="cstat-no" title="statement not covered" >      this.#MBR = options.previous.cpu.#MBR;</span>
-<span class="cstat-no" title="statement not covered" >      /*} else if (options.data === "randomize") {</span>
-<span class="cstat-no" title="statement not covered" >      this.#registers = {</span>
-<span class="cstat-no" title="statement not covered" >        AX: Byte.random(16),</span>
-<span class="cstat-no" title="statement not covered" >        BX: Byte.random(16),</span>
-<span class="cstat-no" title="statement not covered" >        CX: Byte.random(16),</span>
-<span class="cstat-no" title="statement not covered" >        DX: Byte.random(16),</span>
-<span class="cstat-no" title="statement not covered" >        SP: Byte.random(16),</span>
-<span class="cstat-no" title="statement not covered" >        IP: Byte.random(16),</span>
-<span class="cstat-no" title="statement not covered" >        IR: Byte.random(8),</span>
-<span class="cstat-no" title="statement not covered" >        ri: Byte.random(16),</span>
-<span class="cstat-no" title="statement not covered" >        id: Byte.random(16),</span>
-<span class="cstat-no" title="statement not covered" >        left: Byte.random(16),</span>
-<span class="cstat-no" title="statement not covered" >        right: Byte.random(16),</span>
-<span class="cstat-no" title="statement not covered" >        result: Byte.random(16),</span>
-<span class="cstat-no" title="statement not covered" >        FLAGS: Byte.random(16),</span>
-<span class="cstat-no" title="statement not covered" >      };</span>
-<span class="cstat-no" title="statement not covered" >      this.#MAR = Byte.random(16);</span>
-<span class="cstat-no" title="statement not covered" >      this.#MBR = Byte.random(8);*/</span>
+      /*} else if (options.data === "randomize") {
+      this.#registers = {
+        AX: Byte.random(16),
+        BX: Byte.random(16),
+        CX: Byte.random(16),
+        DX: Byte.random(16),
+        SP: Byte.random(16),
+        IP: Byte.random(16),
+        IR: Byte.random(8),
+        ri: Byte.random(16),
+        id: Byte.random(16),
+        left: Byte.random(16),
+        right: Byte.random(16),
+        result: Byte.random(16),
+        FLAGS: Byte.random(16),
+      };
+      this.#MAR = Byte.random(16);
+      this.#MBR = Byte.random(8);*/
     } else {
       this.#registers = {
         AX: Byte.zero(16),
@@ -1434,17 +1784,55 @@ export class CPU extends Component {
       statement =&gt; statement.isInstruction() &amp;&amp; statement.instruction === "INT",
     );
 &nbsp;
-    // Verificar si el programa contiene la directiva ORG
-    const hasORG = options.hasORG ?? false;
+    // Verificar si el programa contiene la directiva ORG específicamente ORG 20h al inicio
+    const hasORG20hAtStart = options.hasORG20hAtStart ?? false;
+&nbsp;
+    // Verificar si el programa usa vector de interrupciones (SOLO INT o PIC)
+    const hasINTOrInterruptDevices = options.hasINTOrInterruptDevices ?? hasINT;
+    const hasPICConfig = options.devices.pic;
+&nbsp;
+    // Detectar donde realmente empieza el código mirando las instrucciones
+    const firstInstruction =
+      options.program.instructions.length &gt; 0 ? options.program.instructions[0] : null;
+    const firstInstructionAddress = firstInstruction
+      ? typeof firstInstruction.start === "number"
+        ? <span class="branch-0 cbranch-no" title="branch not covered" >firstInstruction.start</span>
+        : firstInstruction.start.value
+      : 0;
+&nbsp;
+    console.log("DEBUG CPU:", {
+      hasINT,
+      hasORG20hAtStart,
+      hasORG: options.hasORG,
+      hasINTOrInterruptDevices,
+      hasPICConfig,
+      firstInstructionAddress: "0x" + firstInstructionAddress.toString(16).padStart(2, "0"),
+      devices: options.devices,
+      instructionsCount: options.program.instructions.length,
+      firstFewInstructions: options.program.instructions.slice(0, 3).map(i =&gt; ({
+        type: i.type,
+        instruction: i.isInstruction() ? i.instruction : <span class="branch-1 cbranch-no" title="branch not covered" >"not-instruction",</span>
+        start:
+          "0x" +
+          (typeof i.start === "number" ? <span class="branch-0 cbranch-no" title="branch not covered" >i.start : i</span>.start.value).toString(16).padStart(2, "0"),
+      })),
+    });
 &nbsp;
     // Determinar la dirección inicial del registro IP
     let initialIP: number;
-    if (hasORG) <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (hasORG20hAtStart) {
 <span class="cstat-no" title="statement not covered" >      initialIP = 0x20;</span>
-    } else if (hasINT) <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
+<span class="cstat-no" title="statement not covered" >      console.log("IP set to 0x20 (hasORG20hAtStart)");</span>
+    <span class="missing-if-branch" title="if path not taken" >I</span>} else if ((hasINTOrInterruptDevices || hasPICConfig) &amp;&amp; <span class="branch-2 cbranch-no" title="branch not covered" >firstInstructionAddress &gt;= 8) {</span>
+      // Si usa INT/PIC Y el código está cargado en 0x08 o superior, usar 0x08
 <span class="cstat-no" title="statement not covered" >      initialIP = 0x08;</span>
+<span class="cstat-no" title="statement not covered" >      console.log("IP set to 0x08 (INT/PIC + code at 08h+)");</span>
     } else {
-      initialIP = 0x00;
+      // Si no usa INT/PIC O el código está en 0x00, usar donde está el código
+      initialIP = firstInstructionAddress;
+      console.log(
+        `IP set to 0x${initialIP.toString(16).padStart(2, "0")} (first instruction address)`,
+      );
     }
     this.#registers.IP = Byte.fromUnsigned(initialIP, 16);
 &nbsp;
@@ -1456,6 +1844,73 @@ export class CPU extends Component {
     this.#setFlag("IF", true);
 &nbsp;
     this.#instructions = new Map();
+&nbsp;
+    // Si el programa contiene instrucciones INT, inyectar las rutinas de sistema
+    const hasINTInstruction = options.program.instructions.some(
+      instruction =&gt; instruction.instruction === "INT",
+    );
+&nbsp;
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (hasINTInstruction) {
+      // Ensamblar la rutina INT 6 (lectura de teclado)
+      const int6Code = <span class="cstat-no" title="statement not covered" >`</span>
+        org 0C0h
+        push AL
+        wait_for_key:
+        in AL, 32h
+        cmp AL, 1
+        jnz wait_for_key
+        in AL, 30h
+        mov [BL], AL
+        pop AL
+        iret
+      `;
+&nbsp;
+      const <span class="cstat-no" title="statement not covered" >int6Result = assemble(int6Code);</span>
+<span class="cstat-no" title="statement not covered" >      if (int6Result.success) {</span>
+        // Agregar las instrucciones de INT 6 al mapa de instrucciones
+<span class="cstat-no" title="statement not covered" >        for (const statement of int6Result.instructions) {</span>
+          const <span class="cstat-no" title="statement not covered" >instruction = statementToInstruction(statement);</span>
+<span class="cstat-no" title="statement not covered" >          this.#instructions.set(instruction.start.value, instruction);</span>
+        }
+      }
+&nbsp;
+      // Ensamblar la rutina INT 7 (escritura en pantalla)
+      // Esta rutina escribe una cadena de caracteres en la pantalla
+      // usando memoria de video (0xE5) y opcionalmente el puerto PIO (33h)
+      const int7Code = <span class="cstat-no" title="statement not covered" >`</span>
+        org 0D0h
+        push DL
+        push CL
+        mov DL, 0E5h
+        int7_loop:
+        cmp AL, 0
+        jz int7_end
+        mov CL, [BL]
+        push BL
+        mov BL, DL
+        mov [BL], CL
+        pop BL
+        inc BL
+        inc DL
+        dec AL
+        jmp int7_loop
+        int7_end:
+        pop CL
+        pop DL
+        iret
+      `;
+&nbsp;
+      const <span class="cstat-no" title="statement not covered" >int7Result = assemble(int7Code);</span>
+<span class="cstat-no" title="statement not covered" >      if (int7Result.success) {</span>
+        // Agregar las instrucciones de INT 7 al mapa de instrucciones
+<span class="cstat-no" title="statement not covered" >        for (const statement of int7Result.instructions) {</span>
+          const <span class="cstat-no" title="statement not covered" >instruction = statementToInstruction(statement);</span>
+<span class="cstat-no" title="statement not covered" >          this.#instructions.set(instruction.start.value, instruction);</span>
+        }
+      }
+    }
+&nbsp;
+    // Agregar las instrucciones del programa del usuario
     for (const statement of options.program.instructions) {
       const instruction = statementToInstruction(statement);
       this.#instructions.set(instruction.start.value, instruction);
@@ -1469,45 +1924,53 @@ export class CPU extends Component {
    * ---
    * Called by the Computer.
    */
-<span class="fstat-no" title="function not covered" >  *run(): EventGenerator {</span>
-<span class="cstat-no" title="statement not covered" >    // Infinite loop until computer halts</span>
+<span class="fstat-no" title="function not covered" >  *r</span>un(): EventGenerator {
+    // Infinite loop until computer halts
 <span class="cstat-no" title="statement not covered" >    while (true) {</span>
-<span class="cstat-no" title="statement not covered" >      // Gets the instruction at the current IP from `this.#instructions`</span>
-<span class="cstat-no" title="statement not covered" >      const IP = this.#registers.IP;</span>
-<span class="cstat-no" title="statement not covered" >      const syscallNumber = getSyscallNumber(IP);</span>
-<span class="cstat-no" title="statement not covered" >      if (syscallNumber !== null) {</span>
-<span class="cstat-no" title="statement not covered" >        // Syscall</span>
-<span class="cstat-no" title="statement not covered" >        const continueExecuting = yield* handleSyscall(this.computer, syscallNumber);</span>
-<span class="cstat-no" title="statement not covered" >        if (!continueExecuting) return;</span>
-<span class="cstat-no" title="statement not covered" >      } else {</span>
-<span class="cstat-no" title="statement not covered" >        const instruction = this.#instructions.get(IP.unsigned);</span>
-<span class="cstat-no" title="statement not covered" >        if (!instruction) {</span>
-<span class="cstat-no" title="statement not covered" >          yield {</span>
-<span class="cstat-no" title="statement not covered" >            type: "cpu:error",</span>
-<span class="cstat-no" title="statement not covered" >            error: new SimulatorError("no-instruction", this.#registers.IP),</span>
-<span class="cstat-no" title="statement not covered" >          };</span>
-<span class="cstat-no" title="statement not covered" >          return;</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Execute the instruction, and checks if the instruction returned `false` (halt)</span>
-<span class="cstat-no" title="statement not covered" >        const continueExecuting = yield* instruction.execute(this.computer);</span>
-<span class="cstat-no" title="statement not covered" >        if (!continueExecuting) return;</span>
-<span class="cstat-no" title="statement not covered" >      }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >      // Check for interrupts</span>
+      // Gets the instruction at the current IP from `this.#instructions`
+      const IP = <span class="cstat-no" title="statement not covered" >this.#registers.IP;</span>
+      const instruction = <span class="cstat-no" title="statement not covered" >this.#instructions.get(IP.unsigned);</span>
+      const <span class="cstat-no" title="statement not covered" >syscallNumber = getSyscallNumber(IP);</span>
+&nbsp;
+      // Detectar si estamos ejecutando la rutina INT 7 (rango 0xD0-0xE4)
+      const isInINT7Range = <span class="cstat-no" title="statement not covered" >IP.unsigned &gt;= 0xd0 &amp;&amp; IP.unsigned &lt;= 0xe4;</span>
+<span class="cstat-no" title="statement not covered" >      this.#isExecutingINT7 = isInINT7Range;</span>
+&nbsp;
+      // Si hay una instrucción en esta dirección, ejecutarla
+      // incluso si es una dirección de syscall (para permitir
+      // rutinas de interrupción en ensamblador)
+<span class="cstat-no" title="statement not covered" >      if (instruction) {</span>
+        // Execute the instruction, and checks if the instruction returned `false` (halt)
+        const continueExecuting = <span class="cstat-no" title="statement not covered" >yield* instruction.execute(this.computer);</span>
+<span class="cstat-no" title="statement not covered" >        if (!continueExecuting) <span class="cstat-no" title="statement not covered" >return;</span></span>
+<span class="cstat-no" title="statement not covered" >      } else if (syscallNumber !== null) {</span>
+        // Si no hay instrucción pero es una dirección de syscall,
+        // manejar el syscall de forma especial
+        const continueExecuting = <span class="cstat-no" title="statement not covered" >yield* handleSyscall(this.computer, syscallNumber);</span>
+<span class="cstat-no" title="statement not covered" >        if (!continueExecuting) <span class="cstat-no" title="statement not covered" >return;</span></span>
+      } else {
+        // No hay instrucción ni syscall en esta dirección
+<span class="cstat-no" title="statement not covered" >        yield {</span>
+          type: "cpu:error",
+          error: new SimulatorError("no-instruction", this.#registers.IP),
+        };
+<span class="cstat-no" title="statement not covered" >        return;</span>
+      }
+&nbsp;
+      // Check for interrupts
 <span class="cstat-no" title="statement not covered" >      if (this.getFlag("IF") &amp;&amp; this.computer.io.pic?.isINTRActive()) {</span>
-<span class="cstat-no" title="statement not covered" >        // Start interrupt phase</span>
+        // Start interrupt phase
 <span class="cstat-no" title="statement not covered" >        yield { type: "cpu:cycle.interrupt" };</span>
-<span class="cstat-no" title="statement not covered" >        const intn = yield* this.computer.io.pic.handleINTR();</span>
+        const intn = <span class="cstat-no" title="statement not covered" >yield* this.computer.io.pic.handleINTR();</span>
 <span class="cstat-no" title="statement not covered" >        yield* this.getMBR("ri.l");</span>
 <span class="cstat-no" title="statement not covered" >        yield* this.updateByteRegister("ri.h", Byte.zero(8));</span>
 <span class="cstat-no" title="statement not covered" >        yield* this.startInterrupt(intn);</span>
-<span class="cstat-no" title="statement not covered" >      }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >      // End cycle and repeat</span>
+      }
+&nbsp;
+      // End cycle and repeat
 <span class="cstat-no" title="statement not covered" >      yield { type: "cpu:cycle.end" };</span>
-<span class="cstat-no" title="statement not covered" >    }</span>
-<span class="cstat-no" title="statement not covered" >  }</span>
+    }
+  }
 &nbsp;
   /**
    * Starts an interrupt routine.
@@ -1524,43 +1987,47 @@ export class CPU extends Component {
    * ---
    * Called by the CPU ({@link CPU.run}).
    */
-<span class="fstat-no" title="function not covered" >  *startInterrupt(number: Byte&lt;8&gt;): EventGenerator&lt;boolean&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    // Save machine state</span>
-<span class="cstat-no" title="statement not covered" >    //yield* this.copyWordRegister("FLAGS", "id");</span>
-<span class="cstat-no" title="statement not covered" >    //yield* this.copyByteRegister("FLAGS.l", "MBR");</span>
-<span class="cstat-no" title="statement not covered" >    //yield* this.setMBR("FLAGS.l");</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    if (!(yield* this.pushToStack("FLAGS.l"))) return false; // Stack overflow</span>
+<span class="fstat-no" title="function not covered" >  *s</span>tartInterrupt(number: Byte&lt;8&gt;): EventGenerator&lt;boolean&gt; {
+    // Save machine state
+    //yield* this.copyWordRegister("FLAGS", "id");
+    //yield* this.copyByteRegister("FLAGS.l", "MBR");
+    //yield* this.setMBR("FLAGS.l");
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    if (!(yield* this.pushToStack("FLAGS.l"))) <span class="cstat-no" title="statement not covered" >return false; // Stack overflow</span></span>
 <span class="cstat-no" title="statement not covered" >    yield* this.updateFLAGS({ IF: false });</span>
-<span class="cstat-no" title="statement not covered" >    //yield* this.copyWordRegister("IP", "id");</span>
-<span class="cstat-no" title="statement not covered" >    //yield* this.setMBR("IP.l");</span>
-<span class="cstat-no" title="statement not covered" >    if (!(yield* this.pushToStack("IP.l"))) return false; // Stack overflow</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    // Get interrupt routine address low</span>
-<span class="cstat-no" title="statement not covered" >    //let vector = Byte.fromUnsigned(number.unsigned * 4, 16);</span>
-<span class="cstat-no" title="statement not covered" >    const vector = Byte.fromUnsigned(number.unsigned, 8);</span>
-<span class="cstat-no" title="statement not covered" >    yield* this.updateByteRegister("ri.l", vector);</span>
-<span class="cstat-no" title="statement not covered" >    //yield* this.getMBR("IP.l");</span>
-<span class="cstat-no" title="statement not covered" >    yield* this.copyWordRegister("ri", "IP");</span>
-<span class="cstat-no" title="statement not covered" >    //console.log("Interrupt vector address:", vector);</span>
-<span class="cstat-no" title="statement not covered" >    // yield* this.updateByteRegister("id.l", vector);</span>
-<span class="cstat-no" title="statement not covered" >    //yield* this.copyByteRegister("id.l", "ri.l");</span>
+    //yield* this.copyWordRegister("IP", "id");
+    //yield* this.setMBR("IP.l");
+<span class="cstat-no" title="statement not covered" >    if (!(yield* this.pushToStack("IP.l"))) <span class="cstat-no" title="statement not covered" >return false; // Stack overflow</span></span>
+&nbsp;
+    // Get interrupt routine address low
+    //let vector = Byte.fromUnsigned(number.unsigned * 4, 16);
+    const vector = <span class="cstat-no" title="statement not covered" >Byte.fromUnsigned(number.unsigned, 8);</span>
+    // IMPORTANTE: Actualizar ri.l DIRECTAMENTE sin generar evento cpu:register.update
+    // para evitar el destello visual en el registro ri durante el ciclo 12 de INT
+<span class="cstat-no" title="statement not covered" >    this.#setRegister("ri.l", vector);</span>
+    //yield* this.getMBR("IP.l");
+    // COMENTADO: Este copyByteRegister genera dos eventos innecesarios (register.update y register.copy)
+    // que se quieren evitar en el ciclo 12 de INT. El valor ya está en ri.l y se usará directamente.
+    // yield* this.copyByteRegister("ri.l", "IP.l");
+    //console.log("Interrupt vector address:", vector);
+    // yield* this.updateByteRegister("id.l", vector);
+    //yield* this.copyByteRegister("id.l", "ri.l");
 <span class="cstat-no" title="statement not covered" >    yield* this.setMAR("ri");</span>
-<span class="cstat-no" title="statement not covered" >    if (!(yield* this.useBus("mem-read"))) return false; // Error reading memory</span>
-<span class="cstat-no" title="statement not covered" >    //yield* this.getMBR("id.l");</span>
+<span class="cstat-no" title="statement not covered" >    if (!(yield* this.useBus("mem-read"))) <span class="cstat-no" title="statement not covered" >return false; // Error reading memory</span></span>
+    //yield* this.getMBR("id.l");
 <span class="cstat-no" title="statement not covered" >    yield* this.getMBR("IP.l");</span>
-<span class="cstat-no" title="statement not covered" >    // Get interrupt routine address high</span>
-<span class="cstat-no" title="statement not covered" >    /*vector = vector.add(1);</span>
-<span class="cstat-no" title="statement not covered" >    yield* this.updateWordRegister("ri", vector);</span>
-<span class="cstat-no" title="statement not covered" >    yield* this.setMAR("ri");</span>
-<span class="cstat-no" title="statement not covered" >    if (!(yield* this.useBus("mem-read"))) return false; // Error reading memory</span>
-<span class="cstat-no" title="statement not covered" >    yield* this.getMBR("id.h");*/</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    // Update IP</span>
-<span class="cstat-no" title="statement not covered" >    //yield* this.copyWordRegister("ri", "IP");</span>
-<span class="cstat-no" title="statement not covered" >    //yield* this.getMBR("IP.l");</span>
+    // Get interrupt routine address high
+    /*vector = vector.add(1);
+    yield* this.updateWordRegister("ri", vector);
+    yield* this.setMAR("ri");
+    if (!(yield* this.useBus("mem-read"))) return false; // Error reading memory
+    yield* this.getMBR("id.h");*/
+&nbsp;
+    // Update IP
+    //yield* this.copyWordRegister("ri", "IP");
+    //yield* this.getMBR("IP.l");
 <span class="cstat-no" title="statement not covered" >    return true;</span>
-<span class="cstat-no" title="statement not covered" >  }</span>
+  }
 &nbsp;
   toJSON() {
     const registers = Object.entries(this.#registers).reduce(
@@ -1586,12 +2053,12 @@ export class CPU extends Component {
    */
   getRegister(register: ByteRegister): Byte&lt;8&gt;;
   getRegister(register: WordRegister): Byte&lt;16&gt;;
-<span class="fstat-no" title="function not covered" >  getRegister(register: Register): AnyByte {</span>
-<span class="cstat-no" title="statement not covered" >    const [reg, part] = parseRegister(register);</span>
-<span class="cstat-no" title="statement not covered" >    if (part === "low") return this.#registers[reg].low;</span>
-<span class="cstat-no" title="statement not covered" >    else if (part === "high") return this.#registers[reg].high;</span>
-<span class="cstat-no" title="statement not covered" >    else return this.#registers[reg];</span>
-<span class="cstat-no" title="statement not covered" >  }</span>
+<span class="fstat-no" title="function not covered" >  getRegister(r</span>egister: Register): AnyByte {
+    const [reg, part<span class="cstat-no" title="statement not covered" >] = parseRegister(register);</span>
+<span class="cstat-no" title="statement not covered" >    if (part === "low") <span class="cstat-no" title="statement not covered" >return this.#registers[reg].<span class="cstat-no" title="statement not covered" >low;</span></span></span>
+    else if (part === "high") <span class="cstat-no" title="statement not covered" >return this.#registers[reg].high;</span>
+    else <span class="cstat-no" title="statement not covered" >return this.#registers[reg];</span>
+  }
 &nbsp;
   /**
    * Sets the value of the specified register.
@@ -1602,25 +2069,25 @@ export class CPU extends Component {
    */
   #setRegister(register: ByteRegister, value: Byte&lt;8&gt;): void;
   #setRegister(register: WordRegister, value: Byte&lt;16&gt;): void;
-<span class="fstat-no" title="function not covered" >  #setRegister(register: Register, value: AnyByte): void {</span>
-<span class="cstat-no" title="statement not covered" >    const [reg, part] = parseRegister(register);</span>
+<span class="fstat-no" title="function not covered" >  #setRegister(r</span>egister: Register, value: AnyByte): void {
+    const [reg, part<span class="cstat-no" title="statement not covered" >] = parseRegister(register);</span>
 <span class="cstat-no" title="statement not covered" >    if (part === null) {</span>
 <span class="cstat-no" title="statement not covered" >      if (this.#registers[reg].size !== value.size) {</span>
 <span class="cstat-no" title="statement not covered" >        throw new TypeError(</span>
-<span class="cstat-no" title="statement not covered" >          `Cannot set register ${register} with value ${value} of different size`,</span>
-<span class="cstat-no" title="statement not covered" >        );</span>
-<span class="cstat-no" title="statement not covered" >      }</span>
-<span class="cstat-no" title="statement not covered" >      (this.#registers[reg] as AnyByte) = value;</span>
-<span class="cstat-no" title="statement not covered" >    } else {</span>
+          `Cannot set register ${register} with value ${value} of different size`,
+        );
+      }
+      (<span class="cstat-no" title="statement not covered" >this.#registers[reg] as AnyByte) = value;</span>
+    } else {
 <span class="cstat-no" title="statement not covered" >      if (!value.is8bits()) {</span>
 <span class="cstat-no" title="statement not covered" >        throw new TypeError(</span>
-<span class="cstat-no" title="statement not covered" >          `Cannot set register ${register} with value ${value} of different size`,</span>
-<span class="cstat-no" title="statement not covered" >        );</span>
-<span class="cstat-no" title="statement not covered" >      }</span>
-<span class="cstat-no" title="statement not covered" >      if (part === "low") (this.#registers[reg] as AnyByte) = this.#registers[reg].withLow(value);</span>
-<span class="cstat-no" title="statement not covered" >      else (this.#registers[reg] as AnyByte) = this.#registers[reg].withHigh(value);</span>
-<span class="cstat-no" title="statement not covered" >    }</span>
-<span class="cstat-no" title="statement not covered" >  }</span>
+          `Cannot set register ${register} with value ${value} of different size`,
+        );
+      }
+<span class="cstat-no" title="statement not covered" >      if (part === "low") (<span class="cstat-no" title="statement not covered" >this.#registers[reg] as AnyByte) = this.#registers[reg].withLow(value);</span></span>
+      else (<span class="cstat-no" title="statement not covered" >this.#registers[reg] as AnyByte) = this.#registers[reg].withHigh(value);</span>
+    }
+  }
 &nbsp;
   /**
    * Copies the value of a byte register to another byte register.
@@ -1628,11 +2095,11 @@ export class CPU extends Component {
    * ---
    * Called by the instructions ({@link InstructionType.execute}) and the CPU.
    */
-<span class="fstat-no" title="function not covered" >  *copyByteRegister(src: ByteRegister, dest: ByteRegister): EventGenerator {</span>
-<span class="cstat-no" title="statement not covered" >    const value = this.getRegister(src);</span>
+<span class="fstat-no" title="function not covered" >  *c</span>opyByteRegister(src: ByteRegister, dest: ByteRegister): EventGenerator {
+    const value = <span class="cstat-no" title="statement not covered" >this.getRegister(src);</span>
 <span class="cstat-no" title="statement not covered" >    this.#setRegister(dest, value);</span>
 <span class="cstat-no" title="statement not covered" >    yield { type: "cpu:register.copy", size: 8, src, dest };</span>
-<span class="cstat-no" title="statement not covered" >  }</span>
+  }
 &nbsp;
   /**
    * Copies the value of a word register to another word register.
@@ -1640,11 +2107,11 @@ export class CPU extends Component {
    * ---
    * Called by the instructions ({@link InstructionType.execute}) and the CPU.
    */
-<span class="fstat-no" title="function not covered" >  *copyWordRegister(src: WordRegister, dest: WordRegister): EventGenerator {</span>
-<span class="cstat-no" title="statement not covered" >    const value = this.getRegister(src);</span>
+<span class="fstat-no" title="function not covered" >  *c</span>opyWordRegister(src: WordRegister, dest: WordRegister): EventGenerator {
+    const value = <span class="cstat-no" title="statement not covered" >this.getRegister(src);</span>
 <span class="cstat-no" title="statement not covered" >    this.#setRegister(dest, value.withHigh(Byte.zero(8)));</span>
 <span class="cstat-no" title="statement not covered" >    yield { type: "cpu:register.copy", size: 16, src, dest };</span>
-<span class="cstat-no" title="statement not covered" >  }</span>
+  }
 &nbsp;
   /**
    * Updates the value of a byte register.
@@ -1652,14 +2119,14 @@ export class CPU extends Component {
    * ---
    * Called by the instructions ({@link InstructionType.execute}) and the CPU.
    */
-<span class="fstat-no" title="function not covered" >  *updateByteRegister(</span>
-<span class="cstat-no" title="statement not covered" >    register: ByteRegister,</span>
-<span class="cstat-no" title="statement not covered" >    value: Byte&lt;8&gt; | ((prev: Byte&lt;8&gt;) =&gt; Byte&lt;8&gt;),</span>
-<span class="cstat-no" title="statement not covered" >  ): EventGenerator {</span>
+<span class="fstat-no" title="function not covered" >  *u</span>pdateByteRegister(
+    register: ByteRegister,
+    value: Byte&lt;8&gt; | ((prev: Byte&lt;8&gt;) =&gt; Byte&lt;8&gt;),
+  ): EventGenerator {
 <span class="cstat-no" title="statement not covered" >    value = typeof value === "function" ? value(this.getRegister(register)) : value;</span>
 <span class="cstat-no" title="statement not covered" >    this.#setRegister(register, value);</span>
 <span class="cstat-no" title="statement not covered" >    yield { type: "cpu:register.update", size: 8, register, value };</span>
-<span class="cstat-no" title="statement not covered" >  }</span>
+  }
 &nbsp;
   /**
    * Updates the value of a word register.
@@ -1667,14 +2134,14 @@ export class CPU extends Component {
    * ---
    * Called by the instructions ({@link InstructionType.execute}) and the CPU.
    */
-<span class="fstat-no" title="function not covered" >  *updateWordRegister(</span>
-<span class="cstat-no" title="statement not covered" >    register: WordRegister,</span>
-<span class="cstat-no" title="statement not covered" >    value: Byte&lt;16&gt; | ((prev: Byte&lt;16&gt;) =&gt; Byte&lt;16&gt;),</span>
-<span class="cstat-no" title="statement not covered" >  ): EventGenerator {</span>
+<span class="fstat-no" title="function not covered" >  *u</span>pdateWordRegister(
+    register: WordRegister,
+    value: Byte&lt;16&gt; | ((prev: Byte&lt;16&gt;) =&gt; Byte&lt;16&gt;),
+  ): EventGenerator {
 <span class="cstat-no" title="statement not covered" >    value = typeof value === "function" ? value(this.getRegister(register)) : value;</span>
 <span class="cstat-no" title="statement not covered" >    this.#setRegister(register, value);</span>
 <span class="cstat-no" title="statement not covered" >    yield { type: "cpu:register.update", size: 16, register, value };</span>
-<span class="cstat-no" title="statement not covered" >  }</span>
+  }
 &nbsp;
   // #=========================================================================#
   // # Flags methods                                                           #
@@ -1684,22 +2151,22 @@ export class CPU extends Component {
    * Returns the value of the specified flag.
    * @see {@link https://vonsim.github.io/docs/cpu/#flags}
    */
-<span class="fstat-no" title="function not covered" >  getFlag(flag: Flag): boolean {</span>
+<span class="fstat-no" title="function not covered" >  getFlag(f</span>lag: Flag): boolean {
 <span class="cstat-no" title="statement not covered" >    switch (flag) {</span>
-<span class="cstat-no" title="statement not covered" >      case "CF":</span>
+      case "CF":
 <span class="cstat-no" title="statement not covered" >        return this.#registers.FLAGS.bit(1);</span>
-<span class="cstat-no" title="statement not covered" >      case "ZF":</span>
+      case "ZF":
 <span class="cstat-no" title="statement not covered" >        return this.#registers.FLAGS.bit(0);</span>
-<span class="cstat-no" title="statement not covered" >      case "SF":</span>
+      case "SF":
 <span class="cstat-no" title="statement not covered" >        return this.#registers.FLAGS.bit(3);</span>
-<span class="cstat-no" title="statement not covered" >      case "IF":</span>
+      case "IF":
 <span class="cstat-no" title="statement not covered" >        return this.#registers.FLAGS.bit(4);</span>
-<span class="cstat-no" title="statement not covered" >      case "OF":</span>
+      case "OF":
 <span class="cstat-no" title="statement not covered" >        return this.#registers.FLAGS.bit(2);</span>
-<span class="cstat-no" title="statement not covered" >      default:</span>
+      default:
 <span class="cstat-no" title="statement not covered" >        throw new TypeError(`Invalid flag ${flag}`);</span>
-<span class="cstat-no" title="statement not covered" >    }</span>
-<span class="cstat-no" title="statement not covered" >  }</span>
+    }
+  }
 &nbsp;
   /**
    * Sets the value of the specified flag.
@@ -1711,19 +2178,19 @@ export class CPU extends Component {
 <span class="branch-0 cbranch-no" title="branch not covered" >      case "CF":</span>
 <span class="cstat-no" title="statement not covered" >        this.#registers.FLAGS = this.#registers.FLAGS.withBit(1, value);</span>
 <span class="cstat-no" title="statement not covered" >        return;</span>
-<span class="branch-0 cbranch-no" title="branch not covered" >      case "ZF":</span>
+<span class="branch-1 cbranch-no" title="branch not covered" >      case "ZF":</span>
 <span class="cstat-no" title="statement not covered" >        this.#registers.FLAGS = this.#registers.FLAGS.withBit(0, value);</span>
 <span class="cstat-no" title="statement not covered" >        return;</span>
-<span class="branch-0 cbranch-no" title="branch not covered" >      case "SF":</span>
+<span class="branch-2 cbranch-no" title="branch not covered" >      case "SF":</span>
 <span class="cstat-no" title="statement not covered" >        this.#registers.FLAGS = this.#registers.FLAGS.withBit(3, value);</span>
 <span class="cstat-no" title="statement not covered" >        return;</span>
       case "IF":
         this.#registers.FLAGS = this.#registers.FLAGS.withBit(4, value);
         return;
-<span class="branch-0 cbranch-no" title="branch not covered" >      case "OF":</span>
+<span class="branch-4 cbranch-no" title="branch not covered" >      case "OF":</span>
 <span class="cstat-no" title="statement not covered" >        this.#registers.FLAGS = this.#registers.FLAGS.withBit(2, value);</span>
 <span class="cstat-no" title="statement not covered" >        return;</span>
-<span class="branch-0 cbranch-no" title="branch not covered" >      default:</span>
+<span class="branch-5 cbranch-no" title="branch not covered" >      default:</span>
 <span class="cstat-no" title="statement not covered" >        throw new TypeError(`Invalid flag ${flag}`);</span>
     }
   }
@@ -1735,19 +2202,19 @@ export class CPU extends Component {
    * ---
    * Called by the instructions ({@link InstructionType.execute}) and the CPU.
    */
-<span class="fstat-no" title="function not covered" >  *updateFLAGS(flags: PartialFlags): EventGenerator {</span>
-<span class="cstat-no" title="statement not covered" >    if (typeof flags.CF === "boolean") this.#setFlag("CF", flags.CF);</span>
-<span class="cstat-no" title="statement not covered" >    if (typeof flags.ZF === "boolean") this.#setFlag("ZF", flags.ZF);</span>
-<span class="cstat-no" title="statement not covered" >    if (typeof flags.SF === "boolean") this.#setFlag("SF", flags.SF);</span>
-<span class="cstat-no" title="statement not covered" >    if (typeof flags.IF === "boolean") this.#setFlag("IF", flags.IF);</span>
-<span class="cstat-no" title="statement not covered" >    if (typeof flags.OF === "boolean") this.#setFlag("OF", flags.OF);</span>
+<span class="fstat-no" title="function not covered" >  *u</span>pdateFLAGS(flags: PartialFlags): EventGenerator {
+<span class="cstat-no" title="statement not covered" >    if (typeof flags.CF === "boolean") <span class="cstat-no" title="statement not covered" >this.#setFlag("CF", flags.CF);</span></span>
+<span class="cstat-no" title="statement not covered" >    if (typeof flags.ZF === "boolean") <span class="cstat-no" title="statement not covered" >this.#setFlag("ZF", flags.ZF);</span></span>
+<span class="cstat-no" title="statement not covered" >    if (typeof flags.SF === "boolean") <span class="cstat-no" title="statement not covered" >this.#setFlag("SF", flags.SF);</span></span>
+<span class="cstat-no" title="statement not covered" >    if (typeof flags.IF === "boolean") <span class="cstat-no" title="statement not covered" >this.#setFlag("IF", flags.IF);</span></span>
+<span class="cstat-no" title="statement not covered" >    if (typeof flags.OF === "boolean") <span class="cstat-no" title="statement not covered" >this.#setFlag("OF", flags.OF);</span></span>
 <span class="cstat-no" title="statement not covered" >    yield {</span>
-<span class="cstat-no" title="statement not covered" >      type: "cpu:register.update",</span>
-<span class="cstat-no" title="statement not covered" >      size: 16,</span>
-<span class="cstat-no" title="statement not covered" >      register: "FLAGS",</span>
-<span class="cstat-no" title="statement not covered" >      value: this.#registers.FLAGS,</span>
-<span class="cstat-no" title="statement not covered" >    };</span>
-<span class="cstat-no" title="statement not covered" >  }</span>
+      type: "cpu:register.update",
+      size: 16,
+      register: "FLAGS",
+      value: this.#registers.FLAGS,
+    };
+  }
 &nbsp;
   /**
    * Updates the FLAGS register.
@@ -1756,21 +2223,21 @@ export class CPU extends Component {
    * ---
    * Called by the instructions ({@link InstructionType.execute}) and the CPU.
    */
-<span class="fstat-no" title="function not covered" >  *aluExecute(operation: string, result: AnyByte, flags: PartialFlags): EventGenerator {</span>
+<span class="fstat-no" title="function not covered" >  *a</span>luExecute(operation: string, result: AnyByte, flags: PartialFlags): EventGenerator {
 <span class="cstat-no" title="statement not covered" >    this.#registers.result = result.is8bits() ? this.#registers.result.withLow(result) : result;</span>
-<span class="cstat-no" title="statement not covered" >    if (typeof flags.CF === "boolean") this.#setFlag("CF", flags.CF);</span>
-<span class="cstat-no" title="statement not covered" >    if (typeof flags.ZF === "boolean") this.#setFlag("ZF", flags.ZF);</span>
-<span class="cstat-no" title="statement not covered" >    if (typeof flags.SF === "boolean") this.#setFlag("SF", flags.SF);</span>
-<span class="cstat-no" title="statement not covered" >    if (typeof flags.IF === "boolean") this.#setFlag("IF", flags.IF);</span>
-<span class="cstat-no" title="statement not covered" >    if (typeof flags.OF === "boolean") this.#setFlag("OF", flags.OF);</span>
+<span class="cstat-no" title="statement not covered" >    if (typeof flags.CF === "boolean") <span class="cstat-no" title="statement not covered" >this.#setFlag("CF", flags.CF);</span></span>
+<span class="cstat-no" title="statement not covered" >    if (typeof flags.ZF === "boolean") <span class="cstat-no" title="statement not covered" >this.#setFlag("ZF", flags.ZF);</span></span>
+<span class="cstat-no" title="statement not covered" >    if (typeof flags.SF === "boolean") <span class="cstat-no" title="statement not covered" >this.#setFlag("SF", flags.SF);</span></span>
+<span class="cstat-no" title="statement not covered" >    if (typeof flags.IF === "boolean") <span class="cstat-no" title="statement not covered" >this.#setFlag("IF", flags.IF);</span></span>
+<span class="cstat-no" title="statement not covered" >    if (typeof flags.OF === "boolean") <span class="cstat-no" title="statement not covered" >this.#setFlag("OF", flags.OF);</span></span>
 <span class="cstat-no" title="statement not covered" >    yield {</span>
-<span class="cstat-no" title="statement not covered" >      type: "cpu:alu.execute",</span>
-<span class="cstat-no" title="statement not covered" >      operation,</span>
-<span class="cstat-no" title="statement not covered" >      size: result.size,</span>
-<span class="cstat-no" title="statement not covered" >      result: this.#registers.result,</span>
-<span class="cstat-no" title="statement not covered" >      flags: this.#registers.FLAGS,</span>
-<span class="cstat-no" title="statement not covered" >    };</span>
-<span class="cstat-no" title="statement not covered" >  }</span>
+      type: "cpu:alu.execute",
+      operation,
+      size: result.size,
+      result: this.#registers.result,
+      flags: this.#registers.FLAGS,
+    };
+  }
 &nbsp;
   // #=========================================================================#
   // # Bus methods                                                             #
@@ -1782,11 +2249,25 @@ export class CPU extends Component {
    * ---
    * Called by the instructions ({@link InstructionType.execute}) and the CPU.
    */
-<span class="fstat-no" title="function not covered" >  *setMAR(register: MARRegister): EventGenerator {</span>
-<span class="cstat-no" title="statement not covered" >    const value = this.getRegister(register);</span>
+<span class="fstat-no" title="function not covered" >  *s</span>etMAR(register: MARRegister): EventGenerator {
+    const value = <span class="cstat-no" title="statement not covered" >this.getRegister(register);</span>
+&nbsp;
+    // DEBUG: Log temporal para diagnóstico
+<span class="cstat-no" title="statement not covered" >    console.log(</span>
+      `[DEBUG setMAR] register=${register}, value=${value.toString("hex")} (${value.unsigned})`,
+    );
+<span class="cstat-no" title="statement not covered" >    if (register === "ri") {</span>
+<span class="cstat-no" title="statement not covered" >      console.log(</span>
+        `[DEBUG setMAR] ri.l=${this.getRegister("ri.l").toString("hex")} (${this.getRegister("ri.l").unsigned})`,
+      );
+<span class="cstat-no" title="statement not covered" >      console.log(</span>
+        `[DEBUG setMAR] BL=${this.getRegister("BL").toString("hex")} (${this.getRegister("BL").unsigned})`,
+      );
+    }
+&nbsp;
 <span class="cstat-no" title="statement not covered" >    this.#MAR = value.withHigh(Byte.zero(8)); // Asigna el byte alto a cero</span>
 <span class="cstat-no" title="statement not covered" >    yield { type: "cpu:mar.set", register };</span>
-<span class="cstat-no" title="statement not covered" >  }</span>
+  }
 &nbsp;
   /**
    * Copies the value of the MBR to another register.
@@ -1794,10 +2275,10 @@ export class CPU extends Component {
    * ---
    * Called by the instructions ({@link InstructionType.execute}) and the CPU.
    */
-<span class="fstat-no" title="function not covered" >  *getMBR(register: ByteRegister): EventGenerator {</span>
+<span class="fstat-no" title="function not covered" >  *g</span>etMBR(register: ByteRegister): EventGenerator {
 <span class="cstat-no" title="statement not covered" >    this.#setRegister(register, this.#MBR);</span>
 <span class="cstat-no" title="statement not covered" >    yield { type: "cpu:mbr.get", register };</span>
-<span class="cstat-no" title="statement not covered" >  }</span>
+  }
 &nbsp;
   /**
    * Sets the value of the MBR.
@@ -1805,11 +2286,11 @@ export class CPU extends Component {
    * ---
    * Called by the instructions ({@link InstructionType.execute}) and the CPU.
    */
-<span class="fstat-no" title="function not covered" >  *setMBR(register: ByteRegister): EventGenerator {</span>
-<span class="cstat-no" title="statement not covered" >    const value = this.getRegister(register);</span>
+<span class="fstat-no" title="function not covered" >  *s</span>etMBR(register: ByteRegister): EventGenerator {
+    const value = <span class="cstat-no" title="statement not covered" >this.getRegister(register);</span>
 <span class="cstat-no" title="statement not covered" >    this.#MBR = value;</span>
 <span class="cstat-no" title="statement not covered" >    yield { type: "cpu:mbr.set", register };</span>
-<span class="cstat-no" title="statement not covered" >  }</span>
+  }
 &nbsp;
   /**
    * Uses the bus. Analogous to set the control lines of the bus.
@@ -1835,62 +2316,62 @@ export class CPU extends Component {
    * ---
    * Called by the instructions ({@link InstructionType.execute}) and the CPU.
    */
-<span class="fstat-no" title="function not covered" >  *useBus(mode: `${"mem" | "io"}-${"read" | "write"}` | "intr-read"): EventGenerator&lt;boolean&gt; {</span>
+<span class="fstat-no" title="function not covered" >  *u</span>seBus(mode: `${"mem" | "io"}-${"read" | "write"}` | "intr-read"): EventGenerator&lt;boolean&gt; {
 <span class="cstat-no" title="statement not covered" >    switch (mode) {</span>
-<span class="cstat-no" title="statement not covered" >      case "mem-read": {</span>
+      case "mem-read": {
 <span class="cstat-no" title="statement not covered" >        yield { type: "cpu:rd.on" };</span>
-<span class="cstat-no" title="statement not covered" >        const value = yield* this.computer.memory.read(this.#MAR);</span>
-<span class="cstat-no" title="statement not covered" >        if (!value) return false; // Error reading from memory</span>
+        const value = <span class="cstat-no" title="statement not covered" >yield* this.computer.memory.read(this.#MAR);</span>
+<span class="cstat-no" title="statement not covered" >        if (!value) <span class="cstat-no" title="statement not covered" >return false; // Error reading from memory</span></span>
 <span class="cstat-no" title="statement not covered" >        this.#MBR = value;</span>
 <span class="cstat-no" title="statement not covered" >        yield { type: "bus:reset" };</span>
 <span class="cstat-no" title="statement not covered" >        return true;</span>
-<span class="cstat-no" title="statement not covered" >      }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >      case "mem-write": {</span>
+      }
+&nbsp;
+      case "mem-write": {
 <span class="cstat-no" title="statement not covered" >        yield { type: "cpu:wr.on" };</span>
-<span class="cstat-no" title="statement not covered" >        const success = yield* this.computer.memory.write(this.#MAR, this.#MBR);</span>
-<span class="cstat-no" title="statement not covered" >        if (!success) return false; // Error writing to memory</span>
+        const success = <span class="cstat-no" title="statement not covered" >yield* this.computer.memory.write(this.#MAR, this.#MBR);</span>
+<span class="cstat-no" title="statement not covered" >        if (!success) <span class="cstat-no" title="statement not covered" >return false; // Error writing to memory</span></span>
 <span class="cstat-no" title="statement not covered" >        yield { type: "bus:reset" };</span>
 <span class="cstat-no" title="statement not covered" >        return true;</span>
-<span class="cstat-no" title="statement not covered" >      }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >      case "io-read": {</span>
+      }
+&nbsp;
+      case "io-read": {
 <span class="cstat-no" title="statement not covered" >        yield { type: "cpu:iom.on" };</span>
-<span class="cstat-no" title="statement not covered" >        const register = yield* this.computer.io.chipSelect(this.#MAR.low);</span>
-<span class="cstat-no" title="statement not covered" >        if (!register) return false; // Error selecting i/o register</span>
+        const register = <span class="cstat-no" title="statement not covered" >yield* this.computer.io.chipSelect(this.#MAR.low);</span>
+<span class="cstat-no" title="statement not covered" >        if (!register) <span class="cstat-no" title="statement not covered" >return false; // Error selecting i/o register</span></span>
 <span class="cstat-no" title="statement not covered" >        yield { type: "cpu:rd.on" };</span>
-<span class="cstat-no" title="statement not covered" >        const value = yield* this.computer.io.read(register);</span>
-<span class="cstat-no" title="statement not covered" >        if (!value) return false; // Error reading from i/o</span>
+        const value = <span class="cstat-no" title="statement not covered" >yield* this.computer.io.read(register);</span>
+<span class="cstat-no" title="statement not covered" >        if (!value) <span class="cstat-no" title="statement not covered" >return false; // Error reading from i/o</span></span>
 <span class="cstat-no" title="statement not covered" >        this.#MBR = value;</span>
 <span class="cstat-no" title="statement not covered" >        yield { type: "bus:reset" };</span>
 <span class="cstat-no" title="statement not covered" >        return true;</span>
-<span class="cstat-no" title="statement not covered" >      }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >      case "io-write": {</span>
+      }
+&nbsp;
+      case "io-write": {
 <span class="cstat-no" title="statement not covered" >        yield { type: "cpu:iom.on" };</span>
-<span class="cstat-no" title="statement not covered" >        const register = yield* this.computer.io.chipSelect(this.#MAR.low);</span>
-<span class="cstat-no" title="statement not covered" >        if (!register) return false; // Error selecting i/o register</span>
+        const register = <span class="cstat-no" title="statement not covered" >yield* this.computer.io.chipSelect(this.#MAR.low);</span>
+<span class="cstat-no" title="statement not covered" >        if (!register) <span class="cstat-no" title="statement not covered" >return false; // Error selecting i/o register</span></span>
 <span class="cstat-no" title="statement not covered" >        yield { type: "cpu:wr.on" };</span>
-<span class="cstat-no" title="statement not covered" >        const success = yield* this.computer.io.write(register, this.#MBR);</span>
-<span class="cstat-no" title="statement not covered" >        if (!success) return false; // Error writing to i/o</span>
+        const success = <span class="cstat-no" title="statement not covered" >yield* this.computer.io.write(register, this.#MBR);</span>
+<span class="cstat-no" title="statement not covered" >        if (!success) <span class="cstat-no" title="statement not covered" >return false; // Error writing to i/o</span></span>
 <span class="cstat-no" title="statement not covered" >        yield { type: "bus:reset" };</span>
 <span class="cstat-no" title="statement not covered" >        return true;</span>
-<span class="cstat-no" title="statement not covered" >      }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >      case "intr-read": {</span>
-<span class="cstat-no" title="statement not covered" >        if (!this.computer.io.pic) return false; // Error reading from pic (no pic)</span>
-<span class="cstat-no" title="statement not covered" >        const intn = yield* this.computer.io.pic.handleINTR();</span>
+      }
+&nbsp;
+      case "intr-read": {
+<span class="cstat-no" title="statement not covered" >        if (!this.computer.io.pic) <span class="cstat-no" title="statement not covered" >return false; // Error reading from pic (no pic)</span></span>
+        const intn = <span class="cstat-no" title="statement not covered" >yield* this.computer.io.pic.handleINTR();</span>
 <span class="cstat-no" title="statement not covered" >        this.#MBR = intn;</span>
 <span class="cstat-no" title="statement not covered" >        yield { type: "bus:reset" };</span>
 <span class="cstat-no" title="statement not covered" >        return true;</span>
-<span class="cstat-no" title="statement not covered" >      }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >      default: {</span>
-<span class="cstat-no" title="statement not covered" >        const _exhaustiveCheck: never = mode;</span>
+      }
+&nbsp;
+      default: {
+        const _exhaustiveCheck: never = <span class="cstat-no" title="statement not covered" >mode;</span>
 <span class="cstat-no" title="statement not covered" >        return _exhaustiveCheck;</span>
-<span class="cstat-no" title="statement not covered" >      }</span>
-<span class="cstat-no" title="statement not covered" >    }</span>
-<span class="cstat-no" title="statement not covered" >  }</span>
+      }
+    }
+  }
 &nbsp;
   // #=========================================================================#
   // # Stack methods                                                           #
@@ -1898,73 +2379,110 @@ export class CPU extends Component {
 &nbsp;
   /**
    * Pushes a value to the stack, and updates the SP register.
-   * This value should have been previously written to the id register.
+   * The value is read directly from the specified register.
    * @see {@link https://vonsim.github.io/docs/cpu/#pila}
-   * @param value The value to push to the stack.
+   * @param sourceRegister The register containing the value to push to the stack.
+   * @param isPushInstruction Whether this is being called from a PUSH instruction (affects operation order).
    * @returns Whether the operation was successful.
    *
    * ---
    * Called by the instructions ({@link InstructionType.execute}).
    */
-<span class="fstat-no" title="function not covered" >  *pushToStack(</span>
-<span class="cstat-no" title="statement not covered" >    sourceRegister: "AL" | "BL" | "CL" | "DL" | "id.l" | "IP.l" | "FLAGS.l",</span>
-<span class="cstat-no" title="statement not covered" >  ): EventGenerator&lt;boolean&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    let SP = this.getRegister("SP");</span>
-<span class="cstat-no" title="statement not covered" ></span>
+<span class="fstat-no" title="function not covered" >  *p</span>ushToStack(
+    sourceRegister: "AL" | "BL" | "CL" | "DL" | "id.l" | "IP.l" | "FLAGS.l",
+    isPushInstruction = <span class="branch-0 cbranch-no" title="branch not covered" >false,</span>
+  ): EventGenerator&lt;boolean&gt; {
+    let SP = <span class="cstat-no" title="statement not covered" >this.getRegister("SP");</span>
+&nbsp;
 <span class="cstat-no" title="statement not covered" >    if (!MemoryAddress.inRange(SP.unsigned - 1)) {</span>
 <span class="cstat-no" title="statement not covered" >      yield { type: "cpu:error", error: new SimulatorError("stack-overflow") };</span>
 <span class="cstat-no" title="statement not covered" >      return false;</span>
-<span class="cstat-no" title="statement not covered" >    }</span>
-<span class="cstat-no" title="statement not covered" >    SP = SP.add(-1);</span>
-<span class="cstat-no" title="statement not covered" >    yield* this.updateWordRegister("SP", SP);</span>
-<span class="cstat-no" title="statement not covered" >    yield* this.setMAR("SP");</span>
-<span class="cstat-no" title="statement not covered" >    yield* this.setMBR(sourceRegister);</span>
-<span class="cstat-no" title="statement not covered" >    if (!(yield* this.useBus("mem-write"))) return false; // Error writing to memory</span>
-<span class="cstat-no" title="statement not covered" ></span>
+    }
+&nbsp;
+    // Marcar que estamos haciendo una operación de stack
+<span class="cstat-no" title="statement not covered" >    this.#isStackOperation = true;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    if (isPushInstruction) {</span>
+      // Para la instrucción PUSH: MAR -&gt; MBR -&gt; write -&gt; SP--
+<span class="cstat-no" title="statement not covered" >      yield* this.setMBR(sourceRegister);</span>
+<span class="cstat-no" title="statement not covered" >      SP = SP.add(-1);</span>
+<span class="cstat-no" title="statement not covered" >      yield* this.updateWordRegister("SP", SP);</span>
+<span class="cstat-no" title="statement not covered" >      yield* this.setMAR("SP");</span>
+<span class="cstat-no" title="statement not covered" >      if (!(yield* this.useBus("mem-write"))) <span class="cstat-no" title="statement not covered" >return false; // Error writing to memory</span></span>
+    } else {
+      // Para otras instrucciones (INT, CALL, etc.): SP-- -&gt; MBR -&gt; MAR -&gt; write
+<span class="cstat-no" title="statement not covered" >      SP = SP.add(-1);</span>
+<span class="cstat-no" title="statement not covered" >      yield* this.updateWordRegister("SP", SP);</span>
+<span class="cstat-no" title="statement not covered" >      yield* this.setMBR(sourceRegister);</span>
+<span class="cstat-no" title="statement not covered" >      yield* this.setMAR("SP");</span>
+<span class="cstat-no" title="statement not covered" >      if (!(yield* this.useBus("mem-write"))) <span class="cstat-no" title="statement not covered" >return false; // Error writing to memory</span></span>
+    }
+&nbsp;
+    // Desmarcar la operación de stack
+<span class="cstat-no" title="statement not covered" >    this.#isStackOperation = false;</span>
+&nbsp;
 <span class="cstat-no" title="statement not covered" >    if (!MemoryAddress.inRange(SP.unsigned - 1)) {</span>
 <span class="cstat-no" title="statement not covered" >      yield { type: "cpu:error", error: new SimulatorError("stack-overflow") };</span>
 <span class="cstat-no" title="statement not covered" >      return false;</span>
-<span class="cstat-no" title="statement not covered" >    }</span>
-<span class="cstat-no" title="statement not covered" >    /* yield* this.setMAR("SP");</span>
-<span class="cstat-no" title="statement not covered" >    yield* this.setMBR(sourceRegister);</span>
-<span class="cstat-no" title="statement not covered" >    if (!(yield* this.useBus("mem-write"))) return false; // Error writing to memory</span>
-<span class="cstat-no" title="statement not covered" >    SP = SP.add(-1);</span>
-<span class="cstat-no" title="statement not covered" >    yield* this.updateWordRegister("SP", SP);*/</span>
+    }
+&nbsp;
 <span class="cstat-no" title="statement not covered" >    return true;</span>
-<span class="cstat-no" title="statement not covered" >  }</span>
+  }
 &nbsp;
   /**
    * Pops a value from the stack, and updates the SP register.
-   * This value will be written to the id register.
+   * This value will be written directly to the specified register.
    * @see {@link https://vonsim.github.io/docs/cpu/#pila}
+   * @param sourceRegister The register where the popped value will be written.
    * @returns Whether the operation was successful.
    *
    * ---
    * Called by the instructions ({@link InstructionType.execute}).
    */
-<span class="fstat-no" title="function not covered" >  *popFromStack(</span>
-<span class="cstat-no" title="statement not covered" >    sourceRegister: "AL" | "BL" | "CL" | "DL" | "id.l" | "IP.l" | "FLAGS.l",</span>
-<span class="cstat-no" title="statement not covered" >  ): EventGenerator&lt;boolean&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    let SP = this.getRegister("SP");</span>
-<span class="cstat-no" title="statement not covered" ></span>
+<span class="fstat-no" title="function not covered" >  *p</span>opFromStack(
+    sourceRegister: "AL" | "BL" | "CL" | "DL" | "id.l" | "IP.l" | "FLAGS.l",
+  ): EventGenerator&lt;boolean&gt; {
+    let SP = <span class="cstat-no" title="statement not covered" >this.getRegister("SP");</span>
+&nbsp;
 <span class="cstat-no" title="statement not covered" >    if (!MemoryAddress.inRange(SP)) {</span>
 <span class="cstat-no" title="statement not covered" >      yield { type: "cpu:error", error: new SimulatorError("stack-underflow") };</span>
 <span class="cstat-no" title="statement not covered" >      return false;</span>
-<span class="cstat-no" title="statement not covered" >    }</span>
-<span class="cstat-no" title="statement not covered" >    /* SP = SP.add(1);</span>
-<span class="cstat-no" title="statement not covered" >    yield* this.updateWordRegister("SP", SP);</span>
+    }
+    /* SP = SP.add(1);
+    yield* this.updateWordRegister("SP", SP);
+    yield* this.setMAR("SP");
+    if (!(yield* this.useBus("mem-read"))) return false; // Error reading memory
+    yield* this.getMBR(sourceRegister);*/
+&nbsp;
 <span class="cstat-no" title="statement not covered" >    yield* this.setMAR("SP");</span>
-<span class="cstat-no" title="statement not covered" >    if (!(yield* this.useBus("mem-read"))) return false; // Error reading memory</span>
-<span class="cstat-no" title="statement not covered" >    yield* this.getMBR(sourceRegister);*/</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    yield* this.setMAR("SP");</span>
-<span class="cstat-no" title="statement not covered" >    if (!(yield* this.useBus("mem-read"))) return false; // Error reading memory</span>
+<span class="cstat-no" title="statement not covered" >    if (!(yield* this.useBus("mem-read"))) <span class="cstat-no" title="statement not covered" >return false; // Error reading memory</span></span>
 <span class="cstat-no" title="statement not covered" >    yield* this.getMBR(sourceRegister);</span>
 <span class="cstat-no" title="statement not covered" >    SP = SP.add(1);</span>
 <span class="cstat-no" title="statement not covered" >    yield* this.updateWordRegister("SP", SP);</span>
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
 <span class="cstat-no" title="statement not covered" >    return true;</span>
-<span class="cstat-no" title="statement not covered" >  }</span>
+  }
+&nbsp;
+  /**
+   * Sets the flag indicating we're executing INT 7 routine
+   */
+<span class="fstat-no" title="function not covered" >  setExecutingINT7(v</span>alue: boolean): void {
+<span class="cstat-no" title="statement not covered" >    this.#isExecutingINT7 = value;</span>
+  }
+&nbsp;
+  /**
+   * Gets the flag indicating if we're executing INT 7 routine
+   */
+<span class="fstat-no" title="function not covered" >  isExecutingINT7(): boolean {</span>
+<span class="cstat-no" title="statement not covered" >    return this.#isExecutingINT7;</span>
+  }
+&nbsp;
+  /**
+   * Gets the flag indicating if we're in a stack operation (PUSH/POP)
+   */
+<span class="fstat-no" title="function not covered" >  isStackOperation(): boolean {</span>
+<span class="cstat-no" title="statement not covered" >    return this.#isStackOperation;</span>
+  }
 }
 &nbsp;
 export type {
@@ -1980,22 +2498,21 @@ export type {
 export { parseRegister } from "./utils";
 &nbsp;</pre></td></tr></table></pre>
 
-      <div class="push"></div>
-      <!-- for sticky footer -->
-    </div>
-    <!-- /wrapper -->
-    <div class="footer quiet pad2 space-top1 center small">
-      Code coverage generated by
-      <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-      at 2025-07-14T12:36:49.915Z
-    </div>
-    <script src="../../prettify.js"></script>
-    <script>
-      window.onload = function () {
-        prettyPrint();
-      };
-    </script>
-    <script src="../../sorter.js"></script>
-    <script src="../../block-navigation.js"></script>
-  </body>
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2026-11-26T16:38:26.695Z
+            </div>
+        <script src="../../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../../sorter.js"></script>
+        <script src="../../block-navigation.js"></script>
+    </body>
 </html>
+    
