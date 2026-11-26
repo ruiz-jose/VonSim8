@@ -225,20 +225,20 @@ function tryNotifyGlobal(
 }
 
 function notifyError(error: SimulatorError<any>) {
-  const message = error.translate(getSettings().language);
-  toast({ title: message, variant: "error" });
+  const lang = getSettings().language;
+  const message = error.translate(lang);
+  const hint = typeof error.hint === "function" ? error.hint(lang) : null;
+  const hintText = hint ? `💡 ${lang === "es" ? "Pista" : "Hint"}: ${hint}` : undefined;
+  toast({ title: message, description: hintText, variant: "error" });
+  const notification = {
+    type: "error" as const,
+    title: lang === "es" ? "Error de simulación" : "Simulation error",
+    message: hintText ? `${message}\n${hintText}` : message,
+  };
   if (addNotification) {
-    addNotification({
-      type: "error",
-      title: "Error de simulación",
-      message,
-    });
+    addNotification(notification);
   } else {
-    tryNotifyGlobal({
-      type: "error",
-      title: "Error de simulación",
-      message,
-    });
+    tryNotifyGlobal(notification);
   }
 }
 
