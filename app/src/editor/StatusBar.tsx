@@ -1,3 +1,4 @@
+import type { EditorView } from "@codemirror/view";
 import clsx from "clsx";
 import { atom, useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect } from "react";
@@ -9,10 +10,13 @@ import { Tooltip } from "@/components/ui/Tooltip";
 import { useSettings } from "@/lib/settings";
 import { toast } from "@/lib/toast";
 
+import { goToFirstError } from "./diagnostics";
 import { ejemplos } from "./examples/examples";
 import { getSavedProgram } from "./files";
 
 export const lintErrorsAtom = atom(0);
+/** 1-based line of the first assembler error, or 0 when there are none. */
+export const firstErrorLineAtom = atom(0);
 
 // Átomos para manejar el estado del archivo
 const _fileHandleAtom = atom(null as any);
@@ -53,6 +57,7 @@ export function StatusBar() {
   // Tamaño de fuente del editor
   const [settings, setSettings] = useSettings();
   const lintErrors = useAtomValue(lintErrorsAtom);
+  const firstErrorLine = useAtomValue(firstErrorLineAtom);
   const fileHandle = useAtomValue(fileHandleAtom);
   const setFileHandle = useSetAtom(fileHandleAtom);
   const setLastSavedProgram = useSetAtom(lastSavedProgramAtom);
@@ -384,12 +389,19 @@ export function StatusBar() {
             </div>
           </PopoverContent>
         </Popover>
-        {/* Indicador de errores */}
-        <div
+        {/* Indicador de errores: al hacer clic lleva a la primera línea con error */}
+        <button
+          type="button"
+          data-testid="lint-errors"
+          disabled={lintErrors === 0}
+          onClick={() => {
+            if (window.codemirror) goToFirstError(window.codemirror as unknown as EditorView);
+          }}
+          title={lintErrors > 0 ? "Ir a la primera línea con error" : undefined}
           className={clsx(
             "flex items-center gap-1.5 rounded-full px-2 py-0.5 font-medium transition-colors",
             lintErrors > 0
-              ? "border border-red-500/30 bg-red-500/20 text-red-300"
+              ? "cursor-pointer border border-red-500/30 bg-red-500/20 text-red-300 hover:bg-red-500/30"
               : "border border-green-500/30 bg-green-500/20 text-green-300",
           )}
         >
@@ -397,9 +409,11 @@ export function StatusBar() {
             className={clsx("size-2 rounded-full", lintErrors > 0 ? "bg-red-400" : "bg-green-400")}
           />
           <span className="font-mono">
-            {lintErrors > 0 ? `${lintErrors} error${lintErrors > 1 ? "es" : ""}` : "Sin errores"}
+            {lintErrors > 0
+              ? `${lintErrors} error${lintErrors > 1 ? "es" : ""}${firstErrorLine ? ` · línea ${firstErrorLine}` : ""}`
+              : "Sin errores"}
           </span>
-        </div>
+        </button>
       </div>
     </div>
   );
