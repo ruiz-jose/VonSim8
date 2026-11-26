@@ -474,7 +474,7 @@ const TourTooltip = memo(
             </div>
             <button
               onClick={onSkip}
-              className="absolute right-2 top-2 rounded p-1 text-stone-400 hover:text-white focus:outline-none"
+              className="absolute right-2 top-2 rounded p-1 text-stone-300 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-mantis-300"
               aria-label="Cerrar"
             >
               <FontAwesomeIcon icon={faTimes} size="sm" />

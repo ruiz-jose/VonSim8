@@ -2,7 +2,6 @@ import { MemoryAddress } from "@vonsim/common/address";
 import type { Byte } from "@vonsim/common/byte";
 import clsx from "clsx";
 import { useAtomValue } from "jotai";
-import { useEffect, useRef, useState } from "react";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover";
 import {
@@ -16,6 +15,7 @@ import {
 } from "@/computer/cpu/state";
 import { dataAddressesAtom, programAddressesAtom } from "@/computer/memory/state";
 import { animated, getSpring } from "@/computer/shared/springs";
+import { useChangeHighlight } from "@/hooks/useChangeHighlight";
 import { useTranslate } from "@/lib/i18n";
 
 import { memoryShownAtom, operatingAddressAtom, writtenAddressesAtom } from "./state";
@@ -65,7 +65,7 @@ export function Memory() {
       className="absolute left-[800px] top-[-160px] z-10 size-auto rounded-lg border border-stone-600 bg-stone-900 shadow-2xl [&_*]:z-20"
       data-testid="memory-component"
     >
-      <span className="block w-min rounded-br-lg rounded-tl-lg border-b border-r border-stone-600 bg-mantis-500 px-2 py-1 text-3xl text-white shadow">
+      <span className="block w-min rounded-br-lg rounded-tl-lg border-b border-r border-stone-600 bg-mantis-700 px-2 py-1 text-3xl text-white shadow">
         {translate("computer.memory.name")}
       </span>
 
@@ -78,7 +78,7 @@ export function Memory() {
                 <th
                   key={index}
                   className={clsx(
-                    "relative size-10 border border-gray-500 bg-mantis-500",
+                    "relative size-10 border border-gray-500 bg-mantis-700 text-white",
                     index % 4 === 0 && index !== 0 ? "border-l-4 border-mantis-600" : "",
                   )}
                 >
@@ -101,7 +101,7 @@ export function Memory() {
                   rowIndex % 4 === 0 && rowIndex !== 0 ? "border-t-4 border-mantis-600" : ""
                 }
               >
-                <th className="relative size-10 border border-gray-500 bg-mantis-500">
+                <th className="relative size-10 border border-gray-500 bg-mantis-700 text-white">
                   <span className="inline-flex items-center">
                     {rowIndex.toString(16).toUpperCase()}
                     {/* Flecha en fila donde apunta IP */}
@@ -193,16 +193,8 @@ function MemoryCell({
   const translate = useTranslate();
   const operatingAddress = useAtomValue(operatingAddressAtom);
 
-  // Animación de destello al actualizar valor
-  const [flash, setFlash] = useState(false);
-  const prevValue = useRef(value);
-  useEffect(() => {
-    if (prevValue.current !== value) {
-      setFlash(true);
-      setTimeout(() => setFlash(false), 300);
-      prevValue.current = value;
-    }
-  }, [value]);
+  // Resaltar la celda si su valor cambió en el último paso
+  const changed = useChangeHighlight(Number(value));
 
   const title = translate("computer.memory.cell", address);
 
@@ -210,7 +202,10 @@ function MemoryCell({
     <Popover>
       <PopoverTrigger asChild>
         <animated.div
-          title={title}
+          role="button"
+          title={changed ? `${title} (cambió en el último paso)` : title}
+          aria-label={`${title}: ${value.toString("hex")}${label ? ` (${label})` : ""}${changed ? ", cambió en el último paso" : ""}`}
+          data-changed={changed ? "true" : undefined}
           className={clsx(
             "relative flex size-10 cursor-pointer select-none items-center justify-center border font-mono text-base transition-all duration-200",
             // Colores de fondo y borde según tipo
@@ -220,7 +215,7 @@ function MemoryCell({
                 ? "z-10 shadow-lg shadow-yellow-400/50 outline outline-2 outline-yellow-400 ring-2 ring-yellow-400 ring-offset-2"
                 : "",
             // Cambiar fondos de colores sólidos por fondo oscuro consistente
-            "bg-stone-800",
+            changed && !isIP && !isSP ? "bg-amber-950" : "bg-stone-800",
             // Subrayado para celdas escritas recientemente
             isWritten ? "underline decoration-red-400 decoration-2 underline-offset-1" : "",
             isInterruptVector && !isSP && !isStackData ? "border-l-4 border-orange-500" : "",
@@ -237,7 +232,8 @@ function MemoryCell({
             "text-stone-100",
             // Hover y animación de destello
             "hover:z-20 hover:scale-110 hover:shadow-xl",
-            flash && "animate-pulse",
+            // Resaltado persistente de lo que cambió en el último paso
+            changed && !isIP && !isSP && "z-10 ring-2 ring-inset ring-amber-300",
           )}
           style={
             address.value === operatingAddress.value
@@ -293,8 +289,19 @@ function MemoryCell({
               📍
             </span>
           )}
+          {changed && (
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute bottom-0.5 right-0.5 size-2 rounded-full bg-amber-300"
+            />
+          )}
           {/* Valor de la celda */}
-          <span className="z-10 mt-3 block font-mono text-lg font-bold">
+          <span
+            className={clsx(
+              "z-10 mt-3 block font-mono text-lg font-bold",
+              changed && "text-amber-200",
+            )}
+          >
             {value.toString("hex")}
           </span>
           {isIP && (

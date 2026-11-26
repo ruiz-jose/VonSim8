@@ -1,6 +1,6 @@
 import "./styles.css";
 
-import { history, indentMore } from "@codemirror/commands";
+import { history, indentLess, indentMore } from "@codemirror/commands";
 import { EditorSelection, EditorState } from "@codemirror/state";
 import {
   drawSelection,
@@ -47,6 +47,11 @@ export function Editor({ className }: { className?: string }) {
   useEffect(() => {
     if (!element) return;
 
+    // Accesibilidad de teclado: Tab inserta espacios, pero si se presiona
+    // Escape justo antes, Tab mueve el foco fuera del editor (evita la
+    // "trampa de teclado", WCAG 2.1.2).
+    let escapePressed = false;
+
     window.codemirror = new EditorView({
       state: EditorState.create({
         doc: getSavedProgram() || "",
@@ -62,9 +67,14 @@ export function Editor({ className }: { className?: string }) {
           highlightSpecialChars(),
           history(),
           drawSelection(),
+          EditorView.contentAttributes.of({ "aria-label": "Editor de código assembly" }),
           EditorView.domEventHandlers({
             // Prevent dropping files into the editor, handled by the file handler
             drop: ev => ev.preventDefault(),
+            keydown: ev => {
+              if (ev.key !== "Escape" && ev.key !== "Tab") escapePressed = false;
+              return false;
+            },
           }),
           EditorState.allowMultipleSelections.of(true),
           highlightActiveLine(),
@@ -77,6 +87,7 @@ export function Editor({ className }: { className?: string }) {
             {
               key: "Escape",
               run: view => {
+                escapePressed = true;
                 view.dispatch({
                   selection: EditorSelection.create([view.state.selection.main], 0),
                 });
@@ -86,6 +97,10 @@ export function Editor({ className }: { className?: string }) {
             {
               key: "Tab",
               run: view => {
+                if (escapePressed) {
+                  escapePressed = false;
+                  return false; // Dejar que el navegador mueva el foco
+                }
                 if (view.state.selection.ranges.some(r => !r.empty)) return indentMore(view);
                 view.dispatch(
                   view.state.update(view.state.replaceSelection(" ".repeat(view.state.tabSize)), {
@@ -95,8 +110,17 @@ export function Editor({ className }: { className?: string }) {
                 );
                 return true;
               },
+              shift: view => {
+                if (escapePressed) {
+                  escapePressed = false;
+                  return false; // Dejar que el navegador mueva el foco hacia atrás
+                }
+                return indentLess(view);
+              },
             },
-            ...vscodeKeymap,
+            // El Tab de vscodeKeymap siempre previene el comportamiento por
+            // defecto; se reemplaza por el de arriba para poder salir del editor.
+            ...vscodeKeymap.filter(binding => !(binding.key === "Tab" && binding.shift)),
           ]),
           VonSim(),
         ],

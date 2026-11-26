@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover";
 import { Slider } from "@/components/ui/Slider";
 import { Tooltip } from "@/components/ui/Tooltip";
+import { useTranslate } from "@/lib/i18n";
 import { useSettings } from "@/lib/settings";
 import { toast } from "@/lib/toast";
 
@@ -50,6 +51,7 @@ declare global {
 const supportsNativeFileSystem = "showSaveFilePicker" in window;
 
 export function StatusBar() {
+  const translate = useTranslate();
   // Tamaño de fuente del editor
   const [settings, setSettings] = useSettings();
   const lintErrors = useAtomValue(lintErrorsAtom);
@@ -78,11 +80,11 @@ export function StatusBar() {
   // Abrir archivo desde la PC
   const openFileFromPC = useCallback(async () => {
     if (!supportsNativeFileSystem) {
-      toast({ title: "editor.files.unsupported", variant: "error" });
+      toast({ title: translate("editor.files.unsupported"), variant: "error" });
       return;
     }
     if (unsavedChanges) {
-      const discard = confirm("editor.files.unsaved");
+      const discard = confirm(translate("editor.files.unsaved"));
       if (!discard) return;
     }
     try {
@@ -103,15 +105,15 @@ export function StatusBar() {
       }
     } catch (error) {
       console.error(error);
-      toast({ title: "editor.files.open-error", variant: "error" });
+      toast({ title: translate("editor.files.open-error"), variant: "error" });
     }
-  }, [unsavedChanges, setFileHandle, setLastSavedProgram]);
+  }, [unsavedChanges, setFileHandle, setLastSavedProgram, translate]);
 
   // Abrir ejemplo
   const openExample = useCallback(
     (ejemplo: (typeof ejemplos)[0]) => {
       if (unsavedChanges) {
-        const discard = confirm("editor.files.unsaved");
+        const discard = confirm(translate("editor.files.unsaved"));
         if (!discard) return;
       }
       setFileHandle(null);
@@ -127,12 +129,12 @@ export function StatusBar() {
       }
       toast({ title: `Ejemplo cargado: ${ejemplo.nombre}`, variant: "info" });
     },
-    [unsavedChanges, setFileHandle, setLastSavedProgram, setSettings],
+    [unsavedChanges, setFileHandle, setLastSavedProgram, setSettings, translate],
   );
 
   const saveFile = useCallback(async () => {
     if (!supportsNativeFileSystem) {
-      toast({ title: "editor.files.unsupported", variant: "error" });
+      toast({ title: translate("editor.files.unsupported"), variant: "error" });
       return;
     }
 
@@ -152,9 +154,9 @@ export function StatusBar() {
       toast({ title: "Archivo guardado", variant: "info" });
     } catch (error) {
       console.error(error);
-      toast({ title: "editor.files.save-error", variant: "error" });
+      toast({ title: translate("editor.files.save-error"), variant: "error" });
     }
-  }, [fileHandle, unsavedChanges, setLastSavedProgram]);
+  }, [fileHandle, unsavedChanges, setLastSavedProgram, translate]);
 
   const saveFileAs = useCallback(async () => {
     const source = window.codemirror!.state.doc.toString();
@@ -178,7 +180,7 @@ export function StatusBar() {
         }
       } catch (error) {
         console.error(error);
-        toast({ title: "editor.files.save-error", variant: "error" });
+        toast({ title: translate("editor.files.save-error"), variant: "error" });
       }
     } else {
       const blob = new Blob([source], { type: "text/plain" });
@@ -194,7 +196,7 @@ export function StatusBar() {
       document.body.removeChild(a);
       URL.revokeObjectURL(href);
     }
-  }, [fileHandle, setFileHandle, setLastSavedProgram]);
+  }, [fileHandle, setFileHandle, setLastSavedProgram, translate]);
 
   return (
     <div
@@ -223,7 +225,7 @@ export function StatusBar() {
                 variant="ghost"
                 size="sm"
                 className="hover-lift"
-                aria-label="editor.files.open"
+                aria-label={translate("editor.files.open")}
               >
                 <span className="icon-[lucide--folder-open] size-4" />
               </Button>
@@ -323,26 +325,26 @@ export function StatusBar() {
             </PopoverContent>
           </Popover>
 
-          <Tooltip content="editor.files.save" position="top">
+          <Tooltip content={translate("editor.files.save")} position="top">
             <Button
               variant="ghost"
               size="sm"
               onClick={saveFile}
               disabled={!fileHandle || !unsavedChanges}
               className="hover-lift"
-              aria-label="editor.files.save"
+              aria-label={translate("editor.files.save")}
             >
               <span className="icon-[lucide--save] size-4" />
             </Button>
           </Tooltip>
 
-          <Tooltip content="editor.files.save-as" position="top">
+          <Tooltip content={translate("editor.files.save-as")} position="top">
             <Button
               variant="ghost"
               size="sm"
               onClick={saveFileAs}
               className="hover-lift"
-              aria-label="editor.files.save-as"
+              aria-label={translate("editor.files.save-as")}
             >
               <span className="icon-[lucide--save-all] size-4" />
             </Button>

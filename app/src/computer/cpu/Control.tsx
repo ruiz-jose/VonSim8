@@ -489,8 +489,20 @@ function AnimatedControlMemory({
 }
 
 const REGISTERS = new Set([
-  "AL", "AH", "BL", "BH", "CL", "CH", "DL", "DH",
-  "AX", "BX", "CX", "DX", "SP", "IP",
+  "AL",
+  "AH",
+  "BL",
+  "BH",
+  "CL",
+  "CH",
+  "DL",
+  "DH",
+  "AX",
+  "BX",
+  "CX",
+  "DX",
+  "SP",
+  "IP",
 ]);
 
 function colorizeOperand(operand: string) {
@@ -514,7 +526,7 @@ function colorizeOperand(operand: string) {
   }
 
   // Valor inmediato: número decimal o hexadecimal (ej: 05h, 255, 0FFh)
-  if (/^[0-9a-fA-F]+h$/i.test(operand) || /^[0-9]+$/.test(operand)) {
+  if (/^[0-9a-f]+h$/i.test(operand) || /^\d+$/.test(operand)) {
     return <span className="text-violet-300">{operand}</span>;
   }
 
@@ -618,7 +630,7 @@ export function Control() {
       </svg>
 
       <div className="absolute bottom-[172px] left-[30px] flex w-full items-start">
-        <span className="block w-min whitespace-nowrap rounded-t-lg border border-b-0 border-stone-600 bg-mantis-500 px-2 pb-3 pt-1 text-xs tracking-wide text-white">
+        <span className="block w-min whitespace-nowrap rounded-t-lg border border-b-0 border-stone-600 bg-mantis-700 px-2 pb-3 pt-1 text-xs tracking-wide text-white">
           {translate("computer.cpu.control-unit")}
         </span>
       </div>
@@ -794,8 +806,7 @@ export function Control() {
                 <span
                   className="font-mono text-3xl font-bold leading-none text-mantis-300"
                   style={{
-                    textShadow:
-                      "0 0 14px rgba(74,222,128,0.75), 0 0 30px rgba(74,222,128,0.35)",
+                    textShadow: "0 0 14px rgba(74,222,128,0.75), 0 0 30px rgba(74,222,128,0.35)",
                   }}
                 >
                   {cycle.metadata.name}
