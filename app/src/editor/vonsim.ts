@@ -4,7 +4,7 @@ import {
   StreamLanguage,
   syntaxHighlighting,
 } from "@codemirror/language";
-import { linter,lintGutter } from "@codemirror/lint";
+import { linter, lintGutter } from "@codemirror/lint";
 import { Tag, tags } from "@lezer/highlight";
 import {
   assemble,

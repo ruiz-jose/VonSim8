@@ -489,8 +489,20 @@ function AnimatedControlMemory({
 }
 
 const REGISTERS = new Set([
-  "AL", "AH", "BL", "BH", "CL", "CH", "DL", "DH",
-  "AX", "BX", "CX", "DX", "SP", "IP",
+  "AL",
+  "AH",
+  "BL",
+  "BH",
+  "CL",
+  "CH",
+  "DL",
+  "DH",
+  "AX",
+  "BX",
+  "CX",
+  "DX",
+  "SP",
+  "IP",
 ]);
 
 function colorizeOperand(operand: string) {
@@ -794,8 +806,7 @@ export function Control() {
                 <span
                   className="font-mono text-3xl font-bold leading-none text-mantis-300"
                   style={{
-                    textShadow:
-                      "0 0 14px rgba(74,222,128,0.75), 0 0 30px rgba(74,222,128,0.35)",
+                    textShadow: "0 0 14px rgba(74,222,128,0.75), 0 0 30px rgba(74,222,128,0.35)",
                   }}
                 >
                   {cycle.metadata.name}
