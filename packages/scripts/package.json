@@ -12,15 +12,14 @@
     "test:coverage": "echo 'No tests for scripts package' && exit 0"
   },
   "dependencies": {
-    "execa": "^8.0.1",
-    "glob": "^10.3.10"
+    "execa": "^8.0.1"
   },
   "devDependencies": {
-    "@types/node": "^20.10.8",
+    "@types/node": "^20.19.43",
     "@vonsim/tsconfig": "workspace:^",
-    "eslint": "^8.56.0",
+    "eslint": "^8.57.1",
     "eslint-config-vonsim": "workspace:^",
-    "prettier": "^3.5.3",
+    "prettier": "~3.6.2",
     "typescript": "~5.3.3"
   }
 }
