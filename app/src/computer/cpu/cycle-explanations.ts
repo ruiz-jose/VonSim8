@@ -32,8 +32,12 @@ type CpuPhase =
  * real de la CPU para que el panel coincida con la etiqueta de la unidad de
  * control (búsqueda de operandos, ejecución o escritura).
  */
-export function resolveStage(rawStage: string, phase: CpuPhase | undefined): string {
+export function resolveStage(rawStage: string, phase: CpuPhase | undefined, action = ""): string {
   if (rawStage !== "Ejecución") return rawStage;
+  // Leer el byte siguiente de la instrucción (un dato inmediato o una
+  // dirección) siempre es obtener un operando, aunque la CPU ya haya pasado a
+  // la fase de escritura (pasa en MOV AL, 5).
+  if (READS_NEXT_INSTRUCTION_BYTE.has(action)) return "Obtención de operandos";
   switch (phase) {
     case "fetching-operands":
     case "fetching-operands-completed":
@@ -44,6 +48,8 @@ export function resolveStage(rawStage: string, phase: CpuPhase | undefined): str
       return "Ejecución";
   }
 }
+
+const READS_NEXT_INSTRUCTION_BYTE = new Set(["MAR ← IP", "MBR ← read(Memoria[MAR]) | IP ← IP + 1"]);
 
 export const STAGE_DESCRIPTIONS: Record<string, string> = {
   Captación: "La CPU trae la instrucción desde la memoria",

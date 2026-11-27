@@ -10,6 +10,14 @@ describe("resolveStage", () => {
     expect(resolveStage("Ejecución", "executing")).toBe("Ejecución");
   });
 
+  it("leer el byte siguiente de la instrucción es obtener un operando", () => {
+    expect(resolveStage("Ejecución", "writeback", "MAR ← IP")).toBe("Obtención de operandos");
+    expect(resolveStage("Ejecución", "writeback", "MBR ← read(Memoria[MAR]) | IP ← IP + 1")).toBe(
+      "Obtención de operandos",
+    );
+    expect(resolveStage("Ejecución", "writeback", "AL ← MBR")).toBe("Escritura");
+  });
+
   it("no cambia Captación ni Interrupción", () => {
     expect(resolveStage("Captación", "executing")).toBe("Captación");
     expect(resolveStage("Interrupción", "writeback")).toBe("Interrupción");

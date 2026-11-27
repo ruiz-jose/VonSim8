@@ -1,6 +1,41 @@
 // Ejemplos de programas para VonSim
 export const ejemplos = [
   {
+    nombre: "Ciclo de instrucción paso a paso",
+    filename: "ciclo_instruccion.asm",
+    contenido: `; Ejemplo guiado: el ciclo de instrucción paso a paso
+;
+; Cómo usarlo:
+;  - Presioná F7 para avanzar UN ciclo y mirá el panel "Ciclo de instrucción".
+;  - Cada paso muestra qué registro cambia y por qué.
+;  - Lo que cambió en el último paso queda marcado en ámbar.
+;
+; Toda instrucción empieza igual, con la CAPTACIÓN (3 ciclos):
+;   1. MAR ← IP       la CPU indica qué celda de memoria quiere leer
+;   2. MBR ← read     la memoria devuelve el byte e IP avanza
+;   3. IR ← MBR       el byte pasa a IR y el decodificador sabe qué hacer
+; Después, cada instrucción hace pasos distintos.
+
+x DB 3          ; variable x: mirá en la memoria la celda con la etiqueta "x"
+y DB 0          ; variable y: acá se va a guardar el resultado
+
+; 1) Dato inmediato: el 5 viene dentro de la instrucción.
+;    Después de la captación, la CPU lee un byte más (el 5) y lo copia a AL.
+MOV AL, 5
+
+; 2) Dato en memoria: la instrucción trae la DIRECCIÓN de x, no su valor.
+;    Fijate en "MAR ← MBR": la dirección leída pasa a MAR para buscar el dato.
+;    Al final, la ALU suma AL + x y actualiza los flags.
+ADD AL, x
+
+; 3) Escribir en memoria: el resultado de AL se guarda en y.
+;    Mirá cómo cambia la celda "y" en el último paso (write).
+MOV y, AL
+
+; 4) HLT: solo la captación y la CPU se detiene.
+HLT`,
+  },
+  {
     nombre: "Sumador simple",
     filename: "sumador.asm",
     contenido: `; Ejemplo: Sumador simple z = x + y\nx DB 3\ny DB 2\nz DB 0\nMOV AL, x\nADD AL, y\nMOV z, AL\nHLT`,

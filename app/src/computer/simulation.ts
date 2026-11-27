@@ -15,6 +15,7 @@ import {
   hasINTInstructionAtom,
   mayUsePICAtom,
 } from "@/computer/cpu/state";
+import { originalLabel } from "@/computer/memory/original-label";
 import { dataAddressesAtom, programAddressesAtom } from "@/computer/memory/state";
 import { highlightCurrentInstruction, highlightLine, setReadOnly } from "@/editor/methods";
 import { programModifiedAtom } from "@/editor/state"; // Importar programModifiedAtom
@@ -84,7 +85,7 @@ function setMessageAndAddToHistory(message: string): void {
   const [rawStage, ...actionParts] = finalMessage.split(":");
   const action = actionParts.join(":").trim();
   // Usar la fase real de la CPU para que el panel coincida con la unidad de control
-  const stage = resolveStage(rawStage.trim(), store.get(cycleAtom).phase);
+  const stage = resolveStage(rawStage.trim(), store.get(cycleAtom).phase, action);
   const marAddress = Number(store.get(MARAtom).unsigned);
   const marLabel = store.get(dataAddressesAtom).find(d => d.address === marAddress)?.label;
   const explanation = explainStep(action, { stage, marLabel });
@@ -1111,7 +1112,8 @@ async function startThread(generator: EventGenerator, allowConcurrent = false): 
     console.log("🕐 [DEBUG] Iniciando hilo concurrente del reloj");
   }
 
-  const threadPromise = executeThread(generator);
+  // Los hilos concurrentes (reloj/timer) no deben tocar los contadores de la CPU
+  const threadPromise = executeThread(generator, allowConcurrent);
   activeThreads.add(threadPromise);
 
   try {
@@ -1125,7 +1127,7 @@ async function startThread(generator: EventGenerator, allowConcurrent = false): 
   }
 }
 
-async function executeThread(generator: EventGenerator): Promise<void> {
+async function executeThread(generator: EventGenerator, isConcurrent = false): Promise<void> {
   try {
     let iterationCount = 0;
     const MAX_ITERATIONS = 500000; // Límite de seguridad para detectar bucles infinitos
@@ -1236,7 +1238,12 @@ async function executeThread(generator: EventGenerator): Promise<void> {
           }
 
           console.log("🔄 [DEBUG] Actualizando contexto de instrucción...");
-          updateInstructionContext(executeStageCounter, currentInstructionName || "");
+          // Un hilo concurrente (el reloj) puede correr mientras la CPU espera una
+          // animación: si actualizara el contexto, pisaría el contador de pasos de
+          // la CPU con un valor viejo y el panel mostraría pasos equivocados.
+          if (!isConcurrent) {
+            updateInstructionContext(executeStageCounter, currentInstructionName || "");
+          }
           console.log("✅ [DEBUG] Contexto actualizado correctamente");
 
           // Caso especial: omitir completamente cpu:register.update (ri.l) en INT paso 11
@@ -1305,7 +1312,7 @@ async function executeThread(generator: EventGenerator): Promise<void> {
 
           // Después del evento, sincronizar el contador con el valor actualizado en events.ts
           console.log("🔄 [DEBUG] Sincronizando executeStageCounter...");
-          executeStageCounter = getCurrentExecuteStageCounter();
+          if (!isConcurrent) executeStageCounter = getCurrentExecuteStageCounter();
           console.log("✅ [DEBUG] executeStageCounter sincronizado:", executeStageCounter);
         } catch (error) {
           console.error("❌ [DEBUG] Error procesando evento:", {
@@ -4362,7 +4369,7 @@ async function dispatch(...args: Action) {
             // Generar una entrada para cada byte de datos
             return values.map((value: number, index: number) => ({
               address: startAddress + index, // Calcular la dirección de cada byte
-              label: index === 0 ? data.label || null : null, // Etiqueta solo para el primer byte
+              label: index === 0 ? originalLabel(code, data) : null, // Etiqueta solo para el primer byte
               value, // Valor del byte
             }));
           });
