@@ -67,6 +67,8 @@ export const spanish: Locale = {
       running: "Ejecutando...",
       run: {
         "cycle-change": "Ciclo",
+        "end-of-phase": "Fase",
+        "end-of-phase-hint": "Avanza hasta el final de la fase actual: búsqueda o ejecución",
         "end-of-instruction": "Instrucción",
         infinity: "Final",
       },

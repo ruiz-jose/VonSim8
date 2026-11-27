@@ -1,4 +1,6 @@
 // Ejemplos de programas para VonSim
+import { ejemplosCiclo } from "./cycle-examples";
+
 export const ejemplos = [
   {
     nombre: "Ciclo de instrucción paso a paso",
@@ -35,6 +37,7 @@ MOV y, AL
 ; 4) HLT: solo la captación y la CPU se detiene.
 HLT`,
   },
+  ...ejemplosCiclo,
   {
     nombre: "Sumador simple",
     filename: "sumador.asm",

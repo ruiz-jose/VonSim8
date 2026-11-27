@@ -1,6 +1,6 @@
 import {
+  faForward,
   faInfinity,
-  faPause,
   faPlay,
   faRedo,
   faStepForward,
@@ -13,8 +13,10 @@ import { useKey } from "react-use";
 import { useSimulation } from "@/computer/simulation";
 import { useTranslate } from "@/lib/i18n";
 
+import { RunButton } from "./RunButton";
+
 // Definir el tipo localmente
-type RunUntil = "cycle-change" | "end-of-instruction" | "infinity";
+type RunUntil = "cycle-change" | "end-of-phase" | "end-of-instruction" | "infinity";
 
 export function Controls({ className }: { className?: string }) {
   const translate = useTranslate();
@@ -67,6 +69,21 @@ export function Controls({ className }: { className?: string }) {
     },
     undefined,
     [runCycle],
+  );
+
+  const runPhase = useCallback(() => {
+    if (status.type === "running") return;
+    setActiveRunMode("end-of-phase");
+    dispatch("cpu.run", "end-of-phase");
+  }, [status.type, dispatch]);
+  useKey(
+    "F6",
+    ev => {
+      ev.preventDefault();
+      runPhase();
+    },
+    undefined,
+    [runPhase],
   );
 
   const runInstruction = useCallback(() => {
@@ -148,6 +165,14 @@ export function Controls({ className }: { className?: string }) {
   // Determinar si mostrar texto y atajos según el tamaño de pantalla
   const showText = screenSize === "desktop" || screenSize === "tablet";
   const showShortcuts = screenSize === "desktop";
+  const common = {
+    disabled: status.type === "running",
+    compact: screenSize === "mobile",
+    showText,
+    showShortcuts,
+    pauseLabel: translate("control.action.pause"),
+    onPause: handlePause,
+  };
 
   return (
     <div
@@ -163,177 +188,43 @@ export function Controls({ className }: { className?: string }) {
         className,
       )}
     >
-      {/* Botón ciclo */}
-      {status.type === "running" && activeRunMode === "cycle-change" ? (
-        <button
-          data-testid="cycle-button"
-          onClick={handlePause}
-          title={translate("control.action.pause")}
-          className={clsx(
-            "group relative flex flex-col items-center rounded-lg transition hover:bg-orange-600/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300",
-            // Púrpura para pausar
-            screenSize === "mobile" ? "px-1 py-0.5" : "px-1.5 py-0.5",
-          )}
-        >
-          <span className="flex items-center justify-center">
-            <FontAwesomeIcon
-              icon={faPause}
-              size="lg"
-              className="text-orange-400 transition group-hover:scale-110"
-            />
-            {showShortcuts && (
-              <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-300">
-                Space
-              </span>
-            )}
-          </span>
-          {showText && <span className="mt-0.5 text-xs">{translate("control.action.pause")}</span>}
-        </button>
-      ) : (
-        <button
-          data-testid="cycle-button"
-          disabled={status.type === "running"}
-          onClick={runCycle}
-          title={translate("control.action.run.cycle-change")}
-          className={clsx(
-            "group relative flex flex-col items-center rounded-lg transition hover:bg-mantis-600/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-mantis-300 disabled:opacity-50",
-            status.type === "running" &&
-              status.until === "cycle-change" &&
-              "animate-pulse-glow-mantis", // Verde para ciclo
-            screenSize === "mobile" ? "px-1 py-0.5" : "px-1.5 py-0.5",
-          )}
-        >
-          <span className="flex items-center justify-center">
-            <FontAwesomeIcon
-              icon={faPlay}
-              size="lg"
-              className="text-mantis-400 transition group-hover:scale-110"
-            />
-            {showShortcuts && (
-              <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-300">
-                F7
-              </span>
-            )}
-          </span>
-          {showText && (
-            <span className="mt-0.5 text-xs">{translate("control.action.run.cycle-change")}</span>
-          )}
-        </button>
-      )}
-      {/* Botón instrucción */}
-      {status.type === "running" && activeRunMode === "end-of-instruction" ? (
-        <button
-          data-testid="new-button"
-          onClick={handlePause}
-          title={translate("control.action.pause")}
-          className={clsx(
-            "group relative flex flex-col items-center rounded-lg transition hover:bg-orange-600/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300",
-            // Púrpura para pausar
-            screenSize === "mobile" ? "px-1 py-0.5" : "px-1.5 py-0.5",
-          )}
-        >
-          <span className="flex items-center justify-center">
-            <FontAwesomeIcon
-              icon={faPause}
-              size="lg"
-              className="text-orange-400 transition group-hover:scale-110"
-            />
-            {showShortcuts && (
-              <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-300">
-                Space
-              </span>
-            )}
-          </span>
-          {showText && <span className="mt-0.5 text-xs">{translate("control.action.pause")}</span>}
-        </button>
-      ) : (
-        <button
-          data-testid="new-button"
-          disabled={status.type === "running"}
-          onClick={runInstruction}
-          title={translate("control.action.run.end-of-instruction")}
-          className={clsx(
-            "group relative flex flex-col items-center rounded-lg transition hover:bg-mantis-600/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-mantis-300 disabled:opacity-50",
-            status.type === "running" &&
-              status.until === "end-of-instruction" &&
-              "animate-pulse-glow-mantis", // Verde para instrucción
-            screenSize === "mobile" ? "px-1 py-0.5" : "px-1.5 py-0.5",
-          )}
-        >
-          <span className="flex items-center justify-center">
-            <FontAwesomeIcon
-              icon={faStepForward}
-              size="lg"
-              className="text-mantis-400 transition group-hover:scale-110"
-            />
-            {showShortcuts && (
-              <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-300">
-                F8
-              </span>
-            )}
-          </span>
-          {showText && (
-            <span className="mt-0.5 text-xs">
-              {translate("control.action.run.end-of-instruction")}
-            </span>
-          )}
-        </button>
-      )}
-      {/* Botón infinito */}
-      {status.type === "running" && activeRunMode === "infinity" ? (
-        <button
-          data-testid="open-button"
-          onClick={handlePause}
-          title={translate("control.action.pause")}
-          className={clsx(
-            "group relative flex flex-col items-center rounded-lg transition hover:bg-orange-600/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300",
-            // Púrpura para pausar
-            screenSize === "mobile" ? "px-1 py-0.5" : "px-1.5 py-0.5",
-          )}
-        >
-          <span className="flex items-center justify-center">
-            <FontAwesomeIcon
-              icon={faPause}
-              size="lg"
-              className="text-orange-400 transition group-hover:scale-110"
-            />
-            {showShortcuts && (
-              <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-300">
-                Space
-              </span>
-            )}
-          </span>
-          {showText && <span className="mt-0.5 text-xs">{translate("control.action.pause")}</span>}
-        </button>
-      ) : (
-        <button
-          data-testid="open-button"
-          disabled={status.type === "running"}
-          onClick={runInfinity}
-          title={translate("control.action.run.infinity")}
-          className={clsx(
-            "group relative flex flex-col items-center rounded-lg transition hover:bg-mantis-600/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-mantis-300 disabled:opacity-50",
-            status.type === "running" && status.until === "infinity" && "animate-pulse-glow-mantis", // Verde para infinito
-            screenSize === "mobile" ? "px-1 py-0.5" : "px-1.5 py-0.5",
-          )}
-        >
-          <span className="flex items-center justify-center">
-            <FontAwesomeIcon
-              icon={faInfinity}
-              size="lg"
-              className="text-mantis-400 transition group-hover:scale-110"
-            />
-            {showShortcuts && (
-              <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-300">
-                F4
-              </span>
-            )}
-          </span>
-          {showText && (
-            <span className="mt-0.5 text-xs">{translate("control.action.run.infinity")}</span>
-          )}
-        </button>
-      )}
+      <RunButton
+        testId="cycle-button"
+        icon={faPlay}
+        label={translate("control.action.run.cycle-change")}
+        shortcut="F7"
+        isActive={status.type === "running" && activeRunMode === "cycle-change"}
+        {...common}
+        onRun={runCycle}
+      />
+      <RunButton
+        testId="phase-button"
+        icon={faForward}
+        label={translate("control.action.run.end-of-phase")}
+        title={translate("control.action.run.end-of-phase-hint")}
+        shortcut="F6"
+        isActive={status.type === "running" && activeRunMode === "end-of-phase"}
+        {...common}
+        onRun={runPhase}
+      />
+      <RunButton
+        testId="new-button"
+        icon={faStepForward}
+        label={translate("control.action.run.end-of-instruction")}
+        shortcut="F8"
+        isActive={status.type === "running" && activeRunMode === "end-of-instruction"}
+        {...common}
+        onRun={runInstruction}
+      />
+      <RunButton
+        testId="open-button"
+        icon={faInfinity}
+        label={translate("control.action.run.infinity")}
+        shortcut="F4"
+        isActive={status.type === "running" && activeRunMode === "infinity"}
+        {...common}
+        onRun={runInfinity}
+      />
       {/* Botón reset/reiniciar (no cambia a pausa) */}
       <button
         data-testid="assemble-button"

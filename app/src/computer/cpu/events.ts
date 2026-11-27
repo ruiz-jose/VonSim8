@@ -24,6 +24,7 @@ import {
   getIsExecutingInterruptRoutine,
   isHaltExecutionAtom,
   pauseSimulation,
+  setMessageAndAddToHistory,
   simulationAtom,
 } from "@/computer/simulation";
 import { highlightCurrentInstruction } from "@/editor/methods";
@@ -533,11 +534,12 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       currentPhase = "fetching";
       // Lógica especial para CALL: establecer mensaje final y registrar ciclo 8
       const { store } = await import("@/lib/jotai");
-      const { messageAtom, totalCycleCountAtom, currentInstructionCycleCountAtom, cycleCountAtom } =
+      const { totalCycleCountAtom, currentInstructionCycleCountAtom, cycleCountAtom } =
         await import("./state");
       if (currentInstructionName === "CALL") {
         const displayMessage = "Ejecución: write(Memoria[MAR]) ← MBR | IP ← ri";
-        store.set(messageAtom, displayMessage);
+        // Registrar también este último paso en el panel (antes solo se mostraba el mensaje)
+        setMessageAndAddToHistory(displayMessage);
 
         // Registrar el ciclo 8 de CALL
         const currentCycleCount = store.get(cycleCountAtom);
