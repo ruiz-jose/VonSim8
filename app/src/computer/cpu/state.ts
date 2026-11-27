@@ -35,7 +35,19 @@ export const currentInstructionCycleCountAtom = atom(0);
 export const showSPAtom = atom(false);
 export const showriAtom = atom(false);
 export const instructionCountAtom = atom(0); // Variable global para contar las instrucciones
-export const messageHistoryAtom = atom<{ cycle: number; stage: string; action: string }[]>([]);
+export type CycleMessage = {
+  cycle: number;
+  stage: string;
+  action: string;
+  explanation?: string | null;
+  /** Instrucción a la que pertenece el paso (ej. "MOV AL, [07]") */
+  instruction?: string;
+};
+export const messageHistoryAtom = atom<CycleMessage[]>([]);
+// Paso que se está animando en este momento (se muestra antes de que quede registrado)
+export const liveStepAtom = atom<string | null>(null as string | null) as PrimitiveAtom<
+  string | null
+>;
 // Crear un átomo para almacenar el valor de connectScreenAndKeyboard
 export const connectScreenAndKeyboardAtom = atom(false);
 export const showInstructionCycleAtom = atom(true); // Por defecto, visible

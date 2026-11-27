@@ -102,7 +102,7 @@ export const DataFlowAnimation = memo(
           // Paquete de datos habitual
           <div
             className={clsx(
-              "absolute rounded bg-mantis-500 px-2 py-1 font-mono text-xs text-white",
+              "absolute rounded bg-mantis-700 px-2 py-1 font-mono text-xs text-white",
               "border border-mantis-400 shadow-lg",
               "transition-all duration-300 ease-out",
             )}

@@ -5,6 +5,7 @@ import { EducationalTooltip } from "@/components/EducationalTooltip";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover";
 import { animated, getSpring, RegisterKey } from "@/computer/shared/springs";
 import type { AnyByteAtom } from "@/computer/shared/types";
+import { useChangeHighlight } from "@/hooks/useChangeHighlight";
 import { useTranslate } from "@/lib/i18n";
 
 export function Register({
@@ -25,6 +26,7 @@ export function Register({
   const translate = useTranslate();
   const reg = useAtomValue(valueAtom);
   const low = reg.low;
+  const changed = useChangeHighlight(Number(low));
 
   // Cambio aquí: Mapeo de nombres de registros a su versión de parte baja
   const nameMapping: Record<string, string> = {
@@ -47,23 +49,40 @@ export function Register({
   // Estilo distintivo para FLAGS, acorde al simulador
   const isFlags = displayName === "FLAGS";
 
+  // Registros internos de la ALU cuyo valor se muestra en el bus, no en la caja
+  const isHiddenValue =
+    displayName === "left" || displayName === "right" || displayName === "result";
+
   return (
     <Popover>
-      <PopoverTrigger asChild>
-        <div className="relative">
-          {title && (
-            <span className="absolute -left-1 -top-3 z-30 rounded bg-mantis-500 px-1.5 py-0.5 text-[10px] font-bold text-white shadow-md">
-              {title}
-            </span>
-          )}
+      <div className="relative">
+        {title && (
+          <span className="absolute -left-1 -top-3 z-30 rounded bg-mantis-700 px-1.5 py-0.5 text-[10px] font-bold text-white shadow-md">
+            {title}
+          </span>
+        )}
+        <PopoverTrigger asChild>
           <animated.button
+            type="button"
+            data-changed={changed && !isHiddenValue ? "true" : undefined}
             title={
-              displayName !== "left" && displayName !== "right" && displayName !== "result"
-                ? `Registro ${displayName}`
+              !isHiddenValue
+                ? `Registro ${displayName}${changed ? " (cambió en el último paso)" : ""}`
                 : displayName
+            }
+            aria-label={
+              !isHiddenValue
+                ? `Registro ${displayName}: ${low.toString("hex")}${changed ? ", cambió en el último paso" : ""}`
+                : undefined
             }
             className={clsx(
               "flex cursor-pointer items-center font-mono leading-none transition-opacity",
+              // Contenedor del indicador de cambio (si no viene ya posicionado)
+              !className?.includes("absolute") && "relative",
+              "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mantis-300",
+              changed &&
+                !isHiddenValue &&
+                "!shadow-[0_0_14px_4px_rgba(252,211,77,0.55)] ring ring-amber-300 ring-offset-2 ring-offset-stone-900",
               isGeneralPurpose || isIP || isSP || isMBR || isMAR || isIR || isTemporal
                 ? "size-10 justify-center rounded border-2 text-lg font-bold shadow-[0_2px_8px_0_rgba(60,180,120,0.10)] transition-all duration-200 hover:scale-110 hover:shadow-xl"
                 : isFlags
@@ -93,6 +112,12 @@ export function Register({
                 : getSpring(springs)
             }
           >
+            {changed && !isHiddenValue && (
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute -right-2 -top-2 z-40 size-3.5 rounded-full border-2 border-stone-900 bg-amber-300"
+              />
+            )}
             {isGeneralPurpose || isSP || isMBR || isMAR || isIR || isTemporal ? (
               // Formato tipo celda de memoria para registros generales, SP, MBR, MAR, IR, id y ri
               <>
@@ -183,8 +208,8 @@ export function Register({
               </span>
             )}
           </animated.button>
-        </div>
-      </PopoverTrigger>
+        </PopoverTrigger>
+      </div>
 
       <PopoverContent className="w-60">
         <div className="px-4 py-2">

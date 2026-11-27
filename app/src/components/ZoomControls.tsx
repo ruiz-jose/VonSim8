@@ -3,17 +3,38 @@ import type { ReactZoomPanPinchRef } from "react-zoom-pan-pinch";
 
 import { useTranslate } from "@/lib/i18n";
 
-export function ZoomControls({ wrapperRef }: { wrapperRef: RefObject<ReactZoomPanPinchRef> }) {
+const buttonClass =
+  "m-0.5 flex size-9 items-center justify-center rounded-md text-white transition-colors hover:enabled:bg-stone-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-mantis-300";
+
+export function ZoomControls({
+  wrapperRef,
+  onFit,
+  onManualZoom,
+}: {
+  wrapperRef: RefObject<ReactZoomPanPinchRef>;
+  onFit?: () => void;
+  onManualZoom?: () => void;
+}) {
   const translate = useTranslate();
 
   return (
-    <div className="absolute right-2 top-2 flex flex-col rounded-lg border border-stone-600 bg-stone-900 shadow">
+    <div
+      role="toolbar"
+      aria-label="Zoom"
+      aria-orientation="vertical"
+      className="absolute right-2 top-2 z-40 flex flex-col rounded-lg border border-stone-600 bg-stone-900 shadow"
+    >
       <button
-        className="m-0.5 flex size-8 items-center justify-center rounded-t-lg text-white transition-colors hover:enabled:bg-stone-800"
-        onClick={() => wrapperRef.current?.zoomIn()}
+        type="button"
+        className={buttonClass}
+        onClick={() => {
+          onManualZoom?.();
+          wrapperRef.current?.zoomIn();
+        }}
         title={translate("control.zoom.in")}
+        aria-label={translate("control.zoom.in")}
       >
-        <span className="size-4">
+        <span className="size-5" aria-hidden="true">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -31,11 +52,16 @@ export function ZoomControls({ wrapperRef }: { wrapperRef: RefObject<ReactZoomPa
       </button>
       <hr className="border-stone-600" />
       <button
-        className="m-0.5 flex size-8 items-center justify-center rounded-b-lg text-white transition-colors hover:enabled:bg-stone-800"
-        onClick={() => wrapperRef.current?.zoomOut()}
+        type="button"
+        className={buttonClass}
+        onClick={() => {
+          onManualZoom?.();
+          wrapperRef.current?.zoomOut();
+        }}
         title={translate("control.zoom.out")}
+        aria-label={translate("control.zoom.out")}
       >
-        <span className="size-4">
+        <span className="size-5" aria-hidden="true">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -51,6 +77,21 @@ export function ZoomControls({ wrapperRef }: { wrapperRef: RefObject<ReactZoomPa
           </svg>
         </span>
       </button>
+      {onFit && (
+        <>
+          <hr className="border-stone-600" />
+          <button
+            type="button"
+            className={buttonClass}
+            onClick={onFit}
+            title={translate("control.zoom.fit")}
+            aria-label={translate("control.zoom.fit")}
+            data-testid="zoom-fit-button"
+          >
+            <span className="icon-[lucide--scan] block size-5" aria-hidden="true" />
+          </button>
+        </>
+      )}
     </div>
   );
 }

@@ -10,6 +10,9 @@ const ToastViewport = forwardRef<
 >(({ className, ...props }, ref) => (
   <ToastPrimitives.Viewport
     ref={ref}
+    // Radix usa F8 por defecto para enfocar las notificaciones, pero F8 es el
+    // atajo de "Instrucción" del simulador: se mueve a Alt+T.
+    hotkey={["altKey", "KeyT"]}
     className={clsx(
       "fixed inset-x-0 top-12 z-[100] mx-auto flex max-h-screen w-full flex-col p-4 md:max-w-[420px]",
       className,

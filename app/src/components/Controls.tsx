@@ -170,7 +170,7 @@ export function Controls({ className }: { className?: string }) {
           onClick={handlePause}
           title={translate("control.action.pause")}
           className={clsx(
-            "group relative flex flex-col items-center rounded-lg transition hover:bg-orange-600/20 focus-visible:ring-2 focus-visible:ring-orange-400",
+            "group relative flex flex-col items-center rounded-lg transition hover:bg-orange-600/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300",
             // Púrpura para pausar
             screenSize === "mobile" ? "px-1 py-0.5" : "px-1.5 py-0.5",
           )}
@@ -182,7 +182,7 @@ export function Controls({ className }: { className?: string }) {
               className="text-orange-400 transition group-hover:scale-110"
             />
             {showShortcuts && (
-              <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
+              <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-300">
                 Space
               </span>
             )}
@@ -196,7 +196,7 @@ export function Controls({ className }: { className?: string }) {
           onClick={runCycle}
           title={translate("control.action.run.cycle-change")}
           className={clsx(
-            "group relative flex flex-col items-center rounded-lg transition hover:bg-mantis-600/20 focus-visible:ring-2 focus-visible:ring-mantis-400 disabled:opacity-50",
+            "group relative flex flex-col items-center rounded-lg transition hover:bg-mantis-600/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-mantis-300 disabled:opacity-50",
             status.type === "running" &&
               status.until === "cycle-change" &&
               "animate-pulse-glow-mantis", // Verde para ciclo
@@ -210,7 +210,7 @@ export function Controls({ className }: { className?: string }) {
               className="text-mantis-400 transition group-hover:scale-110"
             />
             {showShortcuts && (
-              <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
+              <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-300">
                 F7
               </span>
             )}
@@ -227,7 +227,7 @@ export function Controls({ className }: { className?: string }) {
           onClick={handlePause}
           title={translate("control.action.pause")}
           className={clsx(
-            "group relative flex flex-col items-center rounded-lg transition hover:bg-orange-600/20 focus-visible:ring-2 focus-visible:ring-orange-400",
+            "group relative flex flex-col items-center rounded-lg transition hover:bg-orange-600/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300",
             // Púrpura para pausar
             screenSize === "mobile" ? "px-1 py-0.5" : "px-1.5 py-0.5",
           )}
@@ -239,7 +239,7 @@ export function Controls({ className }: { className?: string }) {
               className="text-orange-400 transition group-hover:scale-110"
             />
             {showShortcuts && (
-              <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
+              <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-300">
                 Space
               </span>
             )}
@@ -253,7 +253,7 @@ export function Controls({ className }: { className?: string }) {
           onClick={runInstruction}
           title={translate("control.action.run.end-of-instruction")}
           className={clsx(
-            "group relative flex flex-col items-center rounded-lg transition hover:bg-mantis-600/20 focus-visible:ring-2 focus-visible:ring-mantis-400 disabled:opacity-50",
+            "group relative flex flex-col items-center rounded-lg transition hover:bg-mantis-600/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-mantis-300 disabled:opacity-50",
             status.type === "running" &&
               status.until === "end-of-instruction" &&
               "animate-pulse-glow-mantis", // Verde para instrucción
@@ -267,7 +267,7 @@ export function Controls({ className }: { className?: string }) {
               className="text-mantis-400 transition group-hover:scale-110"
             />
             {showShortcuts && (
-              <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
+              <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-300">
                 F8
               </span>
             )}
@@ -286,7 +286,7 @@ export function Controls({ className }: { className?: string }) {
           onClick={handlePause}
           title={translate("control.action.pause")}
           className={clsx(
-            "group relative flex flex-col items-center rounded-lg transition hover:bg-orange-600/20 focus-visible:ring-2 focus-visible:ring-orange-400",
+            "group relative flex flex-col items-center rounded-lg transition hover:bg-orange-600/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300",
             // Púrpura para pausar
             screenSize === "mobile" ? "px-1 py-0.5" : "px-1.5 py-0.5",
           )}
@@ -298,7 +298,7 @@ export function Controls({ className }: { className?: string }) {
               className="text-orange-400 transition group-hover:scale-110"
             />
             {showShortcuts && (
-              <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
+              <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-300">
                 Space
               </span>
             )}
@@ -312,7 +312,7 @@ export function Controls({ className }: { className?: string }) {
           onClick={runInfinity}
           title={translate("control.action.run.infinity")}
           className={clsx(
-            "group relative flex flex-col items-center rounded-lg transition hover:bg-mantis-600/20 focus-visible:ring-2 focus-visible:ring-mantis-400 disabled:opacity-50",
+            "group relative flex flex-col items-center rounded-lg transition hover:bg-mantis-600/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-mantis-300 disabled:opacity-50",
             status.type === "running" && status.until === "infinity" && "animate-pulse-glow-mantis", // Verde para infinito
             screenSize === "mobile" ? "px-1 py-0.5" : "px-1.5 py-0.5",
           )}
@@ -324,7 +324,7 @@ export function Controls({ className }: { className?: string }) {
               className="text-mantis-400 transition group-hover:scale-110"
             />
             {showShortcuts && (
-              <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
+              <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-300">
                 F4
               </span>
             )}
@@ -341,7 +341,7 @@ export function Controls({ className }: { className?: string }) {
         disabled={status.type === "stopped" || status.type === "running"}
         title={translate("control.action.reset")}
         className={clsx(
-          "group relative flex flex-col items-center rounded-lg transition hover:bg-red-600/20 focus-visible:ring-2 focus-visible:ring-red-400 disabled:opacity-50",
+          "group relative flex flex-col items-center rounded-lg transition hover:bg-red-600/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-300 disabled:opacity-50",
           screenSize === "mobile" ? "px-1 py-0.5" : "px-1.5 py-0.5",
         )}
       >
@@ -352,7 +352,7 @@ export function Controls({ className }: { className?: string }) {
             className="text-red-400 transition group-hover:scale-110"
           />
           {showShortcuts && (
-            <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-400 opacity-80">
+            <span className="pointer-events-none ml-1 font-mono text-[10px] text-stone-300">
               F9
             </span>
           )}

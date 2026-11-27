@@ -81,6 +81,7 @@ export const spanish: Locale = {
     zoom: {
       in: "Acercar",
       out: "Alejar",
+      fit: "Ajustar a la vista",
     },
   },
 
