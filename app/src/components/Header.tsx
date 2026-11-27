@@ -1,4 +1,4 @@
-import { faGraduationCap, faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
+import { faGraduationCap } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
 import { useAtom, useAtomValue } from "jotai";
@@ -7,17 +7,10 @@ import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Controls } from "@/components/Controls";
 import { EducationalMenu, EducationalProgress } from "@/components/educational";
 import { firstStepsOpenAtom } from "@/components/FirstStepsTour";
+import { HelpMenu } from "@/components/HelpMenu";
 // Eliminada referencia a NotificationCenter
 import { settingsOpenAtom } from "@/components/Settings";
 import { IconButton } from "@/components/ui/Button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/DropdownMenu";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { cycleAtom } from "@/computer/cpu/state";
 import { useSimulation } from "@/computer/simulation";
@@ -265,38 +258,7 @@ const ActionButtons = memo(
           />
         </Tooltip>
 
-        <DropdownMenu>
-          <Tooltip content="Ayuda" position="bottom">
-            <DropdownMenuTrigger asChild>
-              <IconButton
-                icon={<FontAwesomeIcon icon={faQuestionCircle} className="size-4" />}
-                variant="ghost"
-                size="md"
-                aria-label="Ayuda"
-                className="hover-lift"
-                data-testid="help-button"
-              />
-            </DropdownMenuTrigger>
-          </Tooltip>
-          <DropdownMenuContent className="w-72" align="end">
-            <DropdownMenuLabel>Ayuda</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={onShowFirstSteps} data-testid="help-first-steps">
-              <span className="icon-[lucide--rocket] mr-2 size-4 shrink-0" />
-              <div className="flex flex-col">
-                <span>Primeros pasos</span>
-                <span className="text-xs text-stone-400">Tu primer programa, paso a paso</span>
-              </div>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={onShowTour} data-testid="help-interface-tour">
-              <span className="icon-[lucide--map] mr-2 size-4 shrink-0" />
-              <div className="flex flex-col">
-                <span>Recorrido por la interfaz</span>
-                <span className="text-xs text-stone-400">Para qué sirve cada parte</span>
-              </div>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <HelpMenu onShowFirstSteps={onShowFirstSteps} onShowTour={onShowTour} />
 
         <Tooltip content={translate("settings.title")} position="bottom">
           <IconButton
@@ -481,6 +443,14 @@ export const Header = memo(() => {
             </div>
 
             {/* Botones de acción */}
+            {/* En pantallas chicas solo se muestra la ayuda, para que la guía siempre esté a mano */}
+            {!layout.showActionButtons && (
+              <HelpMenu
+                onShowFirstSteps={handleShowFirstSteps}
+                onShowTour={handleShowTour}
+                compact
+              />
+            )}
             {layout.showActionButtons && (
               <ActionButtons
                 onShowTour={handleShowTour}

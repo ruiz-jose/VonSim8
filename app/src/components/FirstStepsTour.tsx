@@ -12,6 +12,7 @@ import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState } from 
 
 import { Button } from "@/components/ui/Button";
 import { COMPUTER_FOCUS_EVENT } from "@/computer/focus";
+import { MOBILE_TAB_EVENT } from "@/lib/mobile-tab";
 
 import { useLiveState } from "./first-steps/live";
 import { measureTarget, placeCard, type Rect, sameRect } from "./first-steps/positioning";
@@ -99,11 +100,17 @@ function TourOverlay({ onClose: close }: { onClose: () => void }) {
 
   // Centrar en el panel de la computadora el componente del paso
   useEffect(() => {
+    // En móvil, primero mostrar la pestaña correcta (la computadora puede no estar montada)
+    if (step.mobileTab) {
+      window.dispatchEvent(new CustomEvent(MOBILE_TAB_EVENT, { detail: { tab: step.mobileTab } }));
+    }
     if (!step.focus) return;
-    window.dispatchEvent(
-      new CustomEvent(COMPUTER_FOCUS_EVENT, { detail: { selector: step.focus } }),
-    );
-  }, [step.focus]);
+    const selector = step.focus;
+    const id = window.setTimeout(() => {
+      window.dispatchEvent(new CustomEvent(COMPUTER_FOCUS_EVENT, { detail: { selector } }));
+    }, 150);
+    return () => window.clearTimeout(id);
+  }, [step.mobileTab, step.focus]);
 
   // Mover el foco a la tarjeta en cada paso (accesibilidad)
   useEffect(() => {

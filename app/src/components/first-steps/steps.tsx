@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 
 import { useSimulation } from "@/computer/simulation";
+import type { MobileTab } from "@/lib/mobile-tab";
 
 import { FIRST_STEPS_PROGRAM, getEditorText, type Live } from "./live";
 import type { Placement } from "./positioning";
@@ -10,6 +11,8 @@ export type Step = {
   /** Selector CSS del elemento a resaltar. Sin selector, la tarjeta se centra. */
   target?: string;
   placement?: Placement;
+  /** En el diseño móvil, pestaña que debe estar visible en este paso. */
+  mobileTab?: MobileTab;
   /** Componente del panel de la computadora a centrar (pan/zoom) al entrar al paso. */
   focus?: string;
   title: string;
@@ -90,6 +93,7 @@ export const useSteps = (): Step[] => {
     },
     {
       id: "editor",
+      mobileTab: "editor",
       target: '[data-testid="panel-editor"]',
       placement: "right",
       title: "1. El editor",
@@ -117,6 +121,7 @@ export const useSteps = (): Step[] => {
     },
     {
       id: "assemble",
+      mobileTab: "computer",
       target: INSTRUCTION_BUTTON,
       placement: "bottom",
       title: "2. Ensamblar y ejecutar",
@@ -139,6 +144,7 @@ export const useSteps = (): Step[] => {
     },
     {
       id: "memory",
+      mobileTab: "computer",
       target: '[data-testid="memory-component"]',
       focus: '[data-testid="memory-component"]',
       placement: "left",
@@ -166,6 +172,7 @@ export const useSteps = (): Step[] => {
     },
     {
       id: "registers",
+      mobileTab: "computer",
       target: '[data-tour="register-AL"]',
       focus: '[data-testid="cpu-component"]',
       placement: "left",
@@ -186,6 +193,7 @@ export const useSteps = (): Step[] => {
     },
     {
       id: "step",
+      mobileTab: "computer",
       target: INSTRUCTION_BUTTON,
       placement: "bottom",
       title: "5. Seguí paso a paso",
@@ -217,6 +225,7 @@ export const useSteps = (): Step[] => {
     },
     {
       id: "cycle",
+      mobileTab: "computer",
       target: CYCLE_BUTTON,
       placement: "bottom",
       title: "6. Más detalle: por ciclo",

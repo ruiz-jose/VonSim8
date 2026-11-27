@@ -10,6 +10,7 @@ import {
   FirstStepsTour,
 } from "@/components/FirstStepsTour";
 import { JotaiProvider, store } from "@/lib/jotai";
+import { MOBILE_TAB_EVENT } from "@/lib/mobile-tab";
 
 // setupTests.ts mockea jotai globalmente; esta prueba necesita el estado real
 vi.unmock("jotai");
@@ -108,5 +109,19 @@ describe("FirstStepsTour", () => {
     act(() => store.set(firstStepsOpenAtom, false));
     act(() => store.set(firstStepsOpenAtom, true));
     expect(screen.getByText("Paso 1 de 8")).toBeInTheDocument();
+  });
+
+  it("en móvil pide la pestaña correcta para cada paso", () => {
+    mockEditor();
+    const tabs: string[] = [];
+    const onTab = (e: Event) => tabs.push((e as CustomEvent<{ tab: string }>).detail.tab);
+    window.addEventListener(MOBILE_TAB_EVENT, onTab);
+    act(() => store.set(firstStepsOpenAtom, true));
+    renderTour();
+
+    fireEvent.click(screen.getByTestId("first-steps-next")); // editor
+    fireEvent.click(screen.getByTestId("first-steps-next")); // ensamblar
+    window.removeEventListener(MOBILE_TAB_EVENT, onTab);
+    expect(tabs).toEqual(["editor", "computer"]);
   });
 });
