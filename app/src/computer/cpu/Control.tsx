@@ -3,6 +3,7 @@ import { animated, SpringValue, useSpring } from "@react-spring/web";
 import { useAtomValue } from "jotai";
 import { useEffect, useState } from "react";
 
+import { dataAddressesAtom } from "@/computer/memory/state";
 import { getSpring } from "@/computer/shared/springs";
 import { useTranslate } from "@/lib/i18n";
 
@@ -489,21 +490,45 @@ function AnimatedControlMemory({
 }
 
 const REGISTERS = new Set([
-  "AL", "AH", "BL", "BH", "CL", "CH", "DL", "DH",
-  "AX", "BX", "CX", "DX", "SP", "IP",
+  "AL",
+  "AH",
+  "BL",
+  "BH",
+  "CL",
+  "CH",
+  "DL",
+  "DH",
+  "AX",
+  "BX",
+  "CX",
+  "DX",
+  "SP",
+  "IP",
 ]);
 
-function colorizeOperand(operand: string) {
+type DataLabel = { address: number; label: string | null };
+
+function colorizeOperand(operand: string, dataLabels: DataLabel[] = []) {
   // Acceso a memoria: [...]
   if (operand.startsWith("[") && operand.endsWith("]")) {
     const inner = operand.slice(1, -1);
+    const isRegister = REGISTERS.has(inner.toUpperCase());
+    // Si la dirección corresponde a una variable, mostrar su nombre (ej. [07] x)
+    const address = /^[0-9a-f]+h?$/i.test(inner) ? parseInt(inner, 16) : NaN;
+    const label = isRegister ? null : dataLabels.find(d => d.address === address)?.label;
     return (
       <span>
         <span className="text-amber-400">[</span>
-        <span className={REGISTERS.has(inner.toUpperCase()) ? "text-sky-300" : "text-amber-300"}>
-          {inner}
-        </span>
+        <span className={isRegister ? "text-sky-300" : "text-amber-300"}>{inner}</span>
         <span className="text-amber-400">]</span>
+        {label && (
+          <span
+            className="ml-1 rounded bg-green-900/60 px-1 text-sm text-green-300"
+            title={`Variable ${label}`}
+          >
+            {label}
+          </span>
+        )}
       </span>
     );
   }
@@ -514,7 +539,7 @@ function colorizeOperand(operand: string) {
   }
 
   // Valor inmediato: número decimal o hexadecimal (ej: 05h, 255, 0FFh)
-  if (/^[0-9a-fA-F]+h$/i.test(operand) || /^[0-9]+$/.test(operand)) {
+  if (/^[0-9a-f]+h$/i.test(operand) || /^\d+$/.test(operand)) {
     return <span className="text-violet-300">{operand}</span>;
   }
 
@@ -562,6 +587,7 @@ export function Control() {
 
   const translate = useTranslate();
   const cycle = useAtomValue(cycleAtom);
+  const dataLabels = useAtomValue(dataAddressesAtom);
   const [showControlMem, setShowControlMem] = useState(false);
 
   // El progreso de la memoria de control ahora depende del progreso del secuenciador
@@ -618,7 +644,7 @@ export function Control() {
       </svg>
 
       <div className="absolute bottom-[172px] left-[30px] flex w-full items-start">
-        <span className="block w-min whitespace-nowrap rounded-t-lg border border-b-0 border-stone-600 bg-mantis-500 px-2 pb-3 pt-1 text-xs tracking-wide text-white">
+        <span className="block w-min whitespace-nowrap rounded-t-lg border border-b-0 border-stone-600 bg-mantis-700 px-2 pb-3 pt-1 text-xs tracking-wide text-white">
           {translate("computer.cpu.control-unit")}
         </span>
       </div>
@@ -794,8 +820,7 @@ export function Control() {
                 <span
                   className="font-mono text-3xl font-bold leading-none text-mantis-300"
                   style={{
-                    textShadow:
-                      "0 0 14px rgba(74,222,128,0.75), 0 0 30px rgba(74,222,128,0.35)",
+                    textShadow: "0 0 14px rgba(74,222,128,0.75), 0 0 30px rgba(74,222,128,0.35)",
                   }}
                 >
                   {cycle.metadata.name}
@@ -805,7 +830,7 @@ export function Control() {
                     {cycle.metadata.operands.map((op, i) => (
                       <span key={i}>
                         {i > 0 && <span className="text-stone-500">, </span>}
-                        {colorizeOperand(op)}
+                        {colorizeOperand(op, dataLabels)}
                       </span>
                     ))}
                   </span>

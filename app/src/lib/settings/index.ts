@@ -49,7 +49,7 @@ export const getSettings = () => store.get(settingsAtom);
 
 export const useSettings = () => useAtom(settingsAtom);
 
-const showInstructionCycleAtom = atom(get => get(settingsAtom).showInstructionCycle);
+const showInstructionCycleAtom = atom(get => get(settingsAtom).showCyclePanel);
 export const useShowInstructionCycle = () => useAtomValue(showInstructionCycleAtom);
 
 const showStatsCPUAtom = atom(get => get(settingsAtom).showStatsCPU);

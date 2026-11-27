@@ -72,21 +72,28 @@ const DesktopLayout = memo(() => {
       <Panel
         id="panel-editor"
         order={1}
-        minSize={30}
-        defaultSize={50}
+        minSize={25}
+        defaultSize={40}
         tagName="section"
+        aria-label="Editor"
         className="rounded-lg border border-stone-600 bg-black"
         data-testid="panel-editor"
       >
         <Editor className="size-full" />
       </Panel>
-      <PanelResizeHandle className="w-2" />
+      <PanelResizeHandle
+        className="group flex w-2 items-center justify-center rounded"
+        aria-label="Redimensionar paneles"
+      >
+        <span className="h-10 w-1 rounded-full bg-stone-700 transition-colors group-hover:bg-mantis-500 group-data-[resize-handle-active]:bg-mantis-400" />
+      </PanelResizeHandle>
       <Panel
         id="panel-computer"
         order={2}
         minSize={20}
-        defaultSize={50}
+        defaultSize={60}
         tagName="section"
+        aria-label="Computadora"
         className="computer-background rounded-lg border border-stone-600"
         data-testid="panel-computer"
       >
@@ -94,7 +101,12 @@ const DesktopLayout = memo(() => {
       </Panel>
       {settingsOpen && (
         <>
-          <PanelResizeHandle className="w-2" />
+          <PanelResizeHandle
+            className="group flex w-2 items-center justify-center rounded"
+            aria-label="Redimensionar paneles"
+          >
+            <span className="h-10 w-1 rounded-full bg-stone-700 transition-colors group-hover:bg-mantis-500 group-data-[resize-handle-active]:bg-mantis-400" />
+          </PanelResizeHandle>
           <Panel
             id="panel-settings"
             order={3}
@@ -141,42 +153,21 @@ const MobileLayout = memo(() => {
     [settingsOpen, setSettingsOpen],
   );
 
-  // Memoizar el texto del tab actual
-  const tabText = useMemo(() => {
-    switch (tab) {
-      case "editor":
-        return "Editor";
-      case "computer":
-        return "Computadora";
-      case "settings":
-        return "Configuración";
-      default:
-        return "";
-    }
-  }, [tab]);
-
   return (
     <Tabs value={tab} onValueChange={setTab} asChild>
       <>
-        {/* Barra de estado mejorada */}
-        <div className="sticky top-0 z-30 w-full border-b border-stone-700 bg-stone-900 px-4 py-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-stone-500">Pestaña:</span>
-              <span className="text-sm font-medium text-white">{tabText}</span>
-            </div>
-            {tab === "computer" && (
-              <div className="text-center">
-                <div className="text-xs text-stone-500">Instrucción actual:</div>
-                <div className="font-mono text-sm text-mantis-400">
-                  {currentInstruction || (
-                    <span className="italic text-stone-400">Sin instrucción</span>
-                  )}
-                </div>
-              </div>
-            )}
+        {/* Instrucción actual (solo en la pestaña Computadora: la pestaña activa ya se ve abajo) */}
+        {tab === "computer" && (
+          <div
+            className="sticky top-0 z-30 flex w-full items-center justify-center gap-2 border-b border-stone-700 bg-stone-900 px-4 py-1.5"
+            aria-live="polite"
+          >
+            <span className="text-xs text-stone-300">Instrucción actual:</span>
+            <span className="font-mono text-sm font-bold text-mantis-300">
+              {currentInstruction || <span className="font-normal italic text-stone-300">—</span>}
+            </span>
           </div>
-        </div>
+        )}
 
         <TabsContent value="editor" asChild>
           <section
@@ -208,21 +199,21 @@ const MobileLayout = memo(() => {
           <TabsList className="grid grid-cols-3 gap-2">
             <TabsTrigger
               value="editor"
-              className="inline-flex flex-col items-center justify-center rounded-lg py-2 text-xs font-medium text-stone-400 transition-colors hover:bg-stone-800 hover:text-white data-[state=active]:bg-mantis-600 data-[state=active]:text-white"
+              className="inline-flex min-h-12 flex-col items-center justify-center rounded-lg py-2 text-xs font-medium text-stone-300 transition-colors hover:bg-stone-800 hover:text-white data-[state=active]:bg-mantis-700 data-[state=active]:text-white"
             >
               <span className="icon-[lucide--file-terminal] mb-1 size-5" />
               {translate("control.tabs.editor")}
             </TabsTrigger>
             <TabsTrigger
               value="computer"
-              className="inline-flex flex-col items-center justify-center rounded-lg py-2 text-xs font-medium text-stone-400 transition-colors hover:bg-stone-800 hover:text-white data-[state=active]:bg-mantis-600 data-[state=active]:text-white"
+              className="inline-flex min-h-12 flex-col items-center justify-center rounded-lg py-2 text-xs font-medium text-stone-300 transition-colors hover:bg-stone-800 hover:text-white data-[state=active]:bg-mantis-700 data-[state=active]:text-white"
             >
               <span className="icon-[lucide--computer] mb-1 size-5" />
               {translate("control.tabs.computer")}
             </TabsTrigger>
             <TabsTrigger
               value="settings"
-              className="inline-flex flex-col items-center justify-center rounded-lg py-2 text-xs font-medium text-stone-400 transition-colors hover:bg-stone-800 hover:text-white data-[state=active]:bg-mantis-600 data-[state=active]:text-white"
+              className="inline-flex min-h-12 flex-col items-center justify-center rounded-lg py-2 text-xs font-medium text-stone-300 transition-colors hover:bg-stone-800 hover:text-white data-[state=active]:bg-mantis-700 data-[state=active]:text-white"
             >
               <span className="icon-[lucide--settings] mb-1 size-5" />
               Configuración

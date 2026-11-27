@@ -10,7 +10,7 @@
       "@vonsim/assembler": ["../packages/assembler/src"],
       "@vonsim/assembler/*": ["../packages/assembler/src/*"]
     },
-    "types": ["wicg-file-system-access"]
+    "types": ["wicg-file-system-access", "node"]
   },
   "include": ["src"]
 }

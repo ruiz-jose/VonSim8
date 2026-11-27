@@ -5,10 +5,12 @@ import { DATA_ON_LOAD_VALUES, LANGUAGES } from "./consts";
 
 export const settingsSchema = z.object({
   /**
-   * Show or hide the instruction cycle.
-   * Controls whether the instruction cycle is visible in the UI.
+   * Show or hide the "Ciclo de instrucción" panel.
+   * Visible by default: it is the main aid to follow each step of the CPU.
+   * (Renamed from `showInstructionCycle`, which defaulted to hidden, so that
+   * saved settings don't keep it hidden.)
    */
-  showInstructionCycle: z.boolean().catch(false),
+  showCyclePanel: z.boolean().catch(true),
 
   /**
    * Show or hide the CPU statistics.

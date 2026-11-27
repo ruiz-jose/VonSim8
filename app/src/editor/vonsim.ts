@@ -4,7 +4,7 @@ import {
   StreamLanguage,
   syntaxHighlighting,
 } from "@codemirror/language";
-import { Diagnostic, linter } from "@codemirror/lint";
+import { linter, lintGutter } from "@codemirror/lint";
 import { Tag, tags } from "@lezer/highlight";
 import {
   assemble,
@@ -17,7 +17,8 @@ import {
 import { store } from "@/lib/jotai";
 import { getSettings } from "@/lib/settings";
 
-import { lintErrorsAtom } from "./StatusBar";
+import { buildDiagnostics, errorLineHighlighter, type LintableError } from "./diagnostics";
+import { firstErrorLineAtom, lintErrorsAtom } from "./StatusBar";
 
 /**
  * This is the VonSim language definition.
@@ -131,18 +132,16 @@ const vonsimLinter = linter(
 
     if (result.success) {
       store.set(lintErrorsAtom, 0);
+      store.set(firstErrorLineAtom, 0);
       return [];
     }
 
     // Type assertion since we know result is AssembleResultError after the success check
     const errorResult = result as AssembleResultError;
     const lang = getSettings().language;
-    const errors = errorResult.errors.map<Diagnostic>((error: any) => {
-      const from = error.position?.start ?? 0;
-      const to = error.position?.end ?? source.length;
-      return { message: error.translate(lang), severity: "error", from, to };
-    });
+    const errors = buildDiagnostics(errorResult.errors as LintableError[], source, lang);
     store.set(lintErrorsAtom, errors.length);
+    store.set(firstErrorLineAtom, errors[0]?.line ?? 0);
     return errors;
   },
   {
@@ -151,5 +150,10 @@ const vonsimLinter = linter(
 );
 
 export function VonSim() {
-  return new LanguageSupport(vonsimLanguage, [vonsimHighlighter, vonsimLinter]);
+  return new LanguageSupport(vonsimLanguage, [
+    vonsimHighlighter,
+    vonsimLinter,
+    lintGutter(),
+    errorLineHighlighter,
+  ]);
 }

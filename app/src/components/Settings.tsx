@@ -106,8 +106,8 @@ export function Settings({ className }: { className?: string }) {
 
         <Switch
           className="ml-8"
-          checked={settings.showInstructionCycle}
-          onCheckedChange={value => setSettings(prev => ({ ...prev, showInstructionCycle: value }))}
+          checked={settings.showCyclePanel}
+          onCheckedChange={value => setSettings(prev => ({ ...prev, showCyclePanel: value }))}
         />
       </Setting>
 

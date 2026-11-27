@@ -2,6 +2,32 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+/* ===== FOCO DE TECLADO VISIBLE (WCAG 2.4.7) =====
+   Indicador por defecto para todo elemento interactivo. Usa :where() para no
+   ganar especificidad: los componentes con su propio estilo de foco lo
+   reemplazan sin conflictos. */
+@layer base {
+  :where(
+    a,
+    button,
+    input,
+    select,
+    textarea,
+    summary,
+    [role="button"],
+    [role="tab"],
+    [tabindex]
+  ):focus-visible {
+    outline: 2px solid theme("colors.mantis.300");
+    outline-offset: 2px;
+  }
+
+  :where([data-panel-resize-handle-id]):focus-visible {
+    outline: none;
+    background-color: theme("colors.mantis.500");
+  }
+}
+
 /* ===== ANIMACIONES BÁSICAS ===== */
 @keyframes fade-in {
   from {

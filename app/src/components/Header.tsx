@@ -67,12 +67,13 @@ const SimulationStatus = memo(
     }, [status.type]);
     const statusColor = useMemo(() => {
       switch (status.type) {
+        // Combinaciones con contraste AA (≥ 4.5:1) para el texto
         case "running":
-          return "bg-green-600";
+          return "bg-green-700 text-white";
         case "paused":
-          return "bg-yellow-600";
+          return "bg-amber-400 text-stone-950";
         default:
-          return "bg-stone-600";
+          return "bg-stone-600 text-white";
       }
     }, [status.type]);
 
@@ -176,11 +177,14 @@ const SimulationStatus = memo(
     }, [isAnimating, cycle]);
 
     return (
-      <div className="flex items-center gap-2">
+      <div className="flex min-w-0 items-center gap-2">
         {/* Estado de ejecución */}
         <div
+          role="status"
+          aria-live="polite"
+          title={statusText}
           className={clsx(
-            "flex items-center gap-1.5 rounded-full px-2 py-1 font-medium text-white",
+            "flex shrink-0 items-center gap-1.5 rounded-full px-2 py-1 font-medium",
             statusColor,
             status.type === "running" && "animate-pulse-glow",
             isMobile && "px-1.5 py-0.5", // Más compacto en móvil
@@ -193,19 +197,20 @@ const SimulationStatus = memo(
               status.type === "running"
                 ? "bg-green-300"
                 : status.type === "paused"
-                  ? "bg-yellow-300"
+                  ? "bg-amber-800"
                   : "bg-stone-300",
             )}
+            aria-hidden="true"
           />
-          {/* Ocultar texto en móvil o cuando está compacto */}
-          {!isMobile && !isCompact && statusText}
+          {/* En pantallas chicas el texto queda disponible para lectores de pantalla */}
+          {!isMobile && !isCompact ? statusText : <span className="sr-only">{statusText}</span>}
         </div>
 
         {/* Fase actual - con estilo distintivo y moderno */}
         {(status.type === "running" || (cycle && cycle.phase === "halting")) && getPhaseText && (
           <div
             className={clsx(
-              "rounded-lg border-l-4 text-[10px] font-bold lowercase tracking-wide shadow-sm backdrop-blur-sm transition-all duration-300 ease-in-out",
+              "truncate rounded-lg border-l-4 text-xs font-bold lowercase tracking-wide shadow-sm backdrop-blur-sm transition-all duration-300 ease-in-out",
               getPhaseColor,
               getPhaseAnimation, // Aplicar animación solo cuando cambia la fase
               isMobile
@@ -393,7 +398,6 @@ export const Header = memo(() => {
     switch (screenSize) {
       case "mobile":
         return {
-          gridCols: "grid-cols-2",
           showStatusLeft: true,
           showStatusCenter: false,
           showActionButtons: false,
@@ -402,7 +406,6 @@ export const Header = memo(() => {
         };
       case "compact":
         return {
-          gridCols: "grid-cols-3",
           showStatusLeft: false,
           showStatusCenter: true,
           showActionButtons: false,
@@ -411,7 +414,6 @@ export const Header = memo(() => {
         };
       case "tablet":
         return {
-          gridCols: "grid-cols-3",
           showStatusLeft: false,
           showStatusCenter: true,
           showActionButtons: true,
@@ -420,7 +422,6 @@ export const Header = memo(() => {
         };
       case "desktop":
         return {
-          gridCols: "grid-cols-3",
           showStatusLeft: false,
           showStatusCenter: true,
           showActionButtons: true,
@@ -447,9 +448,9 @@ export const Header = memo(() => {
         )}
         data-testid="header"
       >
-        <div className={clsx("grid items-center", layout.gridCols)}>
+        <div className="flex items-center justify-between gap-3">
           {/* Lado izquierdo: Logo y estado (cuando corresponde) */}
-          <div className="flex items-center gap-3">
+          <div className="flex min-w-0 shrink-0 items-center gap-3 lg:w-56">
             {logoSection}
             {/* Mostrar estado en móvil a la izquierda */}
             {layout.showStatusLeft && (
@@ -463,7 +464,7 @@ export const Header = memo(() => {
 
           {/* Centro: Estado del CPU (cuando corresponde) */}
           {layout.showStatusCenter && (
-            <div className="flex justify-center">
+            <div className="flex min-w-0 flex-1 justify-center">
               <SimulationStatus
                 status={status}
                 isMobile={layout.isMobile}
@@ -473,7 +474,7 @@ export const Header = memo(() => {
           )}
 
           {/* Lado derecho: Controles y botones de acción */}
-          <div className="flex items-center justify-end gap-6">
+          <div className="flex shrink-0 items-center justify-end gap-3 lg:gap-6">
             {/* Controles */}
             <div className="flex justify-end">
               <Controls />

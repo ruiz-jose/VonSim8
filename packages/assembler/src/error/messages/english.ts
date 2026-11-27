@@ -24,7 +24,7 @@ export const english = {
   "double-memory-access": "Can't access to a memory location twice in the same instruction.",
   "duplicated-label": (label: string) => `Duplicated label "${label}".`,
   "empty-program":
-    "The program is empty or does not contain executable instructions.\n\nRemember: a valid program must have at least one instruction and end with the END directive.\n\nFor example:\n\n    org 1000h\n    mov al, 3\n    hlt\n    end\n\nSee the documentation or examples for more help.",
+    "The program is empty or does not contain executable instructions.\n\nA valid program needs at least one instruction. For example:\n\n    mov al, 3\n    hlt\n\nSee the examples in the Open menu for more help.",
   "end-must-be-the-last-statement": "END must be the last statement.",
   "equ-not-found": (label: string) => `EQU "${label}" not found.`,
   "expects-ax": "This operand should be AL.",
