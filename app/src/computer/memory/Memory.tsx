@@ -261,12 +261,13 @@ function MemoryCell({
             </span>
           )}
           {isDataAddress && !isSP && !isStackData && !isProgramAddress && !isInterruptVector && (
+            // Si el dato tiene nombre de variable, mostrarlo para conectar el código con la memoria
             <span
-              className="pointer-events-none absolute left-0.5 top-0.5 rounded bg-stone-900/80 px-0.5 text-[10px] text-green-400"
-              title="Dato"
+              className="pointer-events-none absolute left-0.5 top-0.5 max-w-[34px] truncate rounded bg-green-900/80 px-0.5 font-sans text-[10px] font-semibold text-green-300"
+              title={label ? `Variable ${label}` : "Dato"}
               style={{ lineHeight: 1 }}
             >
-              📦
+              {label ?? "📦"}
             </span>
           )}
           {/* Nuevo: Icono para datos de la pila */}

@@ -58,7 +58,7 @@ export function ComputerContainer() {
     let maxX = -Infinity;
     let maxY = -Infinity;
     for (const el of Array.from(content.children)) {
-      if (!(el instanceof HTMLDivElement)) continue;
+      if (!(el instanceof HTMLElement)) continue;
       const rect = el.getBoundingClientRect();
       if (rect.width === 0 || rect.height === 0) continue;
       minX = Math.min(minX, rect.left);

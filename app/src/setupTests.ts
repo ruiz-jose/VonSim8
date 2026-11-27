@@ -56,7 +56,7 @@ vi.mock("@/lib/i18n", () => ({
 vi.mock("@/lib/settings", () => ({
   useSettings: vi.fn(() => [
     {
-      showInstructionCycle: true,
+      showCyclePanel: true,
       showRegisters: true,
       showMemory: true,
       showIO: true,

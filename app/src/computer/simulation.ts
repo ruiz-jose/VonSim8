@@ -24,6 +24,7 @@ import { posthog } from "@/lib/posthog";
 import { getSettings, settingsAtom, useDevices } from "@/lib/settings";
 import { toast } from "@/lib/toast";
 
+import { describeLiveEvent, explainStep, resolveStage } from "./cpu/cycle-explanations";
 import { generateDataPath } from "./cpu/DataBus";
 import {
   connectScreenAndKeyboardAtom,
@@ -31,6 +32,8 @@ import {
   cycleAtom,
   cycleCountAtom,
   instructionCountAtom,
+  liveStepAtom,
+  MARAtom,
   messageAtom,
   messageHistoryAtom,
   resetCPUState,
@@ -78,8 +81,19 @@ function setMessageAndAddToHistory(message: string): void {
 
   // Agregar al historial inmediatamente de forma síncrona
   const currentCycleCount = store.get(currentInstructionCycleCountAtom);
-  const [stage, ...actionParts] = finalMessage.split(":");
+  const [rawStage, ...actionParts] = finalMessage.split(":");
   const action = actionParts.join(":").trim();
+  // Usar la fase real de la CPU para que el panel coincida con la unidad de control
+  const stage = resolveStage(rawStage.trim(), store.get(cycleAtom).phase);
+  const marAddress = Number(store.get(MARAtom).unsigned);
+  const marLabel = store.get(dataAddressesAtom).find(d => d.address === marAddress)?.label;
+  const explanation = explainStep(action, { stage, marLabel });
+  const cycleState = store.get(cycleAtom);
+  const instruction =
+    "metadata" in cycleState && cycleState.metadata
+      ? [cycleState.metadata.name, cycleState.metadata.operands.join(", ")].join(" ").trim()
+      : undefined;
+  store.set(liveStepAtom, null);
 
   // Agregar al historial evitando duplicados
   // NOTA: Mostramos currentCycleCount + 1 porque el contador se incrementa DESPUÉS de llamar a esta función
@@ -90,7 +104,7 @@ function setMessageAndAddToHistory(message: string): void {
     if (lastMessage && lastMessage.cycle === displayCycle && lastMessage.action === action) {
       return prev;
     }
-    return [...prev, { cycle: displayCycle, stage: stage.trim(), action }];
+    return [...prev, { cycle: displayCycle, stage, action, explanation, instruction }];
   });
 }
 
@@ -293,6 +307,7 @@ export function finishSimulation(error?: SimulatorError<any>) {
   store.set(simulationAtom, { type: "stopped", error });
   store.set(cycleAtom, { phase: "stopped", error });
   stopAllAnimations();
+  store.set(liveStepAtom, null);
 
   // Resetear la bandera de HLT para futuras ejecuciones
   store.set(isHaltExecutionAtom, false);
@@ -348,6 +363,7 @@ function resetState(state: ComputerState, clearRegisters = false) {
   store.set(cycleCountAtom, cycleCount);
   store.set(instructionCountAtom, instructionCount);
   store.set(messageAtom, ""); // Limpiar el mensaje actual
+  store.set(liveStepAtom, null);
   // Limpiar el historial de mensajes si clearRegisters es true
   if (clearRegisters) {
     store.set(messageHistoryAtom, []); // Limpia el historial de mensajes
@@ -1262,6 +1278,9 @@ async function executeThread(generator: EventGenerator): Promise<void> {
 
           // Crear un timeout para detectar bloqueos en handleEvent
           // PERO: No aplicar timeout a eventos que requieren interacción del usuario
+          // Mostrar en el panel qué se está animando, antes de que el paso quede registrado
+          const liveStep = describeLiveEvent(event.value);
+          if (liveStep) store.set(liveStepAtom, liveStep);
           const eventPromise = handleEvent(event.value);
 
           // Lista de eventos que requieren interacción del usuario y no deben tener timeout
