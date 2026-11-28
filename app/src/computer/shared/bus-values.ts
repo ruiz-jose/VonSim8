@@ -25,7 +25,7 @@ export type BusKey =
 export type BusValue = {
   /** Recorrido (path SVG) de la animación a la que pertenece este valor */
   path: string;
-  /** Texto a mostrar, por ejemplo "0Ah" */
+  /** Texto a mostrar, por ejemplo "0A" */
   text: string;
 };
 
@@ -52,9 +52,9 @@ export function tagPathSource(path: string, source: PathSource | null | undefine
   return path;
 }
 
-/** Formatea un byte como lo muestran los registros: "0Ah". */
+/** Formatea un byte como lo muestran los registros, sin la "h": "0A". */
 export function formatBusValue(value: Byte<8> | Byte<16>): string {
-  return `${value.low.toString("hex")}h`;
+  return value.low.toString("hex");
 }
 
 function readRegister(name: string): Byte<8> | Byte<16> | null {
