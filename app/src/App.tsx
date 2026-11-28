@@ -1,9 +1,10 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
 import { useAtom, useAtomValue } from "jotai";
-import { memo, useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useMedia } from "react-use";
 
+import { FirstStepsTour } from "@/components/FirstStepsTour";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { InlineNotificationProvider } from "@/components/InlineNotification";
@@ -18,6 +19,7 @@ import { Editor } from "@/editor";
 import { usePWAUpdate } from "@/hooks/usePWAUpdate";
 import { useVersionCheck } from "@/hooks/useVersionCheck";
 import { useTranslate } from "@/lib/i18n";
+import { MOBILE_TAB_EVENT, type MobileTab } from "@/lib/mobile-tab";
 import { useLanguage } from "@/lib/settings";
 
 // Componente principal optimizado con memo
@@ -47,6 +49,7 @@ const App = memo(() => {
       <Footer data-testid="footer" />
 
       <WelcomeTour />
+      <FirstStepsTour />
       <KeyboardShortcuts />
       <InlineNotificationProvider />
       <KeyboardInputNotification />
@@ -141,6 +144,18 @@ const MobileLayout = memo(() => {
 
   // Memoizar el tab actual
   const tab = useMemo(() => (settingsOpen ? "settings" : selectedTab), [settingsOpen, selectedTab]);
+
+  // Otras partes de la app (p. ej. la guía de primeros pasos) pueden pedir una pestaña
+  useEffect(() => {
+    const onTab = (event: Event) => {
+      const requested = (event as CustomEvent<{ tab?: MobileTab }>).detail?.tab;
+      if (requested !== "editor" && requested !== "computer") return;
+      setSettingsOpen(false);
+      setSelectedTab(requested);
+    };
+    window.addEventListener(MOBILE_TAB_EVENT, onTab);
+    return () => window.removeEventListener(MOBILE_TAB_EVENT, onTab);
+  }, [setSettingsOpen]);
 
   // Callback optimizado para cambiar tab
   const setTab = useCallback(

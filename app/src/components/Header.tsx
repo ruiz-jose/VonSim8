@@ -1,4 +1,4 @@
-import { faGraduationCap, faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
+import { faGraduationCap } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
 import { useAtom, useAtomValue } from "jotai";
@@ -6,6 +6,8 @@ import { memo, useCallback, useEffect, useMemo, useState } from "react";
 
 import { Controls } from "@/components/Controls";
 import { EducationalMenu, EducationalProgress } from "@/components/educational";
+import { firstStepsOpenAtom } from "@/components/FirstStepsTour";
+import { HelpMenu } from "@/components/HelpMenu";
 // Eliminada referencia a NotificationCenter
 import { settingsOpenAtom } from "@/components/Settings";
 import { IconButton } from "@/components/ui/Button";
@@ -17,7 +19,14 @@ import { useSettings } from "@/lib/settings";
 
 // Hook personalizado para manejar el tour
 const useTourControl = () => {
+  const [, setFirstStepsOpen] = useAtom(firstStepsOpenAtom);
+
+  const handleShowFirstSteps = useCallback(() => {
+    setFirstStepsOpen(true);
+  }, [setFirstStepsOpen]);
+
   const handleShowTour = useCallback(() => {
+    setFirstStepsOpen(false);
     // Usar la función global startWelcomeTour si está disponible
     if ((window as any).startWelcomeTour) {
       (window as any).startWelcomeTour();
@@ -26,9 +35,9 @@ const useTourControl = () => {
       localStorage.removeItem("vonsim8-tour-completed");
       window.location.reload();
     }
-  }, []);
+  }, [setFirstStepsOpen]);
 
-  return { handleShowTour };
+  return { handleShowTour, handleShowFirstSteps };
 };
 
 // Componente de estado de simulación optimizado
@@ -218,12 +227,14 @@ SimulationStatus.displayName = "SimulationStatus";
 const ActionButtons = memo(
   ({
     onShowTour,
+    onShowFirstSteps,
     onToggleSettings,
     settingsOpen,
     onToggleEducational,
     educationalOpen,
   }: {
     onShowTour: () => void;
+    onShowFirstSteps: () => void;
     onToggleSettings: () => void;
     settingsOpen: boolean;
     onToggleEducational: () => void;
@@ -247,16 +258,7 @@ const ActionButtons = memo(
           />
         </Tooltip>
 
-        <Tooltip content="Mostrar tour de bienvenida" position="bottom">
-          <IconButton
-            icon={<FontAwesomeIcon icon={faQuestionCircle} className="size-4" />}
-            onClick={onShowTour}
-            variant="ghost"
-            size="md"
-            aria-label="Mostrar tour de bienvenida"
-            className="hover-lift"
-          />
-        </Tooltip>
+        <HelpMenu onShowFirstSteps={onShowFirstSteps} onShowTour={onShowTour} />
 
         <Tooltip content={translate("settings.title")} position="bottom">
           <IconButton
@@ -282,7 +284,7 @@ export const Header = memo(() => {
   const [educationalOpen, setEducationalOpen] = useState(false);
   const [progressOpen, setProgressOpen] = useState(false);
   const { status } = useSimulation();
-  const { handleShowTour } = useTourControl();
+  const { handleShowTour, handleShowFirstSteps } = useTourControl();
 
   // Detectar diferentes tamaños de pantalla para mejor responsividad
   const [screenSize, setScreenSize] = useState<"mobile" | "compact" | "tablet" | "desktop">(
@@ -441,9 +443,18 @@ export const Header = memo(() => {
             </div>
 
             {/* Botones de acción */}
+            {/* En pantallas chicas solo se muestra la ayuda, para que la guía siempre esté a mano */}
+            {!layout.showActionButtons && (
+              <HelpMenu
+                onShowFirstSteps={handleShowFirstSteps}
+                onShowTour={handleShowTour}
+                compact
+              />
+            )}
             {layout.showActionButtons && (
               <ActionButtons
                 onShowTour={handleShowTour}
+                onShowFirstSteps={handleShowFirstSteps}
                 onToggleSettings={handleToggleSettings}
                 settingsOpen={settingsOpen}
                 onToggleEducational={handleToggleEducational}

@@ -247,7 +247,7 @@ export function CPU() {
 
       <ALU />
 
-      <div className="absolute left-[450px] top-[30px] z-10">
+      <div className="absolute left-[450px] top-[30px] z-10" data-tour="register-AL">
         <Reg name="AL" emphasis className="" />
         <span className="absolute left-0 top-0 z-30 select-none rounded-full border border-emerald-400 bg-emerald-800 px-1 py-0 font-mono text-xs font-bold tracking-widest text-emerald-400">
           AL
