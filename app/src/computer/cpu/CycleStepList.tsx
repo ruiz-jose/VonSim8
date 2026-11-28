@@ -4,6 +4,7 @@ import { Fragment } from "react";
 import { STAGE_DESCRIPTIONS } from "./cycle-explanations";
 import { groupByInstruction, summarizeInstruction } from "./instruction-summary";
 import { InstructionSummaryCard } from "./InstructionSummaryCard";
+import { PracticeBadge, PracticeQuestion } from "./PracticeQuestion";
 import type { CycleMessage } from "./state";
 
 type StageStyle = { icon: string; title: string; card: string; badge: string; text: string };
@@ -73,7 +74,16 @@ function StageHeader({ stage }: { stage: string }) {
   );
 }
 
-function StepCard({ msg, isCurrent }: { msg: CycleMessage; isCurrent: boolean }) {
+type StepCardProps = {
+  msg: CycleMessage;
+  isCurrent: boolean;
+  /** Modo práctica: preguntar antes de mostrar el paso. */
+  question?: { seed: number; onAnswer: (chosen: string) => void };
+  /** Modo práctica: opción que eligió el alumno, si ya respondió. */
+  answer?: string;
+};
+
+function StepCard({ msg, isCurrent, question, answer }: StepCardProps) {
   const style = styleFor(msg.stage);
   return (
     <li
@@ -93,24 +103,42 @@ function StepCard({ msg, isCurrent }: { msg: CycleMessage; isCurrent: boolean })
       >
         {msg.cycle}
       </span>
-      <div className="min-w-0 flex-1">
-        <code className={clsx("block font-mono text-xs font-semibold", style.text)}>
-          {msg.action}
-        </code>
-        {msg.explanation && (
-          <p
-            className={clsx(
-              "mt-0.5 text-xs leading-snug",
-              isCurrent ? "text-stone-200" : "text-stone-400",
-            )}
-          >
-            {msg.explanation}
-          </p>
-        )}
-      </div>
+      {question ? (
+        <PracticeQuestion msg={msg} seed={question.seed} onAnswer={question.onAnswer} />
+      ) : (
+        <div className="min-w-0 flex-1">
+          <code className={clsx("block font-mono text-xs font-semibold", style.text)}>
+            {msg.action}
+          </code>
+          {msg.explanation && (
+            <p
+              className={clsx(
+                "mt-0.5 text-xs leading-snug",
+                isCurrent ? "text-stone-200" : "text-stone-400",
+              )}
+            >
+              {msg.explanation}
+            </p>
+          )}
+          {answer !== undefined && answer !== msg.action && (
+            <p className="mt-0.5 text-[11px] text-red-300">
+              Elegiste: <code className="font-mono">{answer}</code>
+            </p>
+          )}
+        </div>
+      )}
+      {!question && answer !== undefined && <PracticeBadge correct={answer === msg.action} />}
     </li>
   );
 }
+
+export type PracticeState = {
+  /** Respuestas dadas, por posición del paso en el historial. */
+  answers: Record<number, string>;
+  /** Posición del paso por el que se pregunta ahora, o null. */
+  askIndex: number | null;
+  onAnswer: (index: number, chosen: string) => void;
+};
 
 /**
  * Lista de pasos del ciclo de instrucción, agrupados por instrucción y por
@@ -122,11 +150,13 @@ export function CycleStepList({
   messages,
   liveStep,
   lastInstructionComplete = false,
+  practice,
 }: {
   messages: CycleMessage[];
   liveStep: string | null;
   /** La última instrucción de la lista ya terminó (muestra su resumen). */
   lastInstructionComplete?: boolean;
+  practice?: PracticeState;
 }) {
   const groups = groupByInstruction(messages);
   let index = -1;
@@ -134,7 +164,9 @@ export function CycleStepList({
     <ol className="space-y-1.5">
       {groups.map((steps, groupIndex) => {
         const isLastGroup = groupIndex === groups.length - 1;
-        const showSummary = !isLastGroup || lastInstructionComplete;
+        // El resumen del último grupo espera a que se responda la pregunta
+        const asking = practice?.askIndex != null;
+        const showSummary = !isLastGroup || (lastInstructionComplete && !asking);
         return (
           <Fragment key={groupIndex}>
             {steps[0].instruction && (
@@ -150,10 +182,23 @@ export function CycleStepList({
               index++;
               const isNewStage = i === 0 || steps[i - 1].stage !== msg.stage;
               const isCurrent = !liveStep && index === messages.length - 1;
+              const stepIndex = index;
+              const question =
+                practice?.askIndex === stepIndex
+                  ? {
+                      seed: stepIndex,
+                      onAnswer: (chosen: string) => practice.onAnswer(stepIndex, chosen),
+                    }
+                  : undefined;
               return (
                 <Fragment key={i}>
                   {isNewStage && <StageHeader stage={msg.stage} />}
-                  <StepCard msg={msg} isCurrent={isCurrent} />
+                  <StepCard
+                    msg={msg}
+                    isCurrent={isCurrent}
+                    question={question}
+                    answer={practice?.answers[stepIndex]}
+                  />
                 </Fragment>
               );
             })}
