@@ -17,6 +17,8 @@ import { UndirectedGraph } from "graphology";
 import { bidirectional } from "graphology-shortest-path/unweighted";
 import { useAtomValue } from "jotai";
 
+import { tagPathSource } from "@/computer/shared/bus-values";
+import { BusValueTag } from "@/computer/shared/BusValueTag";
 import { animated, getSpring } from "@/computer/shared/springs";
 
 import type { PhysicalRegister } from "./state";
@@ -285,6 +287,14 @@ export function generateSimultaneousLeftRightPath(
   instruction?: string,
   mode?: string,
 ): string {
+  return tagPathSource(computeSimultaneousLeftRightPath(from, instruction, mode), from);
+}
+
+function computeSimultaneousLeftRightPath(
+  from: DataRegister,
+  instruction?: string,
+  mode?: string,
+): string {
   // Normalizar nombres de registros para evitar subniveles
   const normalizeRegister = (reg: string): string => {
     return reg.replace(/\.(l|h)$/, "");
@@ -325,6 +335,17 @@ export function generateSimultaneousLeftRightPath(
  * @throws If there is no path between the two registers.
  */
 export function generateDataPath(
+  from: DataRegister,
+  to: DataRegister,
+  instruction?: string,
+  mode?: string,
+  options?: { separateMBRPaths?: boolean; direction?: "left" | "right" },
+): string {
+  // Anotar de qué registro sale el dato, para mostrarlo viajando por el bus
+  return tagPathSource(computeDataPath(from, to, instruction, mode, options), from);
+}
+
+function computeDataPath(
   from: DataRegister,
   to: DataRegister,
   instruction?: string,
@@ -909,7 +930,10 @@ export function generateMBRtoMARPath(): string {
   const marJoin2 = [550, 349]; // MAR join2
   const mar = [630, 349]; // MAR (centrado en el registro MAR)
 
-  return `M ${mbrBottom[0]} ${mbrBottom[1]} L ${mbrBottomExit[0]} ${mbrBottomExit[1]} L ${mbrToBusHorizontal[0]} ${mbrToBusHorizontal[1]} L ${mbrToBusJoin[0]} ${mbrToBusJoin[1]} L ${outrMbrJoin[0]} ${outrMbrJoin[1]} L ${marJoin2[0]} ${marJoin2[1]} L ${mar[0]} ${mar[1]}`;
+  return tagPathSource(
+    `M ${mbrBottom[0]} ${mbrBottom[1]} L ${mbrBottomExit[0]} ${mbrBottomExit[1]} L ${mbrToBusHorizontal[0]} ${mbrToBusHorizontal[1]} L ${mbrToBusJoin[0]} ${mbrToBusJoin[1]} L ${outrMbrJoin[0]} ${outrMbrJoin[1]} L ${marJoin2[0]} ${marJoin2[1]} L ${mar[0]} ${mar[1]}`,
+    "MBR",
+  );
 }
 
 type DataBusProps = {
@@ -1068,6 +1092,9 @@ export function DataBus({ showSP, showid, showri }: DataBusProps) {
         strokeDasharray={1}
         style={addressStyle}
       />
+      {/* Valor que viaja por cada bus interno, junto a la punta de la animación */}
+      <BusValueTag bus="cpu.internalBus.address" />
+      <BusValueTag bus="cpu.internalBus.data" />
     </svg>
   );
 }

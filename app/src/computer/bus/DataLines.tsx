@@ -1,3 +1,4 @@
+import { BusValueTag } from "@/computer/shared/BusValueTag";
 import { animated, getSpring } from "@/computer/shared/springs";
 import { useSimulation } from "@/computer/simulation";
 
@@ -100,6 +101,10 @@ export function DataLines() {
           opacity: addressOpacity,
         }}
       />
+
+      {/* Valor que viaja por el bus de direcciones y el de datos */}
+      <BusValueTag bus="bus.address" />
+      <BusValueTag bus="bus.data" />
 
       {/* Chip select to memory line - z-index higher to appear above other buses */}
       {devices.hasIOBus && (

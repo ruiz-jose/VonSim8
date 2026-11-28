@@ -113,6 +113,19 @@ export function Settings({ className }: { className?: string }) {
 
       <Setting>
         <SettingInfo>
+          <SettingTitle>{translate("settings.busValues.label")}</SettingTitle>
+          <SettingSubtitle>{translate("settings.busValues.description")}</SettingSubtitle>
+        </SettingInfo>
+
+        <Switch
+          className="ml-8"
+          checked={settings.showBusValues}
+          onCheckedChange={value => setSettings(prev => ({ ...prev, showBusValues: value }))}
+        />
+      </Setting>
+
+      <Setting>
+        <SettingInfo>
           <SettingTitle>{translate("settings.statsCPU.label")}</SettingTitle>
         </SettingInfo>
 

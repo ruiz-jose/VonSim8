@@ -1,5 +1,6 @@
 import type { MARRegister } from "@vonsim/simulator/cpu";
 
+import { tagPathSource } from "@/computer/shared/bus-values";
 import { animated, getSpring } from "@/computer/shared/springs";
 
 export type { MARRegister as AddressRegister };
@@ -20,6 +21,13 @@ export function generateAddressPath(
   showpath1?: boolean,
   showpath2?: boolean,
 ): string {
+  // Anotar de qué registro sale la dirección, para mostrarla viajando por el bus.
+  // showpath2 es el recorrido que sale del MBR.
+  const source = showpath2 && !showpath1 ? "MBR" : from;
+  return tagPathSource(computeAddressPath(from, showpath1, showpath2), source);
+}
+
+function computeAddressPath(from: MARRegister, showpath1?: boolean, showpath2?: boolean): string {
   let path = "";
   if (showpath1) {
     path = "M 455 388 L 525 388 L 550 348 H 610"; // ri - usando líneas que siguen el bus gris

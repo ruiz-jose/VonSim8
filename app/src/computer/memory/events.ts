@@ -11,6 +11,7 @@ import {
   showReadControlText,
   showWriteControlText,
 } from "@/computer/shared/animate";
+import { tagPathSource } from "@/computer/shared/bus-values";
 import type { SimulatorEvent } from "@/computer/shared/types";
 import { finishSimulation, notifyWarning } from "@/computer/simulation";
 import { store } from "@/lib/jotai";
@@ -57,7 +58,9 @@ export const drawExternalDataPath = (
   duration?: number,
 ) => {
   try {
+    // Al escribir, sale el valor del MBR; al leer, el valor lo fija memory:read.ok
     const path = generateExternalDataPath(direction);
+    if (direction === "mbr-to-memory") tagPathSource(path, "MBR");
     if (!path) {
       console.warn("❌ No se generó path para drawExternalDataPath");
       return Promise.resolve();
@@ -127,7 +130,7 @@ function generateDataPathFromPIO(): string {
  */
 export const drawDataPathToPIO = (duration?: number) => {
   try {
-    const path = generateDataPathToPIO();
+    const path = tagPathSource(generateDataPathToPIO(), "MBR");
     if (!path) {
       console.warn("❌ No se generó path para drawDataPathToPIO");
       return Promise.resolve();
@@ -197,7 +200,7 @@ function generateAddressPathToPIO(): string {
  */
 export const drawAddressPathToPIO = (duration?: number) => {
   try {
-    const path = generateAddressPathToPIO();
+    const path = tagPathSource(generateAddressPathToPIO(), "MAR");
     if (!path) {
       console.warn("❌ No se generó path para drawAddressPathToPIO");
       return Promise.resolve();
@@ -235,7 +238,7 @@ function generateExternalAddressPath(): string {
 // Función para animar el bus de direcciones externo (igual que el interno del CPU)
 export const drawExternalAddressPath = (duration?: number) => {
   try {
-    const path = generateExternalAddressPath();
+    const path = tagPathSource(generateExternalAddressPath(), "MAR");
     if (!path) return Promise.resolve();
 
     // Usar la configuración de velocidad de animación si no se especifica duración
@@ -508,7 +511,9 @@ export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promi
         { duration: 1, easing: "easeOutQuart" },
       );
 
-      // Animar el bus de datos desde la memoria hacia el MBR (igual que bus interno)
+      // Animar el bus de datos desde la memoria hacia el MBR (igual que bus interno),
+      // mostrando el valor leído mientras viaja
+      tagPathSource(generateExternalDataPath("memory-to-mbr"), event.value);
       await drawExternalDataPath("memory-to-mbr");
 
       // Actualizar el valor primero
