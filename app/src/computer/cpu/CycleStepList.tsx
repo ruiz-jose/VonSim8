@@ -4,7 +4,9 @@ import { Fragment } from "react";
 import { STAGE_DESCRIPTIONS } from "./cycle-explanations";
 import { groupByInstruction, summarizeInstruction } from "./instruction-summary";
 import { InstructionSummaryCard } from "./InstructionSummaryCard";
+import { PracticeBadge, PracticeQuestion } from "./PracticeQuestion";
 import type { CycleMessage } from "./state";
+import type { PracticeResult, PracticeState } from "./usePracticeMode";
 
 type StageStyle = { icon: string; title: string; card: string; badge: string; text: string };
 
@@ -73,7 +75,14 @@ function StageHeader({ stage }: { stage: string }) {
   );
 }
 
-function StepCard({ msg, isCurrent }: { msg: CycleMessage; isCurrent: boolean }) {
+type StepCardProps = {
+  msg: CycleMessage;
+  isCurrent: boolean;
+  /** Modo práctica: resultado de la predicción de este paso, si la hubo. */
+  result?: PracticeResult;
+};
+
+function StepCard({ msg, isCurrent, result }: StepCardProps) {
   const style = styleFor(msg.stage);
   return (
     <li
@@ -107,7 +116,13 @@ function StepCard({ msg, isCurrent }: { msg: CycleMessage; isCurrent: boolean })
             {msg.explanation}
           </p>
         )}
+        {result && result.status !== "ok" && (
+          <p className="mt-0.5 text-[11px] text-red-300">
+            Elegiste: <code className="font-mono">{result.chosen}</code>
+          </p>
+        )}
       </div>
+      {result && <PracticeBadge status={result.status} />}
     </li>
   );
 }
@@ -122,11 +137,13 @@ export function CycleStepList({
   messages,
   liveStep,
   lastInstructionComplete = false,
+  practice,
 }: {
   messages: CycleMessage[];
   liveStep: string | null;
   /** La última instrucción de la lista ya terminó (muestra su resumen). */
   lastInstructionComplete?: boolean;
+  practice?: PracticeState;
 }) {
   const groups = groupByInstruction(messages);
   let index = -1;
@@ -153,7 +170,7 @@ export function CycleStepList({
               return (
                 <Fragment key={i}>
                   {isNewStage && <StageHeader stage={msg.stage} />}
-                  <StepCard msg={msg} isCurrent={isCurrent} />
+                  <StepCard msg={msg} isCurrent={isCurrent} result={practice?.results[index]} />
                 </Fragment>
               );
             })}
@@ -161,6 +178,9 @@ export function CycleStepList({
           </Fragment>
         );
       })}
+      {practice?.question && !liveStep && (
+        <PracticeQuestion question={practice.question} onChoose={practice.onChoose} />
+      )}
       {liveStep && (
         <li
           className="ml-6 flex items-center gap-2.5 rounded-lg border border-dashed border-mantis-400/60 bg-mantis-900/20 py-1.5 pl-3 pr-2 text-xs font-medium text-mantis-200"

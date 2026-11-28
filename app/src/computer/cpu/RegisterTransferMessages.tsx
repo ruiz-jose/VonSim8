@@ -9,6 +9,7 @@ import { useSettings } from "@/lib/settings";
 import { toast } from "@/lib/toast";
 
 import { CycleStepList } from "./CycleStepList";
+import { PracticeToggle } from "./PracticeToggle";
 import {
   animationSyncAtom,
   currentInstructionCycleCountAtom,
@@ -17,6 +18,7 @@ import {
   liveStepAtom,
   messageHistoryAtom,
 } from "./state";
+import { usePracticeMode } from "./usePracticeMode";
 
 function clearHistory() {
   store.set(messageHistoryAtom, []);
@@ -83,6 +85,24 @@ export function RegisterTransferMessages() {
     if (container) container.scrollTop = container.scrollHeight;
   }, [messageHistory, liveStep, instructionComplete]);
 
+  const {
+    enabled: practiceEnabled,
+    toggle,
+    practice,
+    score,
+  } = usePracticeMode(
+    messageHistory,
+    simulationStatus.type === "paused",
+    instructionComplete === true,
+  );
+
+  // Mantener a la vista la pregunta del modo práctica
+  const askIndex = practice?.question?.index ?? null;
+  useEffect(() => {
+    const container = containerRef.current;
+    if (container && askIndex !== null) container.scrollTop = container.scrollHeight;
+  }, [askIndex]);
+
   if (!settings.showCyclePanel) return null;
 
   const showLive = simulationStatus.type === "running" ? liveStep : null;
@@ -102,9 +122,12 @@ export function RegisterTransferMessages() {
         <h3 className="text-sm font-bold uppercase tracking-wide text-mantis-400">
           Ciclo de instrucción
         </h3>
-        <span className="text-xs text-stone-400" title="Ciclos de reloj de la instrucción actual">
-          Ciclos: {cycleCount}
-        </span>
+        <div className="flex items-center gap-3">
+          <PracticeToggle enabled={practiceEnabled} onToggle={toggle} score={score} />
+          <span className="text-xs text-stone-400" title="Ciclos de reloj de la instrucción actual">
+            Ciclos: {cycleCount}
+          </span>
+        </div>
       </header>
 
       <div ref={containerRef} className="scrollbar-thin flex-1 overflow-y-auto p-3">
@@ -124,6 +147,7 @@ export function RegisterTransferMessages() {
             messages={messageHistory}
             liveStep={showLive}
             lastInstructionComplete={instructionComplete === true}
+            practice={practice}
           />
         )}
       </div>

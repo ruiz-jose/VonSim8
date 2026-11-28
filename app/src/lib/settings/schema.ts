@@ -13,6 +13,12 @@ export const settingsSchema = z.object({
   showCyclePanel: z.boolean().catch(true),
 
   /**
+   * Modo práctica del panel del ciclo: antes de mostrar cada paso, pregunta
+   * qué hizo la CPU.
+   */
+  practiceMode: z.boolean().catch(false),
+
+  /**
    * Show or hide the CPU statistics.
    * Controls whether the CPU statistics are visible in the UI.
    */
