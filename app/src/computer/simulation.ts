@@ -26,6 +26,7 @@ import { getSettings, settingsAtom, useDevices } from "@/lib/settings";
 import { toast } from "@/lib/toast";
 
 import { canonicalStep, flagsFromByte } from "./cpu/canonical-step";
+import { announceControlStep, resetControlStep } from "./cpu/control-step";
 import { describeLiveEvent, explainStep, resolveStage } from "./cpu/cycle-explanations";
 import { generateDataPath } from "./cpu/DataBus";
 import {
@@ -422,6 +423,7 @@ function resetState(state: ComputerState, clearRegisters = false) {
   cycleCount = 0;
   instructionCount = 0;
   panelStepIndex = 0;
+  resetControlStep();
   lastRecorded = { count: -1, rawAction: "" };
   fetchStageCounter = 0;
   executeStageCounter = 0;
@@ -1357,7 +1359,12 @@ async function executeThread(generator: EventGenerator, isConcurrent = false): P
           // PERO: No aplicar timeout a eventos que requieren interacción del usuario
           // Mostrar en el panel qué se está animando, antes de que el paso quede registrado
           const liveStep = describeLiveEvent(event.value);
-          if (liveStep) store.set(liveStepAtom, liveStep);
+          if (liveStep) {
+            const newStep = store.get(liveStepAtom) === null;
+            store.set(liveStepAtom, liveStep);
+            // La unidad de control lee la microinstrucción y envía las señales
+            await announceControlStep(panelStepIndex, eventType, newStep);
+          }
           const eventPromise = handleEvent(event.value);
 
           // Lista de eventos que requieren interacción del usuario y no deben tener timeout
@@ -1449,6 +1456,7 @@ async function executeThread(generator: EventGenerator, isConcurrent = false): P
         blBxToRiProcessed = false;
         movBuscopyDone = false;
         panelStepIndex = 0;
+        resetControlStep();
         lastRecorded = { count: -1, rawAction: "" };
         unaryStep = 0;
         unaryWriting = false;
