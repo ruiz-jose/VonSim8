@@ -19,6 +19,12 @@ export const settingsSchema = z.object({
   practiceMode: z.boolean().catch(false),
 
   /**
+   * Mostrar el valor que viaja por los buses durante cada animación
+   * (por ejemplo "0Ah" moviéndose de MBR a AL).
+   */
+  showBusValues: z.boolean().catch(true),
+
+  /**
    * Show or hide the CPU statistics.
    * Controls whether the CPU statistics are visible in the UI.
    */

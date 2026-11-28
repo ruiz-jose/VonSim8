@@ -7,6 +7,7 @@ import { store } from "@/lib/jotai";
 import { getSettings } from "@/lib/settings";
 import { colors } from "@/lib/tailwind";
 
+import { startBusValue } from "./bus-values";
 import {
   getSpring,
   RegisterKey,
@@ -102,6 +103,9 @@ export async function anim(
 
       try {
         const spring = getSpring(key);
+
+        // Si arranca el recorrido de un bus, anotar el valor que viaja por él
+        if (from !== undefined) startBusValue(key, from);
 
         if (to === undefined) {
           return spring.set(from);

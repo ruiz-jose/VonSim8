@@ -161,6 +161,11 @@ export const english = {
       label: "Instruction Cycle",
     },
 
+    busValues: {
+      label: "Values on buses",
+      description: "Shows the value travelling along the bus in each animation.",
+    },
+
     statsCPU: {
       label: "CPU Statistics",
     },

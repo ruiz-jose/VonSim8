@@ -163,6 +163,11 @@ export const spanish: Locale = {
       label: "Ciclo de Instrucción",
     },
 
+    busValues: {
+      label: "Valores en los buses",
+      description: "Muestra el dato que viaja por el bus en cada animación.",
+    },
+
     statsCPU: {
       label: "Estadísticas CPU",
     },
