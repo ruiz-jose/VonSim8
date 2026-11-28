@@ -22,6 +22,15 @@ const CONDITIONAL_JUMPS: Record<string, (f: Flags) => boolean> = {
   JNO: f => !f.OF,
 };
 
+// INC, DEC, NOT y NEG (no están en docs/instructioncycle: siguen el mismo
+// esquema que ADD/SUB con un solo operando)
+const UNARY: Record<string, (x: string) => string> = {
+  INC: x => `${x} ← ${x} + 1 | update(FLAGS)`,
+  DEC: x => `${x} ← ${x} - 1 | update(FLAGS)`,
+  NOT: x => `${x} ← NOT ${x} | update(FLAGS)`,
+  NEG: x => `${x} ← NEG ${x} | update(FLAGS)`,
+};
+
 export type Flags = { CF: boolean; ZF: boolean; SF: boolean; OF: boolean };
 export type InstructionInfo = { name: string; operands: string[] };
 
@@ -116,6 +125,14 @@ export function executeSteps(ins: InstructionInfo, flags: Flags): string[] | nul
   }
   if (name === "POP" && ops.length === 1) {
     return ["MAR ← SP", READ, `${ops[0].toUpperCase()} ← MBR | SP ← SP + 1`];
+  }
+  if (name in UNARY && ops.length === 1) {
+    const kind = kindOf(ops[0]);
+    if (kind === "reg") return [UNARY[name](ops[0].toUpperCase())];
+    if (kind === "dir") {
+      return [...READ_NEXT_BYTE, "MAR ← MBR", READ, UNARY[name]("MBR"), WRITE];
+    }
+    return null;
   }
   if (name === "CLI") return ["update(Flags I=0)"];
   if (name === "STI") return ["update(Flags I=1)"];
