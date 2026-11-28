@@ -85,6 +85,9 @@ type CyclePhase =
   | "stopped";
 
 let currentPhase: CyclePhase = "fetching";
+
+// true entre cpu:iom.on y el RD/WR siguiente: ese acceso es de E/S y no de memoria
+let ioAccessInProgress = false;
 // let _waitingForFetchingOperands = false;
 // let _waitingForExecuting = false;
 
@@ -605,6 +608,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
     }
 
     case "cpu:cycle.start": {
+      ioAccessInProgress = false;
       // Animar solo el secuenciador al iniciar ciclo
       void animateSequencerOnly(0.05);
 
@@ -818,13 +822,21 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
 
       const line = event.type.slice(4, 6) as "rd" | "wr";
 
-      // Animar simultáneamente el bus de control 'write' y el bus de direcciones
+      // Acceso a memoria: no dibujar RD/WR acá. memory:read y memory:write dibujan
+      // el bus de control junto con el bus de direcciones (MAR → memoria), así las
+      // dos animaciones arrancan al mismo tiempo en vez de esperar a esta.
+      if (!ioAccessInProgress) return;
+      ioAccessInProgress = false;
+
+      // Acceso a E/S: se mantiene la animación de la línea de control
       window.dispatchEvent(new CustomEvent("vonsim:parallel-memory-write-visual"));
       await turnLineOn(`bus.${line}` as SimplePathKey, 10);
       return;
     }
 
     case "cpu:iom.on": {
+      // El próximo RD/WR es de E/S (IN/OUT), no de memoria
+      ioAccessInProgress = true;
       await turnLineOn("bus.iom", 15);
       return;
     }
