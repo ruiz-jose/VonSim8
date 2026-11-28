@@ -20,7 +20,7 @@ export const settingsSchema = z.object({
 
   /**
    * Mostrar el valor que viaja por los buses durante cada animación
-   * (por ejemplo "0Ah" moviéndose de MBR a AL).
+   * (por ejemplo "0A" moviéndose de MBR a AL).
    */
   showBusValues: z.boolean().catch(true),
 

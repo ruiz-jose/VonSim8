@@ -90,6 +90,9 @@ type CyclePhase =
 
 let currentPhase: CyclePhase = "fetching";
 
+// Pausa pendiente del modo "por ciclo" en cpu:mbr.set (registro → MBR antes de escribir)
+let pauseAfterMBRSet = false;
+
 // true entre cpu:iom.on y el RD/WR siguiente: ese acceso es de E/S y no de memoria
 let ioAccessInProgress = false;
 // let _waitingForFetchingOperands = false;
@@ -1875,17 +1878,11 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
           `📊 Execute Stage Counter incrementado a: ${currentExecuteStageCounter} (Paso 7)`,
         );
 
-        // Si se está ejecutando por ciclo, pausar la simulación después de este paso
+        // Si se está ejecutando por ciclo, pausar después de este paso, pero recién
+        // cuando la animación registro → MBR llegó al MBR (ver el final de este case)
         const simulationStatus = store.get(simulationAtom);
-        console.log(`🔍 Estado de simulación:`, simulationStatus);
-        if (simulationStatus.type === "running" && simulationStatus.until === "cycle-change") {
-          console.log(
-            "⏸️ Pausando simulación después del paso 7 (cpu:mbr.set) - ejecución por ciclo",
-          );
-          setTimeout(() => {
-            pauseSimulation();
-          }, 100); // Pequeño delay para asegurar que la animación se complete
-        }
+        pauseAfterMBRSet =
+          simulationStatus.type === "running" && simulationStatus.until === "cycle-change";
       } else {
         console.log(
           `ℹ️ No se activó contabilización paso 7: instructionName=${instructionName}, register=${normalizedRegister}, executeStageCounter=${currentExecuteStageCounter}`,
@@ -1921,6 +1918,12 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
         await drawDataPath(normalizedSrc, "MBR", instructionName, mode);
         store.set(MBRAtom, store.get(registerAtoms[event.register]));
         await resetDataPath();
+      }
+
+      // Pausa del modo "por ciclo" pedida arriba: ahora que el dato ya llegó al MBR
+      if (pauseAfterMBRSet) {
+        pauseAfterMBRSet = false;
+        if (store.get(simulationAtom).type === "running") pauseSimulation();
       }
       return;
     }
