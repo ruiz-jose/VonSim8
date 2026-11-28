@@ -49,7 +49,7 @@ const tourSteps: TourStep[] = [
     target: "controls",
     title: "Controles de Simulación",
     content:
-      "Controla la simulación: F7 (ejecutar ciclo), F8 (ejecutar instrucción), F4 (ejecución infinita), F9 (resetear). También puedes usar los botones visuales.",
+      "Controla la simulación: F7 (ejecutar ciclo), F6 (avanzar una fase: búsqueda o ejecución), F8 (ejecutar instrucción), F4 (ejecución infinita), F9 (resetear). También puedes usar los botones visuales.",
     icon: "icon-[lucide--cpu]",
     position: "bottom",
   },

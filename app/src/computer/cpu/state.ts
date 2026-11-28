@@ -42,8 +42,13 @@ export type CycleMessage = {
   explanation?: string | null;
   /** Instrucción a la que pertenece el paso (ej. "MOV AL, [07]") */
   instruction?: string;
+  /** Dirección que tenía MAR en este paso, y su variable si la hay (para el resumen). */
+  marAddress?: number;
+  marLabel?: string | null;
 };
 export const messageHistoryAtom = atom<CycleMessage[]>([]);
+// true cuando la última instrucción del panel ya terminó (se muestra su resumen)
+export const instructionCompleteAtom = atom(false);
 // Paso que se está animando en este momento (se muestra antes de que quede registrado)
 export const liveStepAtom = atom<string | null>(null as string | null) as PrimitiveAtom<
   string | null

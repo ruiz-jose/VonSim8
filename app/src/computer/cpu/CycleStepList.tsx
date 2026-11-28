@@ -2,6 +2,8 @@ import clsx from "clsx";
 import { Fragment } from "react";
 
 import { STAGE_DESCRIPTIONS } from "./cycle-explanations";
+import { groupByInstruction, summarizeInstruction } from "./instruction-summary";
+import { InstructionSummaryCard } from "./InstructionSummaryCard";
 import type { CycleMessage } from "./state";
 
 type StageStyle = { icon: string; title: string; card: string; badge: string; text: string };
@@ -111,38 +113,51 @@ function StepCard({ msg, isCurrent }: { msg: CycleMessage; isCurrent: boolean })
 }
 
 /**
- * Lista de pasos del ciclo de instrucción, agrupados por fase. El último paso
- * registrado se destaca; si hay una animación en curso, se muestra al final
- * qué se está haciendo en ese momento.
+ * Lista de pasos del ciclo de instrucción, agrupados por instrucción y por
+ * fase. El último paso registrado se destaca; si hay una animación en curso,
+ * se muestra al final qué se está haciendo en ese momento. Cada instrucción
+ * terminada cierra con un resumen.
  */
 export function CycleStepList({
   messages,
   liveStep,
+  lastInstructionComplete = false,
 }: {
   messages: CycleMessage[];
   liveStep: string | null;
+  /** La última instrucción de la lista ya terminó (muestra su resumen). */
+  lastInstructionComplete?: boolean;
 }) {
+  const groups = groupByInstruction(messages);
+  let index = -1;
   return (
     <ol className="space-y-1.5">
-      {messages.map((msg, index) => {
-        const prev = messages[index - 1];
-        // Una nueva instrucción empieza cuando el contador de ciclos vuelve a 1
-        const isNewInstruction = index === 0 || msg.cycle <= prev.cycle;
-        const isNewStage = isNewInstruction || prev.stage !== msg.stage;
-        const isCurrent = !liveStep && index === messages.length - 1;
+      {groups.map((steps, groupIndex) => {
+        const isLastGroup = groupIndex === groups.length - 1;
+        const showSummary = !isLastGroup || lastInstructionComplete;
         return (
-          <Fragment key={index}>
-            {isNewInstruction && msg.instruction && (
+          <Fragment key={groupIndex}>
+            {steps[0].instruction && (
               <li className="mt-4 flex list-none items-center gap-2 first:mt-0">
                 <span className="h-px flex-1 bg-stone-600" aria-hidden="true" />
                 <span className="font-mono text-xs font-bold text-mantis-300">
-                  {msg.instruction}
+                  {steps[0].instruction}
                 </span>
                 <span className="h-px flex-1 bg-stone-600" aria-hidden="true" />
               </li>
             )}
-            {isNewStage && <StageHeader stage={msg.stage} />}
-            <StepCard msg={msg} isCurrent={isCurrent} />
+            {steps.map((msg, i) => {
+              index++;
+              const isNewStage = i === 0 || steps[i - 1].stage !== msg.stage;
+              const isCurrent = !liveStep && index === messages.length - 1;
+              return (
+                <Fragment key={i}>
+                  {isNewStage && <StageHeader stage={msg.stage} />}
+                  <StepCard msg={msg} isCurrent={isCurrent} />
+                </Fragment>
+              );
+            })}
+            {showSummary && <InstructionSummaryCard summary={summarizeInstruction(steps)} />}
           </Fragment>
         );
       })}

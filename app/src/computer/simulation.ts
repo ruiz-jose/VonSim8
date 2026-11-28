@@ -32,6 +32,7 @@ import {
   currentInstructionCycleCountAtom,
   cycleAtom,
   cycleCountAtom,
+  instructionCompleteAtom,
   instructionCountAtom,
   liveStepAtom,
   MARAtom,
@@ -68,7 +69,7 @@ const simulator = new Simulator();
  * Función auxiliar para establecer mensaje Y agregarlo al historial de forma síncrona
  * Esto garantiza que tanto en desarrollo como en producción se registren los mensajes de la misma manera
  */
-function setMessageAndAddToHistory(message: string): void {
+export function setMessageAndAddToHistory(message: string): void {
   if (!message) return;
 
   // Reemplazar "Ejecución:" por "Interrupción:" si estamos en una rutina de interrupción
@@ -105,7 +106,10 @@ function setMessageAndAddToHistory(message: string): void {
     if (lastMessage && lastMessage.cycle === displayCycle && lastMessage.action === action) {
       return prev;
     }
-    return [...prev, { cycle: displayCycle, stage, action, explanation, instruction }];
+    return [
+      ...prev,
+      { cycle: displayCycle, stage, action, explanation, instruction, marAddress, marLabel },
+    ];
   });
 }
 
@@ -204,7 +208,8 @@ if (typeof window !== "undefined") {
   });
 }
 
-type RunUntil = "cycle-change" | "end-of-instruction" | "infinity";
+// "end-of-phase" se detiene al terminar la búsqueda y al terminar la ejecución (Stallings)
+type RunUntil = "cycle-change" | "end-of-phase" | "end-of-instruction" | "infinity";
 type SimulationStatus =
   | { type: "running"; until: RunUntil; waitingForInput: boolean }
   | { type: "paused" }
@@ -365,6 +370,7 @@ function resetState(state: ComputerState, clearRegisters = false) {
   store.set(instructionCountAtom, instructionCount);
   store.set(messageAtom, ""); // Limpiar el mensaje actual
   store.set(liveStepAtom, null);
+  store.set(instructionCompleteAtom, false);
   // Limpiar el historial de mensajes si clearRegisters es true
   if (clearRegisters) {
     store.set(messageHistoryAtom, []); // Limpia el historial de mensajes
@@ -1352,6 +1358,7 @@ async function executeThread(generator: EventGenerator, isConcurrent = false): P
         // Reiniciar el contador de ciclos para la nueva instrucción
         currentInstructionCycleCount = 0;
         store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+        store.set(instructionCompleteAtom, false);
         // Resetear la bandera de pausa al iniciar nueva instrucción
         shouldPauseAfterEvent = false;
         cycleCount = 0; // Reinicia el contador de ciclos al iniciar cada instrucción
@@ -1382,6 +1389,7 @@ async function executeThread(generator: EventGenerator, isConcurrent = false): P
 
       if (
         status.until === "cycle-change" ||
+        status.until === "end-of-phase" ||
         status.until === "end-of-instruction" ||
         status.until === "infinity"
       ) {
@@ -1393,8 +1401,9 @@ async function executeThread(generator: EventGenerator, isConcurrent = false): P
           instructionCount++;
           console.log(`Instrucciones: ${instructionCount}`);
           store.set(instructionCountAtom, instructionCount);
+          store.set(instructionCompleteAtom, true);
           //store.set(messageAtom, "-");
-          if (status.until === "cycle-change" || status.until === "end-of-instruction") {
+          if (status.until !== "infinity") {
             pauseSimulation();
           }
           continue;
@@ -1427,6 +1436,7 @@ async function executeThread(generator: EventGenerator, isConcurrent = false): P
 
           // Establecer el mensaje antes de actualizar el contador de ciclos de instrucción
           setMessageAndAddToHistory("Ejecución: Detenido");
+          store.set(instructionCompleteAtom, true);
 
           currentInstructionCycleCount++;
           store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
@@ -1521,7 +1531,9 @@ async function executeThread(generator: EventGenerator, isConcurrent = false): P
             cycleCount++;
             currentInstructionCycleCount++;
             store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
-            if (status.until === "cycle-change") {
+            // Con IR ← MBR termina la búsqueda: el botón "Fase" se detiene acá
+            const endOfFetch = status.until === "end-of-phase" && !isExecutingInterruptRoutine;
+            if (status.until === "cycle-change" || endOfFetch) {
               pauseSimulation();
             }
             fetchStageCounter++;
@@ -3810,7 +3822,7 @@ async function executeThread(generator: EventGenerator, isConcurrent = false): P
         }
         // Remove the setTimeout delay - this was causing slowdown when animations are disabled
       } else if (event.value.type === "cpu:cycle.end") {
-        if (status.until === "end-of-instruction" || status.until === "cycle-change") {
+        if (status.until !== "infinity") {
           pauseSimulation();
         }
         // Remove the setTimeout delay - this was causing slowdown when animations are disabled

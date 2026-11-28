@@ -14,6 +14,11 @@ type Shortcut = {
 const keyboardShortcuts: Shortcut[] = [
   // Controles de simulación
   { key: "F7", description: "Ejecutar un ciclo", category: "Simulación" },
+  {
+    key: "F6",
+    description: "Avanzar hasta el final de la fase (búsqueda o ejecución)",
+    category: "Simulación",
+  },
   { key: "F8", description: "Ejecutar una instrucción completa", category: "Simulación" },
   { key: "F4", description: "Ejecución infinita", category: "Simulación" },
   { key: "F9", description: "Resetear simulación", category: "Simulación" },
@@ -39,7 +44,6 @@ const keyboardShortcuts: Shortcut[] = [
   { key: "F2", description: "Abrir configuración", category: "Navegación" },
   { key: "F3", description: "Buscar en el código", category: "Navegación" },
   { key: "F5", description: "Actualizar página", category: "Navegación" },
-  { key: "F6", description: "Cambiar foco al editor", category: "Navegación" },
 
   // Interfaz
   { key: "Escape", description: "Cerrar diálogos", category: "Interfaz" },

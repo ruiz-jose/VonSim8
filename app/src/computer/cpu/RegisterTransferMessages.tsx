@@ -12,6 +12,7 @@ import { CycleStepList } from "./CycleStepList";
 import {
   animationSyncAtom,
   currentInstructionCycleCountAtom,
+  instructionCompleteAtom,
   instructionCountAtom,
   liveStepAtom,
   messageHistoryAtom,
@@ -31,6 +32,7 @@ function clearHistory() {
 export function RegisterTransferMessages() {
   const messageHistory = useAtomValue(messageHistoryAtom);
   const liveStep = useAtomValue(liveStepAtom);
+  const instructionComplete = useAtomValue(instructionCompleteAtom);
   const cycleCount = useAtomValue(currentInstructionCycleCountAtom);
   const simulationStatus = useAtomValue(simulationAtom);
   const programModified = useAtomValue(programModifiedAtom);
@@ -79,7 +81,7 @@ export function RegisterTransferMessages() {
   useEffect(() => {
     const container = containerRef.current;
     if (container) container.scrollTop = container.scrollHeight;
-  }, [messageHistory, liveStep]);
+  }, [messageHistory, liveStep, instructionComplete]);
 
   if (!settings.showCyclePanel) return null;
 
@@ -118,7 +120,11 @@ export function RegisterTransferMessages() {
             </p>
           </div>
         ) : (
-          <CycleStepList messages={messageHistory} liveStep={showLive} />
+          <CycleStepList
+            messages={messageHistory}
+            liveStep={showLive}
+            lastInstructionComplete={instructionComplete === true}
+          />
         )}
       </div>
     </section>

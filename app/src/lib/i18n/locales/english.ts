@@ -66,6 +66,8 @@ export const english = {
       running: "Running...",
       run: {
         "cycle-change": "Cycle",
+        "end-of-phase": "Phase",
+        "end-of-phase-hint": "Run to the end of the current phase: fetch or execute",
         "end-of-instruction": "Instruction",
         infinity: "End",
       },
