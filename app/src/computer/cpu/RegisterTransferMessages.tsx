@@ -90,10 +90,14 @@ export function RegisterTransferMessages() {
     toggle,
     practice,
     score,
-  } = usePracticeMode(messageHistory, simulationStatus.type === "running");
+  } = usePracticeMode(
+    messageHistory,
+    simulationStatus.type === "paused",
+    instructionComplete === true,
+  );
 
   // Mantener a la vista la pregunta del modo práctica
-  const askIndex = practice?.askIndex ?? null;
+  const askIndex = practice?.question?.index ?? null;
   useEffect(() => {
     const container = containerRef.current;
     if (container && askIndex !== null) container.scrollTop = container.scrollHeight;
