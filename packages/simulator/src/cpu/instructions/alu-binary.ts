@@ -73,10 +73,7 @@ export class ALUBinaryInstruction extends Instruction<
           id:
             this.operation.mode === "mem<-imd" &&
             (this.operation.out.mode === "direct" || this.operation.out.mode === "indirect"), // Marcar `id` como true para direccionamiento directo o indirecto
-          ri:
-            this.operation.mode === "mem<-imd" &&
-            this.operation.out.mode === "direct" && // Solo para direccionamiento directo
-            this.name !== "CMP", // Ocultar `ri` para direccionamiento indirecto (ADD/SUB/CMP [BL], 2)
+          ri: this.operation.mode === "mem<-imd" && this.operation.out.mode === "direct", // Solo directo: con [BL], 2 la dirección ya está en BL
         },
       },
     };

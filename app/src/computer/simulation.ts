@@ -25,6 +25,7 @@ import { posthog } from "@/lib/posthog";
 import { getSettings, settingsAtom, useDevices } from "@/lib/settings";
 import { toast } from "@/lib/toast";
 
+import { canonicalStep, flagsFromByte } from "./cpu/canonical-step";
 import { describeLiveEvent, explainStep, resolveStage } from "./cpu/cycle-explanations";
 import { generateDataPath } from "./cpu/DataBus";
 import {
@@ -38,6 +39,7 @@ import {
   MARAtom,
   messageAtom,
   messageHistoryAtom,
+  registerAtoms,
   resetCPUState,
   showriAtom,
   showSPAtom,
@@ -78,34 +80,44 @@ export function setMessageAndAddToHistory(message: string): void {
     finalMessage = message.replace("Ejecución:", "Interrupción:");
   }
 
-  // Establecer el mensaje actual
-  store.set(messageAtom, finalMessage);
-
-  // Agregar al historial inmediatamente de forma síncrona
-  const currentCycleCount = store.get(currentInstructionCycleCountAtom);
+  const cycleState = store.get(cycleAtom);
+  const metadata = "metadata" in cycleState ? cycleState.metadata : undefined;
   const [rawStage, ...actionParts] = finalMessage.split(":");
-  const action = actionParts.join(":").trim();
+  // Fuera de las rutinas de interrupción, mostrar el paso como está documentado
+  // (docs/instructioncycle); si no hay ciclo documentado, el texto original
+  const rawAction = actionParts.join(":").trim();
+  // El mismo paso informado dos veces sin que avance el contador de ciclos
+  const oldCount = store.get(currentInstructionCycleCountAtom);
+  if (oldCount === lastRecorded.count && rawAction === lastRecorded.rawAction) return;
+  const inInterrupt = rawStage.trim() === "Interrupción" || isExecutingInterruptRoutine;
+  const flags = flagsFromByte(store.get(registerAtoms.FLAGS));
+  const documented = inInterrupt ? null : canonicalStep(panelStepIndex, metadata, flags);
+  // Un paso de más en una instrucción con ciclo documentado no se muestra
+  if (!documented && !inInterrupt && canonicalStep(3, metadata, flags) !== null) return;
+  lastRecorded = { count: oldCount, rawAction };
+  const action = documented ?? rawAction;
+
+  // Establecer el mensaje actual
+  store.set(messageAtom, `${rawStage}: ${action}`);
+
   // Usar la fase real de la CPU para que el panel coincida con la unidad de control
-  const stage = resolveStage(rawStage.trim(), store.get(cycleAtom).phase, action);
+  const stage = resolveStage(rawStage.trim(), cycleState.phase, action);
   const marAddress = Number(store.get(MARAtom).unsigned);
   const marLabel = store.get(dataAddressesAtom).find(d => d.address === marAddress)?.label;
   const explanation = explainStep(action, { stage, marLabel });
-  const cycleState = store.get(cycleAtom);
   const instruction =
     "metadata" in cycleState && cycleState.metadata
       ? [cycleState.metadata.name, cycleState.metadata.operands.join(", ")].join(" ").trim()
       : undefined;
   store.set(liveStepAtom, null);
 
-  // Agregar al historial evitando duplicados
-  // NOTA: Mostramos currentCycleCount + 1 porque el contador se incrementa DESPUÉS de llamar a esta función
+  // Agregar al historial evitando duplicados. El número de ciclo es la posición
+  // del paso dentro de la instrucción (desde 1)
+  const displayCycle = panelStepIndex + 1;
+  const lastMessage = store.get(messageHistoryAtom).at(-1);
+  if (lastMessage && lastMessage.cycle === displayCycle && lastMessage.action === action) return;
+  panelStepIndex++;
   store.set(messageHistoryAtom, prev => {
-    const lastMessage = prev[prev.length - 1];
-    const displayCycle = currentCycleCount + 1; // Mostrar ciclo desde 1 en lugar de 0
-    // Evitar duplicados basados en ciclo y acción
-    if (lastMessage && lastMessage.cycle === displayCycle && lastMessage.action === action) {
-      return prev;
-    }
     return [
       ...prev,
       { cycle: displayCycle, stage, action, explanation, instruction, marAddress, marLabel },
@@ -292,6 +304,51 @@ export function notifyWarning(
   }
 }
 
+const UNARY_OPS = new Set(["INC", "DEC", "NOT", "NEG"]);
+
+function isUnaryMemoryInstruction() {
+  return (
+    currentInstructionName !== null &&
+    UNARY_OPS.has(currentInstructionName) &&
+    currentInstructionOperands[0]?.startsWith("[") === true
+  );
+}
+
+/**
+ * Ejecución de INC/DEC/NOT/NEG con operando en memoria (por ejemplo INC x):
+ * MAR ← IP, MBR ← read | IP ← IP + 1, MAR ← MBR, MBR ← read, operación y
+ * escritura. Cada paso se registra en el panel y cuenta un ciclo.
+ */
+function handleUnaryMemoryStep(
+  event: { type: string; register?: string },
+  pauseEachCycle: boolean,
+) {
+  const step = (message: string) => {
+    unaryStep++;
+    setMessageAndAddToHistory(`Ejecución: ${message}`);
+    cycleCount++;
+    currentInstructionCycleCount++;
+    store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
+    if (pauseEachCycle) pauseSimulation();
+  };
+  if (event.type === "cpu:mar.set" && event.register === "IP" && unaryStep === 0) {
+    step("MAR ← IP");
+  } else if (event.type === "cpu:register.update" && event.register === "IP" && unaryStep === 1) {
+    step("MBR ← read(Memoria[MAR]) | IP ← IP + 1");
+  } else if (event.type === "cpu:mar.set" && event.register === "ri" && unaryStep === 2) {
+    step("MAR ← MBR");
+  } else if (event.type === "cpu:mbr.get" && unaryStep === 3) {
+    step("MBR ← read(Memoria[MAR])");
+  } else if (event.type === "cpu:alu.execute" && unaryStep === 4) {
+    step(`MBR ← ${currentInstructionName} MBR | update(FLAGS)`);
+  } else if (event.type === "cpu:wr.on" && unaryStep === 5) {
+    unaryWriting = true;
+  } else if (event.type === "bus:reset" && unaryWriting) {
+    unaryWriting = false;
+    step("write(Memoria[MAR]) ← MBR");
+  }
+}
+
 export function finishSimulation(error?: SimulatorError<any>) {
   // Limpiar hilos activos
   mainCpuThreadActive = false;
@@ -364,6 +421,8 @@ function resetState(state: ComputerState, clearRegisters = false) {
 
   cycleCount = 0;
   instructionCount = 0;
+  panelStepIndex = 0;
+  lastRecorded = { count: -1, rawAction: "" };
   fetchStageCounter = 0;
   executeStageCounter = 0;
   store.set(cycleCountAtom, cycleCount);
@@ -403,6 +462,11 @@ let resultmbrimar = false;
 let displayMessageresultmbr = "";
 let displayMessagepop = "";
 let blBxToRiProcessed = false; // Flag para rastrear cuando BL/BX→ri ya fue procesado
+let movBuscopyDone = false; // MOV entre registros: el paso ya se registró en register.buscopy
+let panelStepIndex = 0; // Pasos de la instrucción actual ya registrados en el panel
+let unaryStep = 0; // INC/DEC/NOT/NEG con operando en memoria: pasos de ejecución hechos
+let unaryWriting = false;
+let lastRecorded = { count: -1, rawAction: "" }; // Último paso registrado (para no repetirlo)
 let blBxRegisterName = ""; // Para recordar si era BL o BX
 let idToMbrCombinedMessage = false; // Flag para rastrear cuando id ← MBR debe combinarse con MAR ← ri
 let lastMemoryOperationWasWrite = false; // Flag para rastrear si la última operación de memoria fue escritura
@@ -1383,6 +1447,11 @@ async function executeThread(generator: EventGenerator, isConcurrent = false): P
         resultmbrimar = false;
         displayMessageresultmbr = "";
         blBxToRiProcessed = false;
+        movBuscopyDone = false;
+        panelStepIndex = 0;
+        lastRecorded = { count: -1, rawAction: "" };
+        unaryStep = 0;
+        unaryWriting = false;
         blBxRegisterName = "";
         idToMbrCombinedMessage = false; // Resetear bandera de mensaje combinado para nueva instrucción
       }
@@ -1563,6 +1632,8 @@ async function executeThread(generator: EventGenerator, isConcurrent = false): P
               }
             }
           }
+        } else if (isUnaryMemoryInstruction()) {
+          handleUnaryMemoryStep(event.value, status.until === "cycle-change");
         } else {
           if (event.value.type === "cpu:rd.on" && executeStageCounter > 1) {
             messageReadWrite = "Ejecución: MBR ← read(Memoria[MAR])";
@@ -1684,8 +1755,7 @@ async function executeThread(generator: EventGenerator, isConcurrent = false): P
             // Detectar si es MOV/ADD/SUB con direccionamiento indirecto para evitar contabilizar el ciclo adicional
             const isIndirectInstruction =
               (currentInstructionName === "MOV" ||
-                currentInstructionName === "ADD" ||
-                currentInstructionName === "SUB") &&
+                ["ADD", "SUB", "CMP", "AND", "OR", "XOR"].includes(currentInstructionName)) &&
               sourceRegister === "ri" &&
               (executeStageCounter === 3 || blBxToRiProcessed) && // Ampliada: también cuando blBxToRiProcessed es true
               // Indirecto puro: no es directo ni inmediato
@@ -1935,25 +2005,20 @@ async function executeThread(generator: EventGenerator, isConcurrent = false): P
                   blBxRegisterName = ""; // Limpiar el nombre almacenado
                 } else if (
                   sourceRegister === "ri" &&
-                  (currentInstructionName === "ADD" || currentInstructionName === "SUB") &&
+                  ["ADD", "SUB", "CMP", "AND", "OR", "XOR"].includes(currentInstructionName) &&
                   !currentInstructionModeri &&
                   !currentInstructionModeid
                 ) {
-                  // Caso especial para ADD/SUB [BL], CL - incrementar ciclo ANTES de mostrar el mensaje
-                  // para que aparezca como ciclo 4 (después de MBR ← read que fue ciclo 3)
+                  // Caso ADD/SUB [BL], CL: MAR ← BL es el ciclo 4. El mensaje se registra
+                  // antes de contar el ciclo, como en el resto de los pasos (si se contara
+                  // antes, el paso siguiente repetiría el número y el panel partiría la
+                  // instrucción en dos)
+                  setMessageAndAddToHistory(`Ejecución: MAR ← ${blBxRegisterName}`);
                   cycleCount++;
                   currentInstructionCycleCount++;
                   store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
-                  console.log(
-                    "🔢 Ciclo incrementado ANTES de mostrar MAR ← BL/BX - cycleCount:",
-                    cycleCount,
-                    "currentInstructionCycleCount:",
-                    currentInstructionCycleCount,
-                  );
                   // Marcar que ya se contabilizó el ciclo para evitar doble contabilización
                   simultaneousCycleCounted = true;
-                  // Ahora mostrar el mensaje usando el registro almacenado
-                  setMessageAndAddToHistory(`Ejecución: MAR ← ${blBxRegisterName}`);
                   mbridirmar = false;
                   blBxToRiProcessed = false; // También resetear esta bandera
                   blBxRegisterName = ""; // Limpiar el nombre almacenado
@@ -2547,9 +2612,9 @@ async function executeThread(generator: EventGenerator, isConcurrent = false): P
             } // Cerrar el bloque if de validateInstructionContext
           } else if (event.value.type === "cpu:alu.execute") {
             if (currentInstructionName === "CMP") {
-              store.set(
-                messageAtom,
-                `Ejecución: ${destinoALU} ${currentInstructionName} ${fuenteALU} ; update(FLAGS)`,
+              // La comparación es un paso del ciclo: registrarla también en el panel
+              setMessageAndAddToHistory(
+                `Ejecución: ${destinoALU} ${currentInstructionName} ${fuenteALU} | update(FLAGS)`,
               );
               cycleCount++;
               currentInstructionCycleCount++;
@@ -2793,6 +2858,7 @@ async function executeThread(generator: EventGenerator, isConcurrent = false): P
             if (currentInstructionName === "MOV") {
               const displayMessage = `Ejecución: ${destRegister} ← ${sourceRegister}`;
               setMessageAndAddToHistory(displayMessage);
+              movBuscopyDone = true;
               cycleCount++;
               currentInstructionCycleCount++;
               store.set(currentInstructionCycleCountAtom, currentInstructionCycleCount);
@@ -2803,6 +2869,10 @@ async function executeThread(generator: EventGenerator, isConcurrent = false): P
                 currentInstructionCycleCount,
               );
             }
+          } else if (event.value.type === "cpu:register.copy" && movBuscopyDone) {
+            // MOV entre registros: register.buscopy y register.copy son el mismo paso
+            // (el bus interno y la copia), que ya se registró y contó una vez
+            movBuscopyDone = false;
           } else if (event.value.type === "cpu:register.copy") {
             console.log("📋 Evento cpu:register.copy detectado");
             const sourceRegister = event.value.src.replace(/\.l$/, "");
@@ -3274,7 +3344,11 @@ async function executeThread(generator: EventGenerator, isConcurrent = false): P
                 isLastStepBeforeCycleEnd = true;
               }
               // Direccionamiento indirecto (modeRi = false, modeId = false): último paso en executeStageCounter === 5
-              else if (!currentInstructionModeid && executeStageCounter === 5) {
+              else if (
+                !currentInstructionModeid &&
+                !currentInstructionModeri &&
+                executeStageCounter === 5
+              ) {
                 isLastStepBeforeCycleEnd = true;
               }
 
@@ -3296,16 +3370,12 @@ async function executeThread(generator: EventGenerator, isConcurrent = false): P
               // Para MOV/ADD/SUB con direccionamiento directo durante la captación del operando en executeStageCounter === 3,
               // no mostrar el mensaje de bus:reset porque cpu:register.update manejará el mensaje correcto
               (executeStageCounter === 3 &&
-                (currentInstructionName === "MOV" ||
-                  currentInstructionName === "ADD" ||
-                  currentInstructionName === "SUB") &&
+                ["MOV", "ADD", "SUB", "CMP", "AND", "OR", "XOR"].includes(currentInstructionName) &&
                 currentInstructionModeri) ||
               // Para MOV/ADD/SUB con direccionamiento directo en executeStageCounter === 3 (captación de dirección),
               // no contabilizar el ciclo porque cpu:register.update ya lo maneja
               (executeStageCounter === 3 &&
-                (currentInstructionName === "MOV" ||
-                  currentInstructionName === "ADD" ||
-                  currentInstructionName === "SUB") &&
+                ["MOV", "ADD", "SUB", "CMP", "AND", "OR", "XOR"].includes(currentInstructionName) &&
                 !currentInstructionModeri &&
                 !currentInstructionModeid &&
                 currentInstructionOperands.length >= 2 && // Direccionamiento directo simple: MOV/ADD/SUB X, AL o MOV/ADD/SUB AL, X (sin corchetes, con direcciones/registros)
@@ -3330,9 +3400,7 @@ async function executeThread(generator: EventGenerator, isConcurrent = false): P
               // Para MOV/ADD/SUB con direccionamiento indirecto + inmediato (MOV/ADD/SUB [BL], 4) en executeStageCounter === 3,
               // no contabilizar el ciclo porque cpu:register.update ya maneja la captación del valor inmediato
               (executeStageCounter === 3 &&
-                (currentInstructionName === "MOV" ||
-                  currentInstructionName === "ADD" ||
-                  currentInstructionName === "SUB") &&
+                ["MOV", "ADD", "SUB", "CMP", "AND", "OR", "XOR"].includes(currentInstructionName) &&
                 !currentInstructionModeri &&
                 !currentInstructionModeid &&
                 currentInstructionOperands.length >= 2 &&
@@ -3353,14 +3421,11 @@ async function executeThread(generator: EventGenerator, isConcurrent = false): P
               // (se está leyendo el tercer byte - valor inmediato)
               (executeStageCounter === 5 &&
                 (currentInstructionName === "MOV" ||
-                  currentInstructionName === "ADD" ||
-                  currentInstructionName === "SUB") &&
+                  ["ADD", "SUB", "CMP", "AND", "OR", "XOR"].includes(currentInstructionName)) &&
                 currentInstructionModeri) ||
               (currentInstructionModeid &&
                 executeStageCounter === 4 &&
-                (currentInstructionName === "ADD" ||
-                  currentInstructionName === "SUB" ||
-                  currentInstructionName === "CMP")) ||
+                ["ADD", "SUB", "CMP", "AND", "OR", "XOR"].includes(currentInstructionName)) ||
               // Para instrucciones aritméticas con direccionamiento directo en executeStageCounter === 3,
               // no mostrar el mensaje de bus:reset porque cpu:register.update manejará el mensaje correcto
               // PERO NO aplicar esto cuando se está leyendo de memoria (direccionamiento indirecto)
@@ -3572,7 +3637,7 @@ async function executeThread(generator: EventGenerator, isConcurrent = false): P
             } else if (
               currentInstructionModeri &&
               executeStageCounter === 5 &&
-              (currentInstructionName === "ADD" || currentInstructionName === "SUB")
+              ["ADD", "SUB", "CMP", "AND", "OR", "XOR"].includes(currentInstructionName)
             ) {
               resultmbrimar = true;
               displayMessageresultmbr = `Ejecución: MBR ← ${sourceRegister} ; MAR ← MBR`;
