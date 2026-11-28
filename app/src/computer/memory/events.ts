@@ -3,9 +3,7 @@ import { MemoryAddress } from "@vonsim/common/address";
 import { showReadBusAnimationAtom, showWriteBusAnimationAtom } from "@/computer/bus/state";
 import { MBRAtom } from "@/computer/cpu/state";
 import {
-  activateRegister,
   anim,
-  deactivateRegister,
   hideReadControlText,
   hideWriteControlText,
   showReadControlText,
@@ -546,8 +544,14 @@ export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promi
       // Mostrar texto "Write" al animar el bus de control WR
       showWriteControlText();
 
-      // Animar el bus de direcciones y el bus de control WR en simultáneo
-      await Promise.all([drawExternalAddressPath(), drawWRControlPath()]);
+      // Escribir es una sola orden a la memoria: la dirección (MAR → memoria), el dato
+      // (MBR → memoria) y la señal WR viajan al mismo tiempo
+      store.set(operatingAddressAtom, MemoryAddress.from(event.address));
+      await Promise.all([
+        drawExternalAddressPath(),
+        drawExternalDataPath("mbr-to-memory"),
+        drawWRControlPath(),
+      ]);
 
       // Ocultar texto "Write" al terminar la animación
       hideWriteControlText();
@@ -559,11 +563,7 @@ export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promi
     case "memory:write.ok": {
       store.set(operatingAddressAtom, MemoryAddress.from(event.address));
 
-      // Para escritura, usar el color específico del MBR
-      await activateRegister("cpu.MBR");
-
-      // Animar el bus de datos desde el MBR hacia la memoria (igual que bus interno)
-      await drawExternalDataPath("mbr-to-memory");
+      // El dato ya viajó del MBR a la memoria junto con la dirección y WR (memory:write)
 
       // Animar la celda de memoria de destino
       await anim(
@@ -595,7 +595,6 @@ export async function handleMemoryEvent(event: SimulatorEvent<"memory:">): Promi
 
       // Resetear animaciones
       await Promise.all([
-        deactivateRegister("cpu.MBR"),
         anim(
           { key: "memory.operating-cell.color", to: colors.white },
           { duration: 1, easing: "easeOutQuart" },
