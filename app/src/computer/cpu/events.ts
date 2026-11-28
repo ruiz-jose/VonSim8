@@ -1261,11 +1261,9 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
             instructionName === "CMP") &&
           mode !== "mem<-imd"
         ) {
-          // Solo actualizar MAR sin animación de bus
+          // MAR ya se actualizó y destelló al terminar la animación MBR → MAR en mbr.get;
+          // acá solo se confirma el valor, sin repetir el destello
           store.set(MARAtom, store.get(registerAtoms.ri));
-          // Destello/actualización de MAR después de haberse mostrado el bus en mbr.get
-          await activateRegister("cpu.MAR", colors.blue[500]);
-          await deactivateRegister("cpu.MAR");
           return;
         }
 
@@ -1641,19 +1639,26 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
               instructionName === "CMP")
           ) {
             console.log("📘 Animación de direcciones (mbr.get directo): MBR → MAR (bus azul)");
+            // Misma duración que las demás transferencias (una unidad de tiempo)
+            const settings = getSettings();
+            const duration = settings.animations ? 1000 / settings.simulationSpeed : 1;
             await anim(
               [
                 { key: "cpu.internalBus.address.path", from: generateMBRtoMARPath() },
                 { key: "cpu.internalBus.address.opacity", from: 1 },
                 { key: "cpu.internalBus.address.strokeDashoffset", from: 1, to: 0 },
               ],
-              { duration: 300, easing: "easeInOutSine", forceMs: true },
+              { duration, easing: "easeInOutSine", forceMs: true },
             );
-            // Ocultar el bus de direcciones tras la animación
+            // MAR recibe la dirección apenas llega la animación (no recién en cpu:mar.set)
+            store.set(MARAtom, store.get(MARAtom).withLow(store.get(MBRAtom)));
+            await activateRegister("cpu.MAR", colors.blue[500]);
+            // Ocultar el bus de direcciones después de que MAR se actualizó
             await anim(
               { key: "cpu.internalBus.address.opacity", to: 0 },
               { duration: 100, easing: "easeInSine", forceMs: true },
             );
+            await deactivateRegister("cpu.MAR");
             // No dibujar bus de datos MBR→ri aquí
             console.log(
               "⏭️ Omitiendo animación de datos MBR → ri en direccionamiento directo (mbr.get)",
