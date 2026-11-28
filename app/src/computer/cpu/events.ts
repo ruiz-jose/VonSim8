@@ -51,6 +51,10 @@ let pendingRightTransfer: { from: DataRegister; instruction: string; mode: strin
 
 // Variable para rastrear el registro fuente en instrucciones OUT (DL o DX)
 let pendingOUTSourceRegister: string | null = null;
+// MOV reg, reg: el simulador anima la copia con cpu:register.buscopy y después
+// emite cpu:register.copy para el mismo dato. Ese segundo evento solo actualiza
+// el valor, sin repetir la animación.
+let movBuscopyPending = false;
 
 // Variables para rastrear el contexto actual de la instrucción
 let currentExecuteStageCounter = 0;
@@ -609,6 +613,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       void animateSequencerOnly(0.05);
 
       instructionName = event.instruction.name; // Obtén el nombre de la instrucción en curso
+      movBuscopyPending = false;
       mode = event.instruction.willUse.ri ? "mem<-imd" : ""; // Verifica si willUse.ri es true y establece el modo
       console.log(
         "[cpu:cycle.start] instructionName:",
@@ -1907,6 +1912,12 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       const src = normalize(event.src);
       const dest = normalize(event.dest);
 
+      if (movBuscopyPending) {
+        movBuscopyPending = false;
+        store.set(registerAtoms[dest], store.get(registerAtoms[src]));
+        return;
+      }
+
       console.log(
         `🔄 cpu:register.copy: ${event.src} → ${event.dest} (normalizado: ${src} → ${dest})`,
       );
@@ -2331,6 +2342,7 @@ export async function handleCPUEvent(event: SimulatorEvent<"cpu:">): Promise<voi
       }
       // Copiar el valor en el frontend (para mantener sincronía visual)
       store.set(registerAtoms[dest], store.get(registerAtoms[src]));
+      movBuscopyPending = instructionName === "MOV";
       await activateRegister(`cpu.${dest}` as RegisterKey);
       await deactivateRegister(`cpu.${dest}` as RegisterKey);
       // SOLO resetea la animación si el destino NO es ri
